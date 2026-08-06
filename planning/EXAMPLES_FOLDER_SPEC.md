@@ -71,7 +71,7 @@ Template
 
 Example
 → Doğru uygulamanın nasıl görünebileceğini gösterir.
-
+```
 ------
 
 # 4. `examples/` Klasörünün Görevi

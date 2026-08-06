@@ -92,6 +92,7 @@ Validation
 Output bağlantısı
 +
 Kapanış durumu
+```
 
 Run, nihai proje dokümanlarının kendisi değildir.
 

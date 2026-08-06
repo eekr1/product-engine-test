@@ -76,7 +76,7 @@ Template ilişkileri
 Output beklentileri
 +
 Validation gereksinimleri
-
+```
 ------
 
 # 4. `packages/` Klasörünün Sistem İçindeki Görevi

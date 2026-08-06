@@ -63,7 +63,7 @@ Planning belgeleri hazırdır.
 
 Ancak:
 
-- planning setinin çapraz audit’i henüz yapılmamıştır,
+- planning setinin çapraz audit’i tamamlanmış ve gerekli düzeltmeler uygulanmıştır,
 - gerçek `engine/` belgeleri henüz üretilmemiştir,
 - diğer ana klasörlerin build aşaması başlamamıştır,
 - hiçbir klasör henüz final veya locked kabul edilmemelidir.
@@ -160,7 +160,7 @@ Deprecated
 | `planning/ARCHIVE_FOLDER_SPEC.md`   | Ready       | Approved     | Approved     | Archive sistemi yapım şartnamesi hazır      |
 | `planning/BUILD_STATUS.md`          | Ready       | Approved     | Approved     | Üst seviye build takibi hazır               |
 
-Planning belgelerinin hazırlanmış olması, henüz audit edilmiş veya kilitlenmiş oldukları anlamına gelmez.
+Planning belgeleri audit edilmiş ve `Approved` durumundadır; henüz `Locked` değildir.
 
 ------
 

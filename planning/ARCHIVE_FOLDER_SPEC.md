@@ -62,7 +62,7 @@ Kaynak bağlantılarının korunması
 Güncel sistemden izolasyon
 
 Archive bir çöp kutusu değildir.
-
+```
 ------
 
 # 4. `archive/` Klasörünün Görevi

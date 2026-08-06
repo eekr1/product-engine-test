@@ -83,6 +83,7 @@ Kalite sınırları
 +
 Çıktı beklentisi
 
+```
 ------
 
 # 4. `templates/` Klasörünün Sistem İçindeki Görevi

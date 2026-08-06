@@ -89,7 +89,7 @@ Kaynaklar
 Açık kararlar
 +
 Onay durumu
-
+```
 Input, Product Engine’in proje hakkında kullanacağı ana gerçeklik kaynağıdır.
 
 ------

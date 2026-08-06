@@ -60,7 +60,7 @@ Doğru klasör yapısı
 Temiz teslim paketi
 +
 Kaynak run bağlantısı
-
+```
 ------
 
 # 4. `outputs/` Klasörünün Görevi

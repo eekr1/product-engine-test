@@ -65,7 +65,7 @@ Run kaydı
 
 System log
 → Bu çalışmalardan Product Engine hakkında ne öğrendik?
-
+```
 ------
 
 # 4. `logs/` Klasörünün Görevi
