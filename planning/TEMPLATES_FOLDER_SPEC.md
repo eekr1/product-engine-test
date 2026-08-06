@@ -1,6 +1,4 @@
-# TEMPLATES_FOLDER_SPEC
-
-# TEMPLATES_FOLDER_SPEC
+﻿# TEMPLATES_FOLDER_SPEC
 
 ## 1. Belgenin Amacı
 
@@ -84,7 +82,6 @@ Koşullu bölümler
 Kalite sınırları
 +
 Çıktı beklentisi
-~~~
 
 ------
 

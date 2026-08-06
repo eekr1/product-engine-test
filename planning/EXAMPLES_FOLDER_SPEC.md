@@ -1,6 +1,4 @@
-# EXAMPLES_FOLDER_SPEC
-
-# EXAMPLES_FOLDER_SPEC
+﻿# EXAMPLES_FOLDER_SPEC
 
 ## 1. Belgenin Amacı
 
@@ -73,7 +71,6 @@ Template
 
 Example
 → Doğru uygulamanın nasıl görünebileceğini gösterir.
-~~~
 
 ------
 

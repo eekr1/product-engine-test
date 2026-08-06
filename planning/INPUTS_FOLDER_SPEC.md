@@ -1,7 +1,5 @@
 ﻿# INPUTS_FOLDER_SPEC
 
-# INPUTS_FOLDER_SPEC
-
 ## 1. Belgenin Amacı
 
 Bu belge, Product Engine içerisindeki `inputs/` klasörünün nasıl inşa edileceğini tanımlayan yapım şartnamesidir.
@@ -91,7 +89,6 @@ Kaynaklar
 Açık kararlar
 +
 Onay durumu
-~~~
 
 Input, Product Engine’in proje hakkında kullanacağı ana gerçeklik kaynağıdır.
 

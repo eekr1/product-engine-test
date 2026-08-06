@@ -1,6 +1,4 @@
-# ARCHIVE_FOLDER_SPEC
-
-# ARCHIVE_FOLDER_SPEC
+﻿# ARCHIVE_FOLDER_SPEC
 
 ## 1. Belgenin Amacı
 
@@ -62,7 +60,6 @@ Tarihsel bağlam
 Kaynak bağlantılarının korunması
 +
 Güncel sistemden izolasyon
-~~~
 
 Archive bir çöp kutusu değildir.
 

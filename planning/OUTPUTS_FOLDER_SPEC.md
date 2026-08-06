@@ -1,7 +1,5 @@
 ﻿# OUTPUTS_FOLDER_SPEC
 
-# OUTPUTS_FOLDER_SPEC
-
 ## 1. Belgenin Amacı
 
 Bu belge, Product Engine içerisindeki `outputs/` klasörünün nasıl inşa edileceğini tanımlayan yapım şartnamesidir.
@@ -62,7 +60,6 @@ Doğru klasör yapısı
 Temiz teslim paketi
 +
 Kaynak run bağlantısı
-~~~
 
 ------
 

@@ -1,7 +1,5 @@
 ﻿# PACKAGES_FOLDER_SPEC
 
-# PACKAGES_FOLDER_SPEC
-
 ## 1. Belgenin Amacı
 
 Bu belge, Product Engine içerisindeki `packages/` klasörünün nasıl inşa edileceğini tanımlayan yapım şartnamesidir.
@@ -78,7 +76,6 @@ Template ilişkileri
 Output beklentileri
 +
 Validation gereksinimleri
-~~~
 
 ------
 

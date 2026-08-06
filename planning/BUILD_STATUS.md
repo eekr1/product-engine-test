@@ -1,6 +1,3 @@
-# BUILD_STATUS
-
-~~~md
 # Product Engine Build Status
 
 ## 1. Belgenin Amacı
@@ -27,16 +24,16 @@ Bu belge, Product Engine’in inşa sürecindeki tek üst seviye durum kaynağı
 
 ```text
 Current Phase:
-Planning Specifications Completed
+Planning Completed
 
 Current Focus:
-Planning Set Cross-Audit
+engine/ Build Preparation
 
 Next Major Build:
 engine/
 
 Overall Status:
-Planning hazır, gerçek klasör üretimi henüz başlamadı.
+Planning seti audit edildi, gerekli düzeltmeler tamamlandı ve engine/ build aşamasına hazır.
 ```
 
 ------
@@ -151,17 +148,17 @@ Deprecated
 
 | Dosya                               | Spec Status | Audit Status | Final Status | Not                                         |
 | ----------------------------------- | ----------- | ------------ | ------------ | ------------------------------------------- |
-| `planning/README.md`                | Ready       | Not Started  | Pending      | Planning kullanım ve üretim protokolü hazır |
-| `planning/ENGINE_FOLDER_SPEC.md`    | Ready       | Not Started  | Pending      | Engine klasörü yapım şartnamesi hazır       |
-| `planning/PACKAGES_FOLDER_SPEC.md`  | Ready       | Not Started  | Pending      | Package sistemi yapım şartnamesi hazır      |
-| `planning/TEMPLATES_FOLDER_SPEC.md` | Ready       | Not Started  | Pending      | Template sistemi yapım şartnamesi hazır     |
-| `planning/INPUTS_FOLDER_SPEC.md`    | Ready       | Not Started  | Pending      | Input sistemi yapım şartnamesi hazır        |
-| `planning/RUNS_FOLDER_SPEC.md`      | Ready       | Not Started  | Pending      | Run sistemi yapım şartnamesi hazır          |
-| `planning/OUTPUTS_FOLDER_SPEC.md`   | Ready       | Not Started  | Pending      | Output sistemi yapım şartnamesi hazır       |
-| `planning/LOGS_FOLDER_SPEC.md`      | Ready       | Not Started  | Pending      | Log sistemi yapım şartnamesi hazır          |
-| `planning/EXAMPLES_FOLDER_SPEC.md`  | Ready       | Not Started  | Pending      | Example sistemi yapım şartnamesi hazır      |
-| `planning/ARCHIVE_FOLDER_SPEC.md`   | Ready       | Not Started  | Pending      | Archive sistemi yapım şartnamesi hazır      |
-| `planning/BUILD_STATUS.md`          | Ready       | Not Started  | Pending      | Üst seviye build takibi hazır               |
+| `planning/README.md`                | Ready       | Approved     | Approved     | Planning kullanım ve üretim protokolü hazır |
+| `planning/ENGINE_FOLDER_SPEC.md`    | Ready       | Approved     | Approved     | Engine klasörü yapım şartnamesi hazır       |
+| `planning/PACKAGES_FOLDER_SPEC.md`  | Ready       | Approved     | Approved     | Package sistemi yapım şartnamesi hazır      |
+| `planning/TEMPLATES_FOLDER_SPEC.md` | Ready       | Approved     | Approved     | Template sistemi yapım şartnamesi hazır     |
+| `planning/INPUTS_FOLDER_SPEC.md`    | Ready       | Approved     | Approved     | Input sistemi yapım şartnamesi hazır        |
+| `planning/RUNS_FOLDER_SPEC.md`      | Ready       | Approved     | Approved     | Run sistemi yapım şartnamesi hazır          |
+| `planning/OUTPUTS_FOLDER_SPEC.md`   | Ready       | Approved     | Approved     | Output sistemi yapım şartnamesi hazır       |
+| `planning/LOGS_FOLDER_SPEC.md`      | Ready       | Approved     | Approved     | Log sistemi yapım şartnamesi hazır          |
+| `planning/EXAMPLES_FOLDER_SPEC.md`  | Ready       | Approved     | Approved     | Example sistemi yapım şartnamesi hazır      |
+| `planning/ARCHIVE_FOLDER_SPEC.md`   | Ready       | Approved     | Approved     | Archive sistemi yapım şartnamesi hazır      |
+| `planning/BUILD_STATUS.md`          | Ready       | Approved     | Approved     | Üst seviye build takibi hazır               |
 
 Planning belgelerinin hazırlanmış olması, henüz audit edilmiş veya kilitlenmiş oldukları anlamına gelmez.
 
@@ -171,7 +168,7 @@ Planning belgelerinin hazırlanmış olması, henüz audit edilmiş veya kilitle
 
 | Sıra | Klasör          | Spec    | Build       | Audit       | Fix         | Final   | Sıradaki Eylem                            |
 | ---- | --------------- | ------- | ----------- | ----------- | ----------- | ------- | ----------------------------------------- |
-| 1    | `engine/`       | Ready   | Not Started | Not Started | Not Started | Pending | Planning audit sonrasında üret            |
+| 1    | `engine/`       | Ready   | Not Started | Not Started | Not Started | Pending | ENGINE_FOLDER_SPEC'e göre build başlat            |
 | 2    | `packages/`     | Ready   | Not Started | Not Started | Not Started | Pending | `engine/` onayından sonra üret            |
 | 3    | `templates/`    | Ready   | Not Started | Not Started | Not Started | Pending | `packages/` onayından sonra üret          |
 | 4    | `inputs/`       | Ready   | Not Started | Not Started | Not Started | Pending | Çekirdek sistem onayından sonra üret      |
@@ -211,30 +208,17 @@ Bir klasörün bağımlı olduğu önceki klasör onaylanmadan sonraki build aş
 
 # 8. Aktif Aşama
 
-## Planning Set Cross-Audit
+## engine/ Build Hazırlığı
 
-Planning setinin bütün belgeleri hazırlanmıştır.
+Planning setinin bütün belgeleri hazırlanmış ve çapraz audit tamamlanmıştır.
 
-Sıradaki çalışma, bu belgeleri birbirleriyle karşılaştıran çapraz audit’tir.
+Audit sonucu: `CONDITIONAL PASS`
 
-Audit sırasında özellikle şu konular kontrol edilmelidir:
+Gerekli build-öncesi düzeltmeler uygulanmıştır.
 
-- Aynı terimlerin farklı spec’lerde aynı anlamda kullanılması
-- Klasör sorumluluklarının birbirine karışmaması
-- Dosya ve klasör ağaçlarının uyumu
-- Var olmayan belgelerin zorunlu kaynak olarak gösterilmemesi
-- Package, template ve document catalog ilişkisi
-- Input, run ve output sınırları
-- Delivery profile terminolojisi
-- Run template’lerinin konumu
-- Output sürümleme yaklaşımı
-- Archive ve aktif klasör ilişkisi
-- Tekrar eden veya gereksiz kurallar
-- Gerçek build’i engelleyecek açık kararlar
+Planning seti engine/ build için `Approved` kabul edilmektedir.
 
-Audit ilk aşamada planning belgelerini değiştirmemelidir.
-
-Yalnızca bulgu raporu üretmelidir.
+Sıradaki iş `ENGINE_FOLDER_SPEC.md`'ye göre `engine/` klasörünü build etmektir.
 
 ------
 
@@ -394,8 +378,6 @@ Aynı sürüm bilgisi farklı belgeler tarafından bağımsız biçimde sahiplen
 
 Şu anda gerçek bir build blokeri bulunmamaktadır.
 
-Ancak planning audit yapılmadan build başlatılması önerilmemektedir.
-
 Mevcut durum:
 
 ```text
@@ -403,7 +385,7 @@ Blocker:
 Yok
 
 Required Gate:
-Planning cross-audit
+Tamamlandı — Planning audit Approved
 
 Next Build Target:
 engine/
@@ -416,16 +398,7 @@ engine/
 Sıradaki tek aktif görev:
 
 ```text
-Bütün planning setini çapraz audit et.
-```
-
-Audit tamamlandıktan sonra:
-
-```text
-1. Bulguları önem seviyesine göre değerlendir.
-2. Yalnızca gerekli düzeltmeleri uygula.
-3. Planning audit durumunu güncelle.
-4. ENGINE_FOLDER_SPEC’e göre engine/ klasörünü üret.
+ENGINE_FOLDER_SPEC'e göre engine/ klasörünü build et.
 ```
 
 ------
@@ -477,16 +450,19 @@ Bu dosya iyimser tahmin değil, mevcut gerçeklik kaydıdır.
 - Bütün ana klasörler için planning spec belgeleri hazırlandı.
 - `planning/README.md` hazırlandı.
 - `planning/BUILD_STATUS.md` hazırlandı.
+- Planning seti çapraz audit tamamlandı (Sonuç: CONDITIONAL PASS).
+- Audit bulguları doğrultusunda gerekli düzeltmeler uygulandı.
+- Tüm açık kararlar kapatıldı.
+- Planning seti engine/ build için Approved kabul edildi.
 
 ### Mevcut Aşama
 
-Planning seti çapraz audit için hazır.
+engine/ klasör build hazırlığı.
 
 ### Henüz Başlamayanlar
 
-- Planning cross-audit
-- Gerçek klasör build’leri
-- Klasör bazlı audit’ler
+- Gerçek klasör build'leri
+- Klasör bazlı audit'ler
 - Example senaryoları
 - Manuel Product Engine testi
 - Final entegrasyon
@@ -494,7 +470,7 @@ Planning seti çapraz audit için hazır.
 
 ### Sıradaki İş
 
-Planning setinin temiz bir ajan veya ayrı sohbet tarafından çapraz denetlenmesi.
+`ENGINE_FOLDER_SPEC.md`'ye göre `engine/` klasörünü build etmek.
 
 ------
 

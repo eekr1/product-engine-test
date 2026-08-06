@@ -1,6 +1,4 @@
-# RUNS_FOLDER_SPEC
-
-# RUNS_FOLDER_SPEC
+﻿# RUNS_FOLDER_SPEC
 
 ## 1. Belgenin Amacı
 
@@ -94,7 +92,6 @@ Validation
 Output bağlantısı
 +
 Kapanış durumu
-~~~
 
 Run, nihai proje dokümanlarının kendisi değildir.
 
@@ -1659,46 +1656,6 @@ Kullanılan gerçek template sürümü kaynak kaydında korunmalıdır.
 
 ------
 
-# 57. Run Operasyon Belgesi Şablonları
-
-Run operasyon belgelerinin şablonları `templates/runs/` altında tutulur.
-
-`runs/` klasörü yalnızca gerçek run kayıtlarını barındırır; template sahibi değildir.
-
-`templates/runs/` altında şu şablonlar yer alabilir:
-
-```text
-templates/runs/
-├── RUN_MANIFEST_TEMPLATE.md
-├── PACKAGE_SELECTION_TEMPLATE.md
-├── SOURCE_REGISTER_TEMPLATE.md
-├── ASSUMPTIONS_TEMPLATE.md
-├── CONFLICTS_TEMPLATE.md
-├── RUN_LOG_TEMPLATE.md
-├── PROGRESS_TEMPLATE.md
-├── VALIDATION_REPORT_TEMPLATE.md
-└── COMPLETION_REPORT_TEMPLATE.md
-```
-
-Bu şablonlar `templates/runs/` klasörü build edilirken oluşturulacaktır.
-
-------
-
-# 58. Run Template Konumu
-
-Run operasyon belgelerinin şablonları için authoritative konum:
-
-```text
-templates/runs/
-```
-
-`runs/_templates/` kullanılmayacaktır.
-
-Tüm üretim şablonları `templates/` altında yönetilir; run operasyon şablonları da bu yapının içindedir.
-
-------
-
-
 # 54. Validation Sonrası Düzeltme Döngüsü
 
 
@@ -1803,6 +1760,46 @@ Aşağıdaki klasörlerin içeriğini değiştirmemelidir:
 - `examples/`
 - `archive/`
 - `planning/`
+
+# 57. Run Operasyon Belgesi Şablonları
+
+Run operasyon belgelerinin şablonları `templates/runs/` altında tutulur.
+
+`runs/` klasörü yalnızca gerçek run kayıtlarını barındırır; template sahibi değildir.
+
+`templates/runs/` altında şu şablonlar yer alabilir:
+
+```text
+templates/runs/
+├── RUN_MANIFEST_TEMPLATE.md
+├── PACKAGE_SELECTION_TEMPLATE.md
+├── SOURCE_REGISTER_TEMPLATE.md
+├── ASSUMPTIONS_TEMPLATE.md
+├── CONFLICTS_TEMPLATE.md
+├── RUN_LOG_TEMPLATE.md
+├── PROGRESS_TEMPLATE.md
+├── VALIDATION_REPORT_TEMPLATE.md
+└── COMPLETION_REPORT_TEMPLATE.md
+```
+
+Bu şablonlar `templates/runs/` klasörü build edilirken oluşturulacaktır.
+
+------
+
+# 58. Run Template Konumu
+
+Run operasyon belgelerinin şablonları için authoritative konum:
+
+```text
+templates/runs/
+```
+
+`runs/_templates/` kullanılmayacaktır.
+
+Tüm üretim şablonları `templates/` altında yönetilir; run operasyon şablonları da bu yapının içindedir.
+
+------
+
 
 # 59. Üretim Sonu Raporu
 

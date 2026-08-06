@@ -1,6 +1,4 @@
-# LOGS_FOLDER_SPEC
-
-# LOGS_FOLDER_SPEC
+﻿# LOGS_FOLDER_SPEC
 
 ## 1. Belgenin Amacı
 
@@ -67,7 +65,6 @@ Run kaydı
 
 System log
 → Bu çalışmalardan Product Engine hakkında ne öğrendik?
-~~~
 
 ------
 
