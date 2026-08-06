@@ -1659,7 +1659,48 @@ Kullanılan gerçek template sürümü kaynak kaydında korunmalıdır.
 
 ------
 
+# 57. Run Operasyon Belgesi Şablonları
+
+Run operasyon belgelerinin şablonları `templates/runs/` altında tutulur.
+
+`runs/` klasörü yalnızca gerçek run kayıtlarını barındırır; template sahibi değildir.
+
+`templates/runs/` altında şu şablonlar yer alabilir:
+
+```text
+templates/runs/
+├── RUN_MANIFEST_TEMPLATE.md
+├── PACKAGE_SELECTION_TEMPLATE.md
+├── SOURCE_REGISTER_TEMPLATE.md
+├── ASSUMPTIONS_TEMPLATE.md
+├── CONFLICTS_TEMPLATE.md
+├── RUN_LOG_TEMPLATE.md
+├── PROGRESS_TEMPLATE.md
+├── VALIDATION_REPORT_TEMPLATE.md
+└── COMPLETION_REPORT_TEMPLATE.md
+```
+
+Bu şablonlar `templates/runs/` klasörü build edilirken oluşturulacaktır.
+
+------
+
+# 58. Run Template Konumu
+
+Run operasyon belgelerinin şablonları için authoritative konum:
+
+```text
+templates/runs/
+```
+
+`runs/_templates/` kullanılmayacaktır.
+
+Tüm üretim şablonları `templates/` altında yönetilir; run operasyon şablonları da bu yapının içindedir.
+
+------
+
+
 # 54. Validation Sonrası Düzeltme Döngüsü
+
 
 Validation bulguları düzeltme gerektirirse:
 
@@ -1684,6 +1725,7 @@ kaydedilmelidir.
 Eski bulgular silinmemeli; resolved olarak işaretlenmelidir.
 
 ------
+
 
 # 55. Run Kalite İlkeleri
 
@@ -1761,60 +1803,6 @@ Aşağıdaki klasörlerin içeriğini değiştirmemelidir:
 - `examples/`
 - `archive/`
 - `planning/`
-
-------
-
-# 57. Oluşturulabilecek Yardımcı Dosyalar
-
-Mevcut ağaçta yer almıyorsa aşağıdaki şablonlar önerilebilir:
-
-```text
-runs/RUN_MANIFEST_TEMPLATE.md
-runs/PACKAGE_SELECTION_TEMPLATE.md
-runs/SOURCE_REGISTER_TEMPLATE.md
-runs/ASSUMPTIONS_TEMPLATE.md
-runs/CONFLICTS_TEMPLATE.md
-runs/RUN_LOG_TEMPLATE.md
-runs/PROGRESS_TEMPLATE.md
-runs/VALIDATION_REPORT_TEMPLATE.md
-runs/COMPLETION_REPORT_TEMPLATE.md
-```
-
-Ancak bu dosyalar onay almadan sessizce eklenmemelidir.
-
-Önce aynı sorumluluğun `templates/` veya `engine/` klasöründe bulunup bulunmadığı kontrol edilmelidir.
-
-Run kayıt template’lerinin ana yeri ayrıca kararlaştırılmalıdır.
-
-------
-
-# 58. Run Template Konumu
-
-Run operasyon belgeleri için iki olası yaklaşım vardır:
-
-## Yaklaşım A
-
-Run şablonları doğrudan `runs/` kökünde tutulur.
-
-```text
-runs/_templates/
-```
-
-## Yaklaşım B
-
-Run şablonları genel template sistemi altında tutulur.
-
-```text
-templates/runs/
-```
-
-V0’da tek bir yaklaşım seçilmelidir.
-
-Aynı run template’i iki farklı klasörde tutulmamalıdır.
-
-Mevcut `templates/` klasör ağacında `runs/` alt klasörü bulunmadığı için, gerekli görülürse ayrı bir yapı değişikliği olarak raporlanmalıdır.
-
-------
 
 # 59. Üretim Sonu Raporu
 

@@ -1,6 +1,5 @@
-﻿# EXAMPLES_FOLDER_SPEC
+# EXAMPLES_FOLDER_SPEC
 
-~~~md
 # EXAMPLES_FOLDER_SPEC
 
 ## 1. Belgenin Amacı
@@ -252,25 +251,30 @@ Amaç, sistemin ölçeklenebilirliğini test etmektir.
 
 Bir example mümkünse tek başına kopuk dosya olarak değil, ilişkili bir scenario seti olarak hazırlanmalıdır.
 
-Önerilen yapı:
+V0 için authoritative yapı mevcut ayrı alt klasör yapısıdır:
 
 ```text
-examples/scenarios/<scenario-id>/
-├── SCENARIO.md
-├── input/
-├── run/
-└── output/
+examples/
+├── inputs/
+├── runs/
+└── outputs/
 ```
 
-V0’da mevcut klasör ağacı korunacaksa dosyalar ortak scenario ID ile ilişkilendirilebilir:
+Aynı senaryoya ait dosyalar ortak `scenario_id` ile ilişkilendirilir.
+
+Örnek:
 
 ```text
-examples/inputs/corporate-site-minimal-input.md
-examples/runs/corporate-site-minimal-run/
-examples/outputs/corporate-site-minimal-output/
+examples/inputs/corporate-site-minimal-001-input.md
+examples/runs/corporate-site-minimal-001-run/
+examples/outputs/corporate-site-minimal-001-output/
 ```
 
-Aynı senaryoya ait input, run ve output’un ilişkisi açık olmalıdır.
+`scenario_id` formatı: `<project-type>-<descriptor>-<sequence>`
+
+`examples/scenarios/<scenario-id>/` yapısı gelecekte değerlendirilebilecek bir seçenektir; V0 build yapısı değildir.
+
+Aynı senaryoya ait input, run ve output'un ilişkisi ortak `scenario_id` üzerinden açıkça anlaşılabilmelidir.
 
 ------
 

@@ -1,6 +1,5 @@
-﻿# LOGS_FOLDER_SPEC
+# LOGS_FOLDER_SPEC
 
-~~~md
 # LOGS_FOLDER_SPEC
 
 ## 1. Belgenin Amacı
@@ -296,7 +295,14 @@ Aynı değişiklik birden fazla türe uyuyorsa baskın tür seçilmelidir.
 
 # 12. Engine Sürümü
 
-Product Engine’in genel sürümü bulunmalıdır.
+Product Engine'in genel sürümü bulunmalıdır.
+
+## Authoritative Kaynaklar
+
+- **Kök `README.md`**: Güncel aktif Product Engine sürümünün authoritative kaynağı.
+- **`logs/ENGINE_CHANGELOG.md`**: Product Engine sürüm geçmişinin authoritative kaynağı.
+
+`PRODUCT_ENGINE_BRAIN.md` sürümün bağımsız sahibi değildir.
 
 Önerilen sürüm biçimi:
 

@@ -1,6 +1,5 @@
 ﻿# OUTPUTS_FOLDER_SPEC
 
-~~~md
 # OUTPUTS_FOLDER_SPEC
 
 ## 1. Belgenin Amacı
@@ -151,13 +150,7 @@ Mevcut ağaç onay alınmadan değiştirilmemelidir.
 
 # 7. Proje Output Yapısı
 
-Her proje output’u kendi klasöründe tutulmalıdır:
-
-```text
-outputs/<category>/<project-slug>/
-```
-
-Birden fazla output sürümü varsa:
+Her proje output'u kendi klasöründe tutulmalıdır:
 
 ```text
 outputs/<category>/<project-slug>/
@@ -168,13 +161,11 @@ outputs/<category>/<project-slug>/
     └── v1.0/
 ```
 
-Daha hafif V0 yaklaşımı:
+`latest/`, en son geçerli ve aktif output'u temsil eder.
 
-```text
-outputs/<category>/<project-slug>_<version>/
-```
+Validation'dan geçmeyen veya invalidated output `latest/` olamaz.
 
-Repository genelinde tek bir yöntem seçilmeli ve tutarlı uygulanmalıdır.
+Eski sürümler `versions/` altında korunur; üzerine yazılmaz.
 
 ------
 

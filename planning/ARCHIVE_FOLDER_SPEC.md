@@ -1,6 +1,5 @@
-﻿# ARCHIVE_FOLDER_SPEC
+# ARCHIVE_FOLDER_SPEC
 
-~~~md
 # ARCHIVE_FOLDER_SPEC
 
 ## 1. Belgenin Amacı
@@ -353,31 +352,35 @@ Arşive taşımak run’ı invalidated yapmaz.
 
 # 14. Archive Metadata
 
-Arşivlenen her içerik en az aşağıdaki bilgileri taşımalıdır:
+Arşivlenen her Markdown dosyasının başına YAML frontmatter bloğu eklenir.
 
-```text
-archive_id
-original_path
-archived_path
-content_type
-original_version
-status
-archive_reason
-archived_at
-archived_by
-replacement
-related_runs
-related_outputs
-notes
+V0 için authoritative metadata yöntemi YAML frontmatter'dır.
+
+Örnek:
+
+```yaml
+---
+archive_id: ARC-TEMPLATE-001
+content_type: template
+original_path: templates/ai/PROJECT_BRAIN_TEMPLATE.md
+archived_path: archive/deprecated-templates/ai/v0.1/PROJECT_BRAIN_TEMPLATE.md
+original_version: 0.1
+status: deprecated
+archive_reason: Yeni metadata ve placeholder standardıyla değiştirildi.
+archived_at: 2026-08-06
+archived_by:
+replacement: templates/ai/PROJECT_BRAIN_TEMPLATE.md
+related_runs:
+related_outputs:
+notes:
+---
 ```
 
-Bu metadata:
+Ayrı `ARCHIVE_METADATA.md` dosyası veya klasör seviyesinde merkezi manifest V0'da kullanılmayacaktır.
 
-- dosyanın başına eklenebilir,
-- yanında `ARCHIVE_METADATA.md` olarak tutulabilir,
-- klasör seviyesinde manifest içinde saklanabilir.
+Binary veya YAML frontmatter desteklemeyen dosyalar için metadata, dosya adı veya yanında bırakılan kısa bir not dosyasıyla sağlanabilir.
 
-Repository genelinde tek yöntem seçilmelidir.
+Zorunlu alanlar: `archive_id`, `status`, `archive_reason`, `archived_at`, `replacement`.
 
 ------
 

@@ -1,6 +1,5 @@
 ﻿# INPUTS_FOLDER_SPEC
 
-~~~md
 # INPUTS_FOLDER_SPEC
 
 ## 1. Belgenin Amacı

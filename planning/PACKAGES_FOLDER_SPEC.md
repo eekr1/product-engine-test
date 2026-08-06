@@ -1,6 +1,5 @@
 ﻿# PACKAGES_FOLDER_SPEC
 
-~~~md
 # PACKAGES_FOLDER_SPEC
 
 ## 1. Belgenin Amacı
