@@ -1,4 +1,4 @@
-﻿# BUILD_STATUS
+# BUILD_STATUS
 
 ~~~md
 # Product Engine Build Status
@@ -37,7 +37,7 @@ engine/
 
 Overall Status:
 Planning hazır, gerçek klasör üretimi henüz başlamadı.
-~~~
+```
 
 ------
 
@@ -303,98 +303,90 @@ Bir klasör yalnızca aşağıdaki koşullarda `Approved` kabul edilmelidir:
 
 ------
 
-# 12. Açık Kararlar
+# 12. Kararlaştırılan Konular
 
-Planning audit sırasında özellikle aşağıdaki konular kesinleştirilmelidir:
+Aşağıdaki açık kararlar planning audit sonrasında kesinleştirilmiştir.
 
 ## Run Template Konumu
 
-Run operasyon belgelerinin şablonları:
+**Karar:** `templates/runs/`
 
-```text
-runs/_templates/
-```
+Run operasyon belgelerinin şablonları `templates/runs/` altında tutulacaktır.
 
-altında mı, yoksa:
-
-```text
-templates/runs/
-```
-
-altında mı tutulacak?
-
-Tek bir authoritative konum seçilmelidir.
+`runs/` klasörü yalnızca gerçek run kayıtlarını barındırır; template sahibi değildir.
 
 ------
 
 ## Output Sürümleme Yapısı
 
-Output’lar:
+**Karar:** `latest/` + `versions/` yapısı
 
 ```text
-outputs/<category>/<project-slug>/versions/<version>/
+outputs/<category>/<project-slug>/
+├── latest/
+└── versions/
+    ├── v0.1/
+    ├── v0.2/
+    └── v1.0/
 ```
 
-şeklinde mi, yoksa:
+`latest/`, en son geçerli `Active` output'u temsil eder.
 
-```text
-outputs/<category>/<project-slug>_<version>/
-```
+Validation'dan geçmeyen veya invalidated output `latest/` olamaz.
 
-şeklinde mi tutulacak?
-
-Repository genelinde tek yöntem seçilmelidir.
+Flat yapı (`outputs/<category>/<project-slug>_<version>/`) kullanılmayacaktır.
 
 ------
 
 ## Example Scenario Yapısı
 
-Example senaryoları mevcut:
+**Karar:** V0 için mevcut ayrı alt klasör yapısı
 
 ```text
-examples/inputs/
-examples/runs/
-examples/outputs/
+examples/
+├── inputs/
+├── runs/
+└── outputs/
 ```
 
-yapısında ortak scenario ID ile mi ilişkilendirilecek, yoksa ileride:
+Aynı senaryoya ait dosyalar ortak `scenario_id` ile ilişkilendirilir.
 
-```text
-examples/scenarios/<scenario-id>/
-```
+Örnek: `corporate-site-minimal-001`
 
-yapısına mı geçilecek?
-
-V0 için en sade uygulanabilir yaklaşım seçilmelidir.
+`examples/scenarios/<scenario-id>/` yapısı gelecekte değerlendirilebilecek bir seçenektir; V0 build yapısı değildir.
 
 ------
 
 ## Archive Metadata Yöntemi
 
-Archive metadata:
+**Karar:** YAML frontmatter
 
-- her belgenin başında,
-- yanında ayrı metadata dosyasında,
-- klasör seviyesinde merkezi manifestte
+Arşivlenen her Markdown dosyasının başına YAML frontmatter bloğu eklenir:
 
-tutulabilir.
+```yaml
+---
+archive_id: ARC-...
+status: deprecated
+archive_reason: ...
+replacement: ...
+archived_at: YYYY-MM-DD
+---
+```
 
-Tek bir yöntem belirlenmelidir.
+Ayrı metadata dosyası veya merkezi manifest V0'da kullanılmayacaktır.
 
 ------
 
 ## Engine Sürüm Kaynağı
 
-Product Engine genel sürümünün hangi authoritative belgede tutulacağı belirlenmelidir.
+**Karar:**
 
-Olası konumlar:
+- Kök `README.md` → güncel aktif Product Engine sürümünün authoritative kaynağı
+- `logs/ENGINE_CHANGELOG.md` → Product Engine sürüm geçmişinin authoritative kaynağı
 
-- Kök `README.md`
-- `PRODUCT_ENGINE_BRAIN.md`
-- Ayrı bir manifest
-- `logs/ENGINE_CHANGELOG.md`
+`PRODUCT_ENGINE_BRAIN.md` sürümün bağımsız sahibi değildir.
 
-Aynı sürüm bilgisi birden fazla bağımsız kaynakta sahiplenilmemelidir.
+Aynı sürüm bilgisi farklı belgeler tarafından bağımsız biçimde sahiplenilmemelidir.
 
 ------
 

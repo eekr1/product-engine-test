@@ -1,6 +1,5 @@
-﻿# RUNS_FOLDER_SPEC
+# RUNS_FOLDER_SPEC
 
-~~~md
 # RUNS_FOLDER_SPEC
 
 ## 1. Belgenin Amacı

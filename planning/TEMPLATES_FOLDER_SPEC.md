@@ -1,6 +1,5 @@
-﻿# TEMPLATES_FOLDER_SPEC
+# TEMPLATES_FOLDER_SPEC
 
-~~~md
 # TEMPLATES_FOLDER_SPEC
 
 ## 1. Belgenin Amacı
@@ -166,7 +165,6 @@ templates/
 │   ├── PRODUCT_RULES_TEMPLATE.md
 │   ├── TECH_CONTEXT_TEMPLATE.md
 │   ├── PRODUCT_STRATEGY_TEMPLATE.md
-│   ├── DESIGN_RULES_TEMPLATE.md
 │   ├── CURRENT_STATUS_TEMPLATE.md
 │   ├── NEXT_TASKS_TEMPLATE.md
 │   ├── DECISIONS_TEMPLATE.md
@@ -196,13 +194,20 @@ templates/
 │   ├── WAVE_PLAN_TEMPLATE.md
 │   └── STANDARD_WAVE_TEMPLATE.md
 │
-└── prompts/
-    ├── START_PROJECT_PROMPT.md
-    ├── START_WAVE_PROMPT.md
-    ├── CONTINUE_WAVE_PROMPT.md
-    ├── UPDATE_DOCS_PROMPT.md
-    └── VALIDATE_PROJECT_PROMPT.md
+├── prompts/
+│   ├── START_PROJECT_PROMPT.md
+│   ├── START_WAVE_PROMPT.md
+│   ├── CONTINUE_WAVE_PROMPT.md
+│   ├── UPDATE_DOCS_PROMPT.md
+│   └── VALIDATE_PROJECT_PROMPT.md
+│
+└── runs/
+    (Run operasyon belgelerinin şablonları burada tutulur.)
 ```
+
+`DESIGN_RULES_TEMPLATE.md` yalnızca `templates/design/` altında bulunur; `templates/ai/` altında ayrı bir kopyası yoktur.
+
+`templates/runs/` alt klasörü run operasyon belgelerinin şablonlarının authoritative konumudur.
 
 Bu ağaç başlangıç hedefidir.
 
