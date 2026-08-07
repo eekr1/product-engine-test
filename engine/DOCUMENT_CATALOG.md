@@ -68,7 +68,7 @@ Document Name      : PRODUCT_RULES.md
 Owner Category     : ai
 Purpose            : Ürünün değişmez davranış, kural ve kısıtlamalarını tanımlar.
 Required           : required
-Applicable Types   : web-app, mobile-app, api-service, content-platform, saas
+Applicable Types   : web-app, mobile-app, api-service, content-platform
 Applicable Profiles: Foundation, Prototype, Implementation Ready, Production Ready
 Primary Info Owner : product_rules, behavior_constraints, scope_rules, ux_rules
 Template Location  : templates/ai/PRODUCT_RULES_TEMPLATE.md
@@ -105,7 +105,7 @@ Document Name      : PRODUCT_STRATEGY.md
 Owner Category     : ai
 Purpose            : Ürünün uzun vadeli konumlanmasını, rekabet bağlamını ve büyüme hedeflerini tanımlar.
 Required           : conditional
-Applicable Types   : web-app, mobile-app, content-platform, saas
+Applicable Types   : web-app, mobile-app, content-platform
 Applicable Profiles: Implementation Ready, Production Ready
 Primary Info Owner : market_positioning, competitive_context, growth_targets, monetization_approach
 Template Location  : templates/ai/PRODUCT_STRATEGY_TEMPLATE.md
@@ -303,7 +303,7 @@ Document Name      : OPERATIONS.md
 Owner Category     : project
 Purpose            : Sistemin production'da nasıl işletileceğini, izleneceğini ve bakımının yapılacağını tanımlar.
 Required           : conditional
-Applicable Types   : web-app, api-service, saas
+Applicable Types   : web-app, api-service
 Applicable Profiles: Production Ready
 Primary Info Owner : monitoring, alerting, backup, incident_response, maintenance_procedures
 Template Location  : templates/project/OPERATIONS_TEMPLATE.md
@@ -339,7 +339,7 @@ Document Name      : WAVE_MAP.md
 Owner Category     : waves
 Purpose            : Projenin teslim dalgalarını ve her dalganın kapsamını üst seviyede gösterir.
 Required           : conditional
-Applicable Types   : web-app, api-service, mobile-app, content-platform, saas
+Applicable Types   : web-app, api-service, mobile-app, content-platform
 Applicable Profiles: Implementation Ready, Production Ready
 Primary Info Owner : wave_structure, wave_goals, wave_scope_boundaries
 Template Location  : templates/waves/WAVE_MAP_TEMPLATE.md
@@ -357,7 +357,7 @@ Document Name      : WAVE_PLAN.md
 Owner Category     : waves
 Purpose            : Belirli bir dalganın görevlerini, bağımlılıklarını ve kriterleri ayrıntılı tanımlar.
 Required           : conditional
-Applicable Types   : web-app, api-service, mobile-app, content-platform, saas
+Applicable Types   : web-app, api-service, mobile-app, content-platform
 Applicable Profiles: Implementation Ready, Production Ready
 Primary Info Owner : wave_tasks, task_breakdown, acceptance_criteria, wave_timeline
 Template Location  : templates/waves/WAVE_PLAN_TEMPLATE.md

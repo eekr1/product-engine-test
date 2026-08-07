@@ -135,8 +135,8 @@ Completed    : Validation'dan geçti, final output hazır.
 Blocked      : Çözülemeyen çelişki veya kritik eksiklik nedeniyle durduruldu.
 Paused       : Kullanıcı kararı veya clarification bekleniyor.
 Resumed      : Paused durumdan devam edildi.
-Failed       : Validation'dan geçemedi veya kritik hata oluştu.
-Cancelled    : Kullanıcı tarafından iptal edildi.
+Failed       : Teknik hata, üretim hatası veya validation başarısızlığı nedeniyle tamamlanamayan run.
+Cancelled    : Kullanıcı tarafından bilinçli olarak iptal edilen run. Status değeri Cancelled kalır.
 Invalidated  : Tamamlanmış run sonradan geçersiz kılındı.
 ```
 
@@ -246,14 +246,13 @@ Aşağıdaki koşulların tamamı sağlandığında run "Completed" olarak kapat
 
 ---
 
-## Başarısız Run Kapanışı
+## Başarısız Run Kapanışı (Failed)
 
 Aşağıdaki durumlardan biri oluştuğunda run "Failed" olarak kapatılır:
 
 ```text
 1. İkinci validation'dan sonra da FAIL alındı.
-2. Üretim kritik bir hatayla durdu ve kurtarılamadı.
-3. Kullanıcı run'ı iptal etti (Cancelled).
+2. Üretim teknik veya kritik bir hatayla durdu ve kurtarılamadı.
 ```
 
 Başarısız run:
@@ -261,6 +260,18 @@ Başarısız run:
 - Final output olarak işlenmez.
 - `latest/` güncellenmez.
 - Run klasörü `runs/failed/<run-id>/` konumuna taşınır.
+
+---
+
+## İptal Edilen Run Kapanışı (Cancelled)
+
+Kullanıcı tarafından bilinçli olarak iptal edilen run "Cancelled" durumuna geçer.
+
+İptal edilen run:
+
+- `RUN_MANIFEST.md` içerisindeki `status` değeri `Cancelled` olarak kalır (`Failed` yapılmaz).
+- Final output üretilmez ve `latest/` güncellenmez.
+- Fiziksel olarak ayrı bir `runs/cancelled/` klasörü tanımlı olmadığı için kayıt `runs/failed/<run-id>/` altında tutulabilir; ancak durum bilgisi her zaman `Cancelled` kalır.
 
 ---
 
@@ -291,7 +302,7 @@ Mevcut run devam ettirilemez, yeni run açılmalıdır:
 - Approved girdi run başladıktan sonra değiştirilmek isteniyor.
 - Run scope'u değişiyor (yeni doküman türleri eklenecek veya çıkarılacak).
 - Proje slug veya kategorisi değişiyor.
-- Önceki run "Failed" veya "Invalidated" durumunda.
+- Önceki run "Failed", "Cancelled" veya "Invalidated" durumunda.
 ```
 
 ---
