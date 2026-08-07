@@ -81,8 +81,8 @@ Hata Seviyesi:
 
 ```text
 Kontrol: INFORMATION_MAP.md'e göre bilgiler doğru dokümanlarda mı?
-  - Teknik stack PRD'de mi tutuluyor? (olmamalı)
-  - Kullanıcı akışları ARCH'ta mı tanımlanıyor? (olmamalı)
+  - Teknik stack PRODUCT_RULES'de mi tutuluyor? (olmamalı)
+  - Kullanıcı akışları TECH_CONTEXT'te mi tanımlanıyor? (olmamalı)
   - Primary owner dışında bilgi sahiplenilmiş mi?
 
 Hata Seviyesi:
@@ -96,10 +96,10 @@ Hata Seviyesi:
 
 ```text
 Kontrol:
-  - PRD'deki kapsam ARCH ile tutarlı mı?
-  - Teknik stack seçimi tutarlı mı (PRD → ARCH → DEPLOY)?
-  - Kullanıcı akışları PRD ve WAVE_MAP arasında uyumlu mu?
-  - Veri modeli (DATA) API şemasıyla (API) tutarlı mı?
+  - PROJECT_BRAIN'deki kapsam PRODUCT_RULES ile tutarlı mı?
+  - Teknik stack seçimi tutarlı mı (PROJECT_BRAIN → TECH_CONTEXT → DEPLOYMENT)?
+  - Kullanıcı akışları PRODUCT_RULES ve WAVE_MAP arasında uyumlu mu?
+  - Veri modeli (DATA_MODEL) API sözleşmesiyle (API_CONTRACTS) tutarlı mı?
   - CURRENT_STATUS ile NEXT_TASKS birbirine uyumlu mu?
 
 Hata Seviyesi:
@@ -235,4 +235,4 @@ Her validation sonrasında aşağıdaki bilgileri içeren bir rapor üretilir:
 - Önerilen repair adımları (FAIL durumunda)
 ```
 
-Bu rapor run manifest'ine eklenir. Bkz: `RUN_PROTOCOL.md`.
+Bu rapor `VALIDATION_REPORT.md` olarak run klasörüne eklenir. Bkz: `RUN_PROTOCOL.md`.

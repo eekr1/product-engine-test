@@ -38,23 +38,41 @@ Run kayıtları final output klasörüne MUST NOT taşınır.
 outputs/<category>/<project-slug>/
 ├── latest/
 │   ├── README.md
-│   ├── PRODUCT_REQUIREMENTS.md
-│   ├── ARCHITECTURE.md           (koşullu)
-│   ├── DATA_MODEL.md             (koşullu)
-│   ├── API_REFERENCE.md          (koşullu)
-│   ├── PRODUCT_STRATEGY.md       (koşullu)
-│   ├── DESIGN_RULES.md           (koşullu)
-│   ├── CURRENT_STATUS.md         (koşullu)
-│   ├── NEXT_TASKS.md             (koşullu)
-│   ├── WAVE_MAP.md               (koşullu)
-│   ├── WAVE_PLAN.md              (koşullu)
-│   ├── DEPLOYMENT.md             (koşullu)
-│   └── TESTING_STRATEGY.md       (koşullu)
+│   ├── PROJECT_BRAIN.md
+│   ├── PRODUCT_RULES.md
+│   ├── TECH_CONTEXT.md
+│   ├── PRODUCT_STRATEGY.md   (koşullu)
+│   ├── DESIGN_RULES.md        (koşullu)
+│   ├── CURRENT_STATUS.md      (koşullu)
+│   ├── NEXT_TASKS.md          (koşullu)
+│   ├── DECISIONS.md           (koşullu)
+│   ├── AGENT_INSTRUCTIONS.md  (koşullu)
+│   ├── PROJECT_PLAN.md        (koşullu)
+│   ├── DATA_MODEL.md          (koşullu)
+│   ├── API_CONTRACTS.md       (koşullu)
+│   ├── DEPLOYMENT.md          (koşullu)
+│   ├── OPERATIONS.md          (koşullu)
+│   ├── TEST_STRATEGY.md       (koşullu)
+│   ├── WAVE_MAP.md            (koşullu)
+│   └── WAVE_PLAN.md           (koşullu)
 └── versions/
     ├── v0.1/
     ├── v0.2/
     └── v1.0/
 ```
+
+Outputs için üst seviye kategori yapısı:
+
+```text
+outputs/
+├── README.md
+├── demos/
+└── products/
+```
+
+`demos/` → Sunulabilir, test edilebilir veya erken aşama teslimler
+
+`products/` → Implementation Ready veya Production Ready kapsamındaki teslimler
 
 ---
 
@@ -81,18 +99,7 @@ outputs/<category>/<project-slug>/
 
 ### `<category>`
 
-Projenin genel türünü tanımlayan kısa klasör adı. Proje türünden türetilir.
-
-Örnek değerler:
-
-```text
-web-apps
-api-services
-mobile-apps
-internal-tools
-landing-pages
-prototypes
-```
+Projenin genel türünü tanımlayan kısa klasör adı. Seçilen paket ve delivery profile'a göre `demos/` veya `products/` olarak belirlenir.
 
 ### `<project-slug>`
 
@@ -117,9 +124,12 @@ Her run'da, seçilen paketten bağımsız olarak aşağıdakiler final output'ta
 ```text
 README.md
   → Projenin başlangıç noktası; diğer belgelere yönlendirir.
+
+PROJECT_BRAIN.md
+  → Projenin tüm bağlamını özetler; ajanın birincil başvuru belgesidir.
 ```
 
-Seçilen pakete göre `PRODUCT_REQUIREMENTS.md` de zorunlu hale gelir.
+Seçilen pakete göre `PRODUCT_RULES.md` ve `TECH_CONTEXT.md` de zorunlu hale gelebilir.
 
 Bkz: `DOCUMENT_CATALOG.md` ve `PACKAGE_RULES.md`
 
@@ -142,7 +152,7 @@ Final output aşağıdakileri MUST NOT içerir:
 ```text
 - Doldurulmamış placeholder alanlar (ör. [BURAYA YAZ], TBD)
 - Template metadata satırları veya notları
-- Run operasyon dosyaları (run log, working output dosyaları)
+- Run operasyon dosyaları (run manifest, run log, working output dosyaları)
 - Başka bir projeye ait içerik
 - Onaylanmamış assumption'lar (tüm assumption'lar kayıtlı ve onaylı olmalı)
 - Çözülmemiş çelişkiler
@@ -178,9 +188,7 @@ Final output içindeki her sürüm için aşağıdaki bilgiler izlenebilir olmal
 - Üretim tarihi
 ```
 
-Bu bilgiler run manifest'inde tutulur. Bkz: `RUN_PROTOCOL.md`.
-
-Final output klasörüne ayrı bir manifest dosyası yazılabilir; ancak bu run manifest'inin kopyası değil, özet bir referans olabilir.
+Bu bilgiler `RUN_MANIFEST.md`'de tutulur. Bkz: `RUN_PROTOCOL.md`.
 
 ---
 
@@ -190,7 +198,7 @@ Final output klasörüne ayrı bir manifest dosyası yazılabilir; ancak bu run 
 Working Output
   → Üretim sürecindeki geçici dokümanlar.
   → Validation tamamlanmadan final output klasörüne taşınmaz.
-  → Run klasöründe tutulur.
+  → runs/active/<run-id>/working-output/ altında tutulur.
 
 Final Output
   → Validation'dan geçmiş, temiz doküman paketi.

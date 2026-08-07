@@ -25,7 +25,7 @@ Projenin hedef teslim olgunluk düzeyidir. Proje türünden bağımsız bir kavr
 Foundation           → Temel bağlam ve amaç belgelenmiş
 Prototype            → Hızlı deneme, minimum belge yükü
 Implementation Ready → Ajana üretime başlatacak yeterlilikte belge
-Production Ready     → Kurumsal düzeyde eksiksiz dokümantasyon
+Production Ready     → Operasyon ve sürdürülebilirlik kapsamı güçlendirilmiş paket
 ```
 
 ### Project Type
@@ -34,7 +34,19 @@ Projenin işlevsel kategorisidir. Delivery profile'dan bağımsızdır. Tanınan
 
 ### Package
 
-Bir delivery profile + project type kombinasyonu için önerilen doküman kümesidir. Gerçek paket tanımları `packages/` klasöründe bulunur. Bu belge yalnızca seçim mantığını tanımlar.
+Belirli bir proje bağlamı için önerilen doküman kümesidir. Gerçek paket tanımları `packages/` klasöründe bulunur. Bu belge yalnızca seçim mantığını tanımlar.
+
+Başlangıç paket dosyaları:
+
+```text
+packages/
+├── README.md
+├── DEMO_FRONTEND_PACKAGE.md
+├── CORPORATE_WEBSITE_PACKAGE.md
+├── SAAS_PACKAGE.md
+├── EXISTING_PROJECT_PACKAGE.md
+└── API_SERVICE_PACKAGE.md
+```
 
 ---
 
@@ -60,9 +72,14 @@ Belirsiz ise intake adımına geri dönülür. Bu alan assumption yapılamaz.
 
 ### Adım 3 — Temel Paketi Seç
 
-Delivery profile + project type kombinasyonuna göre `packages/` klasöründeki karşılık gelen temel paket dosyası belirlenir.
+Delivery profile + project type kombinasyonuna göre `packages/` klasöründeki karşılık gelen paket dosyası belirlenir.
 
-Paket dosyaları `packages/<profile>/<type>.md` formatında konumlanmaktadır.
+Paket dosyaları `packages/` altında düz yapıda konumlanmaktadır:
+
+```text
+packages/<PACKAGE_NAME>.md
+Örnek: packages/SAAS_PACKAGE.md
+```
 
 ### Adım 4 — Uzantı Gereksinimlerini Değerlendir
 
@@ -70,22 +87,25 @@ Temel paket her projeye yeterli gelmeyebilir. Aşağıdaki durumlarda ek doküma
 
 ```text
 Mevcut proje (existing):
-→ STATUS belgesi zorunlu hale gelir.
+→ CURRENT_STATUS (STATUS) belgesi zorunlu hale gelir.
 
 API yüzeyi olan projeler:
-→ API belgesi eklenir.
+→ API_CONTRACTS (API) belgesi eklenir.
 
 Dalga bazlı planlamaya ihtiyaç varsa:
-→ WAVE-MAP ve WAVE-PLAN eklenir.
+→ WAVE_MAP ve WAVE_PLAN eklenir.
 
 Production Ready + dış erişim varsa:
-→ DEPLOY belgesi eklenir.
+→ DEPLOYMENT ve OPERATIONS belgeleri eklenir.
 
 Karmaşık veri modeli olan projeler:
-→ DATA belgesi eklenir.
+→ DATA_MODEL (DATA) belgesi eklenir.
 
 Tasarım kararları belgelenmesi gereken projeler:
-→ DESIGN belgesi eklenir.
+→ DESIGN_RULES (DESIGN) belgesi eklenir.
+
+Ajan çalışma kuralları tanımlanacaksa:
+→ AGENT_INSTRUCTIONS (AGENT-INST) belgesi eklenir.
 ```
 
 ### Adım 5 — Daraltma Gereksinimlerini Değerlendir
@@ -93,14 +113,14 @@ Tasarım kararları belgelenmesi gereken projeler:
 Küçük veya tek amaçlı projeler için bazı belgeler gereksiz olabilir.
 
 ```text
-Prototype + throwaway niyeti:
-→ WAVE-MAP ve WAVE-PLAN çıkarılabilir.
+Prototype + hızlı teslim:
+→ WAVE_MAP, WAVE_PLAN, PROJECT_PLAN çıkarılabilir.
 
-Sadece landing-page:
-→ ARCH ve DATA çıkarılabilir.
+Sadece frontend demo veya landing-page:
+→ DATA_MODEL, API_CONTRACTS, OPERATIONS çıkarılabilir.
 
 Tek kullanıcılı internal-tool:
-→ PROD-STRAT ve DESIGN çıkarılabilir.
+→ PRODUCT_STRATEGY, DESIGN_RULES çıkarılabilir.
 ```
 
 Daraltma kararı assumption olarak kaydedilir.
@@ -163,6 +183,6 @@ MAY: İsteğe bağlı dokümanlar kullanıcı talebi veya açık gereksinim vars
 
 Bu belge paket **seçim mantığını** tanımlar.
 
-Seçilen paketin gerçek doküman listesi ve bu dokümanlar için özel kurallar `packages/<profile>/<type>.md` dosyasında bulunur.
+Seçilen paketin gerçek doküman listesi ve bu dokümanlar için özel kurallar `packages/<PACKAGE_NAME>.md` dosyasında bulunur.
 
 Bu iki sorumluluk birbirine karıştırılmamalıdır.

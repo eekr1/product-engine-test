@@ -22,16 +22,15 @@ Bu katalog, `packages/` ve `templates/` sistemlerinin ortak referansıdır. Bir 
 Her doküman aşağıdaki alanlarla kayıtlıdır:
 
 ```text
-Document ID        : Benzersiz kısa kimlik (ör. PRD, ARCH, WAVE-MAP)
-Document Name      : Dosyanın tam adı (ör. PRODUCT_REQUIREMENTS.md)
-Owner Category     : product | technical | planning | operational | design
+Document ID        : Benzersiz kısa kimlik (ör. PROJECT-BRAIN, TECH-CTX)
+Document Name      : Dosyanın tam adı (ör. PROJECT_BRAIN.md)
+Owner Category     : ai | project | design | waves | prompts | operational
 Purpose            : Dokümanın tek cümlelik amacı
 Required           : required | conditional | optional
 Applicable Types   : Hangi proje türlerinde geçerli?
 Applicable Profiles: Hangi delivery profile'larda geçerli?
 Primary Info Owner : Bu dokümana birincil olarak ait olan bilgi türleri
-Template Location  : templates/<kategori>/<dosya-adı>.md
-Output Location    : outputs/<kategori>/<project-slug>/latest/<dosya-adı>.md
+Template Location  : templates/<alt-klasör>/<dosya-adı>.md
 Dependencies       : Üretilmeden önce tamamlanması gereken diğer dokümanlar
 Validation Notes   : Validation sırasında kontrol edilmesi gereken özel durumlar
 ```
@@ -42,78 +41,58 @@ Validation Notes   : Validation sırasında kontrol edilmesi gereken özel durum
 
 ---
 
-### PRD — Product Requirements
+### PROJECT-BRAIN — Project Brain
 
 ```text
-Document ID        : PRD
-Document Name      : PRODUCT_REQUIREMENTS.md
-Owner Category     : product
-Purpose            : Ürünün ne yapacağını, kimler için olduğunu ve başarı kriterlerini tanımlar.
+Document ID        : PROJECT-BRAIN
+Document Name      : PROJECT_BRAIN.md
+Owner Category     : ai
+Purpose            : Projenin tüm bağlamını özetler; ajanın birincil başvuru belgesidir.
 Required           : required
-Applicable Types   : web-app, mobile-app, api-service, content-platform, integration
-Applicable Profiles: Foundation, Prototype, Implementation Ready, Production Ready
-Primary Info Owner : project_purpose, target_users, core_flows, success_criteria, scope_boundaries
-Template Location  : templates/product/PRODUCT_REQUIREMENTS.md
-Output Location    : outputs/<category>/<project-slug>/latest/PRODUCT_REQUIREMENTS.md
+Applicable Types   : Tüm türler
+Applicable Profiles: Tüm profiller
+Primary Info Owner : project_purpose, project_summary, tech_overview, scope_summary,
+                     key_decisions_summary, current_phase_summary
+Template Location  : templates/ai/PROJECT_BRAIN_TEMPLATE.md
 Dependencies       : Approved project intake
-Validation Notes   : Scope, proje intake ile tutarlı olmalı. Teknik kararlar bu belgede bulunmamalı.
+Validation Notes   : Bağlam tutarlı olmalı; PRODUCT_RULES ve TECH_CONTEXT ile çelişmemeli.
 ```
 
 ---
 
-### ARCH — Architecture Overview
+### PRODUCT-RULES — Product Rules
 
 ```text
-Document ID        : ARCH
-Document Name      : ARCHITECTURE.md
-Owner Category     : technical
-Purpose            : Sistemin teknik mimarisini, bileşenlerini ve bunlar arasındaki ilişkileri tanımlar.
-Required           : conditional
-Applicable Types   : web-app, api-service, mobile-app, integration, infrastructure
-Applicable Profiles: Implementation Ready, Production Ready
-Primary Info Owner : technical_stack, system_components, data_flow, integration_points, hosting
-Template Location  : templates/technical/ARCHITECTURE.md
-Output Location    : outputs/<category>/<project-slug>/latest/ARCHITECTURE.md
-Dependencies       : PRD
-Validation Notes   : Seçilen stack, intake ile tutarlı olmalı. Mimari kararlar gerekçelendirilmiş olmalı.
+Document ID        : PRODUCT-RULES
+Document Name      : PRODUCT_RULES.md
+Owner Category     : ai
+Purpose            : Ürünün değişmez davranış, kural ve kısıtlamalarını tanımlar.
+Required           : required
+Applicable Types   : web-app, mobile-app, api-service, content-platform, saas
+Applicable Profiles: Foundation, Prototype, Implementation Ready, Production Ready
+Primary Info Owner : product_rules, behavior_constraints, scope_rules, ux_rules
+Template Location  : templates/ai/PRODUCT_RULES_TEMPLATE.md
+Dependencies       : PROJECT-BRAIN
+Validation Notes   : Kurallar proje kapsamıyla tutarlı olmalı. Teknik detay burada bulunmamalı.
 ```
 
 ---
 
-### DATA — Data Model
+### TECH-CTX — Tech Context
 
 ```text
-Document ID        : DATA
-Document Name      : DATA_MODEL.md
-Owner Category     : technical
-Purpose            : Sistemdeki varlıkları, ilişkilerini ve veri akışını tanımlar.
-Required           : conditional
-Applicable Types   : web-app, api-service, mobile-app, content-platform
-Applicable Profiles: Implementation Ready, Production Ready
-Primary Info Owner : entities, relationships, data_flows, storage_decisions
-Template Location  : templates/technical/DATA_MODEL.md
-Output Location    : outputs/<category>/<project-slug>/latest/DATA_MODEL.md
-Dependencies       : PRD, ARCH
-Validation Notes   : Varlıklar PRD'deki akışlarla tutarlı olmalı.
-```
-
----
-
-### API — API Reference
-
-```text
-Document ID        : API
-Document Name      : API_REFERENCE.md
-Owner Category     : technical
-Purpose            : Sistemin dışa açık veya iç API yüzeyini tanımlar.
-Required           : conditional
-Applicable Types   : api-service, web-app, integration, mobile-app
-Applicable Profiles: Implementation Ready, Production Ready
-Primary Info Owner : endpoints, request_formats, response_formats, auth_method, error_codes
-Template Location  : templates/technical/API_REFERENCE.md
-Output Location    : outputs/<category>/<project-slug>/latest/API_REFERENCE.md
-Dependencies       : ARCH, DATA
-Validation Notes   : Auth yöntemi ARCH ile tutarlı olmalı.
+Document ID        : TECH-CTX
+Document Name      : TECH_CONTEXT.md
+Owner Category     : ai
+Purpose            : Teknik stack, mimari kararlar ve teknik sınırları tanımlar.
+Required           : required
+Applicable Types   : web-app, mobile-app, api-service, integration, infrastructure
+Applicable Profiles: Foundation, Implementation Ready, Production Ready
+Primary Info Owner : technical_stack, architecture_decisions, system_components,
+                     integration_points, technical_constraints
+Template Location  : templates/ai/TECH_CONTEXT_TEMPLATE.md
+Dependencies       : PROJECT-BRAIN
+Validation Notes   : Stack kararları proje intake ile tutarlı olmalı. Gerekçeler belirtilmeli.
 ```
 
 ---
@@ -123,15 +102,14 @@ Validation Notes   : Auth yöntemi ARCH ile tutarlı olmalı.
 ```text
 Document ID        : PROD-STRAT
 Document Name      : PRODUCT_STRATEGY.md
-Owner Category     : product
+Owner Category     : ai
 Purpose            : Ürünün uzun vadeli konumlanmasını, rekabet bağlamını ve büyüme hedeflerini tanımlar.
 Required           : conditional
-Applicable Types   : web-app, mobile-app, content-platform
-Applicable Profiles: Production Ready
+Applicable Types   : web-app, mobile-app, content-platform, saas
+Applicable Profiles: Implementation Ready, Production Ready
 Primary Info Owner : market_positioning, competitive_context, growth_targets, monetization_approach
-Template Location  : templates/product/PRODUCT_STRATEGY.md
-Output Location    : outputs/<category>/<project-slug>/latest/PRODUCT_STRATEGY.md
-Dependencies       : PRD
+Template Location  : templates/ai/PRODUCT_STRATEGY_TEMPLATE.md
+Dependencies       : PROJECT-BRAIN, PRODUCT-RULES
 Validation Notes   : Yalnızca üretim hedefli projelerde gereklidir. Varsayım olarak üretilmemelidir.
 ```
 
@@ -148,9 +126,8 @@ Required           : conditional
 Applicable Types   : web-app, mobile-app, landing-page, content-platform
 Applicable Profiles: Prototype, Implementation Ready, Production Ready
 Primary Info Owner : visual_language, component_rules, interaction_patterns, accessibility_rules
-Template Location  : templates/design/DESIGN_RULES.md
-Output Location    : outputs/<category>/<project-slug>/latest/DESIGN_RULES.md
-Dependencies       : PRD
+Template Location  : templates/design/DESIGN_RULES_TEMPLATE.md
+Dependencies       : PROJECT-BRAIN, PRODUCT-RULES
 Validation Notes   : Tasarım kararları kullanıcı tarafından onaylanmalı; sessizce uydurulmamalı.
 ```
 
@@ -161,15 +138,14 @@ Validation Notes   : Tasarım kararları kullanıcı tarafından onaylanmalı; s
 ```text
 Document ID        : STATUS
 Document Name      : CURRENT_STATUS.md
-Owner Category     : operational
+Owner Category     : ai
 Purpose            : Projenin mevcut durumunu, son tamamlanan işleri ve kısa vadeli öncelikleri gösterir.
 Required           : conditional
 Applicable Types   : Tüm türler
 Applicable Profiles: Tüm profiller (mevcut projeler için zorunlu)
 Primary Info Owner : current_phase, completed_items, next_priorities, known_blockers
-Template Location  : templates/operational/CURRENT_STATUS.md
-Output Location    : outputs/<category>/<project-slug>/latest/CURRENT_STATUS.md
-Dependencies       : PRD (mevcut proje için ek kaynak girdisi)
+Template Location  : templates/ai/CURRENT_STATUS_TEMPLATE.md
+Dependencies       : PROJECT-BRAIN
 Validation Notes   : Mevcut proje (existing) için required'dır. Sıfırdan projeler için optional.
 ```
 
@@ -180,54 +156,123 @@ Validation Notes   : Mevcut proje (existing) için required'dır. Sıfırdan pro
 ```text
 Document ID        : TASKS
 Document Name      : NEXT_TASKS.md
-Owner Category     : operational
+Owner Category     : ai
 Purpose            : Ajanın veya ekibin sıradaki somut görevlerini listeler.
 Required           : conditional
 Applicable Types   : Tüm türler
 Applicable Profiles: Implementation Ready, Production Ready
-Primary Info Owner : immediate_tasks, task_priority, task_dependencies, assignees
-Template Location  : templates/operational/NEXT_TASKS.md
-Output Location    : outputs/<category>/<project-slug>/latest/NEXT_TASKS.md
-Dependencies       : STATUS, WAVE-PLAN (varsa)
+Primary Info Owner : immediate_tasks, task_priority, task_dependencies
+Template Location  : templates/ai/NEXT_TASKS_TEMPLATE.md
+Dependencies       : STATUS (varsa), WAVE-PLAN (varsa)
 Validation Notes   : Görevler ölçülebilir ve atanabilir olmalı.
 ```
 
 ---
 
-### WAVE-MAP — Wave Map
+### DECISIONS — Decisions
 
 ```text
-Document ID        : WAVE-MAP
-Document Name      : WAVE_MAP.md
-Owner Category     : planning
-Purpose            : Projenin teslim dalgalarını ve her dalganın kapsamını üst seviyede gösterir.
+Document ID        : DECISIONS
+Document Name      : DECISIONS.md
+Owner Category     : ai
+Purpose            : Proje süresince alınan önemli kararları ve gerekçelerini kayıt altına alır.
 Required           : conditional
-Applicable Types   : web-app, api-service, mobile-app, content-platform, integration
-Applicable Profiles: Implementation Ready, Production Ready
-Primary Info Owner : wave_structure, wave_goals, wave_scope_boundaries
-Template Location  : templates/planning/WAVE_MAP.md
-Output Location    : outputs/<category>/<project-slug>/latest/WAVE_MAP.md
-Dependencies       : PRD
-Validation Notes   : Dalgalar PRD kapsamıyla tutarlı olmalı. Dalga sayısı gerçekçi olmalı.
+Applicable Types   : Tüm türler
+Applicable Profiles: Foundation, Implementation Ready, Production Ready
+Primary Info Owner : architectural_decisions, product_decisions, design_decisions, decision_rationale
+Template Location  : templates/ai/DECISIONS_TEMPLATE.md
+Dependencies       : PROJECT-BRAIN
+Validation Notes   : Kararlar gerekçesiyle birlikte kaydedilmeli. Kararlar çelişmemeli.
 ```
 
 ---
 
-### WAVE-PLAN — Wave Plan
+### AGENT-INST — Agent Instructions
 
 ```text
-Document ID        : WAVE-PLAN
-Document Name      : WAVE_PLAN.md
-Owner Category     : planning
-Purpose            : Belirli bir dalganın görevlerini, bağımlılıklarını ve kriterleri ayrıntılı tanımlar.
+Document ID        : AGENT-INST
+Document Name      : AGENT_INSTRUCTIONS.md
+Owner Category     : ai
+Purpose            : Projeye özel ajan çalışma kurallarını ve önceliklerini tanımlar.
 Required           : conditional
-Applicable Types   : web-app, api-service, mobile-app, content-platform, integration
+Applicable Types   : Tüm türler
 Applicable Profiles: Implementation Ready, Production Ready
-Primary Info Owner : wave_tasks, task_breakdown, acceptance_criteria, wave_timeline
-Template Location  : templates/planning/WAVE_PLAN.md
-Output Location    : outputs/<category>/<project-slug>/latest/WAVE_PLAN.md
-Dependencies       : WAVE-MAP
-Validation Notes   : Her dalga için ayrı WAVE_PLAN oluşturulabilir. WAVE-MAP olmadan üretilemez.
+Primary Info Owner : agent_behavior_rules, working_priorities, coding_conventions, communication_style
+Template Location  : templates/ai/AGENT_INSTRUCTIONS_TEMPLATE.md
+Dependencies       : PROJECT-BRAIN, PRODUCT-RULES
+Validation Notes   : Ajan talimatları Product Engine sözleşmeleriyle çelişmemeli.
+```
+
+---
+
+### README-DOC — Project README
+
+```text
+Document ID        : README-DOC
+Document Name      : README.md
+Owner Category     : project
+Purpose            : Projeye yeni katılan ajan veya kişinin başlangıç noktası.
+Required           : required
+Applicable Types   : Tüm türler
+Applicable Profiles: Tüm profiller
+Primary Info Owner : project_summary, how_to_start, key_documents, project_links
+Template Location  : templates/project/README_TEMPLATE.md
+Dependencies       : PROJECT-BRAIN
+Validation Notes   : README diğer belgelerin içeriğini tekrar etmemeli; yönlendirici olmalı.
+```
+
+---
+
+### PROJ-PLAN — Project Plan
+
+```text
+Document ID        : PROJ-PLAN
+Document Name      : PROJECT_PLAN.md
+Owner Category     : project
+Purpose            : Projenin teslim planını, aşamalarını ve zaman çizelgesini tanımlar.
+Required           : conditional
+Applicable Types   : Tüm türler
+Applicable Profiles: Implementation Ready, Production Ready
+Primary Info Owner : project_phases, milestones, timeline, resource_plan
+Template Location  : templates/project/PROJECT_PLAN_TEMPLATE.md
+Dependencies       : PROJECT-BRAIN, WAVE-MAP (varsa)
+Validation Notes   : Plan, onaylı kapsam ile tutarlı olmalı.
+```
+
+---
+
+### DATA — Data Model
+
+```text
+Document ID        : DATA
+Document Name      : DATA_MODEL.md
+Owner Category     : project
+Purpose            : Sistemdeki varlıkları, ilişkilerini ve veri akışını tanımlar.
+Required           : conditional
+Applicable Types   : web-app, api-service, mobile-app, content-platform
+Applicable Profiles: Implementation Ready, Production Ready
+Primary Info Owner : entities, relationships, data_flows, storage_decisions
+Template Location  : templates/project/DATA_MODEL_TEMPLATE.md
+Dependencies       : PROJECT-BRAIN, TECH-CTX
+Validation Notes   : Varlıklar proje kapsamıyla tutarlı olmalı.
+```
+
+---
+
+### API — API Contracts
+
+```text
+Document ID        : API
+Document Name      : API_CONTRACTS.md
+Owner Category     : project
+Purpose            : Sistemin dışa açık veya iç API yüzeyini tanımlar.
+Required           : conditional
+Applicable Types   : api-service, web-app, integration, mobile-app
+Applicable Profiles: Implementation Ready, Production Ready
+Primary Info Owner : endpoints, request_formats, response_formats, auth_method, error_codes
+Template Location  : templates/project/API_CONTRACTS_TEMPLATE.md
+Dependencies       : TECH-CTX, DATA
+Validation Notes   : Auth yöntemi TECH_CONTEXT ile tutarlı olmalı.
 ```
 
 ---
@@ -237,71 +282,104 @@ Validation Notes   : Her dalga için ayrı WAVE_PLAN oluşturulabilir. WAVE-MAP 
 ```text
 Document ID        : DEPLOY
 Document Name      : DEPLOYMENT.md
-Owner Category     : technical
+Owner Category     : project
 Purpose            : Sistemin production ortamına nasıl dağıtılacağını tanımlar.
 Required           : conditional
 Applicable Types   : web-app, api-service, mobile-app, infrastructure
 Applicable Profiles: Production Ready
 Primary Info Owner : deployment_target, deployment_steps, env_variables, rollback_strategy
-Template Location  : templates/technical/DEPLOYMENT.md
-Output Location    : outputs/<category>/<project-slug>/latest/DEPLOYMENT.md
-Dependencies       : ARCH
+Template Location  : templates/project/DEPLOYMENT_TEMPLATE.md
+Dependencies       : TECH-CTX
 Validation Notes   : Deployment detayları kullanıcı tarafından onaylanmalı. Sessizce uydurulmamalı.
 ```
 
 ---
 
-### TEST — Testing Strategy
+### OPS — Operations
+
+```text
+Document ID        : OPS
+Document Name      : OPERATIONS.md
+Owner Category     : project
+Purpose            : Sistemin production'da nasıl işletileceğini, izleneceğini ve bakımının yapılacağını tanımlar.
+Required           : conditional
+Applicable Types   : web-app, api-service, saas
+Applicable Profiles: Production Ready
+Primary Info Owner : monitoring, alerting, backup, incident_response, maintenance_procedures
+Template Location  : templates/project/OPERATIONS_TEMPLATE.md
+Dependencies       : DEPLOY
+Validation Notes   : Sadece Production Ready projelerde gereklidir. Gereksiz bürokrasi eklenmemeli.
+```
+
+---
+
+### TEST — Test Strategy
 
 ```text
 Document ID        : TEST
-Document Name      : TESTING_STRATEGY.md
-Owner Category     : technical
+Document Name      : TEST_STRATEGY.md
+Owner Category     : project
 Purpose            : Projenin nasıl test edileceğini, hangi test katmanlarının kullanılacağını tanımlar.
 Required           : conditional
 Applicable Types   : web-app, api-service, mobile-app
 Applicable Profiles: Implementation Ready, Production Ready
 Primary Info Owner : test_levels, test_scope, coverage_targets, test_tools
-Template Location  : templates/technical/TESTING_STRATEGY.md
-Output Location    : outputs/<category>/<project-slug>/latest/TESTING_STRATEGY.md
-Dependencies       : PRD, ARCH
-Validation Notes   : Test stratejisi, PRD'deki kritik akışları kapsamalı.
+Template Location  : templates/project/TEST_STRATEGY_TEMPLATE.md
+Dependencies       : PROJECT-BRAIN, TECH-CTX
+Validation Notes   : Test stratejisi, projenin kritik akışlarını kapsamalı.
 ```
 
 ---
 
-### README — Project README
+### WAVE-MAP — Wave Map
 
 ```text
-Document ID        : README
-Document Name      : README.md
-Owner Category     : operational
-Purpose            : Projeye yeni katılan ajan veya kişinin başlangıç noktası.
-Required           : required
-Applicable Types   : Tüm türler
-Applicable Profiles: Tüm profiller
-Primary Info Owner : project_summary, how_to_start, key_documents, project_links
-Template Location  : templates/operational/README.md
-Output Location    : outputs/<category>/<project-slug>/latest/README.md
-Dependencies       : PRD
-Validation Notes   : README, diğer belgelerin içeriğini tekrar etmemeli; yönlendirici olmalı.
+Document ID        : WAVE-MAP
+Document Name      : WAVE_MAP.md
+Owner Category     : waves
+Purpose            : Projenin teslim dalgalarını ve her dalganın kapsamını üst seviyede gösterir.
+Required           : conditional
+Applicable Types   : web-app, api-service, mobile-app, content-platform, saas
+Applicable Profiles: Implementation Ready, Production Ready
+Primary Info Owner : wave_structure, wave_goals, wave_scope_boundaries
+Template Location  : templates/waves/WAVE_MAP_TEMPLATE.md
+Dependencies       : PROJECT-BRAIN, PRODUCT-RULES
+Validation Notes   : Dalgalar onaylı kapsam ile tutarlı olmalı. Dalga sayısı gerçekçi olmalı.
 ```
 
 ---
 
-### RUN-LOG — Run Log (Operasyonel)
+### WAVE-PLAN — Wave Plan
 
 ```text
-Document ID        : RUN-LOG
-Document Name      : RUN_LOG.md
+Document ID        : WAVE-PLAN
+Document Name      : WAVE_PLAN.md
+Owner Category     : waves
+Purpose            : Belirli bir dalganın görevlerini, bağımlılıklarını ve kriterleri ayrıntılı tanımlar.
+Required           : conditional
+Applicable Types   : web-app, api-service, mobile-app, content-platform, saas
+Applicable Profiles: Implementation Ready, Production Ready
+Primary Info Owner : wave_tasks, task_breakdown, acceptance_criteria, wave_timeline
+Template Location  : templates/waves/WAVE_PLAN_TEMPLATE.md
+Dependencies       : WAVE-MAP
+Validation Notes   : Her dalga için ayrı WAVE_PLAN oluşturulabilir. WAVE-MAP olmadan üretilemez.
+```
+
+---
+
+### RUN-MANIFEST — Run Manifest (Operasyonel)
+
+```text
+Document ID        : RUN-MANIFEST
+Document Name      : RUN_MANIFEST.md
 Owner Category     : operational
-Purpose            : Tek bir Product Engine çalışmasının kayıt belgesi.
+Purpose            : Tek bir Product Engine çalışmasının kimliğini, durumunu ve önemli kararları kayıt altına alır.
 Required           : required (her run için)
 Applicable Types   : Tüm türler
 Applicable Profiles: Tüm profiller
-Primary Info Owner : run_id, run_status, decisions, assumptions, conflicts, validation_result
-Template Location  : templates/runs/RUN_LOG.md
-Output Location    : runs/<run-id>/RUN_LOG.md
+Primary Info Owner : run_id, run_status, selected_package, delivery_profile,
+                     documents_produced, validation_result, output_version
+Template Location  : templates/runs/RUN_MANIFEST_TEMPLATE.md
 Dependencies       : Approved project intake
 Validation Notes   : Run kayıtları final output içine taşınmaz. Bkz: RUN_PROTOCOL.md.
 ```
@@ -313,6 +391,22 @@ Validation Notes   : Run kayıtları final output içine taşınmaz. Bkz: RUN_PR
 ### Koşullu Dokümanlar
 
 `Required: conditional` olan dokümanlar, proje türü ve delivery profile kombinasyonuna göre seçilir. Paket seçim mantığı için bkz: `PACKAGE_RULES.md`.
+
+### Template Klasör Yapısı
+
+Template'ler aşağıdaki klasör yapısında tutulur:
+
+```text
+templates/
+├── ai/       → PROJECT_BRAIN, PRODUCT_RULES, TECH_CONTEXT, PRODUCT_STRATEGY,
+               CURRENT_STATUS, NEXT_TASKS, DECISIONS, AGENT_INSTRUCTIONS
+├── project/  → README, PROJECT_PLAN, DATA_MODEL, API_CONTRACTS,
+               DEPLOYMENT, OPERATIONS, TEST_STRATEGY
+├── design/   → DESIGN_RULES ve tasarım bileşen template'leri
+├── waves/    → WAVE_MAP, WAVE_PLAN
+├── prompts/  → Ajan çalışma başlatma ve devam prompt'ları
+└── runs/     → Run operasyon belgelerinin template'leri
+```
 
 ### Yeni Doküman Ekleme
 

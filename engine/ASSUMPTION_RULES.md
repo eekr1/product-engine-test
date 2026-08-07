@@ -133,7 +133,7 @@ Kaynak        : paket varsayılanı | proje bağlamı | endüstri standardı
 Durum         : pending_review | confirmed | revised
 ```
 
-Assumption kayıtları run manifest'ine eklenir. Bkz: `RUN_PROTOCOL.md`.
+Assumption kayıtları `ASSUMPTIONS.md` olarak run klasörüne eklenir. Bkz: `RUN_PROTOCOL.md`.
 
 ---
 

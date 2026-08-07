@@ -106,7 +106,7 @@ Alt sıradaki kaynak, üst sıradaki kaynakla çelişiyorsa üst sıradaki kayna
 
 **Davranış:**
 - Bu bir çelişki değil, bir geçiş kararıdır.
-- Mevcut durum CURRENT_STATUS'ta, hedef durum ARCHITECTURE veya PRD'de belgelenir.
+- Mevcut durum CURRENT_STATUS.md'te, hedef durum TECH_CONTEXT veya PRODUCT_RULES'te belgelenir.
 - İki belgenin çeliştiği sanılmamalı; farklı zaman dilimlerini temsil ettikleri netleştirilmelidir.
 
 ---
@@ -139,7 +139,7 @@ Kullanıcıya   : Bildirildi mi? (evet / hayır)
 Durum         : resolved | blocked | pending_user
 ```
 
-Çelişki kayıtları run manifest'ine eklenir. Bkz: `RUN_PROTOCOL.md`.
+Çelişki kayıtları `CONFLICTS.md` olarak run klasörüne eklenir. Bkz: `RUN_PROTOCOL.md`.
 
 ---
 

@@ -141,7 +141,7 @@ Bkz: `ASSUMPTION_RULES.md`, `CONFLICT_RESOLUTION.md`
 ```text
 Girdi   : Doldurulmuş içerik + template yapısı
 Eylem   : Her doküman template'i, onaylı bilgiyle doldurularak üretilir.
-          Dokümanlar bağımlılık sırasına göre üretilir (PRD önce, türevler sonra).
+          Dokümanlar bağımlılık sırasına göre üretilir (PROJECT_BRAIN önce, türevler sonra).
           Üretim sırasında oluşan çalışma dosyaları working output olarak tutulur.
 Çıktı   : Working output (henüz doğrulanmamış doküman seti)
 Durma   : Bir doküman üretimi başarısız olursa
@@ -152,13 +152,15 @@ Durma   : Bir doküman üretimi başarısız olursa
 Doküman üretim bağımlılık sırası (genel):
 
 ```text
-PRD → ARCH → DATA → API
-PRD → WAVE-MAP → WAVE-PLAN
-PRD → DESIGN
-ARCH → DEPLOY
-PRD, ARCH → TEST
-PRD → README
-STATUS → NEXT_TASKS
+PROJECT_BRAIN → PRODUCT_RULES, TECH_CONTEXT
+PROJECT_BRAIN → WAVE_MAP → WAVE_PLAN
+PROJECT_BRAIN → DESIGN_RULES (koşullu)
+PROJECT_BRAIN, TECH_CONTEXT → DATA_MODEL
+TECH_CONTEXT, DATA_MODEL → API_CONTRACTS
+TECH_CONTEXT → DEPLOYMENT
+PROJECT_BRAIN, TECH_CONTEXT → TEST_STRATEGY
+PROJECT_BRAIN → README
+CURRENT_STATUS → NEXT_TASKS
 ```
 
 ---
@@ -211,9 +213,10 @@ Bkz: `OUTPUT_STRUCTURE.md`
 
 ```text
 Girdi   : Final output
-Eylem   : Run kaydı tamamlanır. Run durumu "completed" olarak güncellenir.
+Eylem   : Run kaydı tamamlanır. Run durumu "Completed" olarak güncellenir.
           Üretilen dokümanlar, kullanılan paket, yapılan assumption'lar ve
-          validation sonucu run manifest'ine yazılır.
+          validation sonucu RUN_MANIFEST.md'ye yazılır.
+          Run klasörü runs/completed/<run-id>/ konumuna taşınır.
 Çıktı   : Kapalı run kaydı
 Durma   : — (bu son aşamadır)
 ```

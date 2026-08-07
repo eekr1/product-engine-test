@@ -36,7 +36,7 @@ Bu belge şunların sahibi değildir:
 
 ### Zorunlu Alanlar (MUST)
 
-Aşağıdaki bilgiler olmadan Product Engine çalışmayı başlatamaز.
+Aşağıdaki bilgiler olmadan Product Engine çalışmayı başlatamaz.
 
 ```text
 project_name
@@ -159,8 +159,9 @@ Implementation Ready
   Teknik kararlar, mimari, akışlar ve gereksinimler netleştirilmiştir.
 
 Production Ready
-  Deployment, izleme, güvenlik ve bakım belgelerini de kapsar.
-  Ekip büyüklüğünden bağımsız olarak tam kurumsal dokümantasyon gerektirir.
+  Operasyon, deployment, güvenlik ve sürdürülebilirlik konularının kapsandığı,
+  daha olgun bir dokümantasyon profilidir. Gereksiz doküman üretme ilkesi devam
+  eder; ancak production için gerekli belgeler atlanmaz.
 ```
 
 ---
