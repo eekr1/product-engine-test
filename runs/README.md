@@ -94,7 +94,7 @@ RUN-<YYYYMMDD>-<sequence>
 Yeni bir run yalnızca aşağıdaki 5 kuralın tamamı doğrulandığında açılabilir:
 
 1. **Approved Input Varlığı:** `inputs/approved/<project-slug>/vN/PROJECT_INPUT.md` konumunda onaylanmış, geçerli bir proje girdisi bulunmalıdır. (Pending durumdaki onaylanmamış girdiler ile run açılamaz!)
-2. **Kesin Sürüm Seçimi:** Çalıştırılacak onaylı girdinin kesin sürüm numarası (`v1.0`, `v1.1` vb.) belirtilmiş olmalıdır.
+2. **Kesin Sürüm Seçimi:** Çalıştırılacak onaylı girdinin kesin sürüm numarası (`v1`, `v2`, `vN` vb.) belirtilmiş olmalıdır.
 3. **Paralel Çalışma Preflight Kontrolü:** Aynı proje ve aynı aktif kapsam (scope) için şu anda `active/` altında devam eden çakışan başka bir aktif run bulunmamalıdır.
 4. **Benzersiz Run ID:** Oluşturulan Run ID sistemde daha önce kullanılmamış olmalıdır.
 5. **Kanonik Belge Setinin Hazırlığı:** `templates/runs/` altındaki şablonlar kullanılarak ilk başlangıç belgeleri oluşturulabilir durumda olmalıdır.
@@ -120,10 +120,11 @@ Run yaşam döngüsü `engine/RUN_PROTOCOL.md` sözleşmesi ile tam uyumludur.
            │
      [Initialized]
            │
-       [Running] ───────────► [Blocked] (Kritik Engel)
+       [Running] ───────────► [Blocked] (Kritik Engel / Çelişki)
            │                      │
-           │◄─────────────────────┘ (Çözüm Sonrası)
-           │
+           │◄─────────────────────┼─ (Çözüm Sonrası)
+           │                      │
+           │                      └─► [Cancelled] (İptal Kararı)
            ├───────────────► [Paused] (Bekleme/Açıklama)
            │                    │
            │◄───────────────────┴─ [Resumed]
@@ -132,7 +133,7 @@ Run yaşam döngüsü `engine/RUN_PROTOCOL.md` sözleşmesi ile tam uyumludur.
            │
    ┌───────┴───────┐
    ▼               ▼
-[Completed]     [Failed]
+[Completed]     [Failed] (Unrecoverable Hata / Repair Sınırı)
 ```
 
 ### Durum Tanımları (Status Vocabulary)
@@ -140,12 +141,12 @@ Run yaşam döngüsü `engine/RUN_PROTOCOL.md` sözleşmesi ile tam uyumludur.
 1. **Created:** Run kimliği (Run ID) atandı ve dizin yapısı kuruldu; ancak girdi snapshot'ı ve paket seçimi henüz tamamlanmadı.
 2. **Initialized:** Onaylı girdi snapshot'ı alındı, paket ve teslimat profili kaydedildi, ilk operasyonel belgeler hazırlandı. Üretime geçilebilir.
 3. **Running:** Doküman üretim pipeline'ı aktif olarak çalışıyor, `working-output/` altında taslaklar üretiliyor.
-4. **Blocked:** Kritik bir çelişki (`CONFLICT`), eksik bilgi veya aşılması gereken bir engel nedeniyle üretim ilerletilemiyor. Çözülene kadar beklenir.
+4. **Blocked:** Kritik bir çelişki (`CONFLICT`), eksik bilgi veya aşılması gereken bir engel nedeniyle üretim ilerletilemiyor. Çözülene kadar beklenir (doğrudan `Failed` yapılmaz).
 5. **Paused:** Operatör/kullanıcı kararı veya netleştirme (clarification) talebi nedeniyle çalışma bilinçli olarak duraklatıldı.
 6. **Resumed:** `Paused` durumundaki çalışmaya kullanıcı yanıtı veya onayı sonrası tekrar devam edildi; çalışma doğrudan `Running` durumuna döner.
 7. **Validation:** `working-output/` altındaki belgeler tamamlandı ve doğrulama kurallarına (`VALIDATION_RULES`) göre denetleniyor.
 8. **Completed:** Validation aşaması `PASS` veya onaylı `CONDITIONAL PASS` aldı, nihai çıktılar `outputs/` katmanına aktarıldı, run başarıyla kapatıldı.
-9. **Failed:** Üretim esnasında kritik unrecoverable bir teknik hata oluştu veya validation tekrar denemeleri (`repair`) sonrasında da `FAIL` alındı.
+9. **Failed:** Üretim esnasında unrecoverable bir teknik/üretim hatası oluştu veya validation tekrar denemeleri (`repair`) sınırı sonrasında da `FAIL` alındı.
 10. **Cancelled:** Kullanıcı veya operatör tarafından çalışma bilinçli olarak iptal edildi. `status` değeri **Cancelled** olarak kalır.
 11. **Invalidated:** Tamamlanmış (`Completed`) bir run, sonradan proje girdisi veya kapsamı değiştiği için geçmişe dönük olarak geçersiz kılındı.
 
@@ -187,9 +188,9 @@ Bir run'ın fiziksel dizin konumu yaşam döngüsü boyunca aşağıdaki kuralla
 
 ## 10. Girdi Anlık Görüntüsü (INPUT_SNAPSHOT) Kuralları
 
-- **Oluşturulma:** Run `Initialized` durumuna geçerken `inputs/approved/<project-slug>/vN/PROJECT_INPUT.md` içeriği okunarak `INPUT_SNAPSHOT.md` oluşturulur.
+- **Oluşturulma:** Run `Initialized` durumuna geçerken `inputs/approved/<project-slug>/vN/PROJECT_INPUT.md` (Örn: `inputs/approved/example-project/v1/PROJECT_INPUT.md`) içeriği okunarak `INPUT_SNAPSHOT.md` oluşturulur.
 - **Değişmezlik (Immutability):** Snapshot alındığı andan itibaren **tamamen değiştirilemezdir (immutable)**. Run devam ederken kaynak approved input güncellense dahi aktif run'ın snapshot'ı değiştirilmez.
-- **İçerik:** Snapshot; girdi ID'si, sürüm numarası, onay metadata'sı, kaynak referansı ve doğrulanmış girdi metnini tam olarak saklamalıdır.
+- **İçerik:** Snapshot; girdi ID'si (Örn: `input_id: INPUT-EXAMPLE-V1`), sürüm numarası (`input_version: "1"`), onay metadata'sı, kaynak referansı ve doğrulanmış girdi metnini tam olarak saklamalıdır.
 
 ---
 
@@ -203,7 +204,7 @@ Bir run'ın fiziksel dizin konumu yaşam döngüsü boyunca aşağıdaki kuralla
 ## 12. Varsayım, Çelişki ve Karar Yönetimi
 
 - **`ASSUMPTIONS.md`:** Üretim sırasında yapılan operasyonel varsayımlar `engine/ASSUMPTION_RULES.md` ilkelerine uygun şekilde kaydedilir. Private CoT içermez.
-- **`CONFLICTS.md`:** Girdiler veya şablonlar arasında tespit edilen çelişkiler `engine/CONFLICT_RESOLUTION.md` kurallarına göre kaydedilir. Çözülemeyen kritik çelişkiler çalışmayı `Blocked` durumuna geçirir. Silent overwrite yasaktır!
+- **`CONFLICTS.md`:** Girdiler veya şablonlar arasında tespit edilen çelişkiler `engine/CONFLICT_RESOLUTION.md` kurallarına göre kaydedilir. Çözülemeyen kritik çelişkiler çalışmayı `Blocked` durumuna geçirir (`runs/active/` içinde tutulur, doğrudan `Failed` yapılmaz). Silent overwrite yasaktır!
 - **`DECISIONS.md`:** Sadece çalıştırma sırasındaki operasyonel kararları (sıralama, tamir stratejisi vb.) saklar. Kalıcı mimarlık/ürün kararları nihai proje dokümanlarının sorumluluğundadır.
 
 ---
@@ -239,19 +240,22 @@ Aşağıdaki şartların TAMAMI sağlandığında run `Completed` yapılır:
 6. Run klasörü `runs/completed/<run-id>/` konumuna taşındı.
 
 ### Aynı Girdi ile Yeni Run (Same Input, New Run)
-Aynı onaylı girdi sürümü (`PROJECT_INPUT.md v1.0`) farklı zamanlarda yeniden run başlatmak için kullanılabilir. Her run kendi benzersiz Run ID'sine, snapshot'ına ve loglarına sahiptir.
+Aynı onaylı girdi sürümü (`PROJECT_INPUT.md v1`) farklı zamanlarda yeniden run başlatmak için kullanılabilir. Her run kendi benzersiz Run ID'sine, snapshot'ına ve loglarına sahiptir.
 
 ### Aktif Run Sırasında Yeni Girdi Gelmesi (New Input During Active Run)
 Aktif run sırasında proje gerçeği değişirse, mevcut `INPUT_SNAPSHOT.md` sessizce değiştirilmez!
 1. Aktif run durumuna göre `Paused`, `Cancelled` veya `Invalidated` yapılır.
-2. Yeni bilgi `inputs/` katmanında yeni onaylı sürüm (`v2.0`) olarak kaydedilir.
+2. Yeni bilgi `inputs/` katmanında yeni onaylı sürüm (`v2`) olarak kaydedilir.
 3. Yeni onaylı sürüm ile tamamen yeni bir run başlatılır.
 
-### Geçersiz Kılma (Invalidation)
+### Geçersiz Kılma (Invalidation Semantics)
 Tamamlanmış bir run sonradan geçersiz kalırsa:
-- Klasör `runs/completed/<run-id>/` içinde saklanmaya devam eder (silinmez).
-- `RUN_MANIFEST.md` içerisindeki `status` değeri `Invalidated` olarak güncellenir.
-- `outputs/.../latest/` referansı bu run'ın çıktısına işaret etmeyecek şekilde güncellenir.
+- **Tarihsel Üretim Kanıtı (Execution Evidence):** Üretim sırasında oluşan kanıtlar (`INPUT_SNAPSHOT`, `PACKAGE_SELECTION`, `ASSUMPTIONS`, `CONFLICTS`, `DECISIONS`, `VALIDATION_REPORT`, `COMPLETION_REPORT`, `working-output`) tamamen **immutable (değişmez)** kalır ve yeniden yazılmaz.
+- **Kontrollü Lifecycle Metadata Güncellemesi:**
+  - `RUN_MANIFEST.md` belgesindeki `status` değeri `status: Invalidated` olarak güncellenir.
+  - `RUN_LOG.md` belgesine append-only biçimde geçersiz kılma olayı (`timestamp`, `event: Invalidated`, `reason`, `replacement_run_id`) eklenir.
+- **Fiziksel Konum:** Klasör `runs/completed/<run-id>/` altında saklanmaya devam eder (ayrı bir `runs/invalidated/` klasörü açılmaz ve dosya silinmez).
+- **Outputs Bağlantısı:** `outputs/.../latest/` referansı bu geçersiz kılınan run'ın çıktısına işaret edemez.
 
 ---
 
@@ -259,6 +263,6 @@ Tamamlanmış bir run sonradan geçersiz kalırsa:
 
 1. **Private CoT Yasaktır:** Hiçbir run belgesinde gizli düşünce zinciri (chain-of-thought), içsel ajan sohbeti saklanamaz.
 2. **Secret ve Credential Yasaktır:** Şifreler, API key'leri, token'lar veya özel anahtarlar run belgelerine yazılamaz.
-3. **Makine Bağımsız Yollar (Repo-Relative Paths):** `file:///`, `C:\Users\...`, `/home/...` gibi yerel sistem yolları kullanılamaz. Tüm referanslar repository köküne göre bağıl olmalıdır (Örn: `inputs/approved/example/v1/PROJECT_INPUT.md`).
+3. **Makine Bağımsız Yollar (Repo-Relative Paths):** `file:///`, `C:\Users\...`, `/home/...` gibi yerel sistem yolları kullanılamaz. Tüm referanslar repository köküne göre bağıl olmalıdır (Örn: `inputs/approved/example-project/v1/PROJECT_INPUT.md`).
 4. **Gerçek Proje Sızıntısı Yasaktır:** Reusable rehber ve şablonlarda gerçek şirket/proje isimleri kullanılmaz; generic örnekler (`example-project`, `sample-app`, `RUN-20260808-001`) tercih edilir.
 5. **Agent Tarafsızlığı (Agent Neutrality):** `agent_id` alanı jenerik tanımlar (`agent-01`, `execution-agent`) taşır. LLM model isimleri hardcode edilemez.

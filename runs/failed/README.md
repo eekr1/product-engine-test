@@ -2,7 +2,7 @@
 
 ## 1. Amaç ve Kapsam
 
-`runs/failed/` klasörü, doğrulama aşamasını geçemeyen, teknik/operasyonel bir engel nedeniyle tamamlanamayan (`Failed`) veya kullanıcı/operatör kararıyla bilinçli olarak iptal edilen (`Cancelled`) çalıştırmaların tarihsel operasyonel kayıtlarını saklar.
+`runs/failed/` klasörü, doğrulama aşamasını geçemeyen, teknik/operasyonel bir terminal engel nedeniyle tamamlanamayan (`Failed`) veya kullanıcı/operatör kararıyla bilinçli olarak iptal edilen (`Cancelled`) çalıştırmaların tarihsel operasyonel kayıtlarını saklar.
 
 Bu klasörün temel amacı, başarısızlık veya iptal nedenlerinin kök neden analizine (root cause analysis), denetlenebilirliğe ve sistem iyileştirmelerine imkan tanıyacak şekilde saklanmasıdır.
 
@@ -13,13 +13,18 @@ Bu klasörün temel amacı, başarısızlık veya iptal nedenlerinin kök neden 
 `runs/failed/` dizini altında fiziksel olarak iki temel durumdaki run klasörleri yer alabilir:
 
 1. **`Failed`:**
-   - Doğrulama denemeleri (`repair`) sonrasında da `FAIL` sonucu alınması,
    - Üretim sürecinde unrecoverable bir teknik hatanın oluşması,
-   - Çözülemeyen kritik çelişkiler nedeniyle üretimin durması.
+   - Kurtarılamayan kritik bir üretim/sistem hatasının meydana gelmesi,
+   - Doğrulama tamir denemeleri (`repair`) sınırı sonrasında da `FAIL` sonucu alınması.
 2. **`Cancelled`:**
    - Kullanıcı veya operatörün çalışmayı bilinçli olarak durdurması,
    - Hatalı girdi/kapsam kullanıldığının fark edilerek çalışmanın iptal edilmesi,
-   - Proje hedefinin değişmesi.
+   - Proje hedefinin değişmesi veya `Blocked` durumundaki bir çalışmanın iptal kararı verilerek kapatılması.
+
+### Critical Unresolved Conflict & Blocked Ayrımı
+- **Çelişki Kuralı:** Çözülemeyen kritik çelişkiler (`critical unresolved conflicts`) veya eksik bilgi durumları çalıştırmayı doğrudan `Failed` durumuna **geçirmez**.
+- **`Blocked` Semantiği:** Kritik bir çelişki tespit edildiğinde run `Blocked` durumuna geçer ve fiziksel olarak `runs/active/<run-id>/` dizininde kalır.
+- **Sonuçlanma:** `Blocked` durumundaki çalışma, çelişki çözülürse `Running` olarak devam eder; çözülemez veya sonlandırılmak istenirse operatör kararıyla `Cancelled` durumuna geçirilerek kapatılır.
 
 ### Otorite ve Status Ayrımı (Cancelled ≠ Failed Rule)
 - **Manifest Otoritesi:** Klasörün fiziksel olarak `failed/` altında bulunması onun teknik olarak başarısız olduğu anlamına gelmez. Gerçek durum her zaman `RUN_MANIFEST.md` içerisindeki `status` alanında yazan değerdir.
