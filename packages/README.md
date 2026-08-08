@@ -57,11 +57,11 @@ Klasör içerisinde 5 ana paket tanımı bulunmaktadır:
 
 | Paket Dosyası | Sorumluluk ve Kapsam |
 |---|---|
-| [`DEMO_FRONTEND_PACKAGE.md`](file:///c:/Users/Enis/Desktop/Product%20Engine/packages/DEMO_FRONTEND_PACKAGE.md) | Frontend ağırlıklı, görsel olarak çalışan ve sunulabilir demolar/prototipler için dokümantasyon kapsamı. Atıl (throwaway) değildir; gelecekte gerçek ürüne dönüşebilir. |
-| [`CORPORATE_WEBSITE_PACKAGE.md`](file:///c:/Users/Enis/Desktop/Product%20Engine/packages/CORPORATE_WEBSITE_PACKAGE.md) | Kurumsal web siteleri, tanıtım, hizmet/ürün kataloğu, içerik ve entegre iletişim formları/panelleri için dokümantasyon kapsamı. Gereksiz SaaS bürokrasisi dayatmaz. |
-| [`SAAS_PACKAGE.md`](file:///c:/Users/Enis/Desktop/Product%20Engine/packages/SAAS_PACKAGE.md) | Kullanıcı hesapları, veri modeli, backend, API, yetkilendirme ve operasyon içeren SaaS yazılımları için dokümantasyon kapsamı. (Not: `saas` bir paket adıdır, `project_type` değildir). |
-| [`EXISTING_PROJECT_PACKAGE.md`](file:///c:/Users/Enis/Desktop/Product%20Engine/packages/EXISTING_PROJECT_PACKAGE.md) | Mevcut kod veya dokümantasyonu olan projelerde mevcut durumu (`CURRENT_STATUS.md`) anlayıp güvenle belgelemek için kullanılır. Sıfırdan tasarım yapmaz. |
-| [`API_SERVICE_PACKAGE.md`](file:///c:/Users/Enis/Desktop/Product%20Engine/packages/API_SERVICE_PACKAGE.md) | Arka uç servisleri, API'ler, mikroservisler ve entegrasyon projeleri için dokümantasyon kapsamı. Gereksiz frontend/tasarım belgeleri dayatmaz. |
+| [`DEMO_FRONTEND_PACKAGE.md`](./DEMO_FRONTEND_PACKAGE.md) | Frontend ağırlıklı, görsel olarak çalışan ve sunulabilir demolar/prototipler için dokümantasyon kapsamı. Atıl (throwaway) değildir; gelecekte gerçek ürüne dönüşebilir. |
+| [`CORPORATE_WEBSITE_PACKAGE.md`](./CORPORATE_WEBSITE_PACKAGE.md) | Kurumsal web siteleri, tanıtım, hizmet/ürün kataloğu, içerik ve entegre iletişim formları/panelleri için dokümantasyon kapsamı. Gereksiz SaaS bürokrasisi dayatmaz. |
+| [`SAAS_PACKAGE.md`](./SAAS_PACKAGE.md) | Kullanıcı hesapları, veri modeli, backend, API, yetkilendirme ve operasyon içeren SaaS yazılımları için dokümantasyon kapsamı. (Not: `saas` bir paket adıdır, `project_type` değildir). |
+| [`EXISTING_PROJECT_PACKAGE.md`](./EXISTING_PROJECT_PACKAGE.md) | Mevcut kod veya dokümantasyonu olan projelerde mevcut durumu (`CURRENT_STATUS.md`) anlayıp güvenle belgelemek için kullanılır. Sıfırdan tasarım yapmaz. |
+| [`API_SERVICE_PACKAGE.md`](./API_SERVICE_PACKAGE.md) | Arka uç servisleri, API'ler, mikroservisler ve entegrasyon projeleri için dokümantasyon kapsamı. Gereksiz frontend/tasarım belgeleri dayatmaz. |
 
 ---
 
@@ -85,12 +85,10 @@ Bir projede dokümantasyon kapsamı tek bir statik paketle sınırlı kalmak zor
 
 Delivery Profile, projenin hangi olgunluk seviyesinde belgeleneceğini gösterir ve paket türünden bağımsızdır:
 
-- **Foundation:** Temel bağlam, ürün amacı ve kritik kararlar.
-- **Prototype:** Görsel/işlevsel ilk deneyim için gerekli minimum derinlik.
-- **Implementation Ready:** Bir geliştirme ajanının doğrudan kod yazmaya başlayabileceği ayrıntılı paket.
-- **Production Ready:** Dağıtım (Deployment), operasyon (Operations), güvenlik ve sürdürülebilirlik kapsamı tamamlanmış paket.
-
-Aynı paket (ör. `CORPORATE_WEBSITE_PACKAGE`), `Prototype` profilde minimal ve hızlı üretilebilirken; `Production Ready` profilde deployment ve test stratejisi belgeleriyle desteklenir.
+- **Foundation:** Temel bağlam, ürün amacı ve kritik kararlar. (Catalog gereği `README-DOC`, `PROJECT-BRAIN`, `PRODUCT-RULES`, `TECH-CTX` gibi çekirdek belgeleri kapsar; `DATA`, `API`, `WAVE-MAP` vb. belgeler bu seviyede henüz zorunlu kılınmaz).
+- **Prototype:** Görsel/işlevsel ilk deneyim için gerekli minimum derinlik. (`DESIGN` yetkili; `DATA`, `API`, `WAVE-MAP` zorunlu kılınmaz).
+- **Implementation Ready:** Bir geliştirme ajanının doğrudan kod yazmaya başlayabileceği ayrıntılı paket (`DATA`, `API`, `WAVE-MAP`, `WAVE-PLAN`, `TASKS` yetkili).
+- **Production Ready:** Dağıtım (`DEPLOY`), operasyon (`OPS`), güvenlik ve sürdürülebilirlik kapsamı tamamlanmış paket.
 
 ---
 
@@ -108,12 +106,12 @@ Product Engine çalıştırılırken paket sisteminin doğru anlaşılması içi
 
 ---
 
-## 8. Paket Paket Paket Özet Tablosu
+## 8. Paket Paket Özet Tablosu (Varsayılan Olgunluk Seviyesinde)
 
-| Package ID | Varsayılan Delivery Profile | Temel Zorunlu Dokümanlar | Koşullu Dokümanlar |
+| Package ID | Varsayılan Delivery Profile | Varsayılan Profile Özel Zorunlu Dokümanlar | Koşullu / Profile Özgü Dokümanlar |
 |---|---|---|---|
 | `demo-frontend` | Prototype | `README-DOC`, `PROJECT-BRAIN`, `PRODUCT-RULES`, `DESIGN` | `STATUS`, `AGENT-INST`, `PROJ-PLAN`, `TASKS`, `DECISIONS` |
 | `corporate-website` | Implementation Ready | `README-DOC`, `PROJECT-BRAIN`, `PRODUCT-RULES`, `TECH-CTX`, `DESIGN` | `STATUS`, `AGENT-INST`, `PROJ-PLAN`, `DATA`, `API`, `DEPLOY`, `TEST` |
 | `saas` | Implementation Ready | `README-DOC`, `PROJECT-BRAIN`, `PRODUCT-RULES`, `TECH-CTX`, `DATA`, `API`, `WAVE-MAP`, `WAVE-PLAN` | `STATUS`, `PROD-STRAT`, `DESIGN`, `PROJ-PLAN`, `DEPLOY`, `OPS`, `TEST`, `AGENT-INST` |
-| `existing-project` | Implementation Ready | `README-DOC`, `PROJECT-BRAIN`, `STATUS`, `TECH-CTX` | `PRODUCT-RULES`, `TASKS`, `DECISIONS`, `DATA`, `API`, `AGENT-INST` |
-| `api-service` | Implementation Ready | `README-DOC`, `PROJECT-BRAIN`, `TECH-CTX`, `API`, `DATA` | `STATUS`, `PROJ-PLAN`, `WAVE-MAP`, `WAVE-PLAN`, `DEPLOY`, `OPS`, `TEST`, `AGENT-INST` |
+| `existing-project` | Implementation Ready | `README-DOC`, `PROJECT-BRAIN`, `STATUS`, `TECH-CTX` | `PRODUCT-RULES`, `TASKS`, `DECISIONS`, `DATA`, `API`, `AGENT-INST`, `DEPLOY`, `OPS` |
+| `api-service` | Implementation Ready | `README-DOC`, `PROJECT-BRAIN`, `PRODUCT-RULES`, `TECH-CTX`, `API`, `DATA` | `STATUS`, `PROJ-PLAN`, `WAVE-MAP`, `WAVE-PLAN`, `DEPLOY`, `OPS`, `TEST`, `AGENT-INST` |

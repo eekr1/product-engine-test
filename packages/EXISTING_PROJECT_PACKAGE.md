@@ -6,7 +6,7 @@
 package_id: existing-project
 package_name: Existing Project Package
 package_type: base
-version: 1.0.0
+version: 1.1.0
 status: active
 default_delivery_profile: Implementation Ready
 compatible_project_types:
@@ -48,7 +48,7 @@ Ana hedefleri:
 ### Uygun Olduğu Bağlamlar
 - Devam eden ve koda başlanmış aktif projeler.
 - Dokümantasyonu eksik, eskimiş veya hiç olmayan mevcut kod tabanları (legacy codebases).
-- Başka bir ekikten veya geliştiriciden devralınan projeler.
+- Başka bir ekipten veya geliştiriciden devralınan projeler.
 - Mevcut sisteme yeni modül veya extension eklenecek çalışmalar.
 
 ### Uygun Olmadığı Bağlamlar
@@ -56,12 +56,29 @@ Ana hedefleri:
 
 ---
 
-## 4. Desteklenen Delivery Profile'ları
+## 4. Desteklenen Delivery Profile'ları ve Profile Özel Doküman Kapsamı
 
-1. **Implementation Ready (Varsayılan):** Mevcut kod yapısının, teknik stack'in ve sıradaki geliştirme görevlerinin tam analiz edildiği seviye.
-2. **Foundation:** Mevcut sistemin yüksek seviye mimarisini ve durumunu özetleyen başlangıç seviyesi.
-3. **Prototype:** Mevcut projede hızlı bir PoC veya deneme geliştirmesi yapılması amaçlanan seviye.
-4. **Production Ready:** Mevcut sistemin canlı ortam dağıtımı, mevcut CI/CD süreçleri ve operasyonel risklerinin dokümante edildiği seviye.
+`engine/DOCUMENT_CATALOG.md` kurallarına göre desteklenen her delivery profile için doküman kapsamı aşağıda tanımlanmıştır:
+
+### 4.1 Foundation Profile
+*Amaç: Mevcut sistemin ana bileşenlerini, mimarisini ve bilinen engelleyicilerini yüksek seviyede özetlemek.*
+- **Zorunlu Dokümanlar:** `README-DOC` (`README.md`), `PROJECT-BRAIN` (`PROJECT_BRAIN.md`), `STATUS` (`CURRENT_STATUS.md`), `TECH-CTX` (`TECH_CONTEXT.md`).
+- **Koşullu Dokümanlar:** `PRODUCT-RULES` (`PRODUCT_RULES.md`), `DECISIONS` (`DECISIONS.md`).
+
+### 4.2 Prototype Profile
+*Amaç: Mevcut sisteme eklenecek ilk deneme özelliğinin dokümante edilmesi.*
+- **Zorunlu Dokümanlar:** `README-DOC` (`README.md`), `PROJECT-BRAIN` (`PROJECT_BRAIN.md`), `STATUS` (`CURRENT_STATUS.md`), `TECH-CTX` (`TECH_CONTEXT.md`).
+- **Koşullu Dokümanlar:** `PRODUCT-RULES`, `DESIGN` (`DESIGN_RULES.md` - UI varsa), `DECISIONS`.
+
+### 4.3 Implementation Ready Profile (Varsayılan)
+*Amaç: Mevcut kod yapısının, veritabanının, API'lerin ve sıradaki geliştirme görevlerinin tam analiz edildiği seviye.*
+- **Zorunlu Dokümanlar:** `README-DOC` (`README.md`), `PROJECT-BRAIN` (`PROJECT_BRAIN.md`), `STATUS` (`CURRENT_STATUS.md`), `TECH-CTX` (`TECH_CONTEXT.md`).
+- **Koşullu Dokümanlar:** `PRODUCT-RULES`, `TASKS` (`NEXT_TASKS.md`), `DECISIONS`, `DATA` (`DATA_MODEL.md`), `API` (`API_CONTRACTS.md`), `AGENT-INST` (`AGENT_INSTRUCTIONS.md`).
+
+### 4.4 Production Ready Profile
+*Amaç: Mevcut canlı ortamın, deployment hatlarının ve operasyonel prosedürlerin belgelendiği seviye.*
+- **Zorunlu Dokümanlar:** `README-DOC` (`README.md`), `PROJECT-BRAIN` (`PROJECT_BRAIN.md`), `STATUS` (`CURRENT_STATUS.md`), `TECH-CTX` (`TECH_CONTEXT.md`), `DEPLOY` (`DEPLOYMENT.md`).
+- **Koşullu Dokümanlar:** `PRODUCT-RULES`, `TASKS`, `DECISIONS`, `DATA`, `API`, `AGENT-INST`, `OPS` (`OPERATIONS.md`).
 
 ---
 
@@ -83,11 +100,11 @@ Ana hedefleri:
 
 ---
 
-## 6. Doküman Seçimi
+## 6. Doküman Seçimi ve Sahiplik Kuralları
 
 Yalnızca `engine/DOCUMENT_CATALOG.md` içinde tanımlı doküman ID'leri kullanılır.
 
-### Zorunlu Dokümanlar (Required)
+### Zorunlu Dokümanlar (Implementation Ready Varsayılan Profilinde)
 
 | Document ID | Dosya Adı | Template Konumu | Seçim Gerekçesi |
 |---|---|---|---|
@@ -95,19 +112,6 @@ Yalnızca `engine/DOCUMENT_CATALOG.md` içinde tanımlı doküman ID'leri kullan
 | `PROJECT-BRAIN` | `PROJECT_BRAIN.md` | `templates/ai/PROJECT_BRAIN_TEMPLATE.md` | Mevcut projenin amacını ve mevcut bağlamını özetleyen birincil belge. |
 | `STATUS` | `CURRENT_STATUS.md` | `templates/ai/CURRENT_STATUS_TEMPLATE.md` | **Kritik:** Mevcut durum, tamamlanan işler, açık sorunlar ve kısa vadeli öncelikler. |
 | `TECH-CTX` | `TECH_CONTEXT.md` | `templates/ai/TECH_CONTEXT_TEMPLATE.md` | Mevcut teknik stack, verili mimari kararlar ve teknik sınırlar. |
-
-### Koşullu Dokümanlar (Conditional)
-
-| Document ID | Dosya Adı | Koşul | Gerekçe |
-|---|---|---|---|
-| `PRODUCT-RULES` | `PRODUCT_RULES.md` | Ürün davranış kuralları belgelenecekse | Mevcut ve yeni ürün kurallarını tanımlamak için. |
-| `TASKS` | `NEXT_TASKS.md` | `delivery_profile >= Implementation Ready` ise | Ajanın yapacağı ilk somut görevleri listelemek için. |
-| `DECISIONS` | `DECISIONS.md` | Geçmiş ve yeni kararlar kayıt altına alınacaksa | Karar geçmişini korumak için. |
-| `DATA` | `DATA_MODEL.md` | Mevcut veritabanı veya şema analizi gerekiyorsa | Veri yapısını belgelemek için. |
-| `API` | `API_CONTRACTS.md` | Mevcut veya eklenecek API uç noktaları varsa | API sözleşmelerini tanımlamak için. |
-| `AGENT-INST` | `AGENT_INSTRUCTIONS.md` | Mevcut koda uyum sağlayacak ajan kuralları istenirse | Kodlama standartlarını korumak için. |
-| `DEPLOY` | `DEPLOYMENT.md` | Mevcut dağıtım/sunucu yapısı belgelenecekse | Dağıtım ortamını tanımlamak için. |
-| `OPS` | `OPERATIONS.md` | Mevcut canlı sistem operasyonu varsa | Operasyonel takibi belgelemek için. |
 
 ---
 
@@ -119,7 +123,7 @@ Yalnızca `engine/DOCUMENT_CATALOG.md` içinde tanımlı doküman ID'leri kullan
 
 ### Reduction (Daraltma) Kuralları
 - Mevcut projenin analizinde henüz kodlama aşamasına geçilmeyecekse `TASKS` ve `WAVE_PLAN` ertelenebilir.
-- Zorunlu belgeler (`README-DOC`, `PROJECT-BRAIN`, `STATUS`, `TECH-CTX`) kesinlikle çıkarılamaz.
+- Zorunlu çekirdek belgeler (`README-DOC`, `PROJECT-BRAIN`, `STATUS`, `TECH-CTX`) kesinlikle çıkarılamaz.
 
 ---
 
@@ -153,4 +157,16 @@ Yalnızca `engine/DOCUMENT_CATALOG.md` içinde tanımlı doküman ID'leri kullan
 
 1. **Mevcut Durum Analizi (`STATUS`)** → Mevcut kod ve dokümanlar incelenir, `CURRENT_STATUS.md` oluşturulur.
 2. **Kapsam Genişletme** -> Yeni özellikler için ilgili hedef paket (ör. `SAAS_PACKAGE` veya `API_SERVICE_PACKAGE`) extension olarak eklenir.
-3. **Geliştirme (`NEXT_TASKS`)** -> Ajanlar mevcut projeyi bozmadan yeni görevleri sırayla uygular.
+3. **Geliştirme (`NEXT_TASKS`)** -> Ajanlar mevcut projeyi bozmadan yeni görevleri sırayla uygula.
+
+---
+
+## 12. Tamamlanma Kriterleri
+
+Bu paket çalışması tamamlandığında aşağıdaki kriterlerin karşılandığı doğrulanmalıdır:
+
+1. **Eksiksiz Mevcut Durum Analizi:** `STATUS` (`CURRENT_STATUS.md`) belgesinin üretilmiş ve mevcut tamamlanan işler ile bilinen engelleyicileri eksiksiz yansıtması.
+2. **Current vs Desired State Ayrımı:** Mevcut sistem gerçekliği ile ileride yapılması planlanan iyileştirmelerin birbirine karıştırılmamış olması.
+3. **Profile ve Catalog Uyumu:** Seçilen delivery profile kapsamındaki required/conditional dokümanların `engine/DOCUMENT_CATALOG.md` standartlarıyla uyumlu olması.
+4. **Tekil Üretim Güvencesi:** Başka bir paketle birleştiğinde (extension) aynı doküman ID'sinin iki kez üretilmeyeceğinin garanti edilmesi.
+5. **Temiz Output:** Üretilen belgelerin `outputs/products/<project-slug>/latest/` klasöründe eksiksiz ve doğrulanmış şekilde teslim edilebilir durumda olması.
