@@ -9,7 +9,7 @@ document_id: not_applicable
 version: 1.0.0
 status: active
 template_type: operational
-category: runs
+category: operational
 supported_packages:
   - all
 supported_delivery_profiles:

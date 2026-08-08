@@ -12,9 +12,10 @@ template_type: document
 category: project
 supported_packages:
   - api-service
-  - web-app
-  - mobile-app
   - saas
+  - demo-frontend
+  - corporate-website
+  - existing-project
 supported_delivery_profiles:
   - implementation-ready
   - production-ready

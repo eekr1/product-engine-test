@@ -9,7 +9,7 @@ document_id: not_applicable
 version: 1.0.0
 status: active
 template_type: operational
-category: runs
+category: operational
 supported_packages:
   - all
 supported_delivery_profiles:
@@ -51,13 +51,15 @@ Run kapanışında (`Completed` aşamasında) yazılır.
 ## İçerik Üretim Kuralları
 
 - `Completed` olmayan veya validation geçemeyen bir run tamamlanmış gibi gösterilmemelidir.
+- Validation sonucu `PASS` veya `CONDITIONAL PASS` olmalıdır.
 
 ## Placeholder Tanımları
 
 - `{{RUN_ID}}`: Run kimliği.
 - `{{FINAL_STATUS}}`: Completed (veya Failed/Cancelled).
 - `{{DELIVERABLES_CATALOG_TABLE}}`: Üretilen tüm dokümanların isim, boyut ve konum tablosu.
-- `{{OUTPUT_LOCATION_PATH}}`: Nihai temiz çıktı konumu (`outputs/{{PROJECT_SLUG}}/`).
+- `{{OUTPUT_REF}}`: Nihai temiz çıktı konumu (`outputs/<category>/<project-slug>/versions/<output-version>/`).
+- `{{VALIDATION_RESULT}}`: PASS | CONDITIONAL PASS.
 
 ## Kapsam Dışı
 
@@ -84,11 +86,11 @@ Run kapanışında (`Completed` aşamasında) yazılır.
 
 - **Final Status**: {{FINAL_STATUS}} # Completed
 - **Completion Date**: {{COMPLETED_AT}}
-- **Output Target**: `{{OUTPUT_LOCATION_PATH}}`
+- **Output Ref**: `{{OUTPUT_REF}}`
 
 ## 1. Kapanış Özeti
 
-Product Engine çalışması başarıyla tamamlanmış ve tüm zorunlu kalite denetimlerinden geçmiştir.
+Product Engine çalışması başarıyla tamamlanmış ve kalite denetimlerinden geçmiştir.
 
 ## 2. Üretilen Dokümanlar Kataloğu
 
@@ -96,13 +98,13 @@ Product Engine çalışması başarıyla tamamlanmış ve tüm zorunlu kalite de
 
 ## 3. Validation ve Uyum Özeti
 
-- Validation Sonucu: **PASSED**
-- Rapor Referansı: `VALIDATION_REPORT.md`
+- **Validation Sonucu**: {{VALIDATION_RESULT}} # PASS | CONDITIONAL PASS
+- **Rapor Referansı**: `VALIDATION_REPORT.md`
 
 ## 4. Çıktı Konumu
 
 Nihai dokümantasyon paketi aşağıdaki adreste teslime hazırdır:
-`{{OUTPUT_LOCATION_PATH}}`
+`{{OUTPUT_REF}}`
 
 [CONDITIONAL: include only if unresolved items remain]
 ## 5. Geleceğe Bırakılan Açık Maddeler (Unresolved Items)

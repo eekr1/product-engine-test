@@ -11,10 +11,11 @@ status: active
 template_type: document
 category: project
 supported_packages:
-  - web-app
-  - api-service
-  - mobile-app
   - saas
+  - api-service
+  - demo-frontend
+  - corporate-website
+  - existing-project
 supported_delivery_profiles:
   - implementation-ready
   - production-ready

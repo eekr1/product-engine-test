@@ -11,9 +11,8 @@ status: active
 template_type: document
 category: project
 supported_packages:
-  - web-app
-  - api-service
   - saas
+  - api-service
 supported_delivery_profiles:
   - production-ready
 required_inputs:

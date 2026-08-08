@@ -132,8 +132,8 @@ Tüm proje paketlerinde ve delivery profile seviyelerinde zorunludur (`Required:
 
 ## 8. Doküman Referansları
 
-- [PRODUCT_RULES.md](file:///PRODUCT_RULES.md)
-- [TECH_CONTEXT.md](file:///TECH_CONTEXT.md)
-- [DECISIONS.md](file:///DECISIONS.md)
+- [PRODUCT_RULES.md](./PRODUCT_RULES.md)
+- [TECH_CONTEXT.md](./TECH_CONTEXT.md)
+- [DECISIONS.md](./DECISIONS.md)
 
 # OUTPUT DOCUMENT END

@@ -9,7 +9,7 @@ document_id: not_applicable
 version: 1.0.0
 status: active
 template_type: operational
-category: runs
+category: operational
 supported_packages:
   - all
 supported_delivery_profiles:
@@ -26,7 +26,7 @@ output_filename: VALIDATION_REPORT.md
 
 ## Amaç
 
-`engine/VALIDATION_RULES.md` standartları uyarınca yapılan denetim sonuçlarını, severity seviyelerini, kanıtları ve çözüm aksiyonlarını kaydetmek.
+`engine/VALIDATION_RULES.md` standartları uyarınca `working-output` belgelerine yapılan denetim sonuçlarını, severity seviyelerini, kanıtları ve çözüm aksiyonlarını kaydetmek.
 
 ## Kullanım Koşulları
 
@@ -35,11 +35,11 @@ Run validation aşamasında (`Validation` stage) üretilir ve güncellenir.
 ## Girdi Kaynakları
 
 - `engine/VALIDATION_RULES.md`
-- Üretilen `outputs/` belgeleri
+- Working Output belgeleri (`runs/active/<run-id>/working-output/`)
 
 ## Zorunlu Bölümler
 
-- Doğrulama Genel Sonucu (Overall Validation Result: PASSED / FAILED)
+- Doğrulama Genel Sonucu (Overall Validation Result: PASS / CONDITIONAL PASS / FAIL)
 - Denetim Kontrol Tablosu (Validation Checks Table)
 - Tespit Edilen İhlaller ve Kanıtlar (Violations & Evidence)
 - Düzeltme Aksiyonları (Required Action & Resolution)
@@ -50,13 +50,14 @@ Run validation aşamasında (`Validation` stage) üretilir ve güncellenir.
 
 ## İçerik Üretim Kuralları
 
-- Her kontrol için: Check Name, Result (Pass/Fail/Warning), Severity (Critical/High/Medium/Low), Evidence, Action, Resolution alanları kaydedilmelidir.
-- Kritik bir hata (`Critical`) varken validation sonucu `PASSED` ilan edilemez.
+- Per-check seviyesinde: PASS, FAIL, WARNING sonuçları kullanılabilir.
+- Genel validation sonucu YALNIZCA: `PASS`, `CONDITIONAL PASS` veya `FAIL` olabilir (`PASSED` veya `FAILED` kullanılmaz).
+- Kritik bir hata (`Critical`) varken validation sonucu `PASS` ilan edilemez.
 
 ## Placeholder Tanımları
 
 - `{{RUN_ID}}`: Run kimliği.
-- `{{OVERALL_VALIDATION_RESULT}}`: PASSED veya FAILED.
+- `{{OVERALL_VALIDATION_RESULT}}`: PASS | CONDITIONAL PASS | FAIL.
 - `{{VALIDATION_CHECKS_TABLE}}`: Tüm kontrol maddelerinin sonuç tablosu.
 - `{{VIOLATIONS_AND_EVIDENCE_BLOCK}}`: Hata detayları ve kanıtları.
 
@@ -71,7 +72,7 @@ Run validation aşamasında (`Validation` stage) üretilir ve güncellenir.
 
 ## Delivery Profile Davranışı
 
-- Üretilen paketin kalite ve uyumluluk garantisini sağlar.
+- Üretilen working-output'un kalite ve uyumluluk garantisini sağlar.
 
 ## Validation Beklentileri
 
@@ -83,7 +84,8 @@ Run validation aşamasında (`Validation` stage) üretilir ve güncellenir.
 
 # Validation Report — {{RUN_ID}}
 
-- **Validation Result**: {{OVERALL_VALIDATION_RESULT}} # PASSED | FAILED
+- **Validation Result**: {{OVERALL_VALIDATION_RESULT}} # PASS | CONDITIONAL PASS | FAIL
+- **Validation Target**: `runs/active/{{RUN_ID}}/working-output/`
 - **Validation Date**: {{VALIDATION_DATE}}
 
 ## 1. Denetim Kontrol Tablosu
@@ -96,7 +98,7 @@ Run validation aşamasında (`Validation` stage) üretilir ve güncellenir.
 
 ## 3. Düzeltme Aksiyonları ve Çözüm
 
-- Başarısız kontroller için alınan veya alınması gereken düzeltme aksiyonları.
+- Başarısız kontroller için alınan veya alınması gereken düzeltme/repair aksiyonları.
 
 [CONDITIONAL: include only if warnings exist]
 ## 4. Uyarılar (Non-critical Warnings)

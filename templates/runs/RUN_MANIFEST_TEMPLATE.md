@@ -9,7 +9,7 @@ document_id: RUN-MANIFEST
 version: 1.0.0
 status: active
 template_type: operational
-category: runs
+category: operational
 supported_packages:
   - all
 supported_delivery_profiles:
@@ -52,16 +52,20 @@ Her run için `runs/active/<run-id>/` altında oluşturulması zorunludur.
 
 - Durumlar: `Created`, `Initialized`, `Running`, `Blocked`, `Paused`, `Resumed`, `Validation`, `Completed`, `Failed`, `Cancelled`, `Invalidated`.
 - `Cancelled` ve `Failed` durumları birbirinden kesinlikle ayrılmalıdır.
+- Validation sonucu `PASS`, `CONDITIONAL PASS` veya `FAIL` değerlerini almalıdır.
 
 ## Placeholder Tanımları
 
-- `{{RUN_ID}}`: Run benzersiz kimliği (örn: `io-makina_2026-08-08_001`).
+- `{{RUN_ID}}`: Run benzersiz kimliği (örn: `RUN-20260808-001`).
 - `{{PROJECT_NAME}}`: Proje adı.
 - `{{PROJECT_SLUG}}`: Proje slug.
 - `{{RUN_STATUS}}`: Anlık run durumu.
 - `{{CREATED_AT}}`: Başlatma zaman damgası.
+- `{{ENGINE_VERSION}}`: Runtime tarafından çözülen Product Engine sürümü.
 - `{{PACKAGE_ID}}`: Seçilen paket kimliği.
 - `{{DELIVERY_PROFILE}}`: Seçilen teslimat profili.
+- `{{VALIDATION_RESULT}}`: Validation sonucu (PASS | CONDITIONAL PASS | FAIL).
+- `{{OUTPUT_REF}}`: Nihai output dizin referansı (`outputs/<category>/<project-slug>/versions/<output-version>/`).
 
 ## Kapsam Dışı
 
@@ -70,7 +74,7 @@ Her run için `runs/active/<run-id>/` altında oluşturulması zorunludur.
 
 ## Diğer Dokümanlarla İlişki
 
-- Primary Owner: `run_id`, `run_status`, `selected_package`, `delivery_profile`, `documents_produced`, `validation_result`, `output_version`.
+- Primary Owner: `run_id`, `status`, `created_at`, `completed_at`, `agent_id`, `project_slug`, `selected_package`, `delivery_profile`, `documents_produced`, `validation_result`, `output_version`, `output_ref`.
 - Referenced By: Run operasyonel kayıtları.
 
 ## Delivery Profile Davranışı
@@ -91,17 +95,21 @@ Her run için `runs/active/<run-id>/` altında oluşturulması zorunludur.
 run_id: {{RUN_ID}}
 project_name: {{PROJECT_NAME}}
 project_slug: {{PROJECT_SLUG}}
-engine_version: 1.0.0
+engine_version: {{ENGINE_VERSION}}
 run_type: generation
 status: {{RUN_STATUS}} # Created | Initialized | Running | Blocked | Paused | Resumed | Validation | Completed | Failed | Cancelled | Invalidated
 created_at: {{CREATED_AT}}
 updated_at: {{UPDATED_AT}}
 completed_at: {{COMPLETED_AT}}
+agent_id: {{AGENT_ID}}
 input_id: {{INPUT_ID}}
 input_version: {{INPUT_VERSION}}
-package_id: {{PACKAGE_ID}}
+selected_package: {{PACKAGE_ID}}
 delivery_profile: {{DELIVERY_PROFILE}}
-output_target: outputs/{{PROJECT_SLUG}}/
+documents_produced: {{DOCUMENTS_PRODUCED}}
+validation_result: {{VALIDATION_RESULT}} # PASS | CONDITIONAL PASS | FAIL
+output_version: {{OUTPUT_VERSION}}
+output_ref: {{OUTPUT_REF}}
 ```
 
 ## 1. Run Kimliği ve Bağlam
@@ -110,15 +118,18 @@ output_target: outputs/{{PROJECT_SLUG}}/
 - **Proje**: {{PROJECT_NAME}} ({{PROJECT_SLUG}})
 - **Seçilen Paket**: {{PACKAGE_ID}}
 - **Delivery Profile**: {{DELIVERY_PROFILE}}
+- **Engine Version**: {{ENGINE_VERSION}}
 
 ## 2. Yaşam Döngüsü ve Durum
 
 - **Mevcut Durum**: {{RUN_STATUS}}
 - **Mevcut Aşama**: {{CURRENT_STAGE}}
+- **Validation Sonucu**: {{VALIDATION_RESULT}}
 
 ## 3. Hedef Çıktı Konumu
 
-- **Output Target**: `outputs/{{PROJECT_SLUG}}/`
+- **Output Version**: {{OUTPUT_VERSION}}
+- **Output Ref**: `{{OUTPUT_REF}}`
 
 [CONDITIONAL: include only if run is blocked or failed]
 ## 4. Engelleme veya Başarısızlık Nedeni

@@ -11,10 +11,10 @@ status: active
 template_type: structural
 category: design
 supported_packages:
-  - web-app
-  - mobile-app
-  - landing-page
+  - corporate-website
+  - demo-frontend
   - saas
+  - existing-project
 supported_delivery_profiles:
   - prototype
   - implementation-ready

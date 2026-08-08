@@ -103,6 +103,6 @@ Tüm projelerde zorunludur (`Required: required`).
 [CONDITIONAL: include only if environment variables exist]
 ## 4. Ortam Değişkenleri
 
-- Gerekli `.env` değişkenleri ve yapılandırma talimatları için bkz: [ENV_EXAMPLE_TEMPLATE.md](file:///ENV_EXAMPLE_TEMPLATE.md)
+- Gerekli `.env` değişkenleri ve yapılandırma talimatları için bkz: [.env.example](./.env.example)
 
 # OUTPUT DOCUMENT END

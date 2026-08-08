@@ -24,7 +24,7 @@ output_filename: .env.example
 
 ## Amaç
 
-Projenin ihtiyaç duyduğu ortam değişkenlerinin (environment variables) örnek yapılandırma dosyasını (`.env.example`) standart bir yapıda sunmak.
+Projenin onaylı teknik bağlamında (`TECH_CONTEXT.md` ve `DEPLOYMENT.md`) tanımlanan ortam değişkenlerinin (environment variables) örnek yapılandırma dosyasını (`.env.example`) stack-bağımsız standart bir yapıda sunmak.
 
 ## Kullanım Koşulları
 
@@ -36,27 +36,31 @@ Ortam değişkeni kullanan tüm projelerde bir yapısal şablon olarak kullanıl
 
 ## Zorunlu Bölümler
 
-- Uygulama ve Sunucu Ayarları (App & Server Config)
-- Veritabanı Yapılandırması (Database Config)
-- Kimlik Doğrulama ve Güvenlik (Auth & Security)
+- Uygulama ve Sunucu Yapılandırması (Application Configuration)
 
 ## Koşullu Bölümler
 
-- `[CONDITIONAL: include only if third-party services are used]` Dış Servis ve API Anahtarları
+- `[CONDITIONAL: include only if database exists]` Veritabanı Yapılandırması (Database Configuration)
+- `[CONDITIONAL: include only if authentication exists]` Kimlik Doğrulama ve Güvenlik (Authentication / Security)
+- `[CONDITIONAL: include only if third-party services exist]` Dış Servis ve API Anahtarları (External Services)
 
 ## İçerik Üretim Kuralları
 
-- GERÇEK SECRET, PASSWORD, TOKEN VEYA PRIVATE KEY İÇERMEMELİDİR.
-- Her değişken için açıklama, örnek/varsayılan değer ve zorunluluk durumu belirtilmelidir.
+- Şablon belirli bir dil, framework (Node.js, Python, Go vb.), veritabanı (PostgreSQL, MongoDB vb.) veya auth kütüphanesi (NextAuth, OAuth vb.) varsaymaz.
+- Değişken isimleri onaylı teknik bağlamdan (`TECH_CONTEXT.md`) türetilir.
+- GERÇEK SECRET, PASSWORD, TOKEN VEYA PRIVATE KEY İÇERMEMELİDİR. Yalnızca örnek/placeholder değerler sunulur.
 
 ## Placeholder Tanımları
 
 - `{{PROJECT_NAME}}`: Proje adı.
-- `{{ENV_VARIABLES_BLOCK}}`: Ortam değişkenlerinin açıklamalı listesi.
+- `{{APP_ENV_VARIABLES_BLOCK}}`: Uygulama sunucu ayarları değişken blokları.
+- `{{DATABASE_ENV_VARIABLES_BLOCK}}`: Veritabanı bağlantı değişken blokları.
+- `{{AUTH_ENV_VARIABLES_BLOCK}}`: Auth ve güvenlik değişken blokları.
+- `{{THIRD_PARTY_ENV_VARIABLES_BLOCK}}`: Dış entegrasyon değişken blokları.
 
 ## Kapsam Dışı
 
-- Gerçek canlı ortam değişkeni değerleri (üretilmez ve saklanmaz)
+- Gerçek canlı ortam değişkeni değerleri ve gizli anahtarlar
 
 ## Diğer Dokümanlarla İlişki
 
@@ -70,6 +74,7 @@ Ortam değişkeni kullanan tüm projelerde bir yapısal şablon olarak kullanıl
 ## Validation Beklentileri
 
 - Hiçbir gerçek credential veya secret kalmamalıdır.
+- Belirli bir framework veya veritabanı dayatması yapılmamalıdır.
 
 ---
 
@@ -78,27 +83,26 @@ Ortam değişkeni kullanan tüm projelerde bir yapısal şablon olarak kullanıl
 # {{PROJECT_NAME}} — Environment Variables (.env.example)
 
 # ==========================================
-# Uygulama ve Sunucu Ayarları
+# Uygulama ve Sunucu Yapılandırması
 # ==========================================
-NODE_ENV=development # development | staging | production
-PORT=3000
-APP_URL=http://localhost:3000
+{{APP_ENV_VARIABLES_BLOCK}}
 
+[CONDITIONAL: include only if database exists]
 # ==========================================
 # Veritabanı Yapılandırması
 # ==========================================
-DATABASE_URL=postgresql://user:password@localhost:5432/dbname?schema=public
+{{DATABASE_ENV_VARIABLES_BLOCK}}
 
+[CONDITIONAL: include only if authentication exists]
 # ==========================================
 # Kimlik Doğrulama ve Güvenlik
 # ==========================================
-AUTH_SECRET=your_jwt_or_session_secret_here
-NEXTAUTH_URL=http://localhost:3000
+{{AUTH_ENV_VARIABLES_BLOCK}}
 
-[CONDITIONAL: include only if third-party services are used]
+[CONDITIONAL: include only if third-party services exist]
 # ==========================================
-# Dış Servis ve API Anahtarları
+# Dış Servisler ve API Anahtarları
 # ==========================================
-THIRD_PARTY_API_KEY=your_api_key_here
+{{THIRD_PARTY_ENV_VARIABLES_BLOCK}}
 
 # OUTPUT DOCUMENT END

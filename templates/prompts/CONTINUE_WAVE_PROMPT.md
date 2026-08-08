@@ -11,11 +11,11 @@ status: active
 template_type: prompt
 category: prompts
 supported_packages:
-  - web-app
-  - api-service
-  - mobile-app
-  - content-platform
   - saas
+  - api-service
+  - demo-frontend
+  - corporate-website
+  - existing-project
 supported_delivery_profiles:
   - implementation-ready
   - production-ready
