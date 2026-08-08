@@ -6,7 +6,7 @@
 package_id: saas
 package_name: SaaS Package
 package_type: base
-version: 1.1.0
+version: 1.2.0
 status: active
 default_delivery_profile: Implementation Ready
 compatible_project_types:
@@ -32,48 +32,52 @@ Ana hedefleri:
 - Ürün kurallarını, kullanıcı rollerini (RBAC), yetki matrisini ve iş mantığını eksiksiz belgelemek.
 - Mimari kararları, veritabanı şemasını (`DATA_MODEL.md`) ve API sözleşmelerini (`API_CONTRACTS.md`) tanımlamak.
 - Ürünü aşamalı olarak geliştirmek için Dalga Haritası (`WAVE_MAP.md`) ve Dalga Planı (`WAVE_PLAN.md`) oluşturmak.
-- Seçilen Delivery Profile olgunluğuna göre gereksiz yük oluşturmamak; örneğin `Foundation` veya `Prototype` seviyesinde `DOCUMENT_CATALOG.md` kurallarının izin vermediği Implementation/Production Ready dokümanlarını zorunlu kılmamak.
+- Seçilen Delivery Profile ve Project Type kombinasyonuna göre `DOCUMENT_CATALOG.md` sınırlarını aşmamak.
 
 ---
 
-## 3. Uygun Olduğu ve Olmadığı Proje Bağlamları
+## 3. Doküman Seçimi Filtreleme İlkesi (Double-Filtering Rule)
 
-### Uygun Olduğu Bağlamlar
-- B2B veya B2C SaaS platformları.
-- Çok kiracılı (multi-tenant) veya tek kiracılı bulut uygulamaları.
-- Abonelik, kullanım sınırı (rate limit), ödeme entegrasyonu ve yönetim paneli içeren yazılımlar.
-- Hem ön yüz (web/mobil) hem arka yüz (API) bileşenleri olan entegre ürünler.
+Bu paket içinde bir dokümanın zorunlu (Required) veya koşullu (Conditional) olabilmesi için `engine/DOCUMENT_CATALOG.md` içindeki **hem** `Applicable Types` **hem de** `Applicable Profiles` koşullarını aynı anda sağlaması gerekir:
 
-### Uygun Olmadığı Bağlamlar
-- Sadece tanıtım amaçlı kurumsal web siteleri (Bkz: `CORPORATE_WEBSITE_PACKAGE.md`).
-- Sadece görsel prototip veya arayüz demosu olan projeler (Bkz: `DEMO_FRONTEND_PACKAGE.md`).
-- Ön yüzü bulunmayan, sadece tekil mikroservis niteliğindeki projeler (Bkz: `API_SERVICE_PACKAGE.md`).
+```text
+seçilen project_type  ∈ document.Applicable Types
+         VE
+seçilen delivery_profile ∈ document.Applicable Profiles
+```
+
+Bu iki koşuldan biri sağlanmıyorsa doküman ilgili kombinasyonda otomatik olarak elenir ve Required yapılamaz. Package kuralları `DOCUMENT_CATALOG.md` sınırlarını aşamaz.
 
 ---
 
-## 4. Desteklenen Delivery Profile'ları ve Profile Özel Doküman Kapsamı
+## 4. Desteklenen Project Type + Delivery Profile Doküman Matrisi
 
-`engine/DOCUMENT_CATALOG.md` kurallarına göre desteklenen her delivery profile için izin verilen ve zorunlu kılınan doküman kapsamı aşağıda tanımlanmıştır:
+### 4.1 `web-app` veya `mobile-app` Bağlamı
 
-### 4.1 Foundation Profile
-*Amaç: SaaS ürün fikrinin, mimari yaklaşımının ve temel iş kurallarının tanımlanması.*
-- **Zorunlu Dokümanlar:** `README-DOC` (`README.md`), `PROJECT-BRAIN` (`PROJECT_BRAIN.md`), `PRODUCT-RULES` (`PRODUCT_RULES.md`), `TECH-CTX` (`TECH_CONTEXT.md`).
-- **Not:** `DOCUMENT_CATALOG.md` kurallarına göre `DATA`, `API`, `WAVE-MAP`, `WAVE-PLAN`, `DEPLOY` ve `OPS` belgelerinin applicable olduğu profiller `Implementation Ready` ve/veya `Production Ready`'dir. Bu nedenle `Foundation` seviyesinde zorunlu tutulamazlar.
+- **Foundation Profile:**
+  - *Zorunlu:* `README-DOC` (`README.md`), `PROJECT-BRAIN` (`PROJECT_BRAIN.md`), `PRODUCT-RULES` (`PRODUCT_RULES.md`), `TECH-CTX` (`TECH_CONTEXT.md`).
+- **Prototype Profile:**
+  - *Zorunlu:* `README-DOC`, `PROJECT-BRAIN`, `PRODUCT-RULES`.
+  - *Koşullu:* `DESIGN` (`DESIGN_RULES.md`).
+- **Implementation Ready Profile (Varsayılan):**
+  - *Zorunlu:* `README-DOC`, `PROJECT-BRAIN`, `PRODUCT-RULES`, `TECH-CTX`, `DATA` (`DATA_MODEL.md`), `API` (`API_CONTRACTS.md`), `WAVE-MAP` (`WAVE_MAP.md`), `WAVE-PLAN` (`WAVE_PLAN.md`).
+  - *Koşullu:* `DESIGN`, `PROD-STRAT` (`PRODUCT_STRATEGY.md`), `TEST` (`TEST_STRATEGY.md`), `STATUS` (`CURRENT_STATUS.md`), `PROJ-PLAN` (`PROJECT_PLAN.md`), `AGENT-INST` (`AGENT_INSTRUCTIONS.md`).
+- **Production Ready Profile:**
+  - *Zorunlu:* `README-DOC`, `PROJECT-BRAIN`, `PRODUCT-RULES`, `TECH-CTX`, `DATA`, `API`, `WAVE-MAP`, `WAVE-PLAN`, `DEPLOY` (`DEPLOYMENT.md`), `OPS` (`OPERATIONS.md` - `web-app` için).
 
-### 4.2 Prototype Profile
-*Amaç: SaaS uygulamasının ilk çekirdek akışının (MVP) hızlıca üretilmesine odaklanan seviye.*
-- **Zorunlu Dokümanlar:** `README-DOC` (`README.md`), `PROJECT-BRAIN` (`PROJECT_BRAIN.md`), `PRODUCT-RULES` (`PRODUCT_RULES.md`).
-- **Koşullu Dokümanlar:** `DESIGN` (`DESIGN_RULES.md` - kullanıcı arayüzü varsa), `STATUS` (`CURRENT_STATUS.md` - mevcut projeler için).
+### 4.2 `api-service` Bağlamı
 
-### 4.3 Implementation Ready Profile (Varsayılan)
-*Amaç: Ajanların doğrudan frontend ve backend geliştirmesine başlayabileceği, dalga planları, veri modelleri ve API sözleşmeleri eksiksiz tam paket.*
-- **Zorunlu Dokümanlar:** `README-DOC` (`README.md`), `PROJECT-BRAIN` (`PROJECT_BRAIN.md`), `PRODUCT-RULES` (`PRODUCT_RULES.md`), `TECH-CTX` (`TECH_CONTEXT.md`), `DATA` (`DATA_MODEL.md`), `API` (`API_CONTRACTS.md`), `WAVE-MAP` (`WAVE_MAP.md`), `WAVE-PLAN` (`WAVE_PLAN.md`).
-- **Koşullu Dokümanlar:** `STATUS` (`CURRENT_STATUS.md`), `DESIGN` (`DESIGN_RULES.md`), `PROD-STRAT` (`PRODUCT_STRATEGY.md`), `PROJ-PLAN` (`PROJECT_PLAN.md`), `TEST` (`TEST_STRATEGY.md`), `AGENT-INST` (`AGENT_INSTRUCTIONS.md`).
+- **Implementation Ready Profile:**
+  - *Zorunlu:* `README-DOC`, `PROJECT-BRAIN`, `PRODUCT-RULES`, `TECH-CTX`, `DATA`, `API`, `WAVE-MAP`, `WAVE-PLAN`.
+  - *Elenenler:* `DESIGN` ve `PROD-STRAT` (Catalog uyarınca `api-service` proje türü `DESIGN` ve `PROD-STRAT` belgelerinin `Applicable Types` listesinde yer almaz).
+  - *Koşullu:* `TEST`, `STATUS`, `PROJ-PLAN`, `AGENT-INST`.
 
-### 4.4 Production Ready Profile
-*Amaç: Canlı ortam dağıtımı (Deployment), izleme (Monitoring), yedekleme, güvenlik ve operasyonel süreçlerin (`OPERATIONS.md`) eklendiği en üst olgunluk seviyesi.*
-- **Zorunlu Dokümanlar:** `README-DOC` (`README.md`), `PROJECT-BRAIN` (`PROJECT_BRAIN.md`), `PRODUCT-RULES` (`PRODUCT_RULES.md`), `TECH-CTX` (`TECH_CONTEXT.md`), `DATA` (`DATA_MODEL.md`), `API` (`API_CONTRACTS.md`), `WAVE-MAP` (`WAVE_MAP.md`), `WAVE-PLAN` (`WAVE_PLAN.md`), `DEPLOY` (`DEPLOYMENT.md`), `OPS` (`OPERATIONS.md`).
-- **Koşullu Dokümanlar:** `STATUS`, `DESIGN`, `PROD-STRAT`, `PROJ-PLAN`, `TEST`, `AGENT-INST`.
+### 4.3 `content-platform` Bağlamı
+
+- **Implementation Ready Profile:**
+  - *Zorunlu:* `README-DOC`, `PROJECT-BRAIN`, `PRODUCT-RULES`, `DATA`, `WAVE-MAP`, `WAVE-PLAN`.
+  - *Elenenler:* `TECH-CTX` ve `API` (Catalog uyarınca `content-platform` proje türü `TECH-CTX` ve `API` belgelerinin `Applicable Types` listesinde yer almaz).
+  - *Koşullu:* `DESIGN`, `PROD-STRAT`, `STATUS`, `PROJ-PLAN`, `AGENT-INST`.
 
 ---
 
@@ -82,34 +86,19 @@ Ana hedefleri:
 ### Zorunlu Intake Bilgileri (MUST)
 - `project_name`: SaaS ürün adı.
 - `project_purpose`: Ürünün çözdüğü temel problem ve değer önerisi.
-- `project_type`: `web-app`, `api-service` veya `mobile-app`.
+- `project_type`: `web-app`, `api-service`, `mobile-app` veya `content-platform`.
 - `delivery_profile`: `Implementation Ready` (varsayılan) veya seçilen olgunluk seviyesi.
 - `primary_language`: Çıktı dili.
 
-### Önerilen Intake Bilgileri (SHOULD)
-- `target_users`: Kullanıcı rolleri (ör. Admin, Tenant Owner, End User) ve hedef kitle.
-- `core_flows`: Kayıt/giriş, onboarding, ana işlev akışı, ödeme/abonelik.
-- `technical_stack`: Frontend, backend, veritabanı, auth ve hosting tercihleri.
-- `goals`: Başarı kriterleri ve hedeflenen ürün kapasitesi.
-
 ---
 
-## 6. Doküman Seçimi ve Sahiplik Kuralları
+## 6. Sahiplik (Information Ownership) Kuralları
 
-Yalnızca `engine/DOCUMENT_CATALOG.md` içinde tanımlı doküman ID'leri kullanılır.
-
-### Zorunlu Dokümanlar (Implementation Ready Varsayılan Profilinde)
-
-| Document ID | Dosya Adı | Template Konumu | Seçim Gerekçesi |
-|---|---|---|---|
-| `README-DOC` | `README.md` | `templates/project/README_TEMPLATE.md` | Projenin genel yapısı ve çalıştırma rehberi. |
-| `PROJECT-BRAIN` | `PROJECT_BRAIN.md` | `templates/ai/PROJECT_BRAIN_TEMPLATE.md` | SaaS ürün bağlamı, vizyonu ve ana bileşen özeti. |
-| `PRODUCT-RULES` | `PRODUCT_RULES.md` | `templates/ai/PRODUCT_RULES_TEMPLATE.md` | Kullanıcı rolleri, yetkilendirme kuralları, iş mantığı kısıtlamaları. |
-| `TECH-CTX` | `TECH_CONTEXT.md` | `templates/ai/TECH_CONTEXT_TEMPLATE.md` | Sistem mimarisi, teknik stack, yetkilendirme ve güvenlik kararları. |
-| `DATA` | `DATA_MODEL.md` | `templates/project/DATA_MODEL_TEMPLATE.md` | Veritabanı varlıkları, ilişkiler ve veri akışları. |
-| `API` | `API_CONTRACTS.md` | `templates/project/API_CONTRACTS_TEMPLATE.md` | REST/GraphQL uç noktaları, istek/yanıt şemaları, auth yöntemi. |
-| `WAVE-MAP` | `WAVE_MAP.md` | `templates/waves/WAVE_MAP_TEMPLATE.md` | Ürünün teslim dalgaları (Waves) ve aşamalı kapsam haritası. |
-| `WAVE-PLAN` | `WAVE_PLAN.md` | `templates/waves/WAVE_PLAN_TEMPLATE.md` | Aktif dalganın detaylı görev kırılımı ve kabul kriterleri. |
+`engine/INFORMATION_MAP.md` uyarınca:
+- **`PRODUCT_RULES.md`**: SaaS uygulamasının kullanıcı rollerinin, yetki matrisinin ve iş kurallarının birincil sahibidir.
+- **`TECH_CONTEXT.md`**: Sistem mimarisi, teknik stack ve altyapı kararlarının birincil sahibidir.
+- **`DATA_MODEL.md`**: Veritabanı varlıkları, ilişkiler ve veri şemalarının birincil sahibidir.
+- **`API_CONTRACTS.md`**: API uç noktaları, istek/yanıt şemaları ve auth yöntemlerinin birincil sahibidir.
 
 ---
 
@@ -120,8 +109,8 @@ Yalnızca `engine/DOCUMENT_CATALOG.md` içinde tanımlı doküman ID'leri kullan
 - **Mevcut SaaS Projesi:** Mevcut bir SaaS projesi devralınıyorsa `EXISTING_PROJECT_PACKAGE` extension olarak eklenir ve `STATUS` (`CURRENT_STATUS.md`) zorunlu yapılır.
 
 ### Reduction (Daraltma) Kuralları
-- `Foundation` veya `Prototype` seviyelerinde `DOCUMENT_CATALOG.md` standartlarına uygun olarak `DATA`, `API`, `WAVE-MAP`, `WAVE-PLAN`, `OPS` ve `DEPLOY` belgeleri zorunlu tutulmaz.
-- Seçilen delivery profile kapsamındaki zorunlu çekirdek belgeler daraltılamaz ve çıkarılamaz.
+- `content-platform` veya `api-service` gibi belirli proje türlerinde catalog uyarınca applicable olmayan belgeler kendiliğinden filtrelenir.
+- Seçilen `project_type + delivery_profile` kombinasyonu kapsamındaki zorunlu çekirdek belgeler daraltılamaz ve çıkarılamaz.
 
 ---
 
@@ -138,9 +127,9 @@ Yalnızca `engine/DOCUMENT_CATALOG.md` içinde tanımlı doküman ID'leri kullan
 
 `engine/VALIDATION_RULES.md` kurallarına ek olarak bu pakete özel kontroller:
 
-1. **Rol ve Yetki Tutarlılığı:** `PRODUCT_RULES.md` içindeki kullanıcı rolleri ile `API_CONTRACTS.md` içindeki endpoint yetki gereksinimleri örtüşmelidir.
-2. **Veri Modeli ve Akış Uyuşması:** `DATA_MODEL.md` içindeki varlıklar, `core_flows` içerisindeki tüm veri ihtiyaçlarını karşılamalıdır.
-3. **Dalga Uyumu:** `WAVE_MAP.md` kapsamı ile `WAVE_PLAN.md` görevleri arasında tutarsızlık bulunmamalıdır.
+1. **Double-Filtering Doğrulaması:** `api-service` bağlamında `DESIGN`/`PROD-STRAT` zorlaması olmaması; `content-platform` bağlamında `TECH-CTX`/`API` zorlaması olmaması.
+2. **Rol ve Yetki Tutarlılığı:** `PRODUCT_RULES.md` içindeki kullanıcı rolleri ile `API_CONTRACTS.md` içindeki endpoint yetki gereksinimleri örtüşmelidir.
+3. **Veri Modeli ve Akış Uyuşması:** `DATA_MODEL.md` içindeki varlıklar, `core_flows` içerisindeki tüm veri ihtiyaçlarını karşılamalıdır.
 
 ---
 
@@ -162,7 +151,7 @@ Yalnızca `engine/DOCUMENT_CATALOG.md` içinde tanımlı doküman ID'leri kullan
 
 Bu paket çalışması tamamlandığında aşağıdaki kriterlerin karşılandığı doğrulanmalıdır:
 
-1. **Profile Uyumlu Doküman Seçimi:** Seçilen delivery profile ile `engine/DOCUMENT_CATALOG.md` kurallarının birebir uyumlu olması (ör. `Foundation` seviyesinde `DATA`/`API`/`WAVE-MAP` zorlaması olmaması).
-2. **Document Catalog Uyumluğu:** Kullanılan tüm doküman ID'lerinin `engine/DOCUMENT_CATALOG.md` içinde tanımlı olması.
+1. **Type + Profile Applicability Uyumluğu:** Seçilen `project_type` (`web-app`, `api-service`, `mobile-app`, `content-platform`) ve `delivery_profile` kombinasyonu için `engine/DOCUMENT_CATALOG.md` kurallarının tam uygulanmış olması.
+2. **Catalog Sınırlarının Korunması:** `api-service` için `DESIGN`/`PROD-STRAT` zorlaması olmaması; `content-platform` için `TECH-CTX`/`API` zorlaması olmaması.
 3. **Rol ve Veri Modeli Bütünlüğü:** `PRODUCT_RULES.md` yetki matrisinin `API_CONTRACTS.md` ve `DATA_MODEL.md` ile doğrulanmış olması.
-4. **Çıktı Kalitesi:** Tüm belgelerin `outputs/products/<project-slug>/latest/` klasöründe eksiksiz ve temiz şekilde teslim edilebilir durumda olması.
+4. **Temiz Output:** Tüm belgelerin `outputs/products/<project-slug>/latest/` klasöründe eksiksiz ve temiz şekilde teslim edilebilir durumda olması.

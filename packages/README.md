@@ -21,13 +21,26 @@ Sistem sınırlarını ve sorumluluk ayrımını korumak için:
 
 - **Package bir karar alma motoru değildir:** Hangi projenin hangi package ile eşleşeceğini `engine/PACKAGE_RULES.md` belirler. Package dosyaları seçim mantığını sahiplenmez.
 - **Package yeni doküman kimliği kaynağı değildir:** Tanınan tüm doküman ID'lerinin tek authoritative kaynağı `engine/DOCUMENT_CATALOG.md` belgesidir. Package yeni document ID icat edemez.
-- **Package template içeriği deposu değildir:** Dokümanların iç yapısı, başlık detayları ve şablon metinleri `templates/` klasörünün sorumluluğundadır. Package şablon metni barındırmaz; ilgili template grubuna referans verir.
+- **Package catalog kurallarını ezemez:** Bir dokümanın bir paket içinde Required veya Conditional olması, `engine/DOCUMENT_CATALOG.md` içindeki `Applicable Types` ve `Applicable Profiles` sınırlarını aşamaz.
+- **Package template içeriği deposu değildir:** Dokümanların iç yapısı, başlık detayları ve şablon metinleri `templates/` klasörünün sorumluluğundadır. Package şablon metni barındırmaz.
 - **Package çıktı klasörü değildir:** Gerçek proje belgelerinin üretildiği ve saklandığı yer `outputs/` klasörüdür.
-- **Package tek bir AI modeline özel talimatlar içermez:** Tüm package sözleşmeleri model bağımsızdır.
 
 ---
 
-## 3. Temel Sorumluluk Haritası
+## 3. Doküman Seçimi Filtreleme İlkesi (Double-Filtering Rule)
+
+Bir doküman (Document ID) bir çalışmada ancak ve ancak aşağıdaki iki koşulu **birlikte** sağlıyorsa Required veya Conditional yapılabilir:
+
+```text
+1. Projenin seçilen project_type'ı, dokümanın engine/DOCUMENT_CATALOG.md içerisindeki "Applicable Types" listesinde mevcut olmalıdır.
+2. Projenin seçilen delivery_profile'ı, dokümanın engine/DOCUMENT_CATALOG.md içerisindeki "Applicable Profiles" listesinde mevcut olmalıdır.
+```
+
+Bu iki koşuldan herhangi biri karşılanmıyorsa, ilgili doküman o `project_type + delivery_profile` kombinasyonunda paket tarafından zorunlu kılınamaz ve elenir (filtered out).
+
+---
+
+## 4. Temel Sorumluluk Haritası
 
 ```text
 engine/PACKAGE_RULES.md
@@ -37,7 +50,7 @@ packages/
   ↳ Seçilen package'ın içereceği doküman grubunu ve kapsam derinliğini tanımlar.
 
 engine/DOCUMENT_CATALOG.md
-  ↳ Doküman ID'lerinin (ör. PROJECT-BRAIN, TECH-CTX, API) tek yetkili kataloğudur.
+  ↳ Doküman ID'lerinin ve Applicable Types / Profiles sınırlarının tek yetkili kataloğudur.
 
 templates/
   ↳ Dokümanların fiziksel şablon yapısını ve üretim rehberini barındırır.
@@ -51,7 +64,7 @@ outputs/
 
 ---
 
-## 4. `packages/` Klasöründeki Paketler
+## 5. `packages/` Klasöründeki Paketler
 
 Klasör içerisinde 5 ana paket tanımı bulunmaktadır:
 
@@ -65,36 +78,19 @@ Klasör içerisinde 5 ana paket tanımı bulunmaktadır:
 
 ---
 
-## 5. Base Package + Extension Mantığı
-
-Bir projede dokümantasyon kapsamı tek bir statik paketle sınırlı kalmak zorunda değildir.
+## 6. Base Package + Extension Mantığı
 
 - **Base Package (Temel Paket):** Projenin birincil amacını temsil eder (ör. `SAAS_PACKAGE` veya `CORPORATE_WEBSITE_PACKAGE`).
 - **Extension Package (Eklenti Paketi / Kapsamı):** Temel pakete ek işlevsel alanlar dahil olduğunda devreye girer (ör. Kurumsal siteye API entegrasyonu veya SaaS projesine mevcut projeden başlanması).
 
 ### Birleşim (Merge) ve Çakışma Önleme Kuralları:
-
-1. **Tekil Üretim (No Duplication):** Aynı doküman (Document ID) asla iki kez üretilmez. Örneğin `EXISTING_PROJECT_PACKAGE` ile `SAAS_PACKAGE` birleştirildiğinde `TECH_CONTEXT.md` veya `PROJECT_BRAIN.md` tek bir tutarlı dosya olarak oluşturulur.
-2. **Katalog Otoritesi:** Eklenti paketleri veya birleşimler `engine/DOCUMENT_CATALOG.md` kimlikleri dışında yeni doküman tanımlayamaz.
+1. **Tekil Üretim (No Duplication):** Aynı doküman (Document ID) asla iki kez üretilmez.
+2. **Katalog Otoritesi:** Eklenti paketleri veya birleşimler `engine/DOCUMENT_CATALOG.md` kimlikleri dışında yeni doküman tanımlayamaz ve catalog'da uygun olmayan dokümanları zorunlu kılamaz.
 3. **En Yüksek Olgunluk:** İki paket farklı derinlik gerektiriyorsa, hedef projenin seçilen `delivery_profile` seviyesindeki en kapsayıcı derinlik esas alınır.
-4. **Sahiplik Sınırları:** Eklenti uygulaması `engine/INFORMATION_MAP.md` bilgi sahipliği kurallarını ihlal edemez.
-
----
-
-## 6. Delivery Profile ile İletişim
-
-Delivery Profile, projenin hangi olgunluk seviyesinde belgeleneceğini gösterir ve paket türünden bağımsızdır:
-
-- **Foundation:** Temel bağlam, ürün amacı ve kritik kararlar. (Catalog gereği `README-DOC`, `PROJECT-BRAIN`, `PRODUCT-RULES`, `TECH-CTX` gibi çekirdek belgeleri kapsar; `DATA`, `API`, `WAVE-MAP` vb. belgeler bu seviyede henüz zorunlu kılınmaz).
-- **Prototype:** Görsel/işlevsel ilk deneyim için gerekli minimum derinlik. (`DESIGN` yetkili; `DATA`, `API`, `WAVE-MAP` zorunlu kılınmaz).
-- **Implementation Ready:** Bir geliştirme ajanının doğrudan kod yazmaya başlayabileceği ayrıntılı paket (`DATA`, `API`, `WAVE-MAP`, `WAVE-PLAN`, `TASKS` yetkili).
-- **Production Ready:** Dağıtım (`DEPLOY`), operasyon (`OPS`), güvenlik ve sürdürülebilirlik kapsamı tamamlanmış paket.
 
 ---
 
 ## 7. Önerilen Okuma ve Uygulama Sırası
-
-Product Engine çalıştırılırken paket sisteminin doğru anlaşılması için şu sıra izlenmelidir:
 
 1. `PRODUCT_ENGINE_BRAIN.md`
 2. `engine/PROJECT_INTAKE.md`
@@ -106,12 +102,12 @@ Product Engine çalıştırılırken paket sisteminin doğru anlaşılması içi
 
 ---
 
-## 8. Paket Paket Özet Tablosu (Varsayılan Olgunluk Seviyesinde)
+## 8. Paket Özet Tablosu (Varsayılan Profile & Ana Project Type Bağlamında)
 
-| Package ID | Varsayılan Delivery Profile | Varsayılan Profile Özel Zorunlu Dokümanlar | Koşullu / Profile Özgü Dokümanlar |
+| Package ID | Varsayılan Delivery Profile | Uyumlu Project Type Örnekleri | Varsayılan Profile Özel Çekirdek Zorunlu Dokümanlar |
 |---|---|---|---|
-| `demo-frontend` | Prototype | `README-DOC`, `PROJECT-BRAIN`, `PRODUCT-RULES`, `DESIGN` | `STATUS`, `AGENT-INST`, `PROJ-PLAN`, `TASKS`, `DECISIONS` |
-| `corporate-website` | Implementation Ready | `README-DOC`, `PROJECT-BRAIN`, `PRODUCT-RULES`, `TECH-CTX`, `DESIGN` | `STATUS`, `AGENT-INST`, `PROJ-PLAN`, `DATA`, `API`, `DEPLOY`, `TEST` |
-| `saas` | Implementation Ready | `README-DOC`, `PROJECT-BRAIN`, `PRODUCT-RULES`, `TECH-CTX`, `DATA`, `API`, `WAVE-MAP`, `WAVE-PLAN` | `STATUS`, `PROD-STRAT`, `DESIGN`, `PROJ-PLAN`, `DEPLOY`, `OPS`, `TEST`, `AGENT-INST` |
-| `existing-project` | Implementation Ready | `README-DOC`, `PROJECT-BRAIN`, `STATUS`, `TECH-CTX` | `PRODUCT-RULES`, `TASKS`, `DECISIONS`, `DATA`, `API`, `AGENT-INST`, `DEPLOY`, `OPS` |
-| `api-service` | Implementation Ready | `README-DOC`, `PROJECT-BRAIN`, `PRODUCT-RULES`, `TECH-CTX`, `API`, `DATA` | `STATUS`, `PROJ-PLAN`, `WAVE-MAP`, `WAVE-PLAN`, `DEPLOY`, `OPS`, `TEST`, `AGENT-INST` |
+| `demo-frontend` | Prototype | `web-app`, `landing-page`, `prototype`, `mobile-app` | `README-DOC`, `PROJECT-BRAIN`, `PRODUCT-RULES` (web-app/mobile-app), `DESIGN` (web-app/mobile-app/landing-page) |
+| `corporate-website` | Implementation Ready | `landing-page`, `web-app`, `content-platform` | `README-DOC`, `PROJECT-BRAIN`, `DESIGN`, `PRODUCT-RULES` (web-app/content-platform), `TECH-CTX` (web-app) |
+| `saas` | Implementation Ready | `web-app`, `api-service`, `mobile-app`, `content-platform` | `README-DOC`, `PROJECT-BRAIN`, `PRODUCT-RULES`, `DATA`, `WAVE-MAP`, `WAVE-PLAN`, `TECH-CTX` (web-app/api-service/mobile-app), `API` (web-app/api-service/mobile-app) |
+| `existing-project` | Implementation Ready | Tüm türler | `README-DOC`, `PROJECT-BRAIN`, `STATUS`, `TECH-CTX` (web-app/api-service/mobile-app/integration/infrastructure) |
+| `api-service` | Implementation Ready | `api-service`, `integration`, `infrastructure` | `README-DOC`, `PROJECT-BRAIN`, `TECH-CTX`, `API` (api-service/integration), `PRODUCT-RULES` (api-service), `DATA` (api-service) |

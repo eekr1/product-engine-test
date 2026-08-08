@@ -6,7 +6,7 @@
 package_id: demo-frontend
 package_name: Frontend Demo Package
 package_type: base
-version: 1.1.0
+version: 1.2.0
 status: active
 default_delivery_profile: Prototype
 compatible_project_types:
@@ -34,39 +34,45 @@ Ana hedefleri:
 
 ---
 
-## 3. Uygun Olduğu ve Olmadığı Proje Bağlamları
+## 3. Doküman Seçimi Filtreleme İlkesi (Double-Filtering Rule)
 
-### Uygun Olduğu Bağlamlar
-- Görsel olarak çalışan web/mobil arayüz demoları.
-- Müşteri veya yatırımcı sunumu için hazırlanan etkileşimli prototipler.
-- Tasarım sisteminin veya arayüz akışlarının doğrulanacağı frontend projeleri.
-- Mock veriler veya yerel durum (local state) ile çalışan tek sayfa uygulamaları (SPA).
+Bu paket içinde bir dokümanın zorunlu (Required) veya koşullu (Conditional) olabilmesi için `engine/DOCUMENT_CATALOG.md` içindeki **hem** `Applicable Types` **hem de** `Applicable Profiles` koşullarını aynı anda sağlaması gerekir:
 
-### Uygun Olmadığı Bağlamlar
-- Ağırlıklı olarak veri tabanı mimarisi ve API geliştirmesi içeren projeler (Bkz: `API_SERVICE_PACKAGE.md`).
-- Kompleks yetkilendirme, ödeme entegrasyonu ve iş mantığı içeren tam ölçekli SaaS ürünleri (Bkz: `SAAS_PACKAGE.md`).
-- Altyapı, CI/CD veya DevOps odaklı projeler.
+```text
+seçilen project_type  ∈ document.Applicable Types
+         VE
+seçilen delivery_profile ∈ document.Applicable Profiles
+```
+
+Bu iki koşuldan biri sağlanmıyorsa doküman ilgili kombinasyonda otomatik olarak elenir ve Required yapılamaz. Package kuralları `DOCUMENT_CATALOG.md` sınırlarını aşamaz.
 
 ---
 
-## 4. Desteklenen Delivery Profile'ları ve Profile Özel Doküman Kapsamı
+## 4. Desteklenen Project Type + Delivery Profile Doküman Matrisi
 
-`engine/DOCUMENT_CATALOG.md` kurallarına göre her delivery profile için izin verilen ve zorunlu tutulan doküman kapsamı aşağıda tanımlanmıştır:
+### 4.1 `web-app` veya `mobile-app` Bağlamı
 
-### 4.1 Foundation Profile
-*Amaç: Yüksek seviye fikir ve ekran konseptlerinin tanımlanması.*
-- **Zorunlu Dokümanlar:** `README-DOC` (`README.md`), `PROJECT-BRAIN` (`PROJECT_BRAIN.md`), `PRODUCT-RULES` (`PRODUCT_RULES.md`).
-- **Not:** `DOCUMENT_CATALOG.md` gereği `DESIGN` (`DESIGN_RULES.md`) belgesinin geçerli olduğu profiller `Prototype`, `Implementation Ready` ve `Production Ready`'dir. `Foundation` seviyesinde `DESIGN` üretilmez; görsel tercihler `PROJECT_BRAIN.md` içinde özet bağlam olarak kaydedilir.
+- **Foundation Profile:**
+  - *Zorunlu:* `README-DOC` (`README.md`), `PROJECT-BRAIN` (`PROJECT_BRAIN.md`), `PRODUCT-RULES` (`PRODUCT_RULES.md`), `TECH-CTX` (`TECH_CONTEXT.md`).
+  - *Elenenler:* `DESIGN` (Catalog uyarınca `Foundation` profilinde geçerli değildir; görsel yönelim `PROJECT_BRAIN` içinde not edilir).
+- **Prototype Profile (Varsayılan):**
+  - *Zorunlu:* `README-DOC`, `PROJECT-BRAIN`, `PRODUCT-RULES`, `DESIGN` (`DESIGN_RULES.md`).
+  - *Elenenler:* `TECH-CTX` (Catalog uyarınca `TECH-CTX` belgesinin geçerli olduğu profiller: `Foundation`, `Implementation Ready`, `Production Ready`'dir; `Prototype` profilinde geçerli değildir).
+- **Implementation Ready Profile:**
+  - *Zorunlu:* `README-DOC`, `PROJECT-BRAIN`, `PRODUCT-RULES`, `TECH-CTX`, `DESIGN`.
+  - *Koşullu:* `STATUS` (`CURRENT_STATUS.md`), `TASKS` (`NEXT_TASKS.md`), `AGENT-INST` (`AGENT_INSTRUCTIONS.md`), `PROJ-PLAN` (`PROJECT_PLAN.md`), `DECISIONS` (`DECISIONS.md`).
 
-### 4.2 Prototype Profile (Varsayılan)
-*Amaç: Görsel ve işlevsel ilk deneyimin hızlıca sunuma ve teste hazır hale getirilmesi.*
-- **Zorunlu Dokümanlar:** `README-DOC` (`README.md`), `PROJECT-BRAIN` (`PROJECT_BRAIN.md`), `PRODUCT-RULES` (`PRODUCT_RULES.md`), `DESIGN` (`DESIGN_RULES.md`).
-- **Koşullu Dokümanlar:** `STATUS` (`CURRENT_STATUS.md` - mevcut projeler için).
+### 4.2 `landing-page` Bağlamı
 
-### 4.3 Implementation Ready Profile
-*Amaç: Frontend geliştirici ajanın doğrudan kodlamaya ve bileşen geliştirmeye başlaması.*
-- **Zorunlu Dokümanlar:** `README-DOC` (`README.md`), `PROJECT-BRAIN` (`PROJECT_BRAIN.md`), `PRODUCT-RULES` (`PRODUCT_RULES.md`), `DESIGN` (`DESIGN_RULES.md`).
-- **Koşullu Dokümanlar:** `STATUS` (`CURRENT_STATUS.md`), `TASKS` (`NEXT_TASKS.md`), `AGENT-INST` (`AGENT_INSTRUCTIONS.md`), `PROJ-PLAN` (`PROJECT_PLAN.md`), `DECISIONS` (`DECISIONS.md`).
+- **Prototype veya Implementation Ready Profile:**
+  - *Zorunlu:* `README-DOC`, `PROJECT-BRAIN`, `DESIGN`.
+  - *Elenenler:* `PRODUCT-RULES` ve `TECH-CTX` (Catalog uyarınca `landing-page` proje türü `PRODUCT-RULES` ve `TECH-CTX` belgelerinin `Applicable Types` listesinde yer almaz).
+
+### 4.3 `prototype` (Proje Türü Olarak) Bağlamı
+
+- **Prototype veya Foundation Profile:**
+  - *Zorunlu:* `README-DOC`, `PROJECT-BRAIN`.
+  - *Elenenler:* `PRODUCT-RULES`, `TECH-CTX`, `DESIGN` (Catalog uyarınca `prototype` proje türü bu belgelerin `Applicable Types` listesinde yer almaz).
 
 ---
 
@@ -79,28 +85,13 @@ Ana hedefleri:
 - `delivery_profile`: `Prototype` (varsayılan) veya seçilen diğer desteklenen profil.
 - `primary_language`: Çıktı dili.
 
-### Önerilen Intake Bilgileri (SHOULD)
-- `target_users`: Demoyu inceleyecek hedef kitle veya müşteriler.
-- `core_flows`: Gösterilecek 3-5 kritik arayüz akışı.
-- `design_preferences`: Görsel tema, renkler, tipografi veya UI kütüphanesi tercihleri.
-
 ---
 
-## 6. Doküman Seçimi ve Sahiplik Kuralları
+## 6. Sahiplik (Information Ownership) Kuralları
 
-Yalnızca `engine/DOCUMENT_CATALOG.md` içinde tanımlı doküman ID'leri kullanılır.
-
-### Zorunlu Dokümanlar (Prototype Varsayılan Profilinde)
-
-| Document ID | Dosya Adı | Template Konumu | Seçim Gerekçesi |
-|---|---|---|---|
-| `README-DOC` | `README.md` | `templates/project/README_TEMPLATE.md` | Projenin genel tanıtımı ve çalıştırma yönlendirmesi. |
-| `PROJECT-BRAIN` | `PROJECT_BRAIN.md` | `templates/ai/PROJECT_BRAIN_TEMPLATE.md` | Projenin amacını ve arayüz kapsamını özetleyen birincil bağlam belgesi. |
-| `PRODUCT-RULES` | `PRODUCT_RULES.md` | `templates/ai/PRODUCT_RULES_TEMPLATE.md` | Ekran davranışları, sayfa kuralları ve durum (state) kısıtlamaları. |
-| `DESIGN` | `DESIGN_RULES.md` | `templates/design/DESIGN_RULES_TEMPLATE.md` | Görsel dil, tema, renk paleti, tipografi ve UI bileşen kurallarının tek yetkili sahibi. |
-
-### Sahiplik (Information Ownership) İlkesi
-`engine/INFORMATION_MAP.md` uyarınca tasarım ve UX kurallarının birincil sahibi (primary owner) `DESIGN` (`DESIGN_RULES.md`) belgesidir. `PRODUCT_RULES.md` asla tasarım ve bileşen kuralı sahibi olarak tanımlanamaz.
+`engine/INFORMATION_MAP.md` uyarınca:
+- **`DESIGN_RULES.md` (`DESIGN`)**: Görsel dil, renk paleti, tipografi, UI bileşen kuralları ve arayüz standartlarının tek birincil sahibidir (primary owner). `PRODUCT_RULES.md` asla tasarım kuralı sahibi yapılamaz.
+- **`PRODUCT_RULES.md` (`PRODUCT-RULES`)**: Ekran davranışları, sayfa erişim kuralları ve durum (state) kısıtlamalarının birincil sahibidir.
 
 ### Hariç Tutulan Dokümanlar (Default Excluded)
 Aksi yönde bir extension eklenmedikçe aşağıdaki belgeler bu pakette varsayılan olarak üretilmez:
@@ -120,9 +111,8 @@ Aksi yönde bir extension eklenmedikçe aşağıdaki belgeler bu pakette varsay�
 - **Mevcut Projeden Devam:** Projede önceden yazılmış kodlar varsa `EXISTING_PROJECT_PACKAGE` eklenti ilkeleri uygulanır ve `STATUS` (`CURRENT_STATUS.md`) zorunlu hale gelir.
 
 ### Reduction (Daraltma) Kuralları
-- `Prototype` ve üstü teslim profillerinde `DESIGN` (`DESIGN_RULES.md`) zorunlu bir belgedir ve pas geçilemez/çıkarılamaz. Tasarım kuralları `PRODUCT_RULES.md` içine taşınamaz.
-- Yalnızca `Foundation` seviyesinde `DESIGN` belgesi `DOCUMENT_CATALOG.md` kuralları uyarınca üretilmez; tasarım tercihleri `PROJECT_BRAIN.md` içine kısa girdi notu olarak düşülür.
-- Zorunlu çekirdek belgeler (`README-DOC`, `PROJECT-BRAIN`, `PRODUCT-RULES`) hiçbir koşulda çıkarılamaz.
+- `DESIGN` belgesinin geçerli olduğu tür ve profillerde (`web-app`/`mobile-app`/`landing-page` + `Prototype`/`Implementation Ready`), `DESIGN` belgesi zorunlu olup çıkarılamaz. Tasarım kuralları `PRODUCT_RULES.md` içine taşınamaz.
+- Seçilen `project_type + delivery_profile` kombinasyonu kapsamındaki zorunlu belgeler daraltılamaz.
 
 ---
 
@@ -139,8 +129,8 @@ Aksi yönde bir extension eklenmedikçe aşağıdaki belgeler bu pakette varsay�
 `engine/VALIDATION_RULES.md` kurallarına ek olarak bu pakete özel kontroller:
 
 1. **Sahte Backend İddiası Yokluğu:** Belgeler, kapsam dışı backend/database işlevlerini sanki gerçekten varmış gibi sunmamalı; verilerin mock/local state olduğunu netleştirmelidir.
-2. **Arayüz ve Tasarım Tutarlılığı:** `DESIGN_RULES.md` içindeki stil kararları ile `PRODUCT_RULES.md` içindeki ekran kuralları birbiriyle tutarlı olmalıdır.
-3. **Geliştirilebilirlik:** Tasarım kararları (CSS/Tailwind/UI kütüphanesi yapısı) gelecekte gerçek backend bağlanmasını engellemeyecek modülerlikte tanımlanmalıdır.
+2. **Double-Filtering Doğrulaması:** `landing-page` veya `prototype` proje türlerinde catalog'da geçerli olmayan belgelerin (`PRODUCT-RULES`, `TECH-CTX`) zorunlu kılınmadığı doğrulanmalıdır.
+3. **Arayüz ve Tasarım Tutarlılığı:** `DESIGN_RULES.md` stil kararları ile `PRODUCT_RULES.md` ekran kuralları birbiriyle tutarlı olmalıdır.
 
 ---
 
@@ -158,7 +148,6 @@ Bu paket ile başlayan bir proje şu adımlarla tam ürüne dönüştürülebili
 1. `Prototype` → `Implementation Ready` seviyesine yükseltilir.
 2. `API_SERVICE_PACKAGE` veya `SAAS_PACKAGE` extension olarak eklenir.
 3. Eksik `DATA`, `API` ve `DEPLOY` belgeleri üretilerek `outputs/products/` klasörüne aktarılır.
-4. Mevcut `PROJECT_BRAIN` ve `PRODUCT_RULES` belgeleri güncellenerek geçmiş korunan bir geçiş sağlanır.
 
 ---
 
@@ -166,8 +155,7 @@ Bu paket ile başlayan bir proje şu adımlarla tam ürüne dönüştürülebili
 
 Bu paket çalışması tamamlandığında aşağıdaki kriterlerin karşılandığı doğrulanmalıdır:
 
-1. **Eksiksiz Doküman Seçimi:** Seçilen delivery profile için (`Prototype` için `README-DOC`, `PROJECT-BRAIN`, `PRODUCT-RULES`, `DESIGN`) tüm zorunlu belgelerin üretilmiş olması.
-2. **Document Catalog Uyumluğu:** Kullanılan tüm doküman ID'lerinin `engine/DOCUMENT_CATALOG.md` içinde tanımlı ve ilgili profil/proje türü için geçerli (applicable) olması.
-3. **Information Ownership Uyumluğu:** Tasarım kurallarının yalnızca `DESIGN_RULES.md` tarafından sahiplenilmesi, `PRODUCT_RULES.md` veya başka belgelere taşınmamış olması.
-4. **Çelişkisiz Kapsam:** Reduction kurallarında `DESIGN` belgesi için çelişkili kaldırma ifadesinin bulunmaması.
-5. **Temiz Output:** Çıktının `outputs/demos/<project-slug>/latest/` altında placeholder barındırmayan, doğrulanmış ve teslim edilebilir durumda olması.
+1. **Type + Profile Applicability Uyumluğu:** Üretilecek zorunlu dokümanların hem seçilen `project_type` hem de `delivery_profile` için `engine/DOCUMENT_CATALOG.md` standartlarıyla birebir uyumlu olması.
+2. **Catalog Sınırlarının Korunması:** `landing-page` için `PRODUCT-RULES`/`TECH-CTX` veya `Prototype` profili için `TECH-CTX` zorlamasının yapılmamış olması.
+3. **Information Ownership Uyumluğu:** Tasarım kurallarının yalnızca `DESIGN_RULES.md` bünyesinde kalması.
+4. **Temiz Output:** Çıktının `outputs/demos/<project-slug>/latest/` altında placeholder barındırmayan, doğrulanmış ve teslim edilebilir durumda olması.

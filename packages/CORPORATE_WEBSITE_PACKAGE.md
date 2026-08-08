@@ -6,7 +6,7 @@
 package_id: corporate-website
 package_name: Corporate Website Package
 package_type: base
-version: 1.1.0
+version: 1.2.0
 status: active
 default_delivery_profile: Implementation Ready
 compatible_project_types:
@@ -33,43 +33,46 @@ Ana hedefleri:
 
 ---
 
-## 3. Uygun Olduğu ve Olmadığı Proje Bağlamları
+## 3. Doküman Seçimi Filtreleme İlkesi (Double-Filtering Rule)
 
-### Uygun Olduğu Bağlamlar
-- Kurumsal tanıtım siteleri, holding veya grup şirket siteleri.
-- Ürün ve hizmet kataloğu sunan, teklif/iletişim formu içeren siteler.
-- Blog, haber, duyuru ve insan kaynakları sayfaları barındıran kurumsal platformlar.
-- İsteğe bağlı olarak yönetim paneli (CMS) ile içerik yönetimi yapılan siteler.
+Bu paket içinde bir dokümanın zorunlu (Required) veya koşullu (Conditional) olabilmesi için `engine/DOCUMENT_CATALOG.md` içindeki **hem** `Applicable Types` **hem de** `Applicable Profiles` koşullarını aynı anda sağlaması gerekir:
 
-### Uygun Olmadığı Bağlamlar
-- Yoğun kullanıcı aboneliği, faturalandırma ve karmaşık yetkilendirme içeren SaaS ürünleri (Bkz: `SAAS_PACKAGE.md`).
-- Sadece arayüz görsel demosu amaçlanan geçici prototipler (Bkz: `DEMO_FRONTEND_PACKAGE.md`).
-- Yalnızca API sunan arka uç servisleri (Bkz: `API_SERVICE_PACKAGE.md`).
+```text
+seçilen project_type  ∈ document.Applicable Types
+         VE
+seçilen delivery_profile ∈ document.Applicable Profiles
+```
+
+Bu iki koşuldan biri sağlanmıyorsa doküman ilgili kombinasyonda otomatik olarak elenir ve Required yapılamaz. Package kuralları `DOCUMENT_CATALOG.md` sınırlarını aşamaz.
 
 ---
 
-## 4. Desteklenen Delivery Profile'ları ve Profile Özel Doküman Kapsamı
+## 4. Desteklenen Project Type + Delivery Profile Doküman Matrisi
 
-`engine/DOCUMENT_CATALOG.md` kurallarına göre desteklenen her delivery profile için doküman kapsamı aşağıda tanımlanmıştır:
+### 4.1 `web-app` Bağlamı
 
-### 4.1 Foundation Profile
-*Amaç: Kurumsal vizyon, site amacı, hedef kitle ve temel teknik tercihlerin belirlenmesi.*
-- **Zorunlu Dokümanlar:** `README-DOC` (`README.md`), `PROJECT-BRAIN` (`PROJECT_BRAIN.md`), `PRODUCT-RULES` (`PRODUCT_RULES.md`), `TECH-CTX` (`TECH_CONTEXT.md`).
-- **Not:** `DOCUMENT_CATALOG.md` gereği `DESIGN` belgesi bu seviyede henüz zorunlu değildir. Görsel yönelimler `PROJECT_BRAIN.md` içinde özetlenir.
+- **Foundation Profile:**
+  - *Zorunlu:* `README-DOC` (`README.md`), `PROJECT-BRAIN` (`PROJECT_BRAIN.md`), `PRODUCT-RULES` (`PRODUCT_RULES.md`), `TECH-CTX` (`TECH_CONTEXT.md`).
+- **Prototype Profile:**
+  - *Zorunlu:* `README-DOC`, `PROJECT-BRAIN`, `PRODUCT-RULES`, `DESIGN` (`DESIGN_RULES.md`).
+- **Implementation Ready Profile (Varsayılan):**
+  - *Zorunlu:* `README-DOC`, `PROJECT-BRAIN`, `PRODUCT-RULES`, `TECH-CTX`, `DESIGN`.
+  - *Koşullu:* `STATUS` (`CURRENT_STATUS.md`), `DATA` (`DATA_MODEL.md` - dinamik katalog/CMS varsa), `API` (`API_CONTRACTS.md` - form API varsa), `PROJ-PLAN`, `TEST`, `AGENT-INST`.
+- **Production Ready Profile:**
+  - *Zorunlu:* `README-DOC`, `PROJECT-BRAIN`, `PRODUCT-RULES`, `TECH-CTX`, `DESIGN`, `DEPLOY` (`DEPLOYMENT.md`).
 
-### 4.2 Prototype Profile
-*Amaç: Tasarım yönelimini ve ilk sayfa şablonlarını gösteren erken lansman sürümü.*
-- **Zorunlu Dokümanlar:** `README-DOC` (`README.md`), `PROJECT-BRAIN` (`PROJECT_BRAIN.md`), `PRODUCT-RULES` (`PRODUCT_RULES.md`), `TECH-CTX` (`TECH_CONTEXT.md`), `DESIGN` (`DESIGN_RULES.md`).
+### 4.2 `content-platform` Bağlamı
 
-### 4.3 Implementation Ready Profile (Varsayılan)
-*Amaç: Ajanın tasarıma, sayfa şablonlarına ve içerik bileşenlerine doğrudan başlayabileceği tam dokümantasyon seviyesi.*
-- **Zorunlu Dokümanlar:** `README-DOC` (`README.md`), `PROJECT-BRAIN` (`PROJECT_BRAIN.md`), `PRODUCT-RULES` (`PRODUCT_RULES.md`), `TECH-CTX` (`TECH_CONTEXT.md`), `DESIGN` (`DESIGN_RULES.md`).
-- **Koşullu Dokümanlar:** `STATUS` (`CURRENT_STATUS.md`), `DATA` (`DATA_MODEL.md` - dinamik blog/katalog varsa), `API` (`API_CONTRACTS.md` - iletişim/form API'si varsa), `PROJ-PLAN` (`PROJECT_PLAN.md`), `TEST` (`TEST_STRATEGY.md`), `AGENT-INST` (`AGENT_INSTRUCTIONS.md`).
+- **Implementation Ready Profile:**
+  - *Zorunlu:* `README-DOC`, `PROJECT-BRAIN`, `PRODUCT-RULES`, `DESIGN`.
+  - *Elenenler:* `TECH-CTX` (Catalog uyarınca `content-platform` proje türü `TECH-CTX` belgesinin `Applicable Types` listesinde yer almaz).
+  - *Koşullu:* `DATA` (`DATA_MODEL.md`), `WAVE-MAP` (`WAVE_MAP.md`), `WAVE-PLAN` (`WAVE_PLAN.md`), `PROJ-PLAN`, `AGENT-INST`.
 
-### 4.4 Production Ready Profile
-*Amaç: Canlıya alma (hosting, DNS, SSL, CDN), form güvenlik kontrolleri, SEO ve analitik takibinin belgelendiği olgun seviye.*
-- **Zorunlu Dokümanlar:** `README-DOC` (`README.md`), `PROJECT-BRAIN` (`PROJECT_BRAIN.md`), `PRODUCT-RULES` (`PRODUCT_RULES.md`), `TECH-CTX` (`TECH_CONTEXT.md`), `DESIGN` (`DESIGN_RULES.md`), `DEPLOY` (`DEPLOYMENT.md`).
-- **Koşullu Dokümanlar:** `STATUS`, `DATA`, `API`, `PROJ-PLAN`, `TEST`, `AGENT-INST`.
+### 4.3 `landing-page` Bağlamı
+
+- **Prototype veya Implementation Ready Profile:**
+  - *Zorunlu:* `README-DOC`, `PROJECT-BRAIN`, `DESIGN`.
+  - *Elenenler:* `PRODUCT-RULES`, `TECH-CTX`, `DATA`, `API`, `DEPLOY`, `OPS` (Catalog uyarınca `landing-page` proje türü bu belgelerin `Applicable Types` listesinde yer almaz).
 
 ---
 
@@ -82,47 +85,30 @@ Ana hedefleri:
 - `delivery_profile`: `Implementation Ready` (varsayılan) veya seçilen seviye.
 - `primary_language`: Site ve çıktı dili.
 
-### Önerilen Intake Bilgileri (SHOULD)
-- `target_users`: Hedef ziyaretçi kitlesi, müşteriler veya iş ortakları.
-- `core_flows`: İletişim formu doldurma, ürün/hizmet inceleme, teklif isteme gibi temel akışlar.
-- `technical_stack`: Tercih edilen teknolojiler (ör. Next.js, HTML/CSS, CMS altyapısı).
-- `design_preferences`: Kurumsal renkler, logo, font ve tasarım stili.
-
 ---
 
-## 6. Doküman Seçimi ve Sahiplik Kuralları
+## 6. Sahiplik (Information Ownership) Kuralları
 
-Yalnızca `engine/DOCUMENT_CATALOG.md` içinde tanımlı doküman ID'leri kullanılır.
-
-### Zorunlu Dokümanlar (Implementation Ready Varsayılan Profilinde)
-
-| Document ID | Dosya Adı | Template Konumu | Seçim Gerekçesi |
-|---|---|---|---|
-| `README-DOC` | `README.md` | `templates/project/README_TEMPLATE.md` | Projenin genel yapısı, sayfa mimarisi ve çalıştırma rehberi. |
-| `PROJECT-BRAIN` | `PROJECT_BRAIN.md` | `templates/ai/PROJECT_BRAIN_TEMPLATE.md` | Kurumsal kimlik, site amacı ve genel bağlam belgesi. |
-| `PRODUCT-RULES` | `PRODUCT_RULES.md` | `templates/ai/PRODUCT_RULES_TEMPLATE.md` | Sayfa erişim kuralları, form doğrulama kuralları ve içerik kısıtlamaları. |
-| `TECH-CTX` | `TECH_CONTEXT.md` | `templates/ai/TECH_CONTEXT_TEMPLATE.md` | Hosting, SSG/SSR tercihleri, form gönderme yöntemi ve teknik stack. |
-| `DESIGN` | `DESIGN_RULES.md` | `templates/design/DESIGN_RULES_TEMPLATE.md` | Kurumsal görsel dil, renk paleti, tipografi ve UI bileşen kuralları. |
+`engine/INFORMATION_MAP.md` uyarınca:
+- **`DESIGN_RULES.md`**: Görsel dil, marka renkleri, tipografi ve UI bileşen standartlarının tek birincil sahibidir.
+- **`PRODUCT_RULES.md`**: Sayfa erişim kuralları, form doğrulama mantığı ve içerik kısıtlamalarının birincil sahibidir.
 
 ### Hariç Tutulan Dokümanlar (Default Excluded)
 SaaS veya karmaşık yazılım süreçlerine ait olan aşağıdaki belgeler normal bir kurumsal sitede gerekmedikçe üretilmez:
 - `OPS` (`OPERATIONS.md`)
 - `PROD-STRAT` (`PRODUCT_STRATEGY.md`)
-- `WAVE-MAP` (`WAVE_MAP.md`)
-- `WAVE-PLAN` (`WAVE_PLAN.md`)
 
 ---
 
 ## 7. Extension ve Reduction Kuralları
 
 ### Extension (Genişletme) Kuralları
-- **CMS / Yönetim Paneli Eklentisi:** İçeriğin panellerle yönetilmesi istendiğinde `DATA` (`DATA_MODEL.md`) ve `API` (`API_CONTRACTS.md`) belgeleri zorunlu hale getirilir.
+- **CMS / Yönetim Paneli Eklentisi:** İçeriğin panellerle yönetilmesi istendiğinde (ve `project_type == web-app` ise) `DATA` (`DATA_MODEL.md`) ve `API` (`API_CONTRACTS.md`) belgeleri zorunlu hale getirilir.
 - **Mevcut Siteden Redesign:** Mevcut bir web sitesi yenileniyorsa `EXISTING_PROJECT_PACKAGE` devreye girer ve `STATUS` (`CURRENT_STATUS.md`) zorunlu olur.
 
 ### Reduction (Daraltma) Kuralları
-- Statik, az sayfalı (brochureware) sitelerde `DATA` ve `API` belgeleri tamamen çıkarılır.
-- Çıkarılan belgeler run kaydında gerekçesiyle saklanır.
-- Seçilen delivery profile kapsamındaki zorunlu belgeler asla daraltılamaz.
+- `landing-page` projelerinde catalog uyarınca `PRODUCT-RULES` ve `TECH-CTX` kendiliğinden filtrelenir, gereksiz belge dayatılmaz.
+- Seçilen `project_type + delivery_profile` kombinasyonu kapsamındaki zorunlu belgeler daraltılamaz.
 
 ---
 
@@ -139,8 +125,8 @@ SaaS veya karmaşık yazılım süreçlerine ait olan aşağıdaki belgeler norm
 
 `engine/VALIDATION_RULES.md` kurallarına ek olarak bu pakete özel kontroller:
 
-1. **Sayfa ve Gezinti (Navigation) Uyumu:** Sayfa listesi ile menü/navigasyon yapısı birebir uyumlu olmalıdır.
-2. **İletişim ve Dönüşüm Akışı:** İletişim formlarının nereye gönderileceği (email, API, CRM) ve başarı/hata durumları net tanımlanmış olmalıdır.
+1. **Double-Filtering Doğrulaması:** `landing-page` için catalog dışı `PRODUCT-RULES` veya `TECH-CTX` zorlamasının yapılmadığı doğrulanmalıdır.
+2. **Sayfa ve Gezinti (Navigation) Uyumu:** Sayfa listesi ile menü/navigasyon yapısı birebir uyumlu olmalıdır.
 3. **Bürokrasi Kontrolü:** Basit kurumsal sitelere gereksiz veritabanı veya karmaşık sunucu mimarisi belgeleri eklenmemiş olmalıdır.
 
 ---
@@ -164,8 +150,7 @@ Kurumsal web sitesi zamanla şu şekilde büyütülebilir:
 
 Bu paket çalışması tamamlandığında aşağıdaki kriterlerin karşılandığı doğrulanmalıdır:
 
-1. **Profile Uyumlu Doküman Seçimi:** Seçilen delivery profile için (`Implementation Ready` için `README-DOC`, `PROJECT-BRAIN`, `PRODUCT-RULES`, `TECH-CTX`, `DESIGN`) tüm zorunlu belgelerin eksiksiz seçilmiş olması.
-2. **Document Catalog Uyumluluğu:** Tüm doküman ID'lerinin `engine/DOCUMENT_CATALOG.md` içinde tanımlı ve ilgili profil ile proje türü için izin verilen (`applicable`) sınırlar içinde kalması.
-3. **Gereksiz Bürokrasi Yokluğu:** Basit kurumsal site gereksinimlerinde `OPS`, `PROD-STRAT`, `WAVE-MAP` gibi belgelerin zorunlu kılınmamış olması.
-4. **Paket Doğrulama Kontrolleri:** Sayfa gezintisi ve iletişim akışlarının paket içi doğrulama kurallarından geçmiş olması.
-5. **Temiz Output:** Üretilen belgelerin `outputs/products/<project-slug>/latest/` klasöründe eksiksiz ve placeholder barındırmadan teslim edilebilir durumda olması.
+1. **Type + Profile Applicability Uyumluğu:** Seçilen `project_type` (`web-app`, `content-platform`, `landing-page`) ve `delivery_profile` için `engine/DOCUMENT_CATALOG.md` kurallarının tam uygulanmış olması.
+2. **Catalog Sınırlarının Korunması:** `landing-page` bağlamında `PRODUCT-RULES`/`TECH-CTX` zorlaması olmaması; `content-platform` bağlamında `TECH-CTX` zorlaması olmaması.
+3. **Information Ownership Uyumluğu:** Tasarım kurallarının `DESIGN_RULES.md` belgesinde kalması.
+4. **Temiz Output:** Üretilen belgelerin `outputs/products/<project-slug>/latest/` klasöründe eksiksiz ve placeholder barındırmadan teslim edilebilir durumda olması.
