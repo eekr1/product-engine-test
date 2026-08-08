@@ -53,11 +53,15 @@ Hata Seviyesi:
 ### 2. Zorunlu Doküman Doğrulaması (Required Document Validation)
 
 ```text
-Kontrol: Seçilen paket tarafından required olan tüm dokümanlar üretildi mi?
+Kontrol: Seçilen paket tarafından required olan ve aktif project_type + delivery_profile kombinasyonu için applicable olan tüm dokümanlar ile onların applicable bağımlılıkları üretildi mi?
+
+Not: Aktif project_type + delivery_profile için DOCUMENT_CATALOG.md tarafından applicable olmadığı için skip edilen bir dependency dokümanının üretilmemiş olması FAIL sebebi değildir.
+Ancak aktif project_type + delivery_profile için applicable olan bir dependency dokümanı eksikse bu durum FAIL sebebidir.
 
 Hata Seviyesi:
   - Zorunlu doküman eksik → FAIL
-  - Koşullu doküman eksik (uygunluk koşulu karşılanmışsa) → FAIL
+  - Applicable olan zorunlu bağımlılık dokümanı eksik → FAIL
+  - Applicable olan koşullu doküman eksik (uygunluk koşulu karşılanmışsa) → FAIL
 ```
 
 ---

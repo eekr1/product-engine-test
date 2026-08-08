@@ -163,6 +163,8 @@ PROJECT_BRAIN → README
 CURRENT_STATUS → NEXT_TASKS
 ```
 
+Not: Bağımlılık sırasındaki her dependency dokümanı, yalnızca aktif `project_type + delivery_profile` kombinasyonu için `DOCUMENT_CATALOG.md` uyarınca applicable ise zorunlu üretim bağımlılığı oluşturur. Applicable olmayan bağımlılıklar skip edilir ve kataloğun applicability sınırları aşılamaz.
+
 ---
 
 ### Aşama 9 — Doğrulama (Validation)

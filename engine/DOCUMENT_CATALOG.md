@@ -37,6 +37,30 @@ Validation Notes   : Validation sırasında kontrol edilmesi gereken özel durum
 
 ---
 
+## Dependency Resolution Rule
+
+Document dependency ilişkileri aşağıdaki authoritative kural uyarınca çözümlenir:
+
+1. Bir document'ın dependency'si ancak dependency document'ın kendisi aktif `project_type + delivery_profile` kombinasyonunda applicable ise zorunludur.
+2. Dependency document aktif `project_type + delivery_profile` için applicable değilse dependency uygulanmaz (skip edilir).
+3. Dependency ilişkisi hiçbir zaman `DOCUMENT_CATALOG.md` içindeki `Applicable Types` veya `Applicable Profiles` sınırlarını aşamaz veya document üretilmesini zorlayamaz.
+4. Dependency document'ın skip edilmesi, bilgi sahipliğinin başka bir dokümana taşınması anlamına gelmez. Her doküman yalnızca `engine/INFORMATION_MAP.md` tarafından belirlenen kendi primary info owner alanını üretir.
+
+### Dependency Çözümleme Sırası
+
+1. Target document aktif `project_type` için applicable mı?
+2. Target document aktif `delivery_profile` için applicable mı?
+3. Target document'ın `Dependencies` listesi okunur.
+4. Her dependency için:
+   a. Dependency document `project_type` için applicable mı?
+   b. Dependency document `delivery_profile` için applicable mı?
+5. İki koşulu da sağlayan dependency zorunlu bağımlılık kabul edilir.
+6. Uygun olmayan (non-applicable) dependency skip edilir.
+7. Skip edilen dependency'nin birincil bilgisi başka dokümana taşınmaz.
+8. Target document yalnızca kendi authoritative information ownership sınırında üretilir.
+
+---
+
 ## Doküman Kayıtları
 
 ---
