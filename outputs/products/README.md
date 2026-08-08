@@ -22,8 +22,8 @@ outputs/products/<project-slug>/
     └── ...
 ```
 
-- **`latest/`:** Projenin şu anda geçerli, en son doğrulanmış ve aktif ürün çıktısını gösterir.
-- **`versions/`:** Projenin geçmiş ürün sürümlerini dondurulmuş (immutable) olarak saklar.
+- **`latest/`:** Projenin şu anda geçerli, en son doğrulanmış ve aktif ürün çıktısını gösterir (`derived current valid view`).
+- **`versions/`:** Projenin geçmiş ürün sürümlerini dondurulmuş (`immutable`) olarak saklar.
 
 ---
 
@@ -31,7 +31,7 @@ outputs/products/<project-slug>/
 
 1. **Kategori Seçim Authority'si:** Bir projenin `products/` altında mı yoksa `demos/` altında mı üretileceği kararını bu klasör vermez. Kategori çözümü `engine/PACKAGE_RULES.md` ve onaylı paket sözleşmeleri tarafından gerçekleştirilir. `outputs/products/` yalnızca çözümlenmiş kategoriyi barındırır.
 2. **Kategori ≠ Teslimat Profili (Category ≠ Delivery Profile):** `products/` kategorisi otomatik olarak yalnızca `Production Ready` teslimat profili anlamına gelmez. `Implementation Ready` veya paket kurallarının ürün kategorisinde tanımladığı diğer profiller de burada yer alabilir.
-3. **Temiz Teslimat Şartı:** Yalnızca `VALIDATION_RULES` standartlarından geçmiş (`PASS` veya onaylı `CONDITIONAL PASS`), yer tutuculardan ve operasyonel çalışma izlerinden (`runs/`) arındırılmış nihai teslimatlar tutulur.
+3. **Yayınlama Kapısı Şartı:** Yalnızca başarılı sonlandırma kapısı şartlarını sağlayan (`successful completion gate eligibility`), `VALIDATION_RULES` standartlarından geçmiş (`PASS` veya onaylı `CONDITIONAL PASS`), yer tutuculardan ve operasyonel çalışma izlerinden (`runs/`) arındırılmış nihai teslimatlar yayınlanabilir.
 
 ---
 
