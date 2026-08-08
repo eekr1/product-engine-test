@@ -6,7 +6,7 @@
 package_id: demo-frontend
 package_name: Frontend Demo Package
 package_type: base
-version: 1.2.0
+version: 1.3.0
 status: active
 default_delivery_profile: Prototype
 compatible_project_types:
@@ -34,17 +34,19 @@ Ana hedefleri:
 
 ---
 
-## 3. Doküman Seçimi Filtreleme İlkesi (Double-Filtering Rule)
+## 3. Doküman Seçimi Filtreleme İlkesi ve Deterministik Fallback Algoritması
 
-Bu paket içinde bir dokümanın zorunlu (Required) veya koşullu (Conditional) olabilmesi için `engine/DOCUMENT_CATALOG.md` içindeki **hem** `Applicable Types` **hem de** `Applicable Profiles` koşullarını aynı anda sağlaması gerekir:
+Desteklenen her `project_type + delivery_profile` kombinasyonunda hangi dokümanların geçerli olduğunu belirlemek için aşağıdaki **Deterministik Doküman Çözümleme Algoritması** uygulanır:
 
 ```text
-seçilen project_type  ∈ document.Applicable Types
-         VE
-seçilen delivery_profile ∈ document.Applicable Profiles
+1. Seçilen delivery_profile için paketin aday doküman setini al (Candidate Document Set).
+2. engine/DOCUMENT_CATALOG.md "Applicable Profiles" filtresini uygula:
+   └─ Dokümanın Applicable Profiles listesi seçilen delivery_profile'ı içeriyor mu? (İçermiyorsa elenir).
+3. engine/DOCUMENT_CATALOG.md "Applicable Types" filtresini uygula:
+   └─ Dokümanın Applicable Types listesi seçilen project_type'ı içeriyor mu? (İçermiyorsa elenir).
+4. İki filtreyi de geçen doküman kümesi, ilgili kombinasyonun geçerli doküman kapsamını oluşturur.
+5. Aşağıda açıkça örneklenmemiş kombinasyonlar bu deterministik kural ile yorumsuz çözülür.
 ```
-
-Bu iki koşuldan biri sağlanmıyorsa doküman ilgili kombinasyonda otomatik olarak elenir ve Required yapılamaz. Package kuralları `DOCUMENT_CATALOG.md` sınırlarını aşamaz.
 
 ---
 
@@ -54,25 +56,27 @@ Bu iki koşuldan biri sağlanmıyorsa doküman ilgili kombinasyonda otomatik ola
 
 - **Foundation Profile:**
   - *Zorunlu:* `README-DOC` (`README.md`), `PROJECT-BRAIN` (`PROJECT_BRAIN.md`), `PRODUCT-RULES` (`PRODUCT_RULES.md`), `TECH-CTX` (`TECH_CONTEXT.md`).
-  - *Elenenler:* `DESIGN` (Catalog uyarınca `Foundation` profilinde geçerli değildir; görsel yönelim `PROJECT_BRAIN` içinde not edilir).
+  - *Elenenler:* `DESIGN` (`DESIGN_RULES.md` - `Foundation` profilinde catalog gereği geçerli değildir).
 - **Prototype Profile (Varsayılan):**
-  - *Zorunlu:* `README-DOC`, `PROJECT-BRAIN`, `PRODUCT-RULES`, `DESIGN` (`DESIGN_RULES.md`).
-  - *Elenenler:* `TECH-CTX` (Catalog uyarınca `TECH-CTX` belgesinin geçerli olduğu profiller: `Foundation`, `Implementation Ready`, `Production Ready`'dir; `Prototype` profilinde geçerli değildir).
+  - *Zorunlu:* `README-DOC`, `PROJECT-BRAIN`, `PRODUCT-RULES`, `DESIGN`.
+  - *Elenenler:* `TECH-CTX` (`Prototype` profilinde catalog gereği geçerli değildir).
 - **Implementation Ready Profile:**
   - *Zorunlu:* `README-DOC`, `PROJECT-BRAIN`, `PRODUCT-RULES`, `TECH-CTX`, `DESIGN`.
   - *Koşullu:* `STATUS` (`CURRENT_STATUS.md`), `TASKS` (`NEXT_TASKS.md`), `AGENT-INST` (`AGENT_INSTRUCTIONS.md`), `PROJ-PLAN` (`PROJECT_PLAN.md`), `DECISIONS` (`DECISIONS.md`).
+- **Production Ready Profile:**
+  - *Zorunlu:* `README-DOC`, `PROJECT-BRAIN`, `PRODUCT-RULES`, `TECH-CTX`, `DESIGN`, `DEPLOY` (`DEPLOYMENT.md`).
 
 ### 4.2 `landing-page` Bağlamı
 
 - **Prototype veya Implementation Ready Profile:**
   - *Zorunlu:* `README-DOC`, `PROJECT-BRAIN`, `DESIGN`.
-  - *Elenenler:* `PRODUCT-RULES` ve `TECH-CTX` (Catalog uyarınca `landing-page` proje türü `PRODUCT-RULES` ve `TECH-CTX` belgelerinin `Applicable Types` listesinde yer almaz).
+  - *Elenenler:* `PRODUCT-RULES`, `TECH-CTX` (`landing-page` türü için catalog'da geçerli değildir).
 
 ### 4.3 `prototype` (Proje Türü Olarak) Bağlamı
 
-- **Prototype veya Foundation Profile:**
+- **Tüm Desteklenen Profiller:**
   - *Zorunlu:* `README-DOC`, `PROJECT-BRAIN`.
-  - *Elenenler:* `PRODUCT-RULES`, `TECH-CTX`, `DESIGN` (Catalog uyarınca `prototype` proje türü bu belgelerin `Applicable Types` listesinde yer almaz).
+  - *Elenenler:* `PRODUCT-RULES`, `TECH-CTX`, `DESIGN` (`prototype` proje türü için catalog'da geçerli değildir).
 
 ---
 
@@ -95,12 +99,7 @@ Bu iki koşuldan biri sağlanmıyorsa doküman ilgili kombinasyonda otomatik ola
 
 ### Hariç Tutulan Dokümanlar (Default Excluded)
 Aksi yönde bir extension eklenmedikçe aşağıdaki belgeler bu pakette varsayılan olarak üretilmez:
-- `DATA` (`DATA_MODEL.md`)
-- `API` (`API_CONTRACTS.md`)
-- `DEPLOY` (`DEPLOYMENT.md`)
-- `OPS` (`OPERATIONS.md`)
-- `TEST` (`TEST_STRATEGY.md`)
-- `PROD-STRAT` (`PRODUCT_STRATEGY.md`)
+- `DATA` (`DATA_MODEL.md`), `API` (`API_CONTRACTS.md`), `DEPLOY` (`DEPLOYMENT.md`), `OPS` (`OPERATIONS.md`), `TEST` (`TEST_STRATEGY.md`), `PROD-STRAT` (`PRODUCT_STRATEGY.md`).
 
 ---
 
@@ -112,7 +111,7 @@ Aksi yönde bir extension eklenmedikçe aşağıdaki belgeler bu pakette varsay�
 
 ### Reduction (Daraltma) Kuralları
 - `DESIGN` belgesinin geçerli olduğu tür ve profillerde (`web-app`/`mobile-app`/`landing-page` + `Prototype`/`Implementation Ready`), `DESIGN` belgesi zorunlu olup çıkarılamaz. Tasarım kuralları `PRODUCT_RULES.md` içine taşınamaz.
-- Seçilen `project_type + delivery_profile` kombinasyonu kapsamındaki zorunlu belgeler daraltılamaz.
+- Deterministik fallback algoritması sonucunda kalan zorunlu belgeler daraltılamaz.
 
 ---
 
@@ -129,7 +128,7 @@ Aksi yönde bir extension eklenmedikçe aşağıdaki belgeler bu pakette varsay�
 `engine/VALIDATION_RULES.md` kurallarına ek olarak bu pakete özel kontroller:
 
 1. **Sahte Backend İddiası Yokluğu:** Belgeler, kapsam dışı backend/database işlevlerini sanki gerçekten varmış gibi sunmamalı; verilerin mock/local state olduğunu netleştirmelidir.
-2. **Double-Filtering Doğrulaması:** `landing-page` veya `prototype` proje türlerinde catalog'da geçerli olmayan belgelerin (`PRODUCT-RULES`, `TECH-CTX`) zorunlu kılınmadığı doğrulanmalıdır.
+2. **Deterministik Fallback Doğrulaması:** `landing-page` veya `prototype` proje türlerinde catalog'da geçerli olmayan belgelerin zorunlu kılınmadığı doğrulanmalıdır.
 3. **Arayüz ve Tasarım Tutarlılığı:** `DESIGN_RULES.md` stil kararları ile `PRODUCT_RULES.md` ekran kuralları birbiriyle tutarlı olmalıdır.
 
 ---
@@ -155,7 +154,7 @@ Bu paket ile başlayan bir proje şu adımlarla tam ürüne dönüştürülebili
 
 Bu paket çalışması tamamlandığında aşağıdaki kriterlerin karşılandığı doğrulanmalıdır:
 
-1. **Type + Profile Applicability Uyumluğu:** Üretilecek zorunlu dokümanların hem seçilen `project_type` hem de `delivery_profile` için `engine/DOCUMENT_CATALOG.md` standartlarıyla birebir uyumlu olması.
+1. **Deterministik Çözümleme Uyumluğu:** Desteklenen tüm `project_type + delivery_profile` kombinasyonlarının deterministik fallback algoritmasıyla yorum gerektirmeden çözülebilir olması.
 2. **Catalog Sınırlarının Korunması:** `landing-page` için `PRODUCT-RULES`/`TECH-CTX` veya `Prototype` profili için `TECH-CTX` zorlamasının yapılmamış olması.
 3. **Information Ownership Uyumluğu:** Tasarım kurallarının yalnızca `DESIGN_RULES.md` bünyesinde kalması.
 4. **Temiz Output:** Çıktının `outputs/demos/<project-slug>/latest/` altında placeholder barındırmayan, doğrulanmış ve teslim edilebilir durumda olması.

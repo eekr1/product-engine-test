@@ -6,7 +6,7 @@
 package_id: existing-project
 package_name: Existing Project Package
 package_type: base
-version: 1.2.0
+version: 1.3.0
 status: active
 default_delivery_profile: Implementation Ready
 compatible_project_types:
@@ -43,44 +43,44 @@ Ana hedefleri:
 
 ---
 
-## 3. Doküman Seçimi Filtreleme İlkesi (Double-Filtering Rule)
+## 3. Doküman Seçimi Filtreleme İlkesi ve Deterministik Fallback Algoritması
 
-`EXISTING_PROJECT_PACKAGE` çok sayıda proje türünü destekler. Bu nedenle tüm proje türlerine aynı teknik veya ürün belgeleri zorla uygulanamaz.
-
-Bir doküman (Document ID) ancak ve ancak aşağıdaki iki koşulu **birlikte** sağlıyorsa Required veya Conditional yapılabilir:
+Desteklenen her `project_type + delivery_profile` kombinasyonunda hangi dokümanların geçerli olduğunu belirlemek için aşağıdaki **Deterministik Doküman Çözümleme Algoritması** uygulanır:
 
 ```text
-seçilen project_type  ∈ document.Applicable Types
-         VE
-seçilen delivery_profile ∈ document.Applicable Profiles
+1. Seçilen delivery_profile için paketin aday doküman setini al (Candidate Document Set).
+2. engine/DOCUMENT_CATALOG.md "Applicable Profiles" filtresini uygula:
+   └─ Dokümanın Applicable Profiles listesi seçilen delivery_profile'ı içeriyor mu? (İçermiyorsa elenir).
+3. engine/DOCUMENT_CATALOG.md "Applicable Types" filtresini uygula:
+   └─ Dokümanın Applicable Types listesi seçilen project_type'ı içeriyor mu? (İçermiyorsa elenir).
+4. İki filtreyi de geçen doküman kümesi, ilgili kombinasyonun geçerli doküman kapsamını oluşturur.
+5. Aşağıda açıkça örneklenmemiş kombinasyonlar bu deterministik kural ile yorumsuz çözülür.
 ```
-
-Bu iki koşuldan biri sağlanmıyorsa doküman ilgili proje türü ve profil kombinasyonunda otomatik olarak elenir (filtered out).
 
 ---
 
 ## 4. Desteklenen Project Type + Delivery Profile Doküman Matrisi
 
 ### 4.1 Tüm Proje Türleri İçin Her Zaman Geçerli Çekirdek Set
-- **Zorunlu Dokümanlar:** `README-DOC` (`README.md`), `PROJECT-BRAIN` (`PROJECT_BRAIN.md`), `STATUS` (`CURRENT_STATUS.md` - **Kritik:** Mevcut durum, tamamlanan işler, açık sorunlar).
+- **Tüm Desteklenen Profiller:** `README-DOC` (`README.md`), `PROJECT-BRAIN` (`PROJECT_BRAIN.md`), `STATUS` (`CURRENT_STATUS.md` - **Kritik:** Mevcut durum, tamamlanan işler, açık sorunlar).
 
-### 4.2 Proje Türü Bazında Şartlı Çekirdek Dokümanlar (`Implementation Ready` Seviyesinde)
+### 4.2 Proje Türü ve Profil Bazında Doküman Kapsamları
 
 - **`web-app`, `mobile-app`, `api-service` Türlerinde:**
-  - *İlave Zorunlu:* `TECH-CTX` (`TECH_CONTEXT.md`), `PRODUCT-RULES` (`PRODUCT_RULES.md`).
-  - *Koşullu:* `DATA` (`DATA_MODEL.md`), `API` (`API_CONTRACTS.md`), `TASKS` (`NEXT_TASKS.md`), `DECISIONS` (`DECISIONS.md`), `AGENT-INST` (`AGENT_INSTRUCTIONS.md`).
+  - *Foundation Profile:* `README-DOC`, `PROJECT-BRAIN`, `STATUS`, `TECH-CTX` (`TECH_CONTEXT.md`), `PRODUCT-RULES` (`PRODUCT_RULES.md`).
+  - *Prototype Profile:* `README-DOC`, `PROJECT-BRAIN`, `STATUS`, `PRODUCT-RULES`, `DESIGN` (`web-app`/`mobile-app` için).
+  - *Implementation Ready Profile (Varsayılan):* `README-DOC`, `PROJECT-BRAIN`, `STATUS`, `TECH-CTX`, `PRODUCT-RULES`, `DATA` (`DATA_MODEL.md`), `API` (`API_CONTRACTS.md`).
+  - *Production Ready Profile:* `README-DOC`, `PROJECT-BRAIN`, `STATUS`, `TECH-CTX`, `PRODUCT-RULES`, `DATA`, `API`, `DEPLOY` (`DEPLOYMENT.md`), `OPS` (`OPERATIONS.md` - `web-app`/`api-service` için).
 - **`integration` veya `infrastructure` Türlerinde:**
-  - *İlave Zorunlu:* `TECH-CTX` (`TECH_CONTEXT.md`).
-  - *Koşullu:* `API` (`API_CONTRACTS.md` - `integration` için), `TASKS`, `DECISIONS`, `AGENT-INST`.
-  - *Elenenler:* `PRODUCT-RULES`, `DATA`, `DESIGN` (Catalog uyarınca bu türlerde geçerli değildir).
+  - *Foundation / Implementation Ready Profile:* `README-DOC`, `PROJECT-BRAIN`, `STATUS`, `TECH-CTX`.
+  - *Production Ready Profile:* `README-DOC`, `PROJECT-BRAIN`, `STATUS`, `TECH-CTX`, `DEPLOY` (`infrastructure` için).
+  - *Elenenler:* `PRODUCT-RULES`, `DATA`, `DESIGN` (`integration`/`infrastructure` türlerinde catalog gereği geçerli değildir).
 - **`content-platform` Türünde:**
-  - *İlave Zorunlu:* `PRODUCT-RULES` (`PRODUCT_RULES.md`).
-  - *Elenenler:* `TECH-CTX` (Catalog uyarınca `content-platform` için geçerli değildir).
-  - *Koşullu:* `DATA` (`DATA_MODEL.md`), `DESIGN` (`DESIGN_RULES.md`), `TASKS`, `DECISIONS`.
+  - *Implementation Ready Profile:* `README-DOC`, `PROJECT-BRAIN`, `STATUS`, `PRODUCT-RULES`, `DATA` (`DATA_MODEL.md`).
+  - *Elenenler:* `TECH-CTX` (Catalog uyarınca `content-platform` türünde geçerli değildir).
 - **`landing-page`, `prototype`, `internal-tool`, `other` Türlerinde:**
-  - *Zorunlu:* `README-DOC`, `PROJECT-BRAIN`, `STATUS`.
-  - *Elenenler:* `TECH-CTX`, `PRODUCT-RULES` (`landing-page`, `prototype`, `internal-tool`, `other` türlerinde catalog uyarınca zorunlu tutulamaz).
-  - *Koşullu:* `DESIGN` (`landing-page` için), `TASKS`, `DECISIONS`.
+  - *Tüm Profiller:* `README-DOC`, `PROJECT-BRAIN`, `STATUS`.
+  - *Elenenler:* `TECH-CTX`, `PRODUCT-RULES` (bu türlerde catalog gereği geçerli değildir).
 
 ---
 
@@ -113,7 +113,7 @@ Bu iki koşuldan biri sağlanmıyorsa doküman ilgili proje türü ve profil kom
 
 ### Reduction (Daraltma) Kuralları
 - Çekirdek belgeler (`README-DOC`, `PROJECT-BRAIN`, `STATUS`) hiçbir koşulda çıkarılamaz.
-- Proje türüne uygun olmayan belgeler (`landing-page` için `TECH-CTX` gibi) katalog standartları gereği kendiliğinden filtrelenir.
+- Deterministik fallback algoritması sonucunda elenen belgeler otomatik filtrelenir.
 
 ---
 
@@ -130,7 +130,7 @@ Bu iki koşuldan biri sağlanmıyorsa doküman ilgili proje türü ve profil kom
 
 `engine/VALIDATION_RULES.md` kurallarına ek olarak bu pakete özel kontroller:
 
-1. **Double-Filtering Doğrulaması:** `landing-page`, `content-platform` veya `infrastructure` gibi mevcut projelerde catalog dışı `TECH-CTX` veya `PRODUCT-RULES` zorlamasının yapılmadığı doğrulanmalıdır.
+1. **Deterministik Fallback Doğrulaması:** `landing-page`, `content-platform` veya `infrastructure` gibi mevcut projelerde catalog dışı `TECH-CTX` veya `PRODUCT-RULES` zorlamasının yapılmadığı doğrulanmalıdır.
 2. **Mevcut Gerçeklik Koruması:** Üretilen belgeler mevcut kod depolarındaki gerçeklerle çelişmemelidir.
 3. **Current vs Desired State Ayrımı:** Mevcut durum (`CURRENT_STATUS.md`) ile hedeflenen yeni durum net biçimde birbirinden ayrılmış olmalıdır.
 
@@ -155,7 +155,7 @@ Bu iki koşuldan biri sağlanmıyorsa doküman ilgili proje türü ve profil kom
 
 Bu paket çalışması tamamlandığında aşağıdaki kriterlerin karşılandığı doğrulanmalıdır:
 
-1. **Type + Profile Applicability Uyumluğu:** Seçilen `project_type` ve `delivery_profile` için doküman filtresinin `engine/DOCUMENT_CATALOG.md` kurallarıyla tam uyumlu çalışması.
+1. **Deterministik Çözümleme Uyumluğu:** Seçilen `project_type` ve `delivery_profile` kombinasyonlarının deterministik fallback kuralıyla net çözülebilmesi.
 2. **`STATUS` Varlığı:** `CURRENT_STATUS.md` belgesinin üretilmiş ve mevcut tamamlanan işler ile engelleyicileri eksiksiz yansıtması.
 3. **Current vs Desired State Ayrımı:** Mevcut durum ile hedeflenen durumun birbirine karıştırılmamış olması.
 4. **Temiz Output:** Üretilen belgelerin `outputs/products/<project-slug>/latest/` klasöründe eksiksiz ve doğrulanmış şekilde teslim edilebilir durumda olması.

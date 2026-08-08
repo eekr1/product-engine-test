@@ -27,16 +27,21 @@ Sistem sınırlarını ve sorumluluk ayrımını korumak için:
 
 ---
 
-## 3. Doküman Seçimi Filtreleme İlkesi (Double-Filtering Rule)
+## 3. Doküman Seçimi Filtreleme İlkesi ve Deterministik Fallback Algoritması
 
-Bir doküman (Document ID) bir çalışmada ancak ve ancak aşağıdaki iki koşulu **birlikte** sağlıyorsa Required veya Conditional yapılabilir:
+Her desteklenen `project_type + delivery_profile` kombinasyonunda hangi dokümanların geçerli olduğunu belirlemek için aşağıdaki **Deterministik Doküman Çözümleme Algoritması** uygulanır:
 
 ```text
-1. Projenin seçilen project_type'ı, dokümanın engine/DOCUMENT_CATALOG.md içerisindeki "Applicable Types" listesinde mevcut olmalıdır.
-2. Projenin seçilen delivery_profile'ı, dokümanın engine/DOCUMENT_CATALOG.md içerisindeki "Applicable Profiles" listesinde mevcut olmalıdır.
+1. Seçilen delivery_profile için paketin tanımındaki aday doküman setini (Candidate Document Set) al.
+2. engine/DOCUMENT_CATALOG.md içindeki "Applicable Profiles" filtresini uygula:
+   └─ Dokümanın Applicable Profiles listesi seçilen delivery_profile'ı içeriyor mu? (İçermiyorsa elenir).
+3. engine/DOCUMENT_CATALOG.md içindeki "Applicable Types" filtresini uygula:
+   └─ Dokümanın Applicable Types listesi seçilen project_type'ı içeriyor mu? (İçermiyorsa elenir).
+4. İki filtreyi de geçen doküman kümesi, ilgili kombinasyonun geçerli doküman kapsamını (Required/Conditional) oluşturur.
+5. Paket dosyasında örnek matriste metin olarak açıkça yazılmamış her kombinasyon bu deterministik kuralla çözülür.
 ```
 
-Bu iki koşuldan herhangi biri karşılanmıyorsa, ilgili doküman o `project_type + delivery_profile` kombinasyonunda paket tarafından zorunlu kılınamaz ve elenir (filtered out).
+Bu kural sayesinde hiçbir ajan bir kombinasyon karşısında kendi kişisel yorumunu yapmak zorunda kalmaz.
 
 ---
 

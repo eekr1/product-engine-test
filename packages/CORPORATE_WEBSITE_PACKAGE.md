@@ -6,7 +6,7 @@
 package_id: corporate-website
 package_name: Corporate Website Package
 package_type: base
-version: 1.2.0
+version: 1.3.0
 status: active
 default_delivery_profile: Implementation Ready
 compatible_project_types:
@@ -33,17 +33,19 @@ Ana hedefleri:
 
 ---
 
-## 3. Doküman Seçimi Filtreleme İlkesi (Double-Filtering Rule)
+## 3. Doküman Seçimi Filtreleme İlkesi ve Deterministik Fallback Algoritması
 
-Bu paket içinde bir dokümanın zorunlu (Required) veya koşullu (Conditional) olabilmesi için `engine/DOCUMENT_CATALOG.md` içindeki **hem** `Applicable Types` **hem de** `Applicable Profiles` koşullarını aynı anda sağlaması gerekir:
+Desteklenen her `project_type + delivery_profile` kombinasyonunda hangi dokümanların geçerli olduğunu belirlemek için aşağıdaki **Deterministik Doküman Çözümleme Algoritması** uygulanır:
 
 ```text
-seçilen project_type  ∈ document.Applicable Types
-         VE
-seçilen delivery_profile ∈ document.Applicable Profiles
+1. Seçilen delivery_profile için paketin aday doküman setini al (Candidate Document Set).
+2. engine/DOCUMENT_CATALOG.md "Applicable Profiles" filtresini uygula:
+   └─ Dokümanın Applicable Profiles listesi seçilen delivery_profile'ı içeriyor mu? (İçermiyorsa elenir).
+3. engine/DOCUMENT_CATALOG.md "Applicable Types" filtresini uygula:
+   └─ Dokümanın Applicable Types listesi seçilen project_type'ı içeriyor mu? (İçermiyorsa elenir).
+4. İki filtreyi de geçen doküman kümesi, ilgili kombinasyonun geçerli doküman kapsamını oluşturur.
+5. Aşağıda açıkça örneklenmemiş kombinasyonlar bu deterministik kural ile yorumsuz çözülür.
 ```
-
-Bu iki koşuldan biri sağlanmıyorsa doküman ilgili kombinasyonda otomatik olarak elenir ve Required yapılamaz. Package kuralları `DOCUMENT_CATALOG.md` sınırlarını aşamaz.
 
 ---
 
@@ -63,16 +65,27 @@ Bu iki koşuldan biri sağlanmıyorsa doküman ilgili kombinasyonda otomatik ola
 
 ### 4.2 `content-platform` Bağlamı
 
+- **Foundation Profile:**
+  - *Zorunlu:* `README-DOC`, `PROJECT-BRAIN`, `PRODUCT-RULES`.
+- **Prototype Profile:**
+  - *Zorunlu:* `README-DOC`, `PROJECT-BRAIN`, `PRODUCT-RULES`, `DESIGN`.
 - **Implementation Ready Profile:**
   - *Zorunlu:* `README-DOC`, `PROJECT-BRAIN`, `PRODUCT-RULES`, `DESIGN`.
-  - *Elenenler:* `TECH-CTX` (Catalog uyarınca `content-platform` proje türü `TECH-CTX` belgesinin `Applicable Types` listesinde yer almaz).
+  - *Elenenler:* `TECH-CTX` (Catalog uyarınca `content-platform` için geçerli değildir).
   - *Koşullu:* `DATA` (`DATA_MODEL.md`), `WAVE-MAP` (`WAVE_MAP.md`), `WAVE-PLAN` (`WAVE_PLAN.md`), `PROJ-PLAN`, `AGENT-INST`.
+- **Production Ready Profile:**
+  - *Zorunlu:* `README-DOC`, `PROJECT-BRAIN`, `PRODUCT-RULES`, `DESIGN`.
+  - *Koşullu:* `DATA`, `WAVE-MAP`, `WAVE-PLAN`, `PROJ-PLAN`, `AGENT-INST`.
 
 ### 4.3 `landing-page` Bağlamı
 
+- **Foundation Profile:**
+  - *Zorunlu:* `README-DOC`, `PROJECT-BRAIN`.
 - **Prototype veya Implementation Ready Profile:**
   - *Zorunlu:* `README-DOC`, `PROJECT-BRAIN`, `DESIGN`.
-  - *Elenenler:* `PRODUCT-RULES`, `TECH-CTX`, `DATA`, `API`, `DEPLOY`, `OPS` (Catalog uyarınca `landing-page` proje türü bu belgelerin `Applicable Types` listesinde yer almaz).
+  - *Elenenler:* `PRODUCT-RULES`, `TECH-CTX`, `DATA`, `API`, `DEPLOY`, `OPS` (Catalog uyarınca `landing-page` türünde geçerli değildir).
+- **Production Ready Profile:**
+  - *Zorunlu:* `README-DOC`, `PROJECT-BRAIN`, `DESIGN`.
 
 ---
 
@@ -95,8 +108,7 @@ Bu iki koşuldan biri sağlanmıyorsa doküman ilgili kombinasyonda otomatik ola
 
 ### Hariç Tutulan Dokümanlar (Default Excluded)
 SaaS veya karmaşık yazılım süreçlerine ait olan aşağıdaki belgeler normal bir kurumsal sitede gerekmedikçe üretilmez:
-- `OPS` (`OPERATIONS.md`)
-- `PROD-STRAT` (`PRODUCT_STRATEGY.md`)
+- `OPS` (`OPERATIONS.md`), `PROD-STRAT` (`PRODUCT_STRATEGY.md`).
 
 ---
 
@@ -108,7 +120,7 @@ SaaS veya karmaşık yazılım süreçlerine ait olan aşağıdaki belgeler norm
 
 ### Reduction (Daraltma) Kuralları
 - `landing-page` projelerinde catalog uyarınca `PRODUCT-RULES` ve `TECH-CTX` kendiliğinden filtrelenir, gereksiz belge dayatılmaz.
-- Seçilen `project_type + delivery_profile` kombinasyonu kapsamındaki zorunlu belgeler daraltılamaz.
+- Deterministik fallback algoritması sonucunda kalan zorunlu belgeler daraltılamaz.
 
 ---
 
@@ -125,7 +137,7 @@ SaaS veya karmaşık yazılım süreçlerine ait olan aşağıdaki belgeler norm
 
 `engine/VALIDATION_RULES.md` kurallarına ek olarak bu pakete özel kontroller:
 
-1. **Double-Filtering Doğrulaması:** `landing-page` için catalog dışı `PRODUCT-RULES` veya `TECH-CTX` zorlamasının yapılmadığı doğrulanmalıdır.
+1. **Deterministik Fallback Doğrulaması:** `landing-page` için catalog dışı `PRODUCT-RULES` veya `TECH-CTX` zorlamasının yapılmadığı doğrulanmalıdır.
 2. **Sayfa ve Gezinti (Navigation) Uyumu:** Sayfa listesi ile menü/navigasyon yapısı birebir uyumlu olmalıdır.
 3. **Bürokrasi Kontrolü:** Basit kurumsal sitelere gereksiz veritabanı veya karmaşık sunucu mimarisi belgeleri eklenmemiş olmalıdır.
 
@@ -150,7 +162,7 @@ Kurumsal web sitesi zamanla şu şekilde büyütülebilir:
 
 Bu paket çalışması tamamlandığında aşağıdaki kriterlerin karşılandığı doğrulanmalıdır:
 
-1. **Type + Profile Applicability Uyumluğu:** Seçilen `project_type` (`web-app`, `content-platform`, `landing-page`) ve `delivery_profile` için `engine/DOCUMENT_CATALOG.md` kurallarının tam uygulanmış olması.
+1. **Deterministik Çözümleme Uyumluğu:** Desteklenen tüm `project_type` (`web-app`, `content-platform`, `landing-page`) ve `delivery_profile` kombinasyonlarının deterministik kural ile net çözülebilmesi.
 2. **Catalog Sınırlarının Korunması:** `landing-page` bağlamında `PRODUCT-RULES`/`TECH-CTX` zorlaması olmaması; `content-platform` bağlamında `TECH-CTX` zorlaması olmaması.
 3. **Information Ownership Uyumluğu:** Tasarım kurallarının `DESIGN_RULES.md` belgesinde kalması.
 4. **Temiz Output:** Üretilen belgelerin `outputs/products/<project-slug>/latest/` klasöründe eksiksiz ve placeholder barındırmadan teslim edilebilir durumda olması.

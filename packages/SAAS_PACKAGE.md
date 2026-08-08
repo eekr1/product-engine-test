@@ -6,7 +6,7 @@
 package_id: saas
 package_name: SaaS Package
 package_type: base
-version: 1.2.0
+version: 1.3.0
 status: active
 default_delivery_profile: Implementation Ready
 compatible_project_types:
@@ -36,17 +36,19 @@ Ana hedefleri:
 
 ---
 
-## 3. Doküman Seçimi Filtreleme İlkesi (Double-Filtering Rule)
+## 3. Doküman Seçimi Filtreleme İlkesi ve Deterministik Fallback Algoritması
 
-Bu paket içinde bir dokümanın zorunlu (Required) veya koşullu (Conditional) olabilmesi için `engine/DOCUMENT_CATALOG.md` içindeki **hem** `Applicable Types` **hem de** `Applicable Profiles` koşullarını aynı anda sağlaması gerekir:
+Desteklenen her `project_type + delivery_profile` kombinasyonunda hangi dokümanların geçerli olduğunu belirlemek için aşağıdaki **Deterministik Doküman Çözümleme Algoritması** uygulanır:
 
 ```text
-seçilen project_type  ∈ document.Applicable Types
-         VE
-seçilen delivery_profile ∈ document.Applicable Profiles
+1. Seçilen delivery_profile için paketin aday doküman setini al (Candidate Document Set).
+2. engine/DOCUMENT_CATALOG.md "Applicable Profiles" filtresini uygula:
+   └─ Dokümanın Applicable Profiles listesi seçilen delivery_profile'ı içeriyor mu? (İçermiyorsa elenir).
+3. engine/DOCUMENT_CATALOG.md "Applicable Types" filtresini uygula:
+   └─ Dokümanın Applicable Types listesi seçilen project_type'ı içeriyor mu? (İçermiyorsa elenir).
+4. İki filtreyi de geçen doküman kümesi, ilgili kombinasyonun geçerli doküman kapsamını oluşturur.
+5. Aşağıda açıkça örneklenmemiş kombinasyonlar bu deterministik kural ile yorumsuz çözülür.
 ```
-
-Bu iki koşuldan biri sağlanmıyorsa doküman ilgili kombinasyonda otomatik olarak elenir ve Required yapılamaz. Package kuralları `DOCUMENT_CATALOG.md` sınırlarını aşamaz.
 
 ---
 
@@ -67,16 +69,30 @@ Bu iki koşuldan biri sağlanmıyorsa doküman ilgili kombinasyonda otomatik ola
 
 ### 4.2 `api-service` Bağlamı
 
+- **Foundation Profile:**
+  - *Zorunlu:* `README-DOC`, `PROJECT-BRAIN`, `PRODUCT-RULES`, `TECH-CTX`.
+- **Prototype Profile:**
+  - *Zorunlu:* `README-DOC`, `PROJECT-BRAIN`, `PRODUCT-RULES`.
 - **Implementation Ready Profile:**
   - *Zorunlu:* `README-DOC`, `PROJECT-BRAIN`, `PRODUCT-RULES`, `TECH-CTX`, `DATA`, `API`, `WAVE-MAP`, `WAVE-PLAN`.
-  - *Elenenler:* `DESIGN` ve `PROD-STRAT` (Catalog uyarınca `api-service` proje türü `DESIGN` ve `PROD-STRAT` belgelerinin `Applicable Types` listesinde yer almaz).
+  - *Elenenler:* `DESIGN` ve `PROD-STRAT` (`api-service` türü için catalog'da geçerli değildir).
   - *Koşullu:* `TEST`, `STATUS`, `PROJ-PLAN`, `AGENT-INST`.
+- **Production Ready Profile:**
+  - *Zorunlu:* `README-DOC`, `PROJECT-BRAIN`, `PRODUCT-RULES`, `TECH-CTX`, `DATA`, `API`, `WAVE-MAP`, `WAVE-PLAN`, `DEPLOY`, `OPS`.
 
 ### 4.3 `content-platform` Bağlamı
 
+- **Foundation Profile:**
+  - *Zorunlu:* `README-DOC`, `PROJECT-BRAIN`, `PRODUCT-RULES`.
+- **Prototype Profile:**
+  - *Zorunlu:* `README-DOC`, `PROJECT-BRAIN`, `PRODUCT-RULES`.
+  - *Koşullu:* `DESIGN`.
 - **Implementation Ready Profile:**
   - *Zorunlu:* `README-DOC`, `PROJECT-BRAIN`, `PRODUCT-RULES`, `DATA`, `WAVE-MAP`, `WAVE-PLAN`.
-  - *Elenenler:* `TECH-CTX` ve `API` (Catalog uyarınca `content-platform` proje türü `TECH-CTX` ve `API` belgelerinin `Applicable Types` listesinde yer almaz).
+  - *Elenenler:* `TECH-CTX` ve `API` (`content-platform` türü için catalog'da geçerli değildir).
+  - *Koşullu:* `DESIGN`, `PROD-STRAT`, `STATUS`, `PROJ-PLAN`, `AGENT-INST`.
+- **Production Ready Profile:**
+  - *Zorunlu:* `README-DOC`, `PROJECT-BRAIN`, `PRODUCT-RULES`, `DATA`, `WAVE-MAP`, `WAVE-PLAN`.
   - *Koşullu:* `DESIGN`, `PROD-STRAT`, `STATUS`, `PROJ-PLAN`, `AGENT-INST`.
 
 ---
@@ -96,7 +112,7 @@ Bu iki koşuldan biri sağlanmıyorsa doküman ilgili kombinasyonda otomatik ola
 
 `engine/INFORMATION_MAP.md` uyarınca:
 - **`PRODUCT_RULES.md`**: SaaS uygulamasının kullanıcı rollerinin, yetki matrisinin ve iş kurallarının birincil sahibidir.
-- **`TECH_CONTEXT.md`**: Sistem mimarisi, teknik stack ve altyapı kararlarının birincil sahibidir.
+- **`TECH_CONTEXT.md`**: Sistem mimarisi, teknik stack ve altyapı kararlarının birincil sahibidir (geçerli türlerde).
 - **`DATA_MODEL.md`**: Veritabanı varlıkları, ilişkiler ve veri şemalarının birincil sahibidir.
 - **`API_CONTRACTS.md`**: API uç noktaları, istek/yanıt şemaları ve auth yöntemlerinin birincil sahibidir.
 
@@ -109,7 +125,7 @@ Bu iki koşuldan biri sağlanmıyorsa doküman ilgili kombinasyonda otomatik ola
 - **Mevcut SaaS Projesi:** Mevcut bir SaaS projesi devralınıyorsa `EXISTING_PROJECT_PACKAGE` extension olarak eklenir ve `STATUS` (`CURRENT_STATUS.md`) zorunlu yapılır.
 
 ### Reduction (Daraltma) Kuralları
-- `content-platform` veya `api-service` gibi belirli proje türlerinde catalog uyarınca applicable olmayan belgeler kendiliğinden filtrelenir.
+- Deterministik fallback algoritması sonucunda elenen belgeler otomatik filtrelenir.
 - Seçilen `project_type + delivery_profile` kombinasyonu kapsamındaki zorunlu çekirdek belgeler daraltılamaz ve çıkarılamaz.
 
 ---
@@ -127,7 +143,7 @@ Bu iki koşuldan biri sağlanmıyorsa doküman ilgili kombinasyonda otomatik ola
 
 `engine/VALIDATION_RULES.md` kurallarına ek olarak bu pakete özel kontroller:
 
-1. **Double-Filtering Doğrulaması:** `api-service` bağlamında `DESIGN`/`PROD-STRAT` zorlaması olmaması; `content-platform` bağlamında `TECH-CTX`/`API` zorlaması olmaması.
+1. **Deterministik Fallback Doğrulaması:** `api-service` bağlamında `DESIGN`/`PROD-STRAT` veya `content-platform` bağlamında `TECH-CTX`/`API` zorlamasının yapılmadığı doğrulanmalıdır.
 2. **Rol ve Yetki Tutarlılığı:** `PRODUCT_RULES.md` içindeki kullanıcı rolleri ile `API_CONTRACTS.md` içindeki endpoint yetki gereksinimleri örtüşmelidir.
 3. **Veri Modeli ve Akış Uyuşması:** `DATA_MODEL.md` içindeki varlıklar, `core_flows` içerisindeki tüm veri ihtiyaçlarını karşılamalıdır.
 
@@ -151,7 +167,7 @@ Bu iki koşuldan biri sağlanmıyorsa doküman ilgili kombinasyonda otomatik ola
 
 Bu paket çalışması tamamlandığında aşağıdaki kriterlerin karşılandığı doğrulanmalıdır:
 
-1. **Type + Profile Applicability Uyumluğu:** Seçilen `project_type` (`web-app`, `api-service`, `mobile-app`, `content-platform`) ve `delivery_profile` kombinasyonu için `engine/DOCUMENT_CATALOG.md` kurallarının tam uygulanmış olması.
+1. **Deterministik Çözümleme Uyumluğu:** Desteklenen tüm `project_type` (`web-app`, `api-service`, `mobile-app`, `content-platform`) ve `delivery_profile` kombinasyonlarının deterministik fallback kuralıyla net çözülebilmesi.
 2. **Catalog Sınırlarının Korunması:** `api-service` için `DESIGN`/`PROD-STRAT` zorlaması olmaması; `content-platform` için `TECH-CTX`/`API` zorlaması olmaması.
 3. **Rol ve Veri Modeli Bütünlüğü:** `PRODUCT_RULES.md` yetki matrisinin `API_CONTRACTS.md` ve `DATA_MODEL.md` ile doğrulanmış olması.
 4. **Temiz Output:** Tüm belgelerin `outputs/products/<project-slug>/latest/` klasöründe eksiksiz ve temiz şekilde teslim edilebilir durumda olması.

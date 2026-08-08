@@ -6,7 +6,7 @@
 package_id: api-service
 package_name: API Service Package
 package_type: base
-version: 1.2.0
+version: 1.3.0
 status: active
 default_delivery_profile: Implementation Ready
 compatible_project_types:
@@ -34,17 +34,19 @@ Ana hedefleri:
 
 ---
 
-## 3. Doküman Seçimi Filtreleme İlkesi (Double-Filtering Rule)
+## 3. Doküman Seçimi Filtreleme İlkesi ve Deterministik Fallback Algoritması
 
-Bu paket içinde bir dokümanın zorunlu (Required) veya koşullu (Conditional) olabilmesi için `engine/DOCUMENT_CATALOG.md` içindeki **hem** `Applicable Types` **hem de** `Applicable Profiles` koşullarını aynı anda sağlaması gerekir:
+Desteklenen her `project_type + delivery_profile` kombinasyonunda hangi dokümanların geçerli olduğunu belirlemek için aşağıdaki **Deterministik Doküman Çözümleme Algoritması** uygulanır:
 
 ```text
-seçilen project_type  ∈ document.Applicable Types
-         VE
-seçilen delivery_profile ∈ document.Applicable Profiles
+1. Seçilen delivery_profile için paketin aday doküman setini al (Candidate Document Set).
+2. engine/DOCUMENT_CATALOG.md "Applicable Profiles" filtresini uygula:
+   └─ Dokümanın Applicable Profiles listesi seçilen delivery_profile'ı içeriyor mu? (İçermiyorsa elenir).
+3. engine/DOCUMENT_CATALOG.md "Applicable Types" filtresini uygula:
+   └─ Dokümanın Applicable Types listesi seçilen project_type'ı içeriyor mu? (İçermiyorsa elenir).
+4. İki filtreyi de geçen doküman kümesi, ilgili kombinasyonun geçerli doküman kapsamını oluşturur.
+5. Aşağıda açıkça örneklenmemiş kombinasyonlar bu deterministik kural ile yorumsuz çözülür.
 ```
-
-Bu iki koşuldan biri sağlanmıyorsa doküman ilgili kombinasyonda otomatik olarak elenir ve Required yapılamaz. Package kuralları `DOCUMENT_CATALOG.md` sınırlarını aşamaz.
 
 ---
 
@@ -64,16 +66,26 @@ Bu iki koşuldan biri sağlanmıyorsa doküman ilgili kombinasyonda otomatik ola
 
 ### 4.2 `integration` Bağlamı
 
+- **Foundation Profile:**
+  - *Zorunlu:* `README-DOC`, `PROJECT-BRAIN`, `TECH-CTX`.
+- **Prototype Profile:**
+  - *Zorunlu:* `README-DOC`, `PROJECT-BRAIN`.
 - **Implementation Ready Profile:**
   - *Zorunlu:* `README-DOC`, `PROJECT-BRAIN`, `TECH-CTX`, `API`.
-  - *Elenenler:* `PRODUCT-RULES`, `DATA`, `WAVE-MAP`, `WAVE-PLAN`, `TEST`, `OPS` (Catalog uyarınca `integration` proje türü bu belgelerin `Applicable Types` listesinde yer almaz).
+  - *Elenenler:* `PRODUCT-RULES`, `DATA`, `WAVE-MAP`, `WAVE-PLAN`, `TEST`, `OPS` (`integration` türü için catalog'da geçerli değildir).
   - *Koşullu:* `STATUS`, `PROJ-PLAN`, `AGENT-INST`.
+- **Production Ready Profile:**
+  - *Zorunlu:* `README-DOC`, `PROJECT-BRAIN`, `TECH-CTX`, `API`.
 
 ### 4.3 `infrastructure` Bağlamı
 
+- **Foundation Profile:**
+  - *Zorunlu:* `README-DOC`, `PROJECT-BRAIN`, `TECH-CTX`.
+- **Prototype Profile:**
+  - *Zorunlu:* `README-DOC`, `PROJECT-BRAIN`.
 - **Implementation Ready Profile:**
   - *Zorunlu:* `README-DOC`, `PROJECT-BRAIN`, `TECH-CTX`.
-  - *Elenenler:* `PRODUCT-RULES`, `DATA`, `API`, `WAVE-MAP`, `WAVE-PLAN`, `TEST`, `OPS` (Catalog uyarınca `infrastructure` proje türü bu belgelerin `Applicable Types` listesinde yer almaz).
+  - *Elenenler:* `PRODUCT-RULES`, `DATA`, `API`, `WAVE-MAP`, `WAVE-PLAN`, `TEST`, `OPS` (`infrastructure` türü için catalog'da geçerli değildir).
 - **Production Ready Profile:**
   - *Zorunlu:* `README-DOC`, `PROJECT-BRAIN`, `TECH-CTX`, `DEPLOY` (`DEPLOYMENT.md`).
 
@@ -99,8 +111,7 @@ Bu iki koşuldan biri sağlanmıyorsa doküman ilgili kombinasyonda otomatik ola
 
 ### Hariç Tutulan Dokümanlar (Default Excluded)
 Ön yüzü olmayan projelerde aşağıdaki belgeler normal koşullarda üretilmez:
-- `DESIGN` (`DESIGN_RULES.md`)
-- `PROD-STRAT` (`PRODUCT_STRATEGY.md`)
+- `DESIGN` (`DESIGN_RULES.md`), `PROD-STRAT` (`PRODUCT_STRATEGY.md`).
 
 ---
 
@@ -112,7 +123,7 @@ Bu iki koşuldan biri sağlanmıyorsa doküman ilgili kombinasyonda otomatik ola
 
 ### Reduction (Daraltma) Kuralları
 - `integration` veya `infrastructure` proje türlerinde catalog gereği geçerli olmayan belgeler kendiliğinden filtrelenir.
-- Seçilen `project_type + delivery_profile` kombinasyonu kapsamındaki zorunlu belgeler daraltılamaz.
+- Deterministik fallback algoritması sonucunda kalan zorunlu belgeler daraltılamaz.
 
 ---
 
@@ -129,7 +140,7 @@ Bu iki koşuldan biri sağlanmıyorsa doküman ilgili kombinasyonda otomatik ola
 
 `engine/VALIDATION_RULES.md` kurallarına ek olarak bu pakete özel kontroller:
 
-1. **Double-Filtering Doğrulaması:** `integration` bağlamında `PRODUCT-RULES`/`DATA`, `infrastructure` bağlamında `PRODUCT-RULES`/`DATA`/`API` zorlamasının yapılmadığı doğrulanmalıdır.
+1. **Deterministik Fallback Doğrulaması:** `integration` bağlamında `PRODUCT-RULES`/`DATA`, `infrastructure` bağlamında `PRODUCT-RULES`/`DATA`/`API` zorlamasının yapılmadığı doğrulanmalıdır.
 2. **Information Ownership Doğrulaması:** İş kurallarının (`api-service` için) `PRODUCT_RULES.md` bünyesinde tutulduğu; `TECH_CONTEXT.md` veya `API_CONTRACTS.md` dosyalarının alan ihlali yapmadığı kontrol edilir.
 3. **API Yetkilendirme Uyumluğu:** `TECH_CONTEXT.md` yetkilendirme yöntemi ile `API_CONTRACTS.md` endpoint kuralları birebir tutarlı olmalıdır.
 
@@ -153,7 +164,7 @@ Bu iki koşuldan biri sağlanmıyorsa doküman ilgili kombinasyonda otomatik ola
 
 Bu paket çalışması tamamlandığında aşağıdaki kriterlerin karşılandığı doğrulanmalıdır:
 
-1. **Type + Profile Applicability Uyumluğu:** `api-service`, `integration` veya `infrastructure` proje türleri ve seçilen `delivery_profile` için `engine/DOCUMENT_CATALOG.md` kurallarının birebir uygulanmış olması.
+1. **Deterministik Çözümleme Uyumluğu:** `api-service`, `integration` veya `infrastructure` proje türleri ve seçilen `delivery_profile` kombinasyonlarının deterministik fallback algoritmasıyla yorum gerektirmeden çözülebilmesi.
 2. **Catalog Sınırlarının Korunması:** `integration` için `PRODUCT-RULES`/`DATA`, `infrastructure` için `API`/`DATA`/`PRODUCT-RULES` zorlaması olmaması.
 3. **`PRODUCT-RULES` Sahipliği:** `api-service` türünde `PRODUCT_RULES.md` belgesinin iş kurallarının yetkili sahibi (primary owner) olması.
 4. **Temiz Output:** Tüm belgelerin `outputs/products/<project-slug>/latest/` altında eksiksiz, doğrulanmış ve teslim edilebilir durumda bulunması.
