@@ -36,46 +36,36 @@ outputs/
 
 ---
 
-## 2. Klasör Yapısı ve Naming Kuralları
+## 2. Tek Canonical Klasör Yapısı ve Naming Kuralları
 
-Product Engine V0 için approved fiziksel klasör yapısı şudur:
+Product Engine V0 için approved tek fiziksel klasör yapısı şudur:
 
 ```text
 inputs/
 ├── README.md
 ├── PROJECT_INPUT_TEMPLATE.md
 ├── pending/
-│   └── README.md
+│   ├── README.md
+│   └── <project-slug>/
+│       └── PROJECT_INPUT.md
 └── approved/
-    └── README.md
+    ├── README.md
+    └── <project-slug>/
+        ├── v1/
+        │   └── PROJECT_INPUT.md
+        ├── v2/
+        │   └── PROJECT_INPUT.md
+        └── ...
 ```
 
-### Proje Klasör ve Dosya Yapılanması
-
-Bir projenin girdileri klasör bazlı tutulur:
-
-```text
-inputs/pending/<project-slug>/
-├── PROJECT_INPUT.md
-├── sources/          [opsiyonel]
-└── attachments/      [opsiyonel]
-
-inputs/approved/<project-slug>/
-├── PROJECT_INPUT.md  (veya v1/PROJECT_INPUT.md, v2/PROJECT_INPUT.md)
-├── sources/          [opsiyonel]
-└── attachments/      [opsiyonel]
-```
-
-Daha hafif projelerde tek dosya kullanımı mümkündür:
-- `inputs/pending/<project-slug>.md`
-- `inputs/approved/<project-slug>-v1.md`
+*(Not: Alternatif flat dosya yapısı veya `history/` gibi ikincil yollar kullanılmaz. Fiziksel standart yukarıdaki yapı ile kısıtlıdır.)*
 
 ### Project Slug Standardı
 - Küçük harfli (`lowercase`)
 - URL-safe, tire ile ayrılmış (`hyphen-separated`)
 - Türkçe özel karakter içermeyen (`no turkish special chars`)
 - Stable (Approved olduktan sonra sessizce değiştirilemez)
-- Örnekler: `io-makina`, `vibehall`, `talkx`, `example-project`
+- Örnekler: `example-project`, `sample-app`, `example-service`
 
 Aynı proje için farklı slug'lar altında duplicate kayıt oluşturulması yasaktır.
 
@@ -92,7 +82,7 @@ Raw Project Information (Kullanıcı Brief'i / Dokümanlar)
 Normalization (Yapılandırma & Sınıflandırma)
        │
        ▼
-Pending Input (inputs/pending/<project-slug>/)
+Pending Input (inputs/pending/<project-slug>/PROJECT_INPUT.md)
        │
        ▼
 Clarification / Conflict Resolution / Assumption Verification
@@ -101,7 +91,7 @@ Clarification / Conflict Resolution / Assumption Verification
 Explicit User Approval (Açık Kullanıcı Onayı)
        │
        ▼
-Approved Input (inputs/approved/<project-slug>/)
+Approved Input (inputs/approved/<project-slug>/v1/PROJECT_INPUT.md)
        │
        ▼
 Run Snapshot (runs/active/<run-id>/INPUT_SNAPSHOT.md)
@@ -117,7 +107,7 @@ Run Snapshot (runs/active/<run-id>/INPUT_SNAPSHOT.md)
 | **Rolü** | Intake tamamlama ve analiz çalışma alanı | Generation Source of Truth (Üretim Gerçeklik Kaynağı) |
 | **Generation İzni** | **HAYIR** (Doğrudan run başlatılamaz) | **EVET** (Product Engine run'ı başlatılabilir) |
 | **Project Truth Niteliği** | authoritative değildir | Reusable canonical project truth |
-| **Değişebilirlik** | Düzenlenebilir / Revize edilebilir | **Immutable Logical Version** (Doğrudan overwrite edilemez) |
+| **Değişebilirlik** | Düzenlenebilir / Revize edilebilir | **Immutable Logical Version** (Doğrudan overwrite/mutation yapılamaz) |
 
 ---
 
@@ -129,44 +119,50 @@ Bir `pending` input sessizce veya otomatik olarak `approved` hale getirilemez.
 2. **Agent Kendi Kendine Onay Veremez:** Agent `"Bilgiler yeterli görünüyor, approved sayıyorum"` diyerek `status: approved` atayamaz.
 3. **Approval Metadata:** Approved input içerisinde onay kaydı bulunmalıdır:
    ```yaml
-   approved: true
-   approved_at: 2026-08-08T04:30:00Z
+   status: approved
+   approved_at: <ISO-8601-TIMESTAMP>
    approved_by: user
    ```
 
 ---
 
-## 6. Approved Input Immutability & Versioning
+## 6. Approved Input Immutability & Logical Supersedes
 
-Approved duruma gelmiş bir input dosyası **asla yerinde (in-place) overwrite edilmez**.
+Approved duruma gelmiş bir input dosyası **asla ve kesinlikle yerinde (in-place) overwrite veya mutate edilmez**.
 
-### Sürümleme Mantığı
-- İlk onaylanan sürüm: `v1` (veya `1.0`)
-- Sürüm değiştirme adımları:
-  1. Mevcut `approved` sürüm korunur.
-  2. Eski approved sürümün status değeri `superseded` olarak güncellenebilir/işaretlenebilir (`supersedes` zinciri kurulur).
-  3. Değişiklik talebi üzerine `inputs/pending/<project-slug>/` altında yeni bir pending revision (`v2` adayı) oluşturulur.
-  4. Kullanıcıdan yeniden **explicit user approval** alınır.
-  5. Onay alındığında yeni approved version (`v2`) oluşturulur.
+### Inplace Mutation Yasağı
+Eski bir approved dosya (`v1/PROJECT_INPUT.md`) fiziksel olarak değiştirilemez. Eski dosyayı açıp `status: superseded` yapmak bile yasaktır.
 
-### Canonical Version Metadata
-Her approved input şu metadata alanlarını taşır:
+### Sürümleme ve Forward Reference Mantığı
+Sürüm numaraları artan tamsayılar (`1`, `2`, `3`) ve ilgili klasör adları (`v1`, `v2`, `v3`) olarak tutulur.
+
+- `v1` onaylandığında `inputs/approved/<project-slug>/v1/PROJECT_INPUT.md` oluşturulur (`supersedes: ""`).
+- Değişiklik gerektiğinde `inputs/pending/<project-slug>/PROJECT_INPUT.md` üzerinde v2 adayı hazırlanır.
+- `v2` onaylandığında `inputs/approved/<project-slug>/v2/PROJECT_INPUT.md` oluşturulur ve `supersedes: INPUT-EXAMPLE-PROJECT-V1` yazılır.
+- `v1` fiziksel olarak dokunulmadan kalır; `v2` dosyasındaki forward reference sayesinde `v1`'in **logical olarak superseded olduğu** anlaşılır.
+
+### Canonical Version Metadata Standardı
 ```yaml
 input_id: INPUT-EXAMPLE-PROJECT-V1
 project_name: Example Project
 project_slug: example-project
-input_version: "1.0"
-status: approved # pending | approved | superseded
-created_at: 2026-08-08T04:30:00Z
-updated_at: 2026-08-08T04:30:00Z
-approved_at: 2026-08-08T04:30:00Z
+input_version: "1"
+status: approved # pending | approved
+project_type: web-app # web-app | api-service | mobile-app | internal-tool | landing-page | content-platform | integration | infrastructure | prototype | other
+project_state: new # new | existing
+delivery_profile: Foundation # Foundation | Prototype | Implementation Ready | Production Ready
+primary_language: tr
+created_at: <ISO-8601-TIMESTAMP>
+updated_at: <ISO-8601-TIMESTAMP>
+approved_at: <ISO-8601-TIMESTAMP>
 approved_by: user
-supersedes: "" # İlk versiyon için boş, sonraki versiyonlarda e.g. INPUT-EXAMPLE-PROJECT-V1
-source_type: user-provided # user-provided | existing-project | provided-document | repository | explicit-assumption
+supersedes: ""
+source_type: user-provided
+source_count: 2
 ```
 
 ### Current Active Approved Version Kuralı
-Bir projenin aktif kullanımda olan onaylı girdisi, o proje slug'ına ait **status'ü approved olan en yüksek sürüm numaralı** dosyadır. Gereksiz pointer veya sembolik link sistemleri kullanılmaz.
+Bir projenin aktif kullanımda olan onaylı girdisi, o proje slug'ına ait `inputs/approved/<project-slug>/` altında bulunan **en yüksek `vN` sürüm numarasına sahip klasördeki `PROJECT_INPUT.md`** dosyasıdır. Gereksiz pointer veya symlink sistemleri kullanılmaz.
 
 ---
 
@@ -174,10 +170,10 @@ Bir projenin aktif kullanımda olan onaylı girdisi, o proje slug'ına ait **sta
 
 Çok önemli operasyonel sınır:
 
-- `inputs/approved/<project-slug>/`: Projenin güncel, yeniden kullanılabilir onaylı gerçeğidir (**Reusable Current Truth**).
+- `inputs/approved/<project-slug>/vN/PROJECT_INPUT.md`: Projenin güncel, yeniden kullanılabilir onaylı gerçeğidir (**Reusable Current Truth**).
 - `runs/active/<run-id>/INPUT_SNAPSHOT.md`: Run başlatıldığı andaki approved input sürümünün dondurulmuş, değişmez operasyonel kopyasıdır (**Immutable Operational Snapshot**).
 
-Run başladıktan sonra `inputs/approved/` altındaki veri değişse dahi aktif çalışmanın `INPUT_SNAPSHOT.md` kopyası **değişmez**. Yeni input sürümüyle çalışmak için **yeni bir run** başlatılması gerekir.
+Run başladıktan sonra `inputs/approved/` altına yeni bir sürüm (`vN+1`) onaylansa dahi aktif çalışmanın `INPUT_SNAPSHOT.md` kopyası **değişmez**. Yeni input sürümüyle çalışmak için **yeni bir run** başlatılması gerekir.
 
 ---
 
@@ -196,7 +192,7 @@ Her proje için tek bir canonical input belgesi (`PROJECT_INPUT.md`) tutulur. Ay
 8. **Technical Context & Preferences** (Stack tercihleri, kısıtlar)
 9. **Design Context** (Görsel ve UX yönü)
 10. **Existing Project Context** (Mevcut proje ise: Current Reality, Target State, Transition Scope)
-11. **Content & Data Sources** (Kaynaklar, belgeler, güven seviyeleri)
+11. **Content & Data Sources** (Kaynaklar, belgeler, güven seviyeleri, `source_count`)
 12. **Known Decisions** (Onaylanmış kararlar)
 13. **Open Questions** (Açık sorular - kritikler çözülmüş olmalıdır)
 14. **Assumptions** (Onaylanmış/açık varsayımlar)
@@ -248,7 +244,7 @@ Yalnızca 4 canonical değerden biri olabilir (casing ve yazım korunmalıdır):
 ### Existing Project (`existing`)
 Üç katman net biçimde ayrılmalıdır:
 1. **Current Reality:** Şu an sistemde ne var? (Mevcut stack, mevcut kod, bilinen borçlar).
-2. **Target State:** Ne olması isteniyor? (Hedef mimari/özellikler).
+2. **Target State:** Ne olmasını istiyoruz? (Hedef mimari/özellikler).
 3. **Transition Scope:** Bu çalışmada/run'da ne kadarı yapılacak?
 
 Desired target state, current reality gibi yazılamaz.
@@ -288,6 +284,7 @@ Kullanıcı serbest metinle talep verebilir (Örn: *"React olsun, mobil de olabi
    - Repo içi bağıl yollar (`docs/spec.md`) veya generic referanslar kullanılır.
 3. **Source / Provenance Tracking:**
    - Bilgilerin kaynağı sınıflandırılır: `user-provided`, `existing-project`, `provided-document`, `repository`, `explicit-assumption`.
+   - Toplam geçerli kaynak sayısı `source_count` alanında tutulur.
    - Güven seviyeleri: `Authoritative`, `Trusted`, `Reference Only`, `Unverified`.
 
 ---
@@ -305,14 +302,15 @@ Bir input `approved` yapılmadan önce şu kontrollerin tümü doğrulanmalıdı
 - [ ] **Assumption Validation:** Yapılan varsayımlar net ve kabul edilebilir mi?
 - [ ] **Secret Safety Validation:** Şifre, secret veya token içeriyor mu? (İçermemeli!)
 - [ ] **Portable Path Validation:** Yerel `file:///` veya makineye özel path var mı? (Olmamalı!)
-- [ ] **Explicit Approval Validation:** Kullanıcı açıkça onay vermiş mi? (`approved: true`, `approved_by: user`)
-- [ ] **Version & Identity Validation:** `input_id` ve `input_version` tanımlı ve deterministic mi?
+- [ ] **Explicit Approval Validation:** Kullanıcı açıkça onay vermiş mi? (`status: approved`, `approved_by: user`)
+- [ ] **Version & Identity Validation:** `input_id` (örn: `INPUT-EXAMPLE-PROJECT-V1`) ve `input_version` (örn: `"1"`) tanımlı ve uyumlu mu?
+- [ ] **Source Count Validation:** `source_count` tablodaki kaynak sayısı ile uyumlu mu?
 
 ---
 
 ## 15. Cancellation, Stale & Delete Policy
 
-- **Approved Version Retention:** Approved durumdaki eski input sürümleri asla silinmez. Geçersizleşen sürümler `status: superseded` olarak saklanır.
+- **Approved Version Retention:** Approved durumdaki eski input sürümleri asla silinmez veya yerinde değiştirilmez. Sürümler `inputs/approved/<project-slug>/v1/`, `v2/` klasörlerinde fiziksel olarak aynen korunur.
 - **Pending Cleanup / Cancellation:** Terk edilen veya iptal edilen pending çalışmaları silinebilir veya `pending` altında pasif kayıt olarak kalabilir. Ayrı bir top-level klasör (`rejected`, `cancelled`) V0'da açılmaz.
 
 ---

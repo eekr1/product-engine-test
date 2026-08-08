@@ -2,18 +2,19 @@
 input_id: "INPUT-{{PROJECT_SLUG_UPPER}}-V1"
 project_name: "{{PROJECT_NAME}}"
 project_slug: "{{PROJECT_SLUG}}"
-input_version: "1.0"
-status: "pending" # pending | approved | superseded
+input_version: "1"
+status: "pending" # pending | approved
 project_type: "{{PROJECT_TYPE}}" # web-app | api-service | mobile-app | internal-tool | landing-page | content-platform | integration | infrastructure | prototype | other
 project_state: "{{PROJECT_STATE}}" # new | existing
 delivery_profile: "{{DELIVERY_PROFILE}}" # Foundation | Prototype | Implementation Ready | Production Ready
 primary_language: "tr" # tr | en | etc.
-created_at: "{{YYYY_MM_DD_THH_MM_SSZ}}"
-updated_at: "{{YYYY_MM_DD_THH_MM_SSZ}}"
-approved_at: ""
-approved_by: "" # user
-supersedes: ""
+created_at: "{{CREATED_AT}}" # ISO-8601 format: YYYY-MM-DDTHH:mm:ssZ
+updated_at: "{{UPDATED_AT}}" # ISO-8601 format: YYYY-MM-DDTHH:mm:ssZ
+approved_at: "{{APPROVED_AT}}" # ISO-8601 format: YYYY-MM-DDTHH:mm:ssZ (empty if pending)
+approved_by: "{{APPROVED_BY}}" # user (empty if pending)
+supersedes: "{{SUPERSEDES_INPUT_ID}}" # e.g. INPUT-EXAMPLE-PROJECT-V1 (empty for v1)
 source_type: "user-provided" # user-provided | existing-project | provided-document | repository | explicit-assumption
+source_count: 2 # Integer count of registered sources in table below
 ---
 
 # Project Input: {{PROJECT_NAME}}
@@ -126,6 +127,7 @@ source_type: "user-provided" # user-provided | existing-project | provided-docum
 | SRC-02 | {{SOURCE_NAME_2}} | repository | Trusted | Mevcut sistem kod incelemesi |
 
 *Güven Seviyeleri: Authoritative | Trusted | Reference Only | Unverified*
+*Not: Tablodaki toplam geçerli kaynak sayısı metadata içindeki `source_count` değerini oluşturur.*
 
 ---
 
@@ -158,4 +160,5 @@ source_type: "user-provided" # user-provided | existing-project | provided-docum
 - [ ] No unresolved critical conflicts remaining
 - [ ] No secrets, tokens, passwords or credentials stored
 - [ ] No machine-dependent absolute paths (`file:///C:/...`)
+- [ ] `source_count` metadata accurately reflects registered sources
 - [ ] Explicit approval received from user
