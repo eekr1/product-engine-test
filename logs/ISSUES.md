@@ -36,13 +36,16 @@ Her issue kaydı aşağıdaki dondurulmuş kanonik şemaya göre açılır ve g�
 ```markdown
 ## ISSUE-<NNN> — <Kısa ve Net Başlık>
 
-- **Status:** <Open | Investigating | Planned | In Progress | Blocked | Resolved | Won't Fix | Duplicate | Invalid>
+- **Status:** <Open | Investigating | Planned | In Progress | Blocked | Implemented — Awaiting Validation | Resolved | Won't Fix | Duplicate | Invalid>
 - **Severity:** <Critical | Major | Minor | Low>
 - **Category:** <Engine Rules | Packages | Templates | Inputs | Runs | Outputs | Validation>
+- **Owner:** <unassigned | engine maintainer | review agent>
 - **First Seen:** <YYYY-MM-DD>
 - **Last Seen:** <YYYY-MM-DD>
 - **Related Runs:** <runs/location/run-id/ | None>
-- **Resolved in Version:** <PE-CHANGE-XXX | Pending>
+- **Resolved in Version:** <not_assigned | vX.Y>
+- **Related Change:** <PE-CHANGE-XXX | Pending>
+- **Validation Run:** <RUN-YYYYMMDD-XXX | None>
 
 ### Description
 <Problemin detaylı açıklaması ve gözlemlenen hatalı davranış>
@@ -67,7 +70,8 @@ Her issue kaydı aşağıdaki dondurulmuş kanonik şemaya göre açılır ve g�
 - **`Planned`**: Çözüm planlandı, bir sonraki değişikliğe dahil edilecek.
 - **`In Progress`**: Düzeltme aktif olarak uygulanıyor.
 - **`Blocked`**: Düzeltme başka bir bağımlılık veya karar nedeniyle durdu.
-- **`Resolved`**: Düzeltme uygulandı, doğrulandı ve ilgili `PE-CHANGE-XXX` ile donduruldu.
+- **`Implemented — Awaiting Validation`**: Düzeltme uygulandı ve dokümanlar güncellendi; ancak henüz doğrulama çalışması (`validation run`) tamamlanmadı.
+- **`Resolved`**: Düzeltme uygulandı, ilgili changelog girdisi (`PE-CHANGE-XXX`) oluşturuldu, doğrulama çalışmasıyla hatanın tekrar etmediği kesinleşti.
 - **`Won't Fix`**: Düzeltilmemesine karar verilen bilinen durum.
 - **`Duplicate`**: Başka bir issue kaydının mükerreri olan dosya.
 - **`Invalid`**: Hata olmadığı anlaşılan geçersiz bildirim.
@@ -80,24 +84,31 @@ Her issue kaydı aşağıdaki dondurulmuş kanonik şemaya göre açılır ve g�
 
 ---
 
-## 5. Yaşam Döngüsü ve Tekilleştirme Kuralları (Deduplication & Retention)
+## 5. Çözüm Kapısı ve Yaşam Döngüsü Kuralları (Resolved Gate & Deduplication)
 
+### Resolved Kapısı Şartları (Resolved Gate)
+Bir issue kaydı doğrudan `Resolved` durumuna geçirilemez. `Resolved` yapılabilmesi için aşağıdaki şartların **tamamı** sağlanmış olmalıdır:
+1. Düzeltme uygulanmış olmalıdır (`fix implemented`).
+2. İlgili motor belgeleri ve sözleşmeleri güncellenmiş olmalıdır (`relevant docs/contracts updated`).
+3. Kalıcı changelog kaydı oluşturulmuş olmalıdır (`related changelog entry created — PE-CHANGE-XXX`).
+4. Gerekli durumlarda doğrulama çalışması yürütülmüş olmalıdır (`validation run performed`).
+5. Kusurun tekrar etmediği kanıtlanmış olmalıdır.
+
+*Not: Düzeltme uygulandığı halde doğrulama çalışması henüz gerçekleştirilmediyse durum `Implemented — Awaiting Validation` olarak tutulur.*
+
+### Tekilleştirme ve Saklama (Deduplication & Retention)
 1. **Deduplication (Tekilleştirme):** Yeni bir kusur tespit edildiğinde önce `ISSUES.md` taranır. Aynı kök nedene sahip bir issue zaten varsa yeni ID açılmaz. Mevcut kaydın `Last Seen` tarihi ve `Related Runs` listesi güncellenir.
 2. **Kayıt Silme Yasağı:** Çözülen (`Resolved`), reddedilen (`Won't Fix`) veya mükerrer (`Duplicate`) issue kayıtları dosyadan kesinlikle silinemez (`MUST NOT`).
-3. **Kapatma Şartı:** Bir issue kaydı `Resolved` durumuna geçirildiğinde:
-   - Uygulanan düzeltmenin özeti eklenmelidir.
-   - İlgili changelog kaydı (`PE-CHANGE-XXX`) referans gösterilmelidir.
-   - Düzeltmenin doğrulandığı sürüm veya run bilgisi kaydedilmelidir.
 
 ---
 
 ## 6. Güncel Issue Durumu (Initial Neutral State)
 
 ```text
-Open Issues       : 0
-In Progress       : 0
-Resolved Issues   : 0
-Total Recorded    : 0
+Open Issues                           : 0
+Implemented — Awaiting Validation     : 0
+Resolved Issues                       : 0
+Total Recorded                        : 0
 ```
 
 > [!NOTE]

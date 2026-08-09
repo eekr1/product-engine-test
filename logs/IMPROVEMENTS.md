@@ -26,8 +26,10 @@ Her iyileştirme kaydı aşağıdaki dondurulmuş kanonik şemaya göre eklenir 
 - **Category:** <Automation | Ergonomics | Validation | Packaging | DX | Performance>
 - **Cost / Complexity:** <High | Medium | Low>
 - **Dependencies:** <Gerekli önkoşullar veya None>
-- **Related Issue:** <ISSUE-XXX | None>
-- **Implemented in Version:** <PE-CHANGE-XXX | Pending>
+- **Related Issues:** <ISSUE-002, ISSUE-005 | None>
+- **Implemented in Version:** <not_assigned | vX.Y>
+- **Related Change:** <PE-CHANGE-XXX | Pending>
+- **Validation Run:** <RUN-YYYYMMDD-XXX | None>
 
 ### Summary
 <Geliştirme fikrinin açık ve net tanımı>
@@ -52,7 +54,7 @@ Her iyileştirme kaydı aşağıdaki dondurulmuş kanonik şemaya göre eklenir 
 - **`Evaluating`**: Fizibilite ve etki analizi yapılıyor.
 - **`Planned`**: Uygulama kararı alındı ve planlandı.
 - **`In Progress`**: Aktif olarak geliştiriliyor.
-- **`Implemented`**: Geliştirme tamamlandı, doğrulandı ve `PE-CHANGE-XXX` ile donduruldu.
+- **`Implemented`**: Geliştirme tamamlandı, donduruldu, ilgili `PE-CHANGE-XXX` kaydı bağlandı ve gerekiyorsa doğrulandı.
 - **`Rejected`**: Değerlendirme sonucu uygulanmamasına karar verilen fikir.
 - **`Deferred`**: İleride tekrar değerlendirilmek üzere ertelenmiş fikir.
 
@@ -65,12 +67,18 @@ Her iyileştirme kaydı aşağıdaki dondurulmuş kanonik şemaya göre eklenir 
 
 ---
 
-## 4. Yaşam Döngüsü ve Saklama Kuralları (Retention Policy)
+## 4. Yaşam Döngüsü ve Uygulama Kapısı (Implemented Gate & Retention)
 
-1. **Uygulanan Fikirlerin Koruması:** Uygulanan bir iyileştirme (`Implemented IMPROVEMENTS`) aktif dosyadan kesinlikle silinemez (`MUST NOT`).
-2. **Değişiklik Bağlantısı:** Bir iyileştirme tamamlandığında durumu `Implemented` yapılır; `Implemented in Version` alanına ilgili `PE-CHANGE-XXX` kimliği yazılır.
-3. **Reddedilen Fikirlerin Koruması:** Reddedilen bir öneri (`Rejected`) neden reddedildiği gerekçesiyle birlikte saklanır. Böylece aynı fikrin ileride tekrar tekrar tartışılması engellenir.
-4. **Not Çöplüğü Önleme İlkesi:** Kalıcı engine değeri taşımayan veya tek bir projeye özgü olan fikirler bu dosyaya eklenmez.
+### Implemented Kapısı Şartları (Implemented Gate)
+Bir iyileştirme kaydı `Implemented` durumuna alındığında aşağıdaki alanlar eksiksiz doldurulmalıdır:
+- `Implemented in Version`: İyileştirmenin dahil edildiği motor sürümü (Örn: `0.3` veya `not_assigned`).
+- `Related Change`: İyileştirmenin resmi changelog kaydı (Örn: `PE-CHANGE-005`).
+- `Validation Run`: İyileştirmenin doğrulandığı çalıştırma kimliği (Örn: `RUN-20260101-002` veya `None`).
+
+### Saklama Kuralları
+1. **Uygulanan Fikirlerin Koruması:** Uygulanan bir iyileştirme (`Implemented`) aktif dosyadan kesinlikle silinemez (`MUST NOT`).
+2. **Reddedilen Fikirlerin Koruması:** Reddedilen bir öneri (`Rejected`) neden reddedildiği gerekçesiyle birlikte saklanır. Böylece aynı fikrin ileride tekrar tekrar tartışılması engellenir.
+3. **Not Çöplüğü Önleme İlkesi:** Kalıcı engine değeri taşımayan veya tek bir projeye özgü olan fikirler bu dosyaya eklenmez.
 
 ---
 

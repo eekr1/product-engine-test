@@ -54,13 +54,13 @@ logs/
 ```
 
 ### Klasör Yapılandırma Kuralları
-1. V0 mimarisinde top-level seviyede yeni log dosyaları (`RELEASE_NOTES.md`, `KNOWN_LIMITATIONS.md`, `METRICS.md`, `LESSONS.md`, `MEMORY.md`, `DAILY_LOG.md` vb.) **oluşturulamaz**.
+1. V0 mimarisinde top-level seviyede yeni log dosyaları (`RELEASE_NOTES.md`, `METRICS.md`, `LESSONS.md`, `MEMORY.md`, `DAILY_LOG.md` vb.) **oluşturulamaz**.
 2. Tüm dosyalar başlık seviyesinde bırakılmayacak; reusable format şablonları ve nötr başlangıç durumları (`neutral initial state`) içerecektir.
 3. Gerçekleştirilmemiş sahte çalıştırma (`fake run`), sahte engine sürümü (`fake version`) veya geriye dönük uydurma changelog verisi **üretilemez**.
 
 ---
 
-## 4. Kanonik Belgelerin Sorumlulukları
+## 4. Kanonik Belgelerin Sorumlulukları ve Şemaları
 
 ### 4.1. `README.md`
 - **Sahip Olduğu Soru:** `logs/` katmanı nasıl kullanılır ve yönetilir?
@@ -69,22 +69,26 @@ logs/
 ### 4.2. `ENGINE_CHANGELOG.md`
 - **Sahip Olduğu Soru:** Product Engine'in kendisinde hangi kalıcı değişiklikler yapıldı?
 - **Görevi:** Engine sözleşmeleri (`engine/`), paket kuralları (`packages/`), şablon standartları (`templates/`), girdi/run/çıktı yaşam döngüleri ve validation davranışlarında yapılan kalıcı değişikliklerin kaydıdır.
-- **Kimlik Formatı:** Stable Change ID: `PE-CHANGE-<NNN>` (Örn: `PE-CHANGE-001`).
+- **Kimlik ve Sürüm:** Stable Change ID: `PE-CHANGE-<NNN>`. Motor sürüm geçmişi otoritesidir. Kök `README.md` aktif sürüm bildirene kadar `version: not_assigned` kullanılır.
 
 ### 4.3. `RUN_INDEX.md`
 - **Sahip Olduğu Soru:** Hangi Product Engine run'ları gerçekleştirildi ve genel sonuçları neydi?
-- **Görevi:** Gerçekleştirilen tüm çalıştırmaların hızlı taranabilir ikincil indeksidir (`secondary index`).
-- **Otorite Ayrımı:** `RUN_INDEX.md` bir otorite değildir. Çalıştırma detaylarının ve anlık durumunun tek otoritesi `runs/<location>/<run-id>/RUN_MANIFEST.md` belgesidir.
+- **Görevi:** Gerçekleştirilen tüm çalıştırmaların hızlı taranabilir ikincil indeksidir (`secondary index`). `runs/<location>/<run-id>/RUN_MANIFEST.md` birincil otoritedir.
+- **Vocabulary:**
+  - `Status`: `Created`, `Initialized`, `Running`, `Validation`, `Completed`, `Blocked`, `Paused`, `Resumed`, `Failed`, `Cancelled`, `Invalidated`.
+  - `Validation`: `PASS`, `CONDITIONAL PASS`, `FAIL`, `N/A` (N/A = doğrulama henüz sonuçlanmamış nötr durum).
+  - `Package`: Canonical package ID'leri (`corporate-website`, `demo-frontend`, `saas`, `existing-project`, `api-service`).
 
 ### 4.4. `ISSUES.md`
 - **Sahip Olduğu Soru:** Product Engine'de çözülmesi gereken hangi somut ve doğrulanabilir problemler bulunuyor?
-- **Görevi:** Gözlemlenmiş, tekrar üretilebilir veya doğrulanabilir, engine kalitesini doğrudan etkileyen sistemsel kusurların (`defect/bug`) yaşam döngüsünü takip eder.
-- **Kimlik Formatı:** Stable Issue ID: `ISSUE-<NNN>` (Örn: `ISSUE-001`).
+- **Görevi:** Gözlemlenmiş, tekrar üretilebilir ve doğrulanmış kusurların (`defect/bug`) yaşam döngüsünü takip eder.
+- **Şema Ayrımı:** `Owner` (`unassigned` | `engine maintainer` | `review agent`), `Resolved in Version` (motor sürümü), `Related Change` (`PE-CHANGE-XXX`), `Validation Run` (`RUN-YYYYMMDD-XXX`).
+- **Durumlar:** `Open`, `Investigating`, `Planned`, `In Progress`, `Blocked`, `Implemented — Awaiting Validation`, `Resolved`, `Won't Fix`, `Duplicate`, `Invalid`.
 
 ### 4.5. `IMPROVEMENTS.md`
 - **Sahip Olduğu Soru:** Product Engine gelecekte nasıl daha iyi, sade ve otomatik hale getirilebilir?
-- **Görevi:** Sistem sorunsuz çalışıyor olsa dahi ergonomi, otomasyon, performans ve geliştirici deneyimini artıracak gelecek fikirleri ve geliştirme taleplerini (`backlog`) saklar.
-- **Kimlik Formatı:** Stable Improvement ID: `IMPROVEMENT-<NNN>` (Örn: `IMPROVEMENT-001`).
+- **Görevi:** Ergonomi, otomasyon, performans ve geliştirici deneyimini artıracak gelecek fikirleri backlog'udur (`backlog candidate`).
+- **Şema Ayrımı:** `Related Issues` (çoğul), `Implemented in Version` (motor sürümü), `Related Change` (`PE-CHANGE-XXX`), `Validation Run` (`RUN-YYYYMMDD-XXX`).
 
 ---
 
@@ -94,7 +98,7 @@ logs/
 
 ```text
 ISSUE (Kusur / Defect)
-→ Mevcut davranışta problem, uyumsuzluk veya doğrulanmış hata var. Sistem beklenen sözleşmeyi karşılamıyor.
+→ Mevcut motor davranışında bozukluk, tutarsızlık veya sözleşme ihlali var. Sistem beklenen sözleşmeyi karşılamıyor.
 
 IMPROVEMENT (Geliştirme / Enhancement Candidate)
 → Sistem mevcut haliyle doğru çalışıyor; ancak gelecekte daha hızlı, daha otomatik veya daha sade hale getirilebilir.
@@ -107,9 +111,9 @@ Bir sorunun çözümü yeni bir iyileştirme fikri doğurabilir. Bu durumda iki 
 ## 6. Tarihsel Kayıt Koruması ve Ekleme Kuralları (Append-Oriented Policy)
 
 1. **Sessiz Silme Yasağı:** Çözülen sorunlar (`Resolved ISSUES`) veya uygulanan iyileştirmeler (`Implemented IMPROVEMENTS`) aktif dosyalardan kesinlikle silinemez (`MUST NOT`).
-2. **Geçmiş İzlenebilirliği:** Çözülen bir issue veya uygulanan bir improvement kaydının durumu güncellenir; ilgili `PE-CHANGE-<NNN>` kimliği ve motor sürümü referans gösterilerek dondurulur.
-3. **Deduplication (Tekilleştirme):** Yeni bir issue veya improvement eklenmeden önce mevcut kayıtlar taranmalıdır. Aynı kök nedene sahip bir konu zaten varsa yeni ID oluşturulmaz; mevcut kayıt yeni kanıt ve çalışma referansıyla güncellenir.
-4. **Çapraz Referans (Cross-Referencing):** Aynı engine değişikliği 4 ayrı dosyada uzun uzun tekrar edilmez. Değişikliğin esası `ENGINE_CHANGELOG.md` altında yazılır; diğer belgeler Change ID (`PE-CHANGE-<NNN>`) üzerinden referans verir.
+2. **Geçmiş İzlenebilirliği:** Çözülen bir issue veya uygulanan bir improvement kaydının durumu güncellenir; ilgili motor sürümü, `PE-CHANGE-<NNN>` kimliği ve `Validation Run` referans gösterilerek dondurulur.
+3. **Resolved Kapısı:** Bir issue yalnızca düzeltme uygulandığında + dokümanlar güncellendiğinde + changelog kaydı oluşturulduğunda + doğrulama run'ı tamamlandığında `Resolved` yapılır. Doğrulama bekleniyorsa `Implemented — Awaiting Validation` status'ü kullanılır.
+4. **Deduplication (Tekilleştirme):** Yeni bir issue veya improvement eklenmeden önce mevcut kayıtlar taranmalıdır. Aynı kök nedene sahip bir konu zaten varsa yeni ID oluşturulmaz; mevcut kayıt yeni kanıt ve çalışma referansıyla güncellenir.
 
 ---
 

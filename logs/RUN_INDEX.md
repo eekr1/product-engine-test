@@ -11,9 +11,10 @@ Bu belge, Product Engine tarafından başlatılan ve yürütülen tüm çalışt
 
 ---
 
-## 2. Kanonik Run Durumları (Canonical Status Vocabulary)
+## 2. Kanonik Vocabulary ve Terminoloji
 
-Run Index içerisindeki `Status` kolonunda strictly `engine/RUN_PROTOCOL.md` tarafından onaylanmış aşağıdaki kanonik durum terimleri kullanılır:
+### Run Durumları (Run Status Vocabulary)
+`Status` kolonunda strictly `engine/RUN_PROTOCOL.md` tarafından onaylanmış aşağıdaki kanonik durum terimleri kullanılır:
 
 ```text
 Created      : Run ID atandı, dizin açıldı.
@@ -25,17 +26,48 @@ Blocked      : Kritik çelişki/eksiklik nedeniyle durduruldu (active dizininde 
 Paused       : Kullanıcı kararı/netleştirme nedeniyle duraklatıldı.
 Resumed      : Duraklatılan çalışmaya tekrar devam edildi.
 Failed       : Kurtarılamayan hata veya validation başarısızlığı ile kapanan run.
-Cancelled    : Kullanıcı/operatör tarafından bilinçli olarak iptal edilen run.
+Cancelled    : Kullanıcı/operatör tarafından bilinchli olarak iptal edilen run.
 Invalidated  : Tamamlanmış run sonradan geriye dönük geçersiz kılındı.
 ```
 
-*Not: `Active`, `Success`, `Done`, `Error`, `Passed` gibi onaylanmamış terimlerin kullanımı KESİNLİKLE YASAKTIR.*
+### Doğrulama Durumları (Validation Column Semantics)
+`Validation` kolonunda onaylanmış doğrulama sonuçları ile doğrulanmamış nötr indeks değerleri aşağıdaki biçimde gösterilir:
+
+```text
+PASS             : Doğrulama kurallarından eksiksiz geçti.
+CONDITIONAL PASS : Küçük ve onaylı şartlarla kabul edildi.
+FAIL             : Doğrulama kurallarından geçemedi.
+N/A              : Doğrulama henüz gerçekleşmedi veya uygulanabilir sonuç yok (Not Applicable).
+```
+
+*Not: Validation kolonunda `Pending`, `Success`, `Error`, `Passed` gibi onaylanmamış terimlerin kullanımı KESİNLİKLE YASAK'tır. `N/A` terimi validation henüz sonuçlanmadığında kullanılan nötr indeks değeridir.*
+
+### Paket Kimlikleri (Canonical Package IDs)
+`Package` kolonunda display name yerine strictly `engine/PACKAGE_RULES.md` kanonik paket kimlikleri kullanılır:
+
+```text
+demo-frontend
+corporate-website
+saas
+existing-project
+api-service
+```
+
+### Teslimat Profilleri (Delivery Profiles)
+`Profile` kolonunda onaylanmış profil isimleri kullanılır:
+
+```text
+Foundation
+Prototype
+Implementation Ready
+Production Ready
+```
 
 ---
 
 ## 3. Güncelleme Kuralları (Update Rules)
 
-1. **Run Başlatıldığında:** Çalıştırma `Initialized` durumuna geçtiğinde indekse yeni bir özet satırı eklenir.
+1. **Run Başlatıldığında:** Çalıştırma `Initialized` durumuna geçtiğinde indekse yeni bir özet satırı eklenir. `Validation` değeri `N/A` olarak başlar.
 2. **Durum Değişikliklerinde:** Çalıştırma `Running`, `Validation`, `Blocked`, `Paused` gibi aşamalara geçtikçe `Status` alanı güncellenir.
 3. **Kapanış Aşamasında:** Run terminal duruma (`Completed`, `Failed`, `Cancelled`) ulaştığında `Status`, `Validation`, `Output Ref` ve `Note` alanları nihai haliyle dondurulur.
 4. **Başarısız ve İptal Edilen Run'lar:** `RUN_INDEX.md` yalnızca başarılı çalışmaları listelemez. `Failed`, `Cancelled` ve `Invalidated` durumundaki tüm çalıştırmalar tarihsel izlenebilirlik için görünür kalır.
@@ -55,10 +87,10 @@ Invalidated  : Tamamlanmış run sonradan geriye dönük geçersiz kılındı.
 ### Kolon Tanımları
 - **Run ID:** Kanonik çalıştırma kimliği (`RUN-YYYYMMDD-XXX`).
 - **Project Slug:** Proje tanımlayıcısı (`inputs/approved/<project-slug>/`).
-- **Package:** Seçilen doküman paketi (Örn: `Corporate Website`, `SaaS Product`).
+- **Package:** Kanonik paket kimliği (`corporate-website`, `demo-frontend`, `saas` vb.).
 - **Profile:** Teslimat profili (`Foundation` | `Prototype` | `Implementation Ready` | `Production Ready`).
 - **Status:** Kanonik yaşam döngüsü durumu.
-- **Validation:** Doğrulama sonucu (`PASS` | `CONDITIONAL PASS` | `FAIL` | `Pending`).
+- **Validation:** Doğrulama sonucu (`PASS` | `CONDITIONAL PASS` | `FAIL` | `N/A`).
 - **Date:** Çalıştırmanın son işlem tarihi (`YYYY-MM-DD`).
 - **Output Ref:** Yayınlanan çıktının bağıl yolu (Örn: `outputs/demos/example-project/versions/v0.1` | `N/A`).
 - **Note:** Birkaç kelimelik özet sonuç veya kapatma notu.
