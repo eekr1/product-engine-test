@@ -86,6 +86,7 @@ V0 aşamasında aşağıdaki ek kategoriler ve merkezi indeks dosyaları **kesin
 - `old-planning-specs/` (V0'da oluşturulamaz)
 - `removed-structures/` (V0'da oluşturulamaz)
 - `ARCHIVE_INDEX.md` (V0'da oluşturulamaz; kayıt sayısı büyüdüğünde gelecekte değerlendirilir)
+- `ARCHIVE_METADATA.md` (V0'da merkezi metadata dosyası oluşturulamaz)
 
 ---
 
@@ -149,52 +150,69 @@ Metadata içinde kullanılabilecek kanonik arşiv nedenleri:
 
 ---
 
-## 8. Archive Metadata Standardı (YAML Frontmatter)
+## 8. Archive Metadata Standardı ve Istisnaları (Metadata Architecture)
 
-V0 mimarisinde arşivlenen her Markdown belgesi kendi dosyasının en üstünde **YAML frontmatter** metadata bloğu taşır.
+### 8.1. Genel Markdown Belgeleri Metadata kuralı (YAML Frontmatter)
+`deprecated-engine-docs/` ve `deprecated-templates/` gibi tekil arşivlenen Markdown belgelerinin başında metadata doğrudan dosyanın **YAML frontmatter** alanında saklanır.
 
-> [!NOTE]
-> Ayrı bir `ARCHIVE_METADATA.md` dosyası veya klasör seviyesinde merkezi manifest V0'da kullanılmaz.
+### 8.2. Değişmez Çalıştırma Kanıtı İstisnası (Immutable Runtime Evidence Exception)
+> [!IMPORTANT]
+> **Kanonik Çalıştırma Kanıtlarının Değişmezliği Kuralı**
+> 
+> Tam bir çalıştırma klasörü (`run directory`) arşivlendiğinde (`archive/old-runs/<run-id>/`), sırf arşiv metadata'sı enjekte etmek amacıyla kanonik runtime kanıt dosyaları (`RUN_MANIFEST.md`, `INPUT_SNAPSHOT.md`, `PACKAGE_SELECTION.md`, `SOURCE_REGISTER.md`, `ASSUMPTIONS.md`, `CONFLICTS.md`, `DECISIONS.md`, `RUN_LOG.md`, `PROGRESS.md`, `VALIDATION_REPORT.md`, `COMPLETION_REPORT.md`, `working-output/`) **KESİNLİKLE MODİFİYE EDİLEMEZ VEYA ÜZERİNE YAZILAMAZ**.
+> 
+> Arşivlenen bir run için tüm arşiv metadata'sı, archive katmanının sahibi olduğu sidecar dosyasında saklanır:
+> ```text
+> archive/old-runs/<run-id>/ARCHIVE_RECORD.md
+> ```
 
-### 8.1. Zorunlu Metadata Alanları (Required Fields)
+### 8.3. General Markdown Metadata Formatı (Engine Docs & Templates)
 ```yaml
 ---
 archive_id: ARC-ENGINE-001
+content_type: engine_doc
+original_path: engine/OLD_CONTRACT.md
+archived_path: archive/deprecated-engine-docs/OLD_CONTRACT.md
+original_version: not_assigned
 status: deprecated
-archive_reason: Yeni sözleşmeyle değiştirildi.
+archive_reason: Sorumluluğu yeni sözleşmeye devredildi.
 archived_at: 2026-08-10
+archived_by: execution-agent
 replacement: engine/NEW_CONTRACT.md
+related_runs: []
+notes: ""
 ---
 ```
 
-### 8.2. Kapsamlı Metadata Bloğu Format Şablonu (Örnek Format)
+### 8.4. Archived Run Sidecar Record Formatı (`ARCHIVE_RECORD.md`)
 ```yaml
 ---
-archive_id: ARC-TEMPLATE-001
-content_type: template
-original_path: templates/ai/OLD_TEMPLATE.md
-archived_path: archive/deprecated-templates/OLD_TEMPLATE.md
-original_version: not_assigned
-status: deprecated
-archive_reason: Yeni metadata ve placeholder standardı nedeniyle arşivlendi.
+archive_id: ARC-RUN-001
+content_type: run
+run_id: RUN-20260801-001
+original_path: runs/completed/RUN-20260801-001/
+archived_path: archive/old-runs/RUN-20260801-001/
+archive_status: historical
+archive_reason: Historical retention after operational review period.
 archived_at: 2026-08-10
-archived_by: execution-agent
-replacement: templates/ai/NEW_TEMPLATE.md
-related_runs: []
-related_outputs: []
-notes: "Eski run uyumluluğu için tutuluyor."
+archived_by: operator
+replacement: not_applicable
+related_outputs:
+  - outputs/products/example-project/versions/v1.0/
+notes: ""
 ---
 ```
 
 *(Not: Yukarıdaki metadata örnekleri yalnızca biçim gösterimidir. Yapı kurulumu sırasında sahte arşiv kaydı üretilmemiştir).*
 
-### 8.3. Archive ID Standardı
-- Format: `ARC-<TYPE>-<NNN>` (Örn: `ARC-ENGINE-001`, `ARC-TEMPLATE-001`, `ARC-RUN-001`).
-- Değişmezlik: Atanan Archive ID kararlıdır ve değiştirilemez.
+### 8.5. `RUN_MANIFEST.status` vs `ARCHIVE_RECORD.archive_status` Ayrımı
+- **`RUN_MANIFEST.status`**: Çalıştırmanın runtime yaşam döngüsü durumudur (`Completed`, `Failed`, `Cancelled`, `Invalidated`). Arşive taşıma runtime status değerini kesinlikle değiştirmez!
+- **`ARCHIVE_RECORD.archive_status`**: Arşivleme sınıflandırma durumudur (`historical`, `deprecated`, `invalidated`). Çakışmaları önlemek için sidecar belgesinde `archive_status` terimi kullanılır.
 
-### 8.4. Status vs Archive Reason Ayrımı
-- `status`: Arşivlenmiş içeriğin mevcut durumudur (Örn: `deprecated`, `superseded`, `invalidated`).
-- `archive_reason`: İçeriğin neden arşive alındığının açıklayıcı gerekçesidir.
+### 8.6. Archive Move ≠ Run Invalidation
+- Bir run'ın archive/old-runs/ altına aktarılması, o run'ın `Invalidated` olduğu anlamına gelmez.
+- `Invalidated` bir runtime iş/geçerlilik kararıdır; archive move ise dondurulmuş tarihsel saklama hareketidir.
+- Archive move sırasında `RUN_MANIFEST.output_ref` alanı değiştirilmez; kanonik tarihsel çıktı referansı olarak korunur.
 
 ---
 
@@ -207,11 +225,11 @@ Gelecekte bir içerik arşivlenirken aşağıdaki 11 adımlı kanonik süreç s�
 2. Arşivleme Nedeni Belirleme (Canonical archive_reason seçilir)
 3. Yerine Geçen İçerik Doğrulaması (Replacement path teyit edilir)
 4. Archive Hedef Konumu Seçimi (deprecated-engine-docs, deprecated-templates veya old-runs)
-5. Metadata Hazırlığı (YAML frontmatter eksiksiz yazılır)
-6. Dosya Taşıma (İçerik archive klasörüne aktarılır)
-7. Referans Güncellemeleri (Kırık link oluşmaması için bağımlılıklar güncellenir)
+5. Metadata Hazırlığı (Tekil belgelerde frontmatter; old-runs için ARCHIVE_RECORD.md sidecar yazılır)
+6. Dosya Taşıma (İçerik kanonik kanıtlar modifiye edilmeden archive klasörüne aktarılır)
+7. Referans Güncellemeleri (Kırık link oluşmaması için harici bağımlılıklar güncellenir)
 8. Changelog Kaydı (Gerekiyorsa logs/ENGINE_CHANGELOG.md yazılır)
-9. İndeks Güncellemeleri (İlgili run/output indeksleri güncellenir)
+9. İndeks Güncellemeleri (logs/RUN_INDEX.md içindeki fiziksel konum referansı güncellenir)
 10. Aktif Okuma Akışından Çıkarma (Engine read order ve package seçiminden kaldırılır)
 11. Referans ve İzolasyon Doğrulaması (Kırık link veya aktif sızıntı olmadığı doğrulanır)
 ```
@@ -261,7 +279,7 @@ Restore Akışı:
 
 Archive sınırsız büyüyen bir klasör olmamalıdır. Belirli aralıklarda şu kontroller yapılır:
 - Birebir mükerrer kopya var mı?
-- Metadata'sız dosya var mı?
+- Metadata'sız dosya veya `ARCHIVE_RECORD.md` eksikliği var mı?
 - `replacement` bağlantısı kırık mı?
 - Hiçbir tarihsel/audit değeri kalmamış dosya var mı?
 - Yanlışlıkla saklanmış secret veya PII var mı?
