@@ -3,7 +3,7 @@
 ```yaml
 snapshot_id: SNAPSHOT-RUN-20260101-002
 run_id: RUN-20260101-002
-source_input_id: INPUT-REALTIME-SYNC-001-V1
+source_input_id: INPUT-REALTIME-SYNC-APP-V1
 source_input_version: "1"
 source_input_path: examples/inputs/web-app-blocked-001/PROJECT_INPUT.md
 captured_at: 2026-01-01T00:00:00Z
@@ -19,7 +19,7 @@ approved_at: 2026-01-01T00:00:00Z
 ```markdown
 # PROJECT INPUT — Realtime Sync App Demo
 
-input_id: INPUT-REALTIME-SYNC-001-V1
+input_id: INPUT-REALTIME-SYNC-APP-V1
 project_name: Realtime Sync App Demo
 project_slug: realtime-sync-app
 input_version: "1"

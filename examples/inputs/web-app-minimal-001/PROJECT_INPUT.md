@@ -1,7 +1,7 @@
 # PROJECT INPUT — Task Tracker Minimal Web App
 
 ```yaml
-input_id: INPUT-WEB-APP-MINIMAL-001-V1
+input_id: INPUT-TASK-TRACKER-DEMO-V1
 project_name: Task Tracker Demo App
 project_slug: task-tracker-demo
 input_version: "1"

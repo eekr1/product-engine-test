@@ -3,7 +3,7 @@
 ```yaml
 snapshot_id: SNAPSHOT-RUN-20260101-001
 run_id: RUN-20260101-001
-source_input_id: INPUT-WEB-APP-MINIMAL-001-V1
+source_input_id: INPUT-TASK-TRACKER-DEMO-V1
 source_input_version: "1"
 source_input_path: examples/inputs/web-app-minimal-001/PROJECT_INPUT.md
 captured_at: 2026-01-01T00:00:00Z
@@ -19,7 +19,7 @@ approved_at: 2026-01-01T00:00:00Z
 ```markdown
 # PROJECT INPUT — Task Tracker Minimal Web App
 
-input_id: INPUT-WEB-APP-MINIMAL-001-V1
+input_id: INPUT-TASK-TRACKER-DEMO-V1
 project_name: Task Tracker Demo App
 project_slug: task-tracker-demo
 input_version: "1"

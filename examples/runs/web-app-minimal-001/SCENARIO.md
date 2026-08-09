@@ -19,23 +19,29 @@ anonymized: true
 
 ## 1. Senaryonun Amacı
 
-Bu senaryo, onaylı bir `PROJECT_INPUT.md` belgesinden başlanarak `demo-frontend` paketi ve `Prototype` teslimat profili ile yürütülen ve başarıyla tamamlanan (`status: Completed`) bir çalışmanın 11 kanonik operasyonel belgesini ve `working-output/` yapısını gösterir.
+Bu senaryo, onaylı bir `PROJECT_INPUT.md` (`INPUT-TASK-TRACKER-DEMO-V1`) belgesinden başlanarak `demo-frontend` paketi ve `Prototype` teslimat profili ile yürütülen ve başarıyla tamamlanan (`status: Completed`) bir çalışmanın 11 kanonik operasyonel belgesini ve `working-output/` yapısını gösterir.
 
 ---
 
 ## 2. Test Edilen Davranış
 
 - Run yaşam döngüsünün `Created ➔ Initialized ➔ Running ➔ Validation ➔ Completed` adımlarını sorunsuz geçmesi.
-- `INPUT_SNAPSHOT.md` snapshot'ının onaylı girdiden eksiksiz alınması.
-- `PACKAGE_SELECTION.md` kararlarının `engine/PACKAGE_RULES.md` ile tam uyumlu olması.
-- `VALIDATION_REPORT.md` denetiminin `PASS` vermesi.
-- Final çıktının `outputs/demos/task-tracker-demo/versions/v0.1/` ve `latest/` dizinlerine yayınlanması.
-- `RUN_MANIFEST.md` belgesindeki `output_ref` ve `output_version` alanlarının dondurulması.
+- `INPUT_SNAPSHOT.md` snapshot'ının onaylı girdiden eksiksiz alınması (`INPUT-TASK-TRACKER-DEMO-V1`).
+- `PACKAGE_SELECTION.md` kararlarının `engine/PACKAGE_RULES.md` ile tam uyumlu olması (`selected_package: demo-frontend`).
+- `VALIDATION_REPORT.md` denetiminin `validation_result: PASS` vermesi.
+- `RUN_MANIFEST.md` belgesindeki `output_ref` alanında kanonik runtime yayın konumunun (`outputs/demos/task-tracker-demo/versions/v0.1/`) dondurulması.
 
 ---
 
-## 3. Beklenen Sonuç (Expected Result)
+## 3. Physical Fixture vs Canonical Runtime Output Ref
+
+- **Canonical Runtime Output Ref (`output_ref`):** `outputs/demos/task-tracker-demo/versions/v0.1/` (Gerçek bir çalıştırmanın `RUN_MANIFEST.md` belgesine yazacağı yetkili runtime çıktı yolu).
+- **Physical Example Fixture Location:** `examples/outputs/web-app-minimal-001/` (Örnek materyallerin repository içerisinde saklandığı sentetik fixture dizini).
+
+---
+
+## 4. Beklenen Sonuç (Expected Result)
 
 - **Run Status:** `Completed`
-- **Overall Validation:** `PASS`
-- **Output Publication:** `PUBLISHED` (`output_version: v0.1`, `output_ref: examples/outputs/web-app-minimal-001/`)
+- **Validation Result:** `PASS`
+- **Output Ref:** `outputs/demos/task-tracker-demo/versions/v0.1/`

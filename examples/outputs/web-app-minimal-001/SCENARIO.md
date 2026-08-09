@@ -19,11 +19,20 @@ anonymized: true
 
 ## 1. Senaryonun Amacı
 
-Bu senaryo, `web-app-minimal-001` senaryosunun `RUN-20260101-001` çalışması sonucunda üretilen, `Validation` sürecinden `PASS` alan ve `outputs/demos/task-tracker-demo/versions/v0.1/` altında yayınlanan temiz final teslimat paketini gösterir.
+Bu senaryo, `web-app-minimal-001` senaryosunun `RUN-20260101-001` çalışması sonucunda üretilen ve `Validation` sürecinden `validation_result: PASS` alan temiz final teslimat paketini gösterir.
 
 ---
 
-## 2. Test Edilen Davranış
+## 2. Canonical Runtime Output Ref vs Physical Example Location
+
+- **Canonical Runtime Output Ref (`output_ref`):** `outputs/demos/task-tracker-demo/versions/v0.1/` (Gerçek bir çalıştırmanın runtime aşamasında yayınlandığı yetkili çıktı yolu).
+- **Physical Example Fixture Location:** `examples/outputs/web-app-minimal-001/` (Bu gösterim materyallerinin repository içerisinde saklandığı fiziksel test fixture konumu).
+
+Bu senaryo runtime'da `outputs/demos/task-tracker-demo/versions/v0.1/` yoluna publish edilmiş olan çıktının birebir sentetik örneğidir.
+
+---
+
+## 3. Test Edilen Davranış
 
 - **Strict Cleanliness:** Hiçbir çözülmemiş yer tutucu (`{{...}}`, `<TODO>`), şablon talimatı (`[CONDITIONAL: ...]`) veya dahili yorum kalmaması.
 - **No Run Leakage:** `RUN_MANIFEST.md`, `RUN_LOG.md`, `VALIDATION_REPORT.md` vb. operasyonel belgelerin nihai teslimata sızmaması.
@@ -32,8 +41,9 @@ Bu senaryo, `web-app-minimal-001` senaryosunun `RUN-20260101-001` çalışması 
 
 ---
 
-## 3. Beklenen Sonuç (Expected Result)
+## 4. Beklenen Sonuç (Expected Result)
 
 - **Deliverable Status:** `Clean & Validated`
 - **Output Version:** `v0.1`
-- **Verification:** `PASS`
+- **Validation Result:** `PASS`
+- **Canonical Output Ref:** `outputs/demos/task-tracker-demo/versions/v0.1/`

@@ -47,11 +47,13 @@ examples/runs/
 
 ---
 
-## 4. Canonical Run ID ve Status Vocabulary Standardı
+## 4. Canonical RUN_MANIFEST Fields & Vocabulary Standards
 
+- **Kanonik Manifest Alanları:** Approved `templates/runs/RUN_MANIFEST_TEMPLATE.md` ile tam uyum:
+  `selected_package` (NOT `package_id`), `validation_result` (NOT `overall_validation`), `documents_produced`, `output_version`, `output_ref`.
+- **`output_ref` Semantiği:** `RUN_MANIFEST.md` içindeki `output_ref` her zaman kanonik runtime yayın dizinini gösterir (`outputs/<category>/<project-slug>/versions/<output-version>/`). Örnek materyalin fiziksel repository saklama konumu (`examples/outputs/web-app-minimal-001/`) ise `SCENARIO.md` belgesinde açıklanır.
 - **Run ID Standardı:** `RUN-<YYYYMMDD>-<sequence>` (Örn: `RUN-20260101-001`).
 - **Status Vocabulary:** Yalnızca `engine/RUN_PROTOCOL.md` kanonik terimleri kullanılır:
   `Created`, `Initialized`, `Running`, `Validation`, `Completed`, `Blocked`, `Paused`, `Resumed`, `Failed`, `Cancelled`, `Invalidated`.
-  *(Active, Done, Success kullanımı KESİNLİKLE YASAKTIR).*
-- **Blocked ≠ Failed Ayrımı:** Critical conflict veya netleştirme ihtiyacı olduğunda durum `Blocked` olur. Bu durum teknik bir başarısızlık (`Failed`) değildir.
+- **Blocked ≠ Failed Ayrımı:** Critical conflict veya netleştirme ihtiyacı olduğunda durum `Blocked` olur. Bu durum teknik bir başarısızlık (`Failed`) değildir. Henüz yapılmayan doğrulama için `validation_result: null` veya raporda `validation not executed` belirtilir; uydurma alan isimleri üretilmez.
 - **Sahte Detay Yasağı:** Run loglarında gereksiz 40-50 sahte olay üretilmez. Yalnızca test edilen davranışı gösteren minimum kronolojik olaylar kaydedilir.

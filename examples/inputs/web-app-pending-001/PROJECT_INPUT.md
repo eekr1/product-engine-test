@@ -1,7 +1,7 @@
 # PROJECT INPUT — Analytics Dashboard Pending Draft
 
 ```yaml
-input_id: INPUT-WEB-APP-PENDING-001-V1
+input_id: INPUT-ANALYTICS-DASHBOARD-DEMO-V1
 project_name: Analytics Dashboard Demo
 project_slug: analytics-dashboard-demo
 input_version: "1"

@@ -2,7 +2,7 @@
 
 ```yaml
 run_id: RUN-20260101-002
-overall_validation: N/A
+validation_result: null
 validated_at: null
 validator_id: null
 ```
@@ -11,4 +11,4 @@ validator_id: null
 
 ## Validation Summary
 
-*Çalışma `Blocked` durumunda olduğu için doğrulama (`Validation`) adımı çalıştırılmamıştır.*
+*Validation was not executed because the run is Blocked due to unresolved critical technical conflict (CNF-01).*
