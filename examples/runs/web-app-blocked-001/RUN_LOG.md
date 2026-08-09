@@ -13,6 +13,6 @@ total_events: 3
 
 | Timestamp | Phase | Event | Status | Details |
 |---|---|---|---|---|
-| `2026-01-01T00:00:00Z` | `Intake` | `Run Created & Initialized` | `Initialized` | `INPUT-REALTIME-SYNC-001-V1` snapshot'ı donduruldu. |
-| `2026-01-01T00:02:00Z` | `Package Selection` | `Critical Conflict Detected` | `Running` | `CNF-01` (Backend kısıtı vs Realtime Sync) çelişkisi tespit edildi. |
-| `2026-01-01T00:05:00Z` | `Blocked` | `Run Transitioned to Blocked` | `Blocked` | Kullanıcı netleştirmesi bekleniyor. Üretim ve yayın durduruldu. |
+| `2026-01-01T00:00:00Z` | `Intake` | `Run Initialized` | `Initialized` | `INPUT-REALTIME-SYNC-APP-V1` onaylı girdi snapshot'ı alındı. |
+| `2026-01-01T00:02:00Z` | `Evaluation` | `Runtime Conflict Discovered` | `Running` | Teknik fizibilite incelemesinde gerçek WebSocket sunucusu zorunluluğu keşfedildi. `CNF-01` kaydedildi. |
+| `2026-01-01T00:05:00Z` | `Blocked` | `Status Changed to Blocked` | `Blocked` | Kritik çalışma zamanı çelişkisi nedeniyle run `Blocked` yapıldı. Kullanıcı kararı bekleniyor. |

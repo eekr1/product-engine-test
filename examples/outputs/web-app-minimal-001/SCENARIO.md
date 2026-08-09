@@ -19,16 +19,16 @@ anonymized: true
 
 ## 1. Senaryonun Amacı
 
-Bu senaryo, `web-app-minimal-001` senaryosunun `RUN-20260101-001` çalışması sonucunda üretilen ve `Validation` sürecinden `validation_result: PASS` alan temiz final teslimat paketini gösterir.
+Bu fixture, `web-app-minimal-001` senaryosuna ait eşdeğer gerçek bir çalıştırma (`RUN-20260101-001`) sonucunda `Validation` sürecinden `validation_result: PASS` alarak `outputs/demos/task-tracker-demo/versions/v0.1/` konumuna yayınlanacak olan temiz nihai teslimat paketini temsil eden sentetik bir gösterim örneğidir.
 
 ---
 
 ## 2. Canonical Runtime Output Ref vs Physical Example Location
 
 - **Canonical Runtime Output Ref (`output_ref`):** `outputs/demos/task-tracker-demo/versions/v0.1/` (Gerçek bir çalıştırmanın runtime aşamasında yayınlandığı yetkili çıktı yolu).
-- **Physical Example Fixture Location:** `examples/outputs/web-app-minimal-001/` (Bu gösterim materyallerinin repository içerisinde saklandığı fiziksel test fixture konumu).
+- **Physical Example Fixture Location:** `examples/outputs/web-app-minimal-001/` (Bu gösterim materyallerinin repository içerisinde saklandığı sentetik fixture konumu).
 
-Bu senaryo runtime'da `outputs/demos/task-tracker-demo/versions/v0.1/` yoluna publish edilmiş olan çıktının birebir sentetik örneğidir.
+Bu fixture, gerçek runtime yayın semantiğini ve temiz çıktı standartlarını somutlaştırmak amacıyla hazırlanmıştır.
 
 ---
 

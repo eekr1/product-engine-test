@@ -23,7 +23,7 @@ source_count: 1
 
 ## 1. Original Brief
 
-> "Kullanıcıların canlı olarak mesajlaşabildiği, verilerin sunucu tarafındaki merkezi veritabanıyla anlık eşleştiği bir uygulama demosu istiyoruz. Aynı zamanda proje kesinlikle sunucusuz statik frontend prototipi olarak çalışmalı ve backend/API sunucusu barındırmamalıdır."
+> "Kullanıcıların anlık mesajlaşma deneyimini simüle edilmiş canlı akışla görebileceği frontend ağırlıklı bir prototip hazırlamak istiyoruz. Arayüz mesaj gönderme ve alma simülasyonunu desteklemeli, veriler prototip kapsamında istemci tarafında mock verilerle gösterilmelidir. Dış backend veya sunucu bağımlılığı şimdilik kapsam dışıdır."
 
 ---
 
@@ -42,48 +42,57 @@ source_count: 1
 
 ## 3. Problem & Purpose
 
-- **Çözülen Problem:** Anlık veri senkronizasyonunun prototip düzeyinde görselleştirilmesi.
-- **Ana Amaç:** Mesajlaşma arayüzü sunmak.
+- **Çözülen Problem:** Canlı mesajlaşma ve akış deneyiminin prototip üzerinde görselleştirilmesi.
+- **Ana Amaç:** Kullanıcı etkileşimli simüle edilmiş mesajlaşma arayüzü sunmak.
 
 ---
 
 ## 4. Target Audience
 
-- Prototipi inceleyecek test kullanıcıları.
+- Prototipi ve mesajlaşma UX akışını inceleyecek test kullanıcıları.
 
 ---
 
 ## 5. Scope Boundaries
 
 ### In Scope
-- Mesajlaşma arayüzü kurgusu.
-- İstemci taraflı prototip sunumu.
+- Mesajlaşma arayüzü ve konuşma baloncukları kurgusu.
+- İstemci taraflı mock veri ile mesaj akışı simülasyonu.
+- Koyu temalı responsive mesajlaşma paneli.
 
 ### Out of Scope
-- Kalıcı prod veritabanı.
+- Sunucu tarafı veritabanı (Backend API).
+- Gerçek WebSocket sunucusu.
 
 ---
 
 ## 6. Technical Context & Preferences
 
-- **Stack:** HTML/CSS/JS.
-- **Gereksinim Çelişkisi:** İstemci tarafı sunucusuz mimari kısıtı ile canlı sunucu veritabanı senkronizasyon talebi bir arada yer almaktadır.
+- **Stack:** HTML5, CSS3, Vanilla JavaScript (ES6+).
+- **Prototip Mimarisi:** İstemci tarafı mock veriler ile mesajlaşma akışı simülasyonu.
+- **Kısıtlamalar:** Sunucusuz, istemci tarafında çalışan frontend prototipi.
 
 ---
 
 ## 7. Known Decisions
 
-- **[DEC-01]** Kullanıcı brief'i onaylanmış ve `status: approved` olarak dondurulmuştur.
+- **[DEC-01]** İlk prototip sürümünde mesajlaşma akışı istemci tarafında mock/simüle edilmiş verilerle gösterilecektir.
 
 ---
 
 ## 8. Open Questions
 
-*Intake anında açık soru bırakılmamış; çelişki run aşamasında tespit edilmiştir.*
+*Intake anında açık soru bırakılmamış; tüm zorunlu alanlar netleştirilmiştir.*
 
 ---
 
-## 9. Approval & Verification
+## 9. Conflicts
+
+*İntake aşamasında tespit edilmiş çözülmemiş kritik çelişki bulunmamaktadır.*
+
+---
+
+## 10. Approval & Verification
 
 - **Status:** `approved`
 - **Approved By:** `user`
@@ -92,3 +101,4 @@ source_count: 1
   - [x] Canonical format ve `PROJECT_INPUT.md` yapısına uygun.
   - [x] Kullanıcı açık onayı mevcut (`status: approved`).
   - [x] `input_id: INPUT-REALTIME-SYNC-APP-V1` kanonik.
+  - [x] Çözülmemiş kritik çelişki bulunmuyor.

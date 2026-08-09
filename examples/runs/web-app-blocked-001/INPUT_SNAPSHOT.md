@@ -29,5 +29,5 @@ project_state: new
 delivery_profile: Prototype
 
 ## Brief Requirements
-Kullanıcılar canlı olarak mesajlaşabilsin ve veriler sunucudaki merkezi veritabanıyla anlık eşleşsin. Aynı zamanda proje kesinlikle sunucusuz statik frontend prototipi olarak çalışmalı ve backend/API barındırmamalıdır.
+Kullanıcıların anlık mesajlaşma deneyimini simüle edilmiş canlı akışla görebileceği frontend ağırlıklı bir prototip hazırlamak istiyoruz. Arayüz mesaj gönderme ve alma simülasyonunu desteklemeli, veriler prototip kapsamında istemci tarafında mock verilerle gösterilmelidir. Dış backend veya sunucu bağımlılığı şimdilik kapsam dışıdır.
 ```

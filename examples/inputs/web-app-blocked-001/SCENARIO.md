@@ -19,20 +19,20 @@ anonymized: true
 
 ## 1. Senaryonun Amacı
 
-Bu senaryo, kullanıcı tarafından onaylanmış (`status: approved`) bir `PROJECT_INPUT.md` belgesini gösterir. Ancak bu girdi, kullanıcı talebinde çelişen iki gereksinim barındırmaktadır: "Sunucusuz statik frontend prototipi olma kısıtı" ile "Canlı sunucu veritabanı senkronizasyon talebi".
+Bu senaryo, kullanıcı tarafından sorunsuz biçimde onaylanmış (`status: approved`), hiçbir açık kritik çelişki içermeyen bir `PROJECT_INPUT.md` belgesini gösterir.
 
 ---
 
-## 2. Test Edilen Davranış
+## 2. Input vs Run Contract Semantiği
 
-- **Approved Input ≠ Conflict-Free Run ilkesi:** Girdinin `status: approved` olması, çalıştırmanın sorunsuz tamamlanacağını garanti etmez.
-- **Run Creation Eligibility:** Girdi onaylı olduğu için `Run Creation Gate` aşamasını geçer ve bir run başlatılabilir (`RUN-20260101-002`).
-- **Pipeline Blocking:** Çalıştırma başladıktan sonra `engine/CONFLICT_RESOLUTION.md` uyarınca paket çözümlenirken `CNF-01` kritik mimari çelişkisi tespit edilir ve çalışma `Blocked` durumuna geçer.
+- **Tam Onaylı Girdi (Conflict-Free Intake):** Girdi belgesi intake aşamasında çözülmemiş hiçbir kritik çelişki barındırmaz. Kullanıcı onayı tamdır (`approved_by: user`).
+- **Run Creation Eligibility:** Girdi geçerli ve onaylı olduğu için `Run Creation Gate` aşamasını sorunsuz geçer ve çalıştırma dondurulmuş snapshot ile başlatılır (`RUN-20260101-002`).
+- **Sonradan Keşfedilen Runtime Çelişkisi:** Çalıştırma başladıktan sonra, teknik fizibilite/bağımlılık denetimi sırasında prototipin simülasyon yerine gerçek multi-tenant WebSocket sunucusu gerektirdiği şeklinde yeni bir teknik gereksinim keşfedilir. Bu yeni çalışma zamanı gereksinimi `demo-frontend` prototip kapsamıyla çelişir ve çalışma `Blocked` durumuna geçer.
 
 ---
 
 ## 3. Beklenen Sonuç (Expected Result)
 
 - **Intake Status:** `approved` (`approved_by: user`, `input_id: INPUT-REALTIME-SYNC-APP-V1`)
-- **Run Eligibility:** `ELIGIBLE` (Girdi snapshot'ı alınabilir)
-- **Run Lifecycle Impact:** Run pipeline adımlarında `Blocked` durumuna geçer.
+- **Intake Conflicts:** `None` (Intake esnasında kritik çelişki yoktur)
+- **Run Eligibility:** `ELIGIBLE` (Product Engine snapshot alıp run başlatabilir)

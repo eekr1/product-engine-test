@@ -13,9 +13,9 @@ critical_conflicts: 1
 
 | Conflict ID | Severity | Description | Source A | Source B | Status |
 |---|---|---|---|---|---|
-| `CNF-01` | `Critical` | Sunucusuz statik prototip kısıtı ile canlı sunucu tarafı veritabanı senkronizasyon talebi çelişmektedir. | `INPUT_SNAPSHOT.md` (Scope) | `INPUT_SNAPSHOT.md` (Brief) | `Unresolved` |
+| `CNF-01` | `Critical` | Çalıştırma sırasındaki teknik fizibilite incelemesinde prototipin simülasyon yerine gerçek multi-tenant WebSocket sunucusu gerektirdiği keşfedilmiştir. Bu yeni teknik gereksinim seçilen istemci taraflı `demo-frontend` prototip kapsamı ile çelişmektedir. | `INPUT_SNAPSHOT.md` (`demo-frontend` Scope) | Runtime Technical Discovery (`Feasibility Review`) | `Unresolved` |
 
 ---
 
 ## Conflict Resolution Action
-`engine/CONFLICT_RESOLUTION.md` uyarınca kritik mimari çelişki çözülmeden üretim devam ettirilemez. Çalışma `Blocked` durumuna geçirilmiştir. Kullanıcıdan tercih (mock data persistence vs backend scope eklenmesi) beklenmektedir.
+`engine/CONFLICT_RESOLUTION.md` uyarınca runtime sırasında keşfedilen bu kritik mimari çelişki çözülmeden doküman üretimi devam ettirilemez. Çalışma `Blocked` durumuna geçirilmiştir. Kullanıcıdan kapsam tercihi (Mock simülasyona devam edilmesi mi yoksa backend paketine geçilmesi mi) beklenmektedir.

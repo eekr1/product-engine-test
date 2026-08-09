@@ -2,7 +2,7 @@
 
 ```yaml
 scenario_id: web-app-blocked-001
-title: Blocked Run Due to Critical Unresolved Requirement Conflict
+title: Blocked Run Due to Critical Runtime Technical Conflict
 example_type: edge-case
 project_type: web-app
 package_id: demo-frontend
@@ -19,17 +19,17 @@ anonymized: true
 
 ## 1. Senaryonun Amacı
 
-Bu senaryo, onaylı bir girdi snapshot'ından (`INPUT-REALTIME-SYNC-APP-V1` — `examples/inputs/web-app-blocked-001/PROJECT_INPUT.md`) başlatılan ancak üretim aşamasında çözülemeyen kritik bir teknik çelişki (`Critical Conflict`) tespit edildiğinde bir Product Engine çalışmasının nasıl `Blocked` durumuna geçtiğini gösterir.
+Bu senaryo, tamamen onaylı ve çelişkisiz bir girdi snapshot'ından (`INPUT-REALTIME-SYNC-APP-V1`) başlatılan bir Product Engine çalışmasının, üretim sırasında yeni bir teknik gereksinimin keşfedilmesiyle nasıl `Blocked` durumuna geçtiğini gösterir.
 
 ---
 
-## 2. Test Edilen Davranış
+## 2. Test Edilen Davranış & Akış
 
-- **Approved Input ≠ Conflict-Free Run:** Girdinin `status: approved` olması çalıştırmanın sorunsuz biteceğini garanti etmez; `RUN-20260101-002` çalışması `CNF-01` çelişkisi nedeniyle `Blocked` olur.
-- **`Blocked` Semantiği:** Kritik çelişki veya netleştirme ihtiyacı olduğunda çalışmanın doğrudan `Failed` yapılmayıp `Blocked` durumunda duraklatılması.
-- **Çelişki Kaydı (`CONFLICTS.md`):** İki çelişen gereksinimin (İstemci taraflı sunucusuz deployment kısıtlaması vs Sunucu taraflı canlı multi-tenant senkronizasyon talebi) `CONFLICTS.md` belgesine açıkça kaydedilmesi.
-- **Çıktı Engeli:** `Blocked` durumundaki bir çalışmanın kesinlikle final çıktı yayınlayamayacağını (`output_ref: null`, `output_version: not_published`) doğrulamak.
-- **`Blocked` ≠ `Failed` Ayrımı:** Çelişki çözüldüğünde çalışmanın `Resumed ➔ Running` durumuna dönebileceğini göstermek.
+1. **Approved Input Initialization:** Girdi `status: approved` olarak snapshot alınır ve run başlatılır (`RUN-20260101-002`).
+2. **Runtime Discovery:** Paket ve teknik fizibilite incelemesi sırasında prototipin simülasyon ötesinde canlı multi-tenant WebSocket sunucusu gerektirdiği şeklinde yeni bir çalışma zamanı bağımlılığı keşfedilir.
+3. **Critical Conflict Registration (`CONFLICTS.md`):** Sonradan keşfedilen bu yeni gereksinim `demo-frontend` istemci taraflı prototip kapsamıyla çelişir ve `CNF-01` olarak kaydedilir.
+4. **Transition to Blocked:** Çalışma `engine/CONFLICT_RESOLUTION.md` uyarınca doğrudan `Failed` yapılmayıp `Blocked` durumuna çekilir.
+5. **Output Shielding:** `Blocked` durumundaki bir çalıştırmanın nihai çıktı yayınlayamayacağını (`output_ref: null`, `output_version: not_published`) doğrulamak.
 
 ---
 
