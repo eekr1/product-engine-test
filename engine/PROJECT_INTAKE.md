@@ -231,7 +231,7 @@ Ayrıntılı assumption kuralları için bkz: `ASSUMPTION_RULES.md`.
 Aşağıdaki durumlarda ajan MUST kullanıcıya soru sormalıdır:
 
 - `project_type` belirsiz veya çelişkili ise
-- `delivery_profile` belirtilmemişse ve proje kapsamından tahmin edilemiyorsa
+- `delivery_profile` belirtilmemişse (pending intake aşamasında netleştirilmeli veya safe inference ile belirlenip onay için kullanıcının onayına sunulmalıdır; approved input öncesi kesinleşmek zorundadır)
 - `project_state` belirsiz ise (yani ne kadar mevcut materyal olduğu anlaşılamıyorsa)
 - Birden fazla kapsam yorumu mümkün ve bunlar farklı paket seçimine yol açıyorsa
 - Kullanıcı iki farklı proje hakkında bilgi vermiş gibi görünüyorsa (proje karışıklığı riski)

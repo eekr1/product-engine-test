@@ -77,7 +77,7 @@ source_count: 1
 ## 6. Delivery Target
 
 - **Delivery Profile:** `Prototype`
-- **Hedef:** Kullanılabilir frontend prototipi ve ajanın doğrudan geliştirmeye başlayabileceği temel AI doküman paketi (`PROJECT_BRAIN.md`, `PRODUCT_RULES.md`, `README.md`).
+- **Hedef:** Kullanılabilir frontend prototipi ve ajanın doğrudan geliştirmeye başlayabileceği temel AI doküman paketi (`PROJECT_BRAIN.md`, `PRODUCT_RULES.md`, `DESIGN_RULES.md`, `README.md`).
 
 ---
 

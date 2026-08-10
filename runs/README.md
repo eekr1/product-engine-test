@@ -113,7 +113,9 @@ Sistemde veri tutarlılığını ve çakışmasız çalışma emniyetini sağlam
 
 ## 7. Run Yaşam Döngüsü ve Durum Semantiği (Run Lifecycle)
 
-Run yaşam döngüsü `engine/RUN_PROTOCOL.md` sözleşmesi ile tam uyumludur.
+> [!IMPORTANT]
+> **Otorite Bağlantısı (Canonical Authority)**
+> Run yaşam döngüsü kurallarının, durum geçiş mantığının (`state transitions`) ve status vocabulary tanımlarının tek ve birincil sahibi **`engine/RUN_PROTOCOL.md`** belgesidir. `runs/README.md` bu sözleşmeyi ezmez veya ikinci bir otorite olarak yeniden tanımlamaz; fiziksel depolama ve kullanım rehberliği sağlar.
 
 ```text
        [Created]
@@ -136,40 +138,39 @@ Run yaşam döngüsü `engine/RUN_PROTOCOL.md` sözleşmesi ile tam uyumludur.
 [Completed]     [Failed] (Unrecoverable Hata / Repair Sınırı)
 ```
 
-### Durum Tanımları (Status Vocabulary)
-
-1. **Created:** Run kimliği (Run ID) atandı ve dizin yapısı kuruldu; ancak girdi snapshot'ı ve paket seçimi henüz tamamlanmadı.
-2. **Initialized:** Onaylı girdi snapshot'ı alındı, paket ve teslimat profili kaydedildi, ilk operasyonel belgeler hazırlandı. Üretime geçilebilir.
-3. **Running:** Doküman üretim pipeline'ı aktif olarak çalışıyor, `working-output/` altında taslaklar üretiliyor.
-4. **Blocked:** Kritik bir çelişki (`CONFLICT`), eksik bilgi veya aşılması gereken bir engel nedeniyle üretim ilerletilemiyor. Çözülene kadar beklenir (doğrudan `Failed` yapılmaz).
-5. **Paused:** Operatör/kullanıcı kararı veya netleştirme (clarification) talebi nedeniyle çalışma bilinçli olarak duraklatıldı.
-6. **Resumed:** `Paused` durumundaki çalışmaya kullanıcı yanıtı veya onayı sonrası tekrar devam edildi; çalışma doğrudan `Running` durumuna döner.
-7. **Validation:** `working-output/` altındaki belgeler tamamlandı ve doğrulama kurallarına (`VALIDATION_RULES`) göre denetleniyor.
-8. **Completed:** Validation aşaması `PASS` veya onaylı `CONDITIONAL PASS` aldı, nihai çıktılar `outputs/` katmanına aktarıldı, run başarıyla kapatıldı.
-9. **Failed:** Üretim esnasında unrecoverable bir teknik/üretim hatası oluştu veya validation tekrar denemeleri (`repair`) sınırı sonrasında da `FAIL` alındı.
-10. **Cancelled:** Kullanıcı veya operatör tarafından çalışma bilinçli olarak iptal edildi. `status` değeri **Cancelled** olarak kalır.
-11. **Invalidated:** Tamamlanmış (`Completed`) bir run, sonradan proje girdisi veya kapsamı değiştiği için geçmişe dönük olarak geçersiz kılındı.
+Detaylı durum semantiği ve geçiş kuralları için bkz: [`engine/RUN_PROTOCOL.md`](../engine/RUN_PROTOCOL.md).
 
 ---
 
-## 8. Fiziksel Klasör Taşıma Kuralları (Physical Folder Movement & Atomicity)
+## 8. Fiziksel Klasör Taşıma Kuralları (Physical Storage Semantics & Atomicity)
 
-Bir run'ın fiziksel dizin konumu yaşam döngüsü boyunca aşağıdaki kurallara göre değiştirilir:
+> [!IMPORTANT]
+> **Fiziksel Klasör Semantiği (Physical Storage vs Logical Status)**
+> `runs/active/`, `runs/completed/` ve `runs/failed/` birer yaşam döngüsü terimi veya durum kelimesi (status vocabulary) **değildir**; fiziksel depolama kovalarıdır (physical storage buckets).
+> - Bir çalışmanın mantıksal durumu (`logical status`) **her zaman `RUN_MANIFEST.md` içerisindeki `status` alanından okunur**.
+> - `failed/` fiziksel klasörü, hem teknik başarısızlığa uğrayan (`status: Failed`) hem de kullanıcı kararıyla iptal edilen (`status: Cancelled`) çalışmaları barındırır.
+> - `completed/` fiziksel klasörü, tamamlanan (`status: Completed`) ve sonradan geçersiz kılınan (`status: Invalidated`) çalışmaları barındırır. Geçmiş yürütme kanıtları dondurulur ve dosya taşınmaz.
 
-| Run Durumu | Fiziksel Dizin Konumu |
+Bir run'ın fiziksel dizin konumu yaşam döngüsü boyunca aşağıdaki eşleşmeyle yönetilir:
+
+| Mantıksal Run Durumu (`RUN_MANIFEST.md: status`) | Fiziksel Dizin Konumu |
 | :--- | :--- |
 | `Created`, `Initialized`, `Running`, `Blocked`, `Paused`, `Resumed`, `Validation` | `runs/active/<run-id>/` |
-| `Completed` | `runs/completed/<run-id>/` |
+| `Completed`, `Invalidated` | `runs/completed/<run-id>/` |
 | `Failed`, `Cancelled` | `runs/failed/<run-id>/` |
 
 ### Taşınma Atomisitesi (Folder Move Atomicity)
 - Run kapanış süreci (`RUN_MANIFEST` güncellenmesi, `COMPLETION_REPORT` yazılması, çıktının `outputs/` katmanına aktarılması) eksiksiz tamamlanmadan run klasörü terminal dizinlerine (`completed/` veya `failed/`) **taşınamaz**.
 - Taşıma işlemi sırasında tüm operasyonel belgeler ve `working-output/` içeriği bir bütün olarak korunarak aktarılır.
 
-### Cancelled vs Failed Ayrımı
+### Cancelled vs Failed Fiziksel Eşleşmesi
 - `Cancelled` durumu bir teknik başarısızlık (`Failed`) değildir; bilinçli bir kullanıcı/operatör sonlandırmasıdır.
-- V0 mimarisinde ayrı bir `runs/cancelled/` klasörü bulunmadığı için `Cancelled` run'lar fiziksel olarak `runs/failed/<run-id>/` altında tutulabilir.
+- V0 mimarisinde ayrı bir `runs/cancelled/` klasörü bulunmadığı için `Cancelled` run'lar fiziksel olarak `runs/failed/<run-id>/` depolama kovasında tutulur.
 - **KRİTİK KURAL:** `Cancelled` durumundaki bir çalışmanın `RUN_MANIFEST.md` içerisindeki status değeri **asla `Failed` olarak değiştirilemez**; `status: Cancelled` olarak korunmalıdır.
+
+### Invalidated Run Fiziksel Eşleşmesi
+- Tamamlanmış (`Completed`) bir çalıştırma sonradan `Invalidated` durumuna geçerse, üretilen tarihsel yürütme kanıtları (`INPUT_SNAPSHOT`, `RUN_LOG`, `working-output` vb.) immutable olarak dondurulur.
+- Fiziksel klasör `runs/completed/<run-id>/` altında kalmaya devam eder; ayrı bir `runs/invalidated/` klasörü açılmaz ve dosya silinmez. Logical durum `RUN_MANIFEST.md` belgesinden (`status: Invalidated`) teyit edilir.
 
 ---
 
@@ -231,13 +232,12 @@ Bir run'ın fiziksel dizin konumu yaşam döngüsü boyunca aşağıdaki kuralla
 ## 15. Çalışmanın Kapatılması ve Özel Durumlar
 
 ### Başarılı Kapatma (Completion Gate)
-Aşağıdaki şartların TAMAMI sağlandığında run `Completed` yapılır:
-1. Tüm gerekli dokümanlar üretildi.
-2. Validation sonucu `PASS` veya onaylı `CONDITIONAL PASS`.
-3. Temiz çıktılar `outputs/<category>/<project-slug>/versions/<version>/` dizinine aktarıldı.
-4. `outputs/<category>/<project-slug>/latest/` güncellendi.
-5. `RUN_MANIFEST.md` ve `COMPLETION_REPORT.md` eksiksiz tamamlandı.
-6. Run klasörü `runs/completed/<run-id>/` konumuna taşındı.
+Başarılı yayınlama kapısı (publication gate eligibility) sağlandıktan sonra aşağıdaki adımlar sırasıyla uygulanarak run `Completed` durumunda kapatılır:
+1. Tüm gerekli dokümanlar üretildi ve doğrulama sonucu `PASS` veya kabul edilmiş `CONDITIONAL PASS` alındı.
+2. Sürüm numarası (`output_version`) tahsis edildi ve temiz çıktılar `outputs/<category>/<project-slug>/versions/<output-version>/` dizinine aktarıldı.
+3. `outputs/<category>/<project-slug>/latest/` türetilmiş görünümü güncellendi.
+4. `RUN_MANIFEST.md` belgesinde `output_ref`, `output_version` ve `status: Completed` donduruldu, `COMPLETION_REPORT.md` tamamlandı.
+5. Run klasörü `runs/completed/<run-id>/` konumuna taşındı.
 
 ### Aynı Girdi ile Yeni Run (Same Input, New Run)
 Aynı onaylı girdi sürümü (`PROJECT_INPUT.md v1`) farklı zamanlarda yeniden run başlatmak için kullanılabilir. Her run kendi benzersiz Run ID'sine, snapshot'ına ve loglarına sahiptir.

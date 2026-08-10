@@ -174,8 +174,10 @@ Girdi   : Working output
 Eylem   : VALIDATION_RULES.md'deki tüm kontroller uygulanır.
           Her doküman hem kendi içinde hem de diğer dokümanlarla tutarlılık açısından kontrol edilir.
 Çıktı   : Validation raporu (PASS / CONDITIONAL PASS / FAIL)
-Durma   : FAIL durumunda repair aşamasına geçilir.
-          CONDITIONAL PASS durumunda kullanıcı bilgilendirilir; onay alınarak devam edilebilir.
+Durma   : FAIL durumunda repair (Aşama 10) aşamasına geçilir.
+          CONDITIONAL PASS durumunda kullanıcı/operatör bilgilendirilir; iki geçerli yol mevcuttur:
+          A) accepted CONDITIONAL PASS → Aşama 11 (Final Output Hazırlığı / Publication) adımıyla devam edilir.
+          B) repair requested → Aşama 10 (Repair) adımına geçilir.
 ```
 
 Bkz: `VALIDATION_RULES.md`
@@ -186,40 +188,41 @@ Bkz: `VALIDATION_RULES.md`
 
 ```text
 Girdi   : Validation raporu + working output
-Eylem   : FAIL veya CONDITIONAL PASS durumunda, validation bulgularına göre
+Eylem   : FAIL durumunda (veya CONDITIONAL PASS sonrası repair talep edildiyse), validation bulgularına göre
           ilgili dokümanlar düzeltilir.
-          Onarım sonrası validation tekrar çalıştırılır.
+          Onarım sonrası validation (Aşama 9) tekrar çalıştırılır.
 Çıktı   : Onarılmış working output
 Durma   : İkinci validation'da da FAIL alınırsa
-          → Run başarısız kabul edilir. Kullanıcıya rapor verilir.
+          → Run başarısız kabul edilir (status: Failed). Kullanıcıya rapor verilir.
 ```
 
 ---
 
-### Aşama 11 — Final Output Hazırlığı
+### Aşama 11 — Final Output Hazırlığı (Publication)
 
 ```text
-Girdi   : PASS veya kabul edilmiş CONDITIONAL PASS working output
-Eylem   : Çalışma dosyaları ve run kayıtları temizlenir.
-          Final output, OUTPUT_STRUCTURE.md'de tanımlanan klasör yapısına yerleştirilir.
-          Sürüm numarası atanır, latest/ güncellenir.
-Çıktı   : Final output klasörü (temiz, teslime hazır)
-Durma   : Output yapısı hatalıysa → düzeltilir ve tekrar kontrol edilir.
+Girdi   : PASS veya kabul edilmiş CONDITIONAL PASS working output (publication gate eligibility)
+Eylem   : Sürüm numarası (output_version) tahsis edilir.
+          Final output, OUTPUT_STRUCTURE.md uyarınca versions/<output_version>/ klasörüne yerleştirilir.
+          latest/ türetilmiş görünümü yeni sürümün kopyasıyla güncellenir.
+          RUN_MANIFEST.md belgesindeki output_ref ve output_version alanları dondurulur.
+Çıktı   : Yayınlanmış sürüm çıktısı (versions/<output_version>/ ve latest/)
+Durma   : Output yayınlama aşamasında hata oluşursa → düzeltilir ve tekrar kontrol edilir.
 ```
 
 Bkz: `OUTPUT_STRUCTURE.md`
 
 ---
 
-### Aşama 12 — Run Tamamlama
+### Aşama 12 — Run Tamamlama (Completion)
 
 ```text
-Girdi   : Final output
+Girdi   : Yayınlanmış sürüm çıktısı + dondurulmuş manifest
 Eylem   : Run kaydı tamamlanır. Run durumu "Completed" olarak güncellenir.
           Üretilen dokümanlar, kullanılan paket, yapılan assumption'lar ve
-          validation sonucu RUN_MANIFEST.md'ye yazılır.
+          validation sonucu RUN_MANIFEST.md ve COMPLETION_REPORT.md belgelerine işlenir.
           Run klasörü runs/completed/<run-id>/ konumuna taşınır.
-Çıktı   : Kapalı run kaydı
+Çıktı   : Kapalı run kaydı (status: Completed)
 Durma   : — (bu son aşamadır)
 ```
 

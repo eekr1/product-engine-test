@@ -13,8 +13,9 @@ Task Tracker Demo App, bireysel geliştiricilerin ve küçük ekiplerin günlük
 
 Projenin teknik bağlamı ve iş kuralları aşağıdaki belgelerde tanımlanmıştır:
 
-- [PROJECT_BRAIN.md](file:///examples/outputs/web-app-minimal-001/PROJECT_BRAIN.md) — Çekirdek ürün bağlamı, amaç ve mimari sınırlar.
-- [PRODUCT_RULES.md](file:///examples/outputs/web-app-minimal-001/PRODUCT_RULES.md) — Görev yaşam döngüsü ve iş kuralları.
+- [PROJECT_BRAIN.md](PROJECT_BRAIN.md) — Çekirdek ürün bağlamı, amaç ve mimari sınırlar.
+- [PRODUCT_RULES.md](PRODUCT_RULES.md) — Görev yaşam döngüsü ve iş kuralları.
+- [DESIGN_RULES.md](DESIGN_RULES.md) — Görsel dil, UI bileşen kuralları ve stil standartları.
 
 ## Hızlı Başlangıç
 

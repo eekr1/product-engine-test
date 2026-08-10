@@ -69,7 +69,7 @@ logs/
 ### 4.2. `ENGINE_CHANGELOG.md`
 - **Sahip Olduğu Soru:** Product Engine'in kendisinde hangi kalıcı değişiklikler yapıldı?
 - **Görevi:** Engine sözleşmeleri (`engine/`), paket kuralları (`packages/`), şablon standartları (`templates/`), girdi/run/çıktı yaşam döngüleri ve validation davranışlarında yapılan kalıcı değişikliklerin kaydıdır.
-- **Kimlik ve Sürüm:** Stable Change ID: `PE-CHANGE-<NNN>`. Motor sürüm geçmişi otoritesidir. Kök `README.md` aktif sürüm bildirene kadar `version: not_assigned` kullanılır.
+- **Kimlik ve Sürüm:** Stable Change ID: `PE-CHANGE-<NNN>`. Motor sürüm geçmişi otoritesidir. Kök `README.md` güncel aktif sürümü (`v0.1.0`) açıklar.
 
 ### 4.3. `RUN_INDEX.md`
 - **Sahip Olduğu Soru:** Hangi Product Engine run'ları gerçekleştirildi ve genel sonuçları neydi?

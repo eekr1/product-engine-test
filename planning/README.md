@@ -1,4 +1,4 @@
-﻿# README
+# README
 
  Bu dosya planning klasörünün giriş noktası olacak; spec belgelerinin neden var olduğunu, hangi sırayla kullanılacağını ve üretim–audit–onay döngüsünü yönetecek.
 
@@ -11,10 +11,12 @@
 
 Bu klasördeki belgeler:
 
-- Product Engine’in çalışma zamanındaki nihai sözleşmeleri değildir.
+- Product Engine’in çalışma zamanındaki nihai sözleşmeleri değildir (çalışma zamanında `engine/` yetkilidir).
+- Tamamlanmış runtime sözleşmelerini override edemez; bir çelişki durumunda güncel `engine/` sözleşmeleri birincil otoritedir.
 - Gerçek proje çıktıları değildir.
 - Template, package, input veya run kayıtları değildir.
-- İlgili klasörleri hazırlayacak ajanlar için bağlayıcı inşa rehberleridir.
+- Agent Boot Read Order'ın zorunlu bir parçası değildir.
+- İlgili klasörleri hazırlayacak ajanlar için tarihsel yapım şartnameleridir (build-design specifications).
 
 Her planning spec belgesi, karşılık geldiği klasörün:
 
@@ -120,7 +122,12 @@ planning/
 ├── OUTPUTS_FOLDER_SPEC.md
 ├── LOGS_FOLDER_SPEC.md
 ├── EXAMPLES_FOLDER_SPEC.md
-└── ARCHIVE_FOLDER_SPEC.md
+├── ARCHIVE_FOLDER_SPEC.md
+└── build-prompts/
+    ├── PROMPT_01_ENGINE_BUILD.md
+    ├── PROMPT_02_ENGINE_FIX.md
+    ├── ...
+    └── PROMPT_21_ARCHIVE_FINAL_FIX.md
 ```
 
 ------
@@ -247,6 +254,18 @@ Ana sorusu:
 Ana sorusu:
 
 > Aktif kullanımdan kaldırılan ancak tarihsel değeri bulunan içerikler nasıl korunmalıdır?
+
+------
+
+### `build-prompts/`
+
+Klasör bazlı adım adım inşa sürecinde kullanılan tarihsel orchestration prompt belgelerini (`PROMPT_01_*` .. `PROMPT_21_*`) barındırır.
+
+Ana sorusu:
+
+> Product Engine'in klasörleri hangi tarihsel talimatlarla sırayla inşa edilmiştir?
+
+Bu belgeler tamamlanmış tarihsel yapım kayıtlarıdır; runtime otoritesi taşımazlar ve varsayılan Agent Boot Read Order'a dahil değildirler.
 
 ------
 
@@ -388,14 +407,18 @@ Gereksiz bağlam yükü oluşturulmamalıdır.
 
 ## 11. Spec Belgelerinin Otoritesi
 
-Planning aşamasında varsayılan otorite sırası:
+İnşa süreci tamamlandıktan sonra, çalışma zamanı otoritesi tamamen `engine/` sözleşmelerine devredilmiştir.
+
+İnşa aşamasında varsayılan otorite sırası:
 
 ```text
 Kullanıcının güncel ve açık talebi
 >
 PRODUCT_ENGINE_BRAIN.md
 >
-İlgili planning spec
+Aktif Engine Sözleşmeleri (engine/)
+>
+İlgili planning spec (tarihsel build-design referansı)
 >
 Daha önce onaylanmış klasör sözleşmeleri
 >
@@ -406,9 +429,7 @@ Daha önce onaylanmış klasör sözleşmeleri
 Ajan varsayımları
 ```
 
-Ref ve example belgeleri hiçbir zaman ilgili planning spec’in önüne geçmemelidir.
-
-Bir spec ile Product Engine Brain arasında gerçek bir çelişki bulunursa ajan sessizce seçim yapmamalı ve durumu raporlamalıdır.
+Planning belgeleri hiçbir zaman aktif `engine/` sözleşmelerini override edemez. Bir planning spec ile aktif engine sözleşmesi arasında çelişki bulunursa, güncel `engine/` sözleşmesi authoritative kabul edilir.
 
 ------
 

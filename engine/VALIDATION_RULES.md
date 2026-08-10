@@ -22,12 +22,14 @@ PASS
   → Tüm zorunlu kontroller geçildi. Output final yapılabilir.
 
 CONDITIONAL PASS
-  → Küçük sorunlar var; ancak bunlar üretimi engellemez.
-    Kullanıcıya bildirilir ve onay alındıktan sonra final yapılabilir.
+  → Engellemeyen (non-blocking) doğrulama bulguları mevcut. Kullanıcı/operatör bilgilendirilir.
+    İki geçerli yol mevcuttur:
+    A) accepted CONDITIONAL PASS → Publication gate'e devam edilir (final yapılabilir).
+    B) repair requested → İsteğe bağlı olarak repair adımı seçilebilir.
 
 FAIL
   → Kritik sorun var. Output final yapılamaz.
-    Repair aşamasına geçilir veya run başarısız sayılır.
+    Zorunlu repair aşamasına geçilir; düzeltilemezse run başarısız (Failed) sayılır.
 ```
 
 ---
@@ -217,9 +219,9 @@ Hata Seviyesi:
 
 | Sonuç | Anlamı | Eylem |
 |---|---|---|
-| PASS | Tüm zorunlu kontroller geçildi | Output final yapılır; latest/ güncellenir |
-| CONDITIONAL PASS | Küçük sorunlar var | Kullanıcıya bildirilir; onay alınarak final yapılabilir |
-| FAIL | Kritik sorun var | Repair aşamasına geçilir veya run başarısız sayılır |
+| PASS | Tüm zorunlu kontroller geçildi | Publication gate'e geçilir; output yayınlanır ve latest/ güncellenir |
+| CONDITIONAL PASS | Engellemeyen bulgular var | Kullanıcı/operatör bilgilendirilir; kabul edilerek publication gate'e geçilebilir veya repair talep edilebilir |
+| FAIL | Kritik sorun var | Zorunlu repair aşamasına geçilir; ikinci denemede de çözülemezse run Failed kapatılır |
 
 İkinci validation'dan sonra da FAIL alınırsa run başarısız kapatılır. Bkz: `RUN_PROTOCOL.md`.
 

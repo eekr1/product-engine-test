@@ -1,26 +1,6 @@
-# Product Engine
+# Product Engine Brain
 
-## Ne üretir?
-
-Olayımız projelerin içinde olan ai dosyalarını tek şablon altında toplamak ve her proje için oluşturulacak ai dosyalarını belirlemek, şablonunu ayarlamak ve bunu sürekli hale getirmektir. Daha sonrada bunları tam otomatik hale getirmek. Yani bir projeye başlarken böyle bi proje yapıcaz dedikten sonra tüm o dosyalar hazır istediğimiz gibi hazırlanıcak ve agentler direk üretime başlicak. Agent'in hangisi olduğu bile farketmicek çünkü tüm bilgiler zaten elinde olucak.
-
-## Girdi olarak ne alır?
-
-Proje bilgileri, ai dosyalarıyla ilgili şablonlar ve şablonlara veya projeye ek bilgiler.
-
-## Çıktı olarak ne verir?
-
-Kullanıma hazır ai döküman dosyaları, wave dosyaları ve genel proje dökümantasyonları.
-
-## İlk çalışan sürüm ne yapar?
-
-Bahsettiğimiz girdileri alır ve bahsettiğimiz çıktıları verir ;).
-
----------------------------------------
-
-# Product Engine
-
-## Ne üretir?
+## Ne Üretir?
 
 Product Engine, projelerde kullanılan AI dokümantasyon yapısını standartlaştırır.
 
@@ -36,7 +16,9 @@ Amaç, yeni bir proje fikri tanımlandıktan sonra ihtiyaç duyulan bütün AI v
 
 Bu sayede kullanılan ajanın Codex, Claude, Gemini veya başka bir sistem olması fark etmez. Ajan; ürünün amacını, kurallarını, mimarisini, mevcut durumunu, kararlarını ve sıradaki görevleri doğrudan proje belgelerinden öğrenerek üretime başlayabilir.
 
-## Girdi olarak ne alır?
+---
+
+## Girdi Sebagai Ne Alır?
 
 - Projenin fikri ve amacı
 - Ürün gereksinimleri
@@ -47,9 +29,11 @@ Bu sayede kullanılan ajanın Codex, Claude, Gemini veya başka bir sistem olmas
 - Projeye özel ek bilgiler
 - İstenirse mevcut proje dosyaları ve dokümantasyon
 
-## Çıktı olarak ne verir?
+---
 
-Projeye göre uyarlanmış, birbiriyle tutarlı ve doğrudan kullanılabilir:
+## Çıktı Sebagai Ne Verir?
+
+Projeye göre uyarlanmış, birbiriyle tutarlı ve doğrudan kullanılabilir dokümantasyon paketi:
 
 - AI dokümantasyon dosyaları
 - Proje planı
@@ -60,15 +44,24 @@ Projeye göre uyarlanmış, birbiriyle tutarlı ve doğrudan kullanılabilir:
 - Sonraki görevler
 - Ajan çalışma talimatları
 - Tasarım kuralları
-- Wave Map
-- Ayrıntılı Wave Plan
+- Wave Map ve ayrıntılı Wave Plan
 - README
 - Deployment ve yapılandırma belgeleri
 - Gerekli klasör ve dosya şeması
 
-## İlk çalışan sürüm ne yapar?
+---
 
-İlk sürüm:
+## Model Bağımsızlığı İlkesi
+
+Product Engine belirli bir AI modeline, sağlayıcıya veya özel araç zincirine bağımlı değildir.
+
+Markdown okuyabilen, dosya yazabilen ve kuralları uygulayabilen herhangi bir yetkin ajan Product Engine rolünü yerine getirebilir. Ajanların değişmesi dokümantasyon standardını ve kalitesini etkilemez.
+
+---
+
+## İlk Çalışan Sürüm Ne Yapar?
+
+İlk çalışan sürüm (V0):
 
 1. Kullanıcıdan yapılandırılmış proje bilgilerini alır.
 2. Oluşturulacak doküman paketini seçer.
@@ -79,3 +72,10 @@ Projeye göre uyarlanmış, birbiriyle tutarlı ve doğrudan kullanılabilir:
 
 İlk sürümün kod üretmesi gerekmez. Başarılı sayılması için, yeni bir proje tanımından ajanların doğrudan çalışmaya başlayabileceği eksiksiz ve tutarlı bir dokümantasyon paketi üretmesi yeterlidir.
 
+---
+
+## Temel Sınırlar
+
+- **Brain kural detaylarının deposu değildir:** Çalışma zamanı sözleşmelerinin detayları `engine/` klasöründedir.
+- **Brain sürüm ve durum belgesi değildir:** Aktif sürüm otoritesi root `README.md`, sürüm geçmişi otoritesi `logs/ENGINE_CHANGELOG.md`'dir.
+- **Brain build takibi yapmaz:** Klasör yapım geçmişi ve entegrasyon durumları `planning/BUILD_STATUS.md` ve ilgili log dosyalarında tutulur.

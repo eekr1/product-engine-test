@@ -7,7 +7,7 @@ example_type: positive
 project_type: web-app
 package_id: demo-frontend
 delivery_profile: Prototype
-engine_version: not_assigned
+engine_version: 0.1.0
 status: active
 created_at: 2026-01-01T00:00:00Z
 updated_at: 2026-01-01T00:00:00Z

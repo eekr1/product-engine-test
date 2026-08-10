@@ -28,7 +28,11 @@ Projenin onaylı teknik bağlamında (`TECH_CONTEXT.md` ve `DEPLOYMENT.md`) tan�
 
 ## Kullanım Koşulları
 
-Ortam değişkeni kullanan tüm projelerde bir yapısal şablon olarak kullanılır.
+Ortam değişkeni kullanan tüm projelerde bir yapısal şablon (`template_type: structural`, `document_id: not_applicable`) olarak kullanılır.
+
+> [!NOTE]
+> **Non-Catalog Structural Support Artifact Contract**
+> Bu şablon katalog dışı bir destek çıktısı (`.env.example`) üretir. Bu çıktı bir proje dokümanı değildir, Document Catalog ID'si almaz (`document_id: not_applicable`). Dahil edilmesi paket/şablon uygulanabilirliğine tabidir; doküman seçim pipeline'ını bozmaz ve üretildiğinde nihai çıktı temizlik kurallarına tabidir.
 
 ## Girdi Kaynakları
 

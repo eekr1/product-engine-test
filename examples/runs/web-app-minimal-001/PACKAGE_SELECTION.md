@@ -26,5 +26,6 @@ rule_applied: engine/PACKAGE_RULES.md#Rule-1-Demo-Frontend-Selection
 | `README-DOC` | `README.md` | `Required` | Proje giriş ve tanıtım belgesi |
 | `PROJECT-BRAIN` | `PROJECT_BRAIN.md` | `Required` | Çekirdek ürün bağlamı ve ajan yönlendirmesi |
 | `PRODUCT-RULES` | `PRODUCT_RULES.md` | `Required` | İş kuralları ve durum davranışları |
+| `DESIGN` | `DESIGN_RULES.md` | `Required` | Görsel dil, UI bileşen kuralları ve stil standartları |
 | `TECH-CTX` | `TECH_CONTEXT.md` | `Excluded` | Prototype seviyesinde ayrı teknoloji belgesi gerekmemektedir |
 | `DATA-MODEL` | `DATA_MODEL.md` | `Excluded` | Backend/DB bulunmadığı için hariç tutuldu |

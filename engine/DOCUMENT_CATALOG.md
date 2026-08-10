@@ -439,3 +439,9 @@ Mevcut doküman türlerine girmeyen bağımsız bir sorumluluk bulunduğunda kat
 Mevcut bir dokümanın görevini yeniden ifade etmek için yeni kayıt oluşturulmamalıdır.
 
 Yeni bir kayıt eklenirse `PACKAGE_RULES.md` ve ilgili templates güncellenmeli; `RUN_PROTOCOL.md` içindeki run mantığı etkilenip etkilenmediği kontrol edilmelidir.
+
+### Katalog Dışı Yapısal Destek Çıktıları (Structural Support Artifacts)
+
+`ENV_EXAMPLE_TEMPLATE.md` (`.env.example`) gibi bazı yapısal şablonlar (`template_type: structural`), doküman kataloğunda bağımsız bir Document ID almayan destek dosyaları üretebilir (`document_id: not_applicable`).
+
+Bu nesneler proje dokümanı niteliği taşımaz; üretilmeleri paket/şablon uygulanabilirliğine tabidir ve doküman seçim pipeline'ını etkilemez. Üretildiklerinde nihai çıktı temizlik kurallarına tabidir.

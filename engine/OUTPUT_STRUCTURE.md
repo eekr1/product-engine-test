@@ -80,17 +80,17 @@ outputs/
 
 ### `latest/`
 
-- En son geçerli, validation'dan geçmiş Active output'tur.
-- En son üretilen değil, en son doğrulanan çıktıyı gösterir.
+- En son geçerli, validation'dan geçmiş ve yayınlanmış çıktının türetilmiş görünümüdür (derived view of current valid published output).
+- En son üretilen değil, en son doğrulanan ve yayınlanan çıktıyı gösterir.
 - Validation'dan geçmeyen output MUST NOT `latest/` olarak işaretlenir.
 - Invalidated output `latest/` konumunda tutulamaz.
-- `latest/` her zaman tek bir sürüme işaret eder.
+- `latest/` her zaman tek bir geçerli sürüme işaret eder.
 
 ### `versions/`
 
-- Her başarılı run'dan sonra o run'ın çıktısı `versions/` altında saklanır.
+- Her başarılı yayınlama kapısını (publication gate) geçen çalışmadan sonra o run'ın çıktısı `versions/` altında saklanır.
 - Eski sürümler silinmez; `versions/` altında korunur.
-- Sürüm numarası semantik olmayan basit artan numaralandırmayı takip edebilir (v0.1, v0.2... v1.0...).
+- Sürüm numarası numerik majör ve minör numaralandırmayı takip eder (`v0.1`, `v0.2`... `v0.10`... `v1.0`...).
 - Sürüm numaraları run manifest'inde izlenebilir olmalıdır.
 
 ---
@@ -160,18 +160,47 @@ Final output aşağıdakileri MUST NOT içerir:
 
 ---
 
-## Sürümleme ve latest/ Güncellemesi
+## Sürümleşme ve publication Kanonik Sırası
 
 ```text
-Her başarılı run tamamlandığında:
-  1. Output, versions/<yeni-sürüm>/ altına yazılır.
-  2. latest/ içeriği yeni sürümle değiştirilir.
-  3. Önceki latest/ içeriği, ilgili versions/ klasörünü gösterir (silinmez).
+Başarılı doğrulama (PASS veya kabul edilmiş CONDITIONAL PASS) sonrasında publication gate geçildiğinde:
+  1. output_version tahsis edilir (v<major>.<minor>).
+  2. Temiz çıktı versions/<output_version>/ altına yazılır.
+  3. latest/ klasörünün içeriği yeni sürümün temiz kopyası ile güncellenir.
+  4. RUN_MANIFEST.md içerisindeki output_ref ve output_version alanları dondurulur.
+  5. Run durumu Completed olarak güncellenir ve run klasörü runs/completed/<run-id>/ konumuna taşınır.
 
-Bir run validation'dan geçemezse:
+Validation'dan geçemeyen (FAIL) veya yayınlama hakkı kazanmayan (iptal edilen / duraklatılan / engellenen) çalışmalar:
   → latest/ güncellenmez.
-  → versions/ altına da eklenmez.
+  → versions/ altına eklenmez.
 ```
+
+---
+
+## Sürüm Tahsis ve Sıralama Kuralları (Output Version Allocation & Ordering)
+
+- **Format**: `v<major>.<minor>` (ör. `v0.1`, `v0.2`, `v1.0`). Major ve minor tamsayılardır.
+- **Sıralama (Comparison)**: Karşılaştırma alfabetik değil, numeriktir (önce numerik major, sonra numerik minor). Örnek: `v0.2` < `v0.9` < `v0.10` < `v1.0`.
+- **İlk Sürüm**: Proje için daha önce yayınlanmış çıktı yoksa varsayılan ilk sürüm `v0.1`'dir.
+- **Normal Yeniden Üretim (Regeneration)**: Aynı major sürüm korunur, minor sürüm +1 artırılır (`v0.1` → `v0.2`). `v0.9` → `v0.10` normal ilerlemedir.
+- **Major Artışı**: Major sürüm artışı (`v0.x` → `v1.0`) otomatik değildir; yalnızca açık engine/operatör migrasyon kararı ile gerçekleşir.
+- **Değişmezlik (No Overwrite)**: Yayınlanmış bir sürüm klasörü (`versions/vX.Y/`) silinemez, üzerine yazılamaz veya tekrar kullanılamaz.
+- **Tahsis Yetkisi**: Sürüm numarasını tahsis etme kuralı `engine/OUTPUT_STRUCTURE.md`'ye aittir; gerçekleşen sürüm `RUN_MANIFEST.md` belgesine dondurulur.
+
+---
+
+## Invalidation Fallback ve No Valid Version Davranışı
+
+`latest/` klasörüne kaynaklık eden run `Completed → Invalidated` durumuna geçtiğinde:
+1. `versions/` altındaki tarihsel sürümler taranır.
+2. Kaynak run status değeri `Completed` olan geçerli tarihsel sürümler filtrelenir.
+3. Numerik olarak en yüksek sürüm numarasına sahip geçerli sürüm seçilir.
+4. `latest/` içeriği bu seçilen sürümün kopyasıyla güncellenir.
+
+Eğer projenin geçmişinde hiç geçerli tarihsel sürüm bulunmuyorsa (`status: Completed` olan kaynak run kalmamışsa):
+- `latest/` klasörü silinmez; ancak içeriği tamamen boş tutulur.
+- Geçerli çıktı bulunmadığı durumu, `runs/` katmanında `status: Completed` olan kaynak run bulunamaması üzerinden türetilir.
+- `outputs/` katmanı içinde ek bir durum dosyası (`INVALIDATED.txt`), durum manifesti veya türetilmiş bir status nesnesi oluşturulmaz.
 
 ---
 

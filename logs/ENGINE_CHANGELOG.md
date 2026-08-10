@@ -8,7 +8,7 @@ Bu belge, Product Engine’in çekirdek motor yapısında (`engine/`), paket kur
 - **Kök `README.md`**: Güncel aktif Product Engine sürümünün birincil otoritesidir (`current active version authority`).
 - **`logs/ENGINE_CHANGELOG.md`**: Product Engine sürüm geçmişinin birincil otoritesidir (`version history authority`).
 
-*Not: Kök `README.md` belgesinde henüz aktif bir motor sürümü atanmamışsa changelog kayıtlarında sahte semantic version uydurulmaz; `version: not_assigned` nötr değeri kullanılır.*
+*Not: Kök `README.md` belgesi güncel aktif motor sürümünün (`v0.1.0`) birincil sahibidir. Sürüm değişiklik geçmişi `logs/ENGINE_CHANGELOG.md` içerisinde dondurulur.*
 
 ---
 
@@ -90,7 +90,7 @@ Changelog kayıtlarında yalnızca aşağıdaki 7 standart değişiklik türü k
 ## 6. Sürüm Geçmişi ve Güncel Durum (Neutral Initial State)
 
 ```text
-Active Engine Version Authority : Root README.md (not_assigned)
+Active Engine Version Authority : Root README.md (v0.1.0)
 Version History Authority       : logs/ENGINE_CHANGELOG.md
 Total Recorded Changes          : 0
 ```

@@ -90,7 +90,7 @@ example_type: positive # positive | negative | edge-case | minimal | comprehensi
 project_type: web-app # web-app | api-service | mobile-app | internal-tool | landing-page | content-platform | integration | infrastructure | prototype | other
 package_id: demo-frontend # demo-frontend | corporate-website | saas | existing-project | api-service
 delivery_profile: Prototype # Foundation | Prototype | Implementation Ready | Production Ready
-engine_version: not_assigned # Kök README henüz atamadığı için fixed literal string
+engine_version: 0.1.0 # Root README.md tarafından belirlenen aktif motor sürümü
 status: active # active | deprecated | invalid
 created_at: 2026-01-01T00:00:00Z
 updated_at: 2026-01-01T00:00:00Z
@@ -103,7 +103,7 @@ anonymized: true
 2. **`project_type`**: Yalnızca `engine/PROJECT_INTAKE.md` içinde tanımlı 10 kanonik değerden biri olabilir. (`saas` veya `corporate-website` bir project_type değildir!).
 3. **`package_id`**: Yalnızca 5 kanonik paket ID'sinden biri olabilir (`demo-frontend`, `corporate-website`, `saas`, `existing-project`, `api-service`).
 4. **`delivery_profile`**: Yalnızca 4 kanonik değerden biri olabilir (casing kesinlikle korunur: `Foundation`, `Prototype`, `Implementation Ready`, `Production Ready`).
-5. **`engine_version`**: Root `README.md` henüz sürüm atamadığı için `engine_version: not_assigned` olarak yazılır. Sahte motor sürümü uydurulamaz.
+5. **`engine_version`**: Root `README.md` belgesindeki güncel aktif sürüm otoritesinden okunur (örn: `0.1.0`). Sahte motor sürümü uydurulamaz.
 6. **`input_version`**: `inputs/` katmanı standartlarına uygun olarak tam sayı dizesi olarak yazılır (`"1"`, `"2"`). `v1.0` gibi semver formatı kullanılmaz.
 7. **`output_version`**: `outputs/` katmanı standartlarına uygun olarak semver etiketi ile yazılır (`v0.1`, `v1.0`).
 

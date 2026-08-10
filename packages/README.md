@@ -95,14 +95,18 @@ Klasör içerisinde 5 ana paket tanımı bulunmaktadır:
 
 ---
 
-## 7. Önerilen Okuma ve Uygulama Sırası
+## 7. Agent Boot / Reference Read Order
+
+> [!IMPORTANT]
+> **Kavram Ayrımı: Agent Boot Read Order ≠ Runtime Execution Flow**
+> Aşağıdaki okuma sırası bir ajanın paket sistemini ve doküman kapsamlarını anlamak için izlediği **Agent Boot / Reference Read Order** adımıdır. (Root [README.md](../README.md) bu ayrımın üst otoritesidir). Çalıştırma anındaki step-by-step veri akışı (`Runtime Execution Flow`) ise [`engine/GENERATION_PIPELINE.md`](../engine/GENERATION_PIPELINE.md) belgesinin yetkisindedir.
 
 1. `PRODUCT_ENGINE_BRAIN.md`
 2. `engine/PROJECT_INTAKE.md`
 3. `engine/DOCUMENT_CATALOG.md`
-4. `engine/PACKAGE_RULES.md`
-5. `packages/README.md` (Bu dosya)
-6. İlgili `packages/<PACKAGE_NAME>.md` dosyası
+4. `engine/PACKAGE_RULES.md` (Paket seçim kararı otoritesi)
+5. `packages/README.md` (Bu dosya — Navigasyon rehberi)
+6. İlgili `packages/<PACKAGE_NAME>.md` dosyası (Paket doküman kapsamı)
 7. İlgili `templates/` dosyaları
 
 ---

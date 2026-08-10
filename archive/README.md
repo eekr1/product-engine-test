@@ -112,7 +112,7 @@ V0 aşamasında aşağıdaki ek kategoriler ve merkezi indeks dosyaları **kesin
 - Bir belgenin arşivlenmesi motor seviyesinde bir davranış değişikliği doğuruyorsa changelog kaydı açılır; ancak sırf archive dosyası eklendi diye otomatik changelog yazılmaz.
 
 ### 5.5. Prompt Dosyaları (`PROMPT_XX_*.md`)
-- Kök dizindeki `PROMPT_XX_*.md` dosyaları build orchestration artifact'larıdır. Sırf tamamlanmış prompt oldukları için archive'a taşınamaz.
+- Tarihsel `PROMPT_XX_*.md` dosyaları build orchestration artifact'larıdır ve `planning/build-prompts/` klasöründe tutulur. Sırf tamamlanmış prompt oldukları için `archive/` katmanına taşınamazlar.
 
 ---
 

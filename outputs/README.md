@@ -99,13 +99,13 @@ outputs/<category>/<project-slug>/
 
 ### KRİTİK AYRIM: Kategori ≠ Teslimat Profili (Category ≠ Delivery Profile)
 `outputs/` kategorisi ile `inputs/` / `packages/` katmanlarındaki teslimat profili (`Delivery Profile`) aynı kavramlar değildir:
-- `products/` kategorisindeki bir çıktı otomatik olarak `Production Ready` teslimat profili anlamına gelmez.
-- `demos/` kategorisindeki bir çıktı da yalnız `Prototype` profili anlamına gelmez.
-- **Kategori Çözümleme (Category Resolution):** Bir çalıştırmanın çıktısının `demos/` veya `products/` altına mı yazılacağı `engine/PACKAGE_RULES.md` ve ilgili paket sözleşmesi tarafından çözümlenir. `outputs/` katmanı kendi paket/kategori seçim mantığını icat etmez; yalnızca çözümlenmiş kategoriyi uygular.
-
----
+- `products/` kategorisindeki bir çıktı otomatik olarak `Production Ready` teslimat profili anlamına g---
 
 ## 5. Çıktı Yayınlama Kapısı ve Yaşam Döngüsü Akışı (Publication Gate & Lifecycle)
+
+> [!IMPORTANT]
+> **Otorite Bağlantısı (Canonical Authority)**
+> Çıktı yayınlama kurallarının, sürümleme mantığının, klasör yapısı ilkelerinin ve doğrulama kapılarının birincil yetkili sahibi **`engine/OUTPUT_STRUCTURE.md`** ve **`engine/RUN_PROTOCOL.md`** sözleşmeleridir. `outputs/README.md` bu mantığın fiziksel depolama ve kullanım rehberidir.
 
 Bir proje çıktısının `outputs/` katmanında yayınlanabilmesi için aktif çalıştırmanın **başarılı sonlandırma kapısı şartlarını (`successful completion gate eligibility`)** eksiksiz karşılaması zorunludur.
 
@@ -185,7 +185,7 @@ Bir çalıştırma yayınlama kapısını geçtiğinde `latest/` klasörü aşa�
 4. `RUN_MANIFEST.md` içindeki `output_ref` alanı dondurulur (`outputs/<category>/<project-slug>/versions/<output-version>/`).
 5. Çalıştırma `Completed` olarak kapatılır ve `runs/completed/` dizinine taşınır.
 
-*Not: `latest/` hiçbir zaman eksik, kısmi veya doğrulanmamış bir sürüme işaret edemez.*
+*Not: `latest/` hiçbir zaman eksik, kısmi veya doğrulanmavış bir sürüme işaret edemez.*
 
 ---
 
@@ -234,16 +234,12 @@ Bir projenin aktif `latest/` çıktısına kaynaklık eden çalıştırma geçer
 3. Her bir sürümün kaynak çalışması `RUN_MANIFEST.md` dosyasındaki `output_ref` alanı üzerinden eşleştirilir.
 4. Kaynak çalışmasının `status` değeri `Completed` olan en yüksek sürüm numarasına sahip geçerli tarihsel sürüm seçilir.
 5. `latest/` klasörü bu seçilen en yüksek geçerli sürümün temiz kopyası ile güncellenir (`fallback`).
-6. Eğer projenin geçmişinde hiç geçerli sürüm kalmamışsa, `latest/` klasörü aktif/geçerli çıktı bulunmadığını belirtecek şekilde temizlenir ve `current-unavailable` durumunda tutulur.
+6. Eğer projenin geçmişinde hiç geçerli sürüm kalmamışsa (`status: Completed` olan kaynak run yoksa), `latest/` klasörü silinmez ancak içeriği tamamen boş tutulur. Geçerli çıktı bulunmadığı durumu, `runs/` katmanında `status: Completed` olan kaynak run bulunamaması üzerinden türetilir; `outputs/` içinde ek bir durum dosyası veya manifest oluşturulmaz.
 
 ---
 
 ## 11. İzlenebilirlik Sözleşmesi ve Metadata Yetki Açıklaması (Traceability & Authority Clarification)
 
-### Otorite Çatışması Açıklaması (Planning vs Runtime Authority Clarification)
-`planning/OUTPUTS_FOLDER_SPEC.md` belgesinde yer alan `OUTPUT_MANIFEST.md` ve benzeri çıktı seviyesi manifest önerileri, mimari tasarım aşamasındaki build-time önerileridir. 
-
-**Onaylanmış Runtime Sözleşmeleri Yetkisi (`Precedence Authority`):**
 Product Engine V0 yürütme aşamasında `engine/OUTPUT_STRUCTURE.md` ve `engine/RUN_PROTOCOL.md` onaylı runtime sözleşmeleri tam yetkilidir. Bu sözleşmeler uyarınca izlenebilirlik (`traceability`) tek bir kanonik mekanizmayla sağlanır:
 - `runs/completed/<run-id>/RUN_MANIFEST.md` belgesi; `output_version` ve exact repo-relative `output_ref` (`outputs/<category>/<project-slug>/versions/<output-version>/`) alanlarını dondurur.
 
@@ -289,35 +285,3 @@ Nihai çıktı belgeleri içerisine kesinlikle aşağıdakiler **sızamaz**:
   → yeni çıktı sürümü (new output version)
   ```
   akışı uygulanır.
-
----
-
-## 14. Kontrol ve Denetim Listesi (Final Audit Checklist)
-
-`outputs/` katmanında işlem yaparken veya doğrularken şu 25 ana kural kontrol edilir:
-
-1. Publication için run'ın önceden `Completed` olması gerektiğini söyleyen circular ifade kaldırıldı mı? (Kaldırıldı)
-2. Publication successful-completion gate şartlarına bağlı mı? (Evet)
-3. Publication sonrası run `Completed` olarak kapanıyor mu? (Evet)
-4. Failed run yayınlama yapabiliyor mu? (Yayınlayamamalı)
-5. Cancelled run yayınlama yapabiliyor mu? (Yayınlayamamalı)
-6. Blocked run yayınlama yapabiliyor mu? (Yayınlayamamalı)
-7. Paused run yayınlama yapabiliyor mu? (Yayınlayamamalı)
-8. `OUTPUT_MANIFEST.md` runtime zorunluluğu kaldırıldı mı? (Kaldırıldı)
-9. Mükerrer output metadata veritabanı engellendi mi? (Evet)
-10. Planning önerisi vs runtime otorite farkı belgelendi mi? (Evet)
-11. `RUN_MANIFEST.md` izlenebilirlik otoritesi olarak tanımlı mı? (Evet)
-12. `output_ref` tarihsel `versions/` dizinini gösteriyor mu? (Evet)
-13. Tarihsel çıktı geçerliliği kaynak çalıştırma durumu (`source run status`) üzerinden çözülebiliyor mu? (Evet)
-14. Geçersiz kılınan çalıştırmanın çıktısı `versions/` altında aynen korunuyor mu? (Evet)
-15. Geçersiz kılınan çıktı `latest/` adayı olabiliyor mu? (Olamamalı)
-16. Deterministik fallback mekanizması açıkça tanımlı mı? (Evet)
-17. Geçerli sürüm kalmadığında `current-unavailable` davranışı tanımlı mı? (Evet)
-18. Tarihsel çıktılar in-place modifiye ediliyor mu? (Edilmemeli)
-19. `latest/` türetilmiş görünüm (`derived view`) olarak mı tanımlı? (Evet)
-20. Sürüm geçmişinin mülkiyeti `versions/` klasöründe mi? (Evet)
-21. Outputs katmanı çalıştırma durumu yazıyor mu? (Yazmamalı)
-22. Çıktı sürümleme standardı (`v0.1`, `v0.2`, `v1.0`) korundu mu? (Evet)
-23. Working-output / final-output sınırı korundu mu? (Evet)
-24. Run operasyonel belgelerinin sızması engellendi mi? (Evet)
-25. Yalnızca `outputs/` katmanı sınırlarında mı çalışıldı? (Evet)

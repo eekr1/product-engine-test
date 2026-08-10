@@ -56,13 +56,15 @@ Paket seçimi aşağıdaki sırayla yapılır:
 
 ### Adım 1 — Delivery Profile'ı Belirle
 
-Onaylı intake içindeki `delivery_profile` alanı kullanılır.
+Onaylı intake (`inputs/approved/`) içindeki `delivery_profile` alanı doğrudan tüketilir.
 
-Belirtilmemişse:
+`delivery_profile` approved intake katmanında zorunlu (MUST) bir alandır.
 
-- Proje kapsamı ve teknik gereksinim yoğunluğuna göre tahmin edilir.
-- Tahmin yapılıyorsa assumption olarak kaydedilir.
-- Ajan sessizce seçim yapmamalı; kullanıcı onayı almalıdır.
+Onaylı girdi içerisinde `delivery_profile` bulunmuyorsa:
+- Input geçersizdir (invalid input).
+- Paket seçimi başlatılamaz.
+- Intake düzeltmesi veya yeni onaylı girdi gerekir (`intake correction / new approved input`).
+- Paket seçimi aşamasında `delivery_profile` tahmini veya varsayımı yapılmaz.
 
 ### Adım 2 — Project Type'ı Belirle
 
@@ -146,14 +148,11 @@ Birden fazla paket geçerliyse (ör. birleşik sistem):
 Aşağıdaki durumlarda ajan sessize çekilmeden önce şunları yapmalıdır:
 
 ```text
-Çelişkili proje türü:
-→ Kullanıcıya sorulur. Tahmin yapılmaz.
-
-Birden fazla delivery profile uygun görünüyorsa:
-→ Daha dar profil seçilir, assumption kaydedilir, kullanıcı onayı istenir.
+Çelişkili proje türü veya onaylı girdide eksik delivery_profile:
+→ Paket seçimi başlamaz. Intake düzeltmesi istenir. Tahmin yapılmaz.
 
 Proje büyüklüğü paket sınırında ise:
-→ Daha küçük profil seçilir. Büyük profil kullanıcı onayı gerektirir.
+→ Approved input'taki delivery_profile ne ise o profil temel alınır. Paketin daraltma/genişletme adımları uygulanır.
 ```
 
 ---

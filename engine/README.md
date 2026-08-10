@@ -28,13 +28,18 @@ Bu klasör; hangi bilgileri kabul edeceğini, hangi sırayla hareket edeceğini,
 
 ---
 
-## Zorunlu Okuma Sırası
+## Agent Boot / Reference Read Order (Kanonik Okuma Sırası)
 
-Bir Product Engine çalışması başlatılmadan önce aşağıdaki sırayla okunmalıdır:
+> [!IMPORTANT]
+> **Kavram Ayrımı: Agent Boot Read Order ≠ Runtime Execution Flow**
+> - **Agent Boot Read Order**: Bir ajanın Product Engine sistemini ve çalışma kurallarını anlamak için okuduğu referans okuma sırasıdır. (Root [README.md](../README.md) bu ayrımın üst otoritesidir).
+> - **Runtime Execution Flow**: Bir çalıştırma (`run`) sırasındaki adım adım üretim ve veri akış sırasıdır (`engine/GENERATION_PIPELINE.md` tarafından yönetilir).
+
+Bir Product Engine çalışması başlatılmadan önce referans okuma sırası:
 
 ```text
-1.  PRODUCT_ENGINE_BRAIN.md       (kök klasör — Product Engine nedir?)
-2.  Kök README.md                  (kök klasör — sistem genel görünümü)
+1.  Kök README.md                  (kök klasör — sistem genel görünümü, aktif sürüm, authority haritası)
+2.  PRODUCT_ENGINE_BRAIN.md       (kök klasör — Product Engine nedir, vizyon ve sınırlar)
 3.  engine/README.md               (bu dosya — navigasyon)
 4.  engine/PROJECT_INTAKE.md       (hangi bilgiler gerekli?)
 5.  engine/DOCUMENT_CATALOG.md     (hangi dokümanlar tanınır?)

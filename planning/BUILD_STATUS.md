@@ -1,11 +1,22 @@
 # Product Engine Build Status
 
+> [!NOTE]
+> **Kapsam ve Otorite Sınırı**
+>
+> Bu belge yalnızca Product Engine repository'sinin modül inşa, entegrasyon ve audit geçmişinin durum takibini tutar.
+>
+> Bu dosya:
+> - Runtime status authority değildir,
+> - Product Engine çalıştırma zamanı operasyonel gerçeği değildir,
+> - Yalnızca Product Engine repository build/integration history/status belgesidir.
+
+---
+
 ## 1. Belgenin Amacı
 
-Bu belge, Product Engine’in planlama, üretim, audit ve onay sürecindeki güncel durumunu takip eder.
+Bu belge, Product Engine’in planlama, üretim, audit ve entegrasyon düzeltme sürecindeki güncel durumunu takip eder.
 
 Bu dosya:
-
 - Product Engine’in genel proje planı değildir.
 - Bir Product Engine run kaydı değildir.
 - Engine changelog değildir.
@@ -14,495 +25,168 @@ Bu dosya:
 
 Ana sorusu şudur:
 
-> Product Engine’in hangi bölümü hazır, hangi bölüm üzerinde çalışılıyor ve sıradaki iş nedir?
+> Product Engine’in hangi bölümü inşa edildi, hangi entegrasyon aşamasındayız ve sıradaki iş nedir?
 
-Bu belge, Product Engine’in inşa sürecindeki tek üst seviye durum kaynağıdır.
+Bu belge, Product Engine’in inşa ve entegrasyon sürecindeki üst seviye durum takibini sağlar.
 
 ---
 
-# 2. Genel Durum
+## 2. Genel Durum
 
 ```text
-Current Phase:
-Planning Completed
-
-Current Focus:
-engine/ Build Preparation
-
-Next Major Build:
-engine/
-
-Overall Status:
-Planning seti audit edildi, gerekli düzeltmeler tamamlandı ve engine/ build aşamasına hazır.
+Planning Phase               : Completed
+Folder Builds                : Completed (All Folders CLOSED)
+Final Integration Audit      : Completed
+Integration Fixes            : Completed (Wave 01–05)
+Final Re-Audit               : Pending
+Overall Repository Status    : Ready for Final Re-Audit
 ```
 
-------
+---
 
-# 3. Güncel Özet
+## 3. Güncel Özet
 
-Product Engine’in bütün ana klasörleri için planning spec belgeleri hazırlanmıştır.
+Product Engine’in bütün ana klasörleri için planning spec belgeleri hazırlanmış, tüm ana klasörlerin build aşamaları tamamlanmış, final entegrasyon audit'i gerçekleştirilmiş ve entegrasyon düzeltme dalgaları (Wave 01–05) başarıyla uygulanmıştır.
 
-Tamamlanan planning seti:
+Repository şu anda **Final Re-Audit** adımı öncesinde eksiksiz ve dondurulmuş durumdadır.
+
+---
+
+## 4. Durum Tanımları
+
+### Spec Status
+- `Approved`: Spec audit edildi ve kullanıma onaylandı.
+
+### Build Status
+- `Built`: Klasör içeriği üretildi ve doğrulandı.
+- `CLOSED`: Klasör inşası tamamlandı ve donduruldu.
+
+### Audit Status
+- `Pass`: Kritik veya önemli sorun bulunmadı / çözüldü.
+
+### Final Status
+- `Approved`: Build ve audit tamamlandı.
+- `CLOSED`: Klasör yapısı tamamlanmış ve kapalıdır.
+
+---
+
+## 5. Planning Set Durumu
+
+| Dosya | Spec Status | Audit Status | Final Status | Not |
+|---|---|---|---|---|
+| `planning/README.md` | Approved | Pass | Approved | Planning kullanım ve üretim protokolü hazır |
+| `planning/ENGINE_FOLDER_SPEC.md` | Approved | Pass | Approved | Engine klasörü yapım şartnamesi hazır |
+| `planning/PACKAGES_FOLDER_SPEC.md` | Approved | Pass | Approved | Package sistemi yapım şartnamesi hazır |
+| `planning/TEMPLATES_FOLDER_SPEC.md` | Approved | Pass | Approved | Template sistemi yapım şartnamesi hazır |
+| `planning/INPUTS_FOLDER_SPEC.md` | Approved | Pass | Approved | Input sistemi yapım şartnamesi hazır |
+| `planning/RUNS_FOLDER_SPEC.md` | Approved | Pass | Approved | Run sistemi yapım şartnamesi hazır |
+| `planning/OUTPUTS_FOLDER_SPEC.md` | Approved | Pass | Approved | Output sistemi yapım şartnamesi hazır |
+| `planning/LOGS_FOLDER_SPEC.md` | Approved | Pass | Approved | Log sistemi yapım şartnamesi hazır |
+| `planning/EXAMPLES_FOLDER_SPEC.md` | Approved | Pass | Approved | Example sistemi yapım şartnamesi hazır |
+| `planning/ARCHIVE_FOLDER_SPEC.md` | Approved | Pass | Approved | Archive sistemi yapım şartnamesi hazır |
+| `planning/BUILD_STATUS.md` | Approved | Pass | Approved | Üst seviye build takibi güncel |
+
+---
+
+## 6. Ana Klasör Build Durumu
+
+| Sıra | Klasör | Spec | Build | Audit | Fix | Final | Sıradaki Eylem |
+|---|---|---|---|---|---|---|---|
+| 1 | `engine/` | Approved | Built | Pass | Completed | CLOSED | Runtime kontrat doğrulaması |
+| 2 | `packages/` | Approved | Built | Pass | Completed | CLOSED | Paket kapsam doğrulaması |
+| 3 | `templates/` | Approved | Built | Pass | Completed | CLOSED | Şablon senkronizasyonu |
+| 4 | `inputs/` | Approved | Built | Pass | Completed | CLOSED | Entegrasyon doğrulama |
+| 5 | `runs/` | Approved | Built | Pass | Completed | CLOSED | Entegrasyon doğrulama |
+| 6 | `outputs/` | Approved | Built | Pass | Completed | CLOSED | Entegrasyon doğrulama |
+| 7 | `logs/` | Approved | Built | Pass | Completed | CLOSED | Persistent log takibi |
+| 8 | `examples/` | Approved | Built | Pass | Completed | CLOSED | Fixture senkronizasyonu |
+| 9 | `archive/` | Approved | Built | Pass | Completed | CLOSED | Aktif sistem izolasyonu koruması |
+| 10 | Kök Entegrasyon | Approved | Built | Pass | Completed | CLOSED | Final re-audit doğrulama |
+
+---
+
+## 7. Onaylanan İnşa Sırası ve Mevcut Adım
+
+Product Engine klasörleri belirlenen sırayla üretilmiş ve tamamlanmıştır:
 
 ```text
-planning/
-├── README.md
-├── BUILD_STATUS.md
-├── ENGINE_FOLDER_SPEC.md
-├── PACKAGES_FOLDER_SPEC.md
-├── TEMPLATES_FOLDER_SPEC.md
-├── INPUTS_FOLDER_SPEC.md
-├── RUNS_FOLDER_SPEC.md
-├── OUTPUTS_FOLDER_SPEC.md
-├── LOGS_FOLDER_SPEC.md
-├── EXAMPLES_FOLDER_SPEC.md
-└── ARCHIVE_FOLDER_SPEC.md
+1. Planning set cross-audit            [Tamamlandı]
+2. engine/                             [Tamamlandı - CLOSED]
+3. packages/                           [Tamamlandı - CLOSED]
+4. templates/                          [Tamamlandı - CLOSED]
+5. inputs/                             [Tamamlandı - CLOSED]
+6. runs/                               [Tamamlandı - CLOSED]
+7. outputs/                            [Tamamlandı - CLOSED]
+8. logs/                               [Tamamlandı - CLOSED]
+9. examples/                           [Tamamlandı - CLOSED]
+10. archive/                           [Tamamlandı - CLOSED]
+11. Final Integration Audit            [Tamamlandı]
+12. Integration Fixes (Wave 01..05)    [Tamamlandı - CLOSED]
+13. Final Re-Audit                     [BEKLEYEN - Pending]
 ```
 
-Planning belgeleri hazırdır.
+---
 
-Ancak:
+## 8. Aktif Aşama
 
-- planning setinin çapraz audit’i tamamlanmış ve gerekli düzeltmeler uygulanmıştır,
-- gerçek `engine/` belgeleri henüz üretilmemiştir,
-- diğer ana klasörlerin build aşaması başlamamıştır,
-- hiçbir klasör henüz final veya locked kabul edilmemelidir.
+### Wave 05 — Root Artifact Cleanup & Final Repository Hygiene (Tamamlandı)
 
-------
+Bütün entegrasyon düzeltme dalgaları (Wave 01–05) başarıyla tamamlanmıştır.
 
-# 4. Durum Tanımları
+Tarihsel `PROMPT_XX*` orchestration dosyaları `planning/build-prompts/` dizinine taşınmış, double extension (`.md.md`) adlandırma hataları giderilmiş, `README.md` navigasyonu netleştirilmiş ve repository hijyeni sağlanmıştır.
 
-## Spec Status
+---
 
-```text
-Not Started
-→ Spec çalışması başlamadı.
+## 9. Kararlaştırılan Konular
 
-Draft
-→ Spec hazırlanıyor ancak henüz hazır değil.
-
-Ready
-→ Spec tamamlandı ve audit için hazır.
-
-Approved
-→ Spec audit edildi ve kullanıma onaylandı.
-
-Needs Revision
-→ Spec üzerinde düzeltme gerekiyor.
-```
-
-## Build Status
-
-```text
-Not Started
-→ Gerçek klasör içeriği henüz üretilmedi.
-
-In Progress
-→ Klasör üzerinde aktif üretim yapılıyor.
-
-Built
-→ Klasör içeriği üretildi ve audit bekliyor.
-
-Blocked
-→ Üretim bir karar veya bağımlılık nedeniyle durdu.
-```
-
-## Audit Status
-
-```text
-Not Started
-→ Audit yapılmadı.
-
-In Review
-→ Audit devam ediyor.
-
-Pass
-→ Kritik veya önemli sorun bulunmadı.
-
-Conditional Pass
-→ Küçük düzeltmelerle kabul edilebilir.
-
-Fail
-→ Kritik çelişki veya eksiklik bulundu.
-```
-
-## Final Status
-
-```text
-Pending
-→ Süreç devam ediyor.
-
-Approved
-→ Build ve audit tamamlandı.
-
-Locked
-→ Onaylı yapı aktif temel olarak sabitlendi.
-
-Deprecated
-→ Artık aktif kullanılmıyor.
-```
-
-------
-
-# 5. Planning Set Durumu
-
-| Dosya                               | Spec Status | Audit Status | Final Status | Not                                         |
-| ----------------------------------- | ----------- | ------------ | ------------ | ------------------------------------------- |
-| `planning/README.md`                | Ready       | Approved     | Approved     | Planning kullanım ve üretim protokolü hazır |
-| `planning/ENGINE_FOLDER_SPEC.md`    | Ready       | Approved     | Approved     | Engine klasörü yapım şartnamesi hazır       |
-| `planning/PACKAGES_FOLDER_SPEC.md`  | Ready       | Approved     | Approved     | Package sistemi yapım şartnamesi hazır      |
-| `planning/TEMPLATES_FOLDER_SPEC.md` | Ready       | Approved     | Approved     | Template sistemi yapım şartnamesi hazır     |
-| `planning/INPUTS_FOLDER_SPEC.md`    | Ready       | Approved     | Approved     | Input sistemi yapım şartnamesi hazır        |
-| `planning/RUNS_FOLDER_SPEC.md`      | Ready       | Approved     | Approved     | Run sistemi yapım şartnamesi hazır          |
-| `planning/OUTPUTS_FOLDER_SPEC.md`   | Ready       | Approved     | Approved     | Output sistemi yapım şartnamesi hazır       |
-| `planning/LOGS_FOLDER_SPEC.md`      | Ready       | Approved     | Approved     | Log sistemi yapım şartnamesi hazır          |
-| `planning/EXAMPLES_FOLDER_SPEC.md`  | Ready       | Approved     | Approved     | Example sistemi yapım şartnamesi hazır      |
-| `planning/ARCHIVE_FOLDER_SPEC.md`   | Ready       | Approved     | Approved     | Archive sistemi yapım şartnamesi hazır      |
-| `planning/BUILD_STATUS.md`          | Ready       | Approved     | Approved     | Üst seviye build takibi hazır               |
-
-Planning belgeleri audit edilmiş ve `Approved` durumundadır; henüz `Locked` değildir.
-
-------
-
-# 6. Ana Klasör Build Durumu
-
-| Sıra | Klasör          | Spec    | Build       | Audit       | Fix         | Final   | Sıradaki Eylem                            |
-| ---- | --------------- | ------- | ----------- | ----------- | ----------- | ------- | ----------------------------------------- |
-| 1    | `engine/`       | Ready   | Not Started | Not Started | Not Started | Pending | ENGINE_FOLDER_SPEC'e göre build başlat            |
-| 2    | `packages/`     | Ready   | Not Started | Not Started | Not Started | Pending | `engine/` onayından sonra üret            |
-| 3    | `templates/`    | Ready   | Not Started | Not Started | Not Started | Pending | `packages/` onayından sonra üret          |
-| 4    | `inputs/`       | Ready   | Not Started | Not Started | Not Started | Pending | Çekirdek sistem onayından sonra üret      |
-| 5    | `runs/`         | Ready   | Not Started | Not Started | Not Started | Pending | Input ve engine yapısıyla uyumlu üret     |
-| 6    | `outputs/`      | Ready   | Not Started | Not Started | Not Started | Pending | Run ve validation yapısından sonra üret   |
-| 7    | `logs/`         | Ready   | Not Started | Not Started | Not Started | Pending | Operasyon yapıları netleşince üret        |
-| 8    | `examples/`     | Ready   | Not Started | Not Started | Not Started | Pending | Onaylı sistemi test edecek örnekleri üret |
-| 9    | `archive/`      | Ready   | Not Started | Not Started | Not Started | Pending | Aktif yapı tamamlandıktan sonra üret      |
-| 10   | Kök entegrasyon | Pending | Not Started | Not Started | Not Started | Pending | Bütün klasörlerden sonra tamamla          |
-
-------
-
-# 7. Onaylanan İnşa Sırası
-
-Product Engine klasörleri şu sırayla hazırlanacaktır:
-
-```text
-1. Planning set cross-audit
-2. Gerekli planning düzeltmeleri
-3. engine/
-4. packages/
-5. templates/
-6. inputs/
-7. runs/
-8. outputs/
-9. logs/
-10. examples/
-11. archive/
-12. Kök README ve entegrasyon
-13. Manuel Product Engine testi
-14. Son audit ve kilitleme
-```
-
-Bir klasörün bağımlı olduğu önceki klasör onaylanmadan sonraki build aşamasına geçilmemelidir.
-
-------
-
-# 8. Aktif Aşama
-
-## engine/ Build Hazırlığı
-
-Planning setinin bütün belgeleri hazırlanmış ve çapraz audit tamamlanmıştır.
-
-Audit sonucu: `CONDITIONAL PASS`
-
-Gerekli build-öncesi düzeltmeler uygulanmıştır.
-
-Planning seti engine/ build için `Approved` kabul edilmektedir.
-
-Sıradaki iş `ENGINE_FOLDER_SPEC.md`'ye göre `engine/` klasörünü build etmektir.
-
-------
-
-# 9. Planning Audit Kabul Koşulları
-
-Planning audit sonucu `PASS` veya kabul edilmiş `CONDITIONAL PASS` olmadan `engine/` build aşamasına geçilmemelidir.
-
-## PASS
-
-- Kritik çelişki yoktur.
-- Klasör sorumlulukları nettir.
-- Build sırası uygulanabilirdir.
-- Dosya ağaçları uyumludur.
-- Açık kararlar üretimi engellememektedir.
-
-## CONDITIONAL PASS
-
-- Üretimi engellemeyen küçük ifade veya terminoloji düzeltmeleri vardır.
-- Düzeltmeler kayıt altına alınarak build başlayabilir.
-
-## FAIL
-
-- Aynı sorumluluk birden fazla klasör tarafından sahipleniliyorsa
-- Spec’ler farklı klasör yapıları tanımlıyorsa
-- Zorunlu bağımlılıklar mevcut değilse
-- Engine üretimini engelleyen açık kararlar varsa
-- Planning seti uygulanabilir tek bir sistem oluşturmuyorsa
-
-------
-
-# 10. Bir Klasörün Build Akışı
-
-Her ana klasör için aşağıdaki süreç uygulanmalıdır:
-
-```text
-Spec’i oku
-→ Bağımlı onaylı belgeleri oku
-→ Yalnızca hedef klasörü üret
-→ Build raporu hazırla
-→ Ayrı ajanla audit yap
-→ Bulguları değerlendir
-→ Onaylanan düzeltmeleri uygula
-→ Yeniden doğrula
-→ Klasörü onayla
-→ BUILD_STATUS güncelle
-```
-
-------
-
-# 11. Klasör Tamamlanma Koşulları
-
-Bir klasör yalnızca aşağıdaki koşullarda `Approved` kabul edilmelidir:
-
-1. İlgili spec audit edilmiştir.
-2. Klasördeki zorunlu belgeler doldurulmuştur.
-3. Build raporu hazırlanmıştır.
-4. Ayrı audit tamamlanmıştır.
-5. Kritik bulgular çözülmüştür.
-6. Önemli çelişkiler giderilmiştir.
-7. Başka klasörlerin sorumlulukları ihlal edilmemiştir.
-8. Belgeler ajan bağımsızdır.
-9. Manuel kullanım mümkündür.
-10. Bu dosyadaki durum tablosu güncellenmiştir.
-
-`Locked` durumu ancak klasör gerçek bir testte başarıyla kullanıldıktan sonra verilmelidir.
-
-------
-
-# 12. Kararlaştırılan Konular
-
-Aşağıdaki açık kararlar planning audit sonrasında kesinleştirilmiştir.
-
-## Run Template Konumu
-
+### Run Template Konumu
 **Karar:** `templates/runs/`
 
-Run operasyon belgelerinin şablonları `templates/runs/` altında tutulacaktır.
-
-`runs/` klasörü yalnızca gerçek run kayıtlarını barındırır; template sahibi değildir.
-
-------
-
-## Output Sürümleme Yapısı
-
+### Output Sürümleme Yapısı
 **Karar:** `latest/` + `versions/` yapısı
 
-```text
-outputs/<category>/<project-slug>/
-├── latest/
-└── versions/
-    ├── v0.1/
-    ├── v0.2/
-    └── v1.0/
-```
+### Example Scenario Yapısı
+**Karar:** V0 için alt klasör yapısı (`examples/inputs/`, `examples/runs/`, `examples/outputs/`)
 
-`latest/`, en son geçerli `Active` output'u temsil eder.
+### Archive Metadata Yöntemi
+**Karar:** YAML frontmatter (tekil dosyalar) ve sidecar `ARCHIVE_RECORD.md` (`old-runs/`)
 
-Validation'dan geçmeyen veya invalidated output `latest/` olamaz.
-
-Flat yapı (`outputs/<category>/<project-slug>_<version>/`) kullanılmayacaktır.
-
-------
-
-## Example Scenario Yapısı
-
-**Karar:** V0 için mevcut ayrı alt klasör yapısı
-
-```text
-examples/
-├── inputs/
-├── runs/
-└── outputs/
-```
-
-Aynı senaryoya ait dosyalar ortak `scenario_id` ile ilişkilendirilir.
-
-Örnek: `corporate-site-minimal-001`
-
-`examples/scenarios/<scenario-id>/` yapısı gelecekte değerlendirilebilecek bir seçenektir; V0 build yapısı değildir.
-
-------
-
-## Archive Metadata Yöntemi
-
-**Karar:** YAML frontmatter
-
-Arşivlenen her Markdown dosyasının başına YAML frontmatter bloğu eklenir:
-
-```yaml
----
-archive_id: ARC-...
-status: deprecated
-archive_reason: ...
-replacement: ...
-archived_at: YYYY-MM-DD
----
-```
-
-Ayrı metadata dosyası veya merkezi manifest V0'da kullanılmayacaktır.
-
-------
-
-## Engine Sürüm Kaynağı
-
+### Engine Sürüm Kaynağı
 **Karar:**
-
-- Kök `README.md` → güncel aktif Product Engine sürümünün authoritative kaynağı
+- Kök `README.md` → güncel aktif Product Engine sürümünün authoritative kaynağı (`0.1.0`)
 - `logs/ENGINE_CHANGELOG.md` → Product Engine sürüm geçmişinin authoritative kaynağı
 
-`PRODUCT_ENGINE_BRAIN.md` sürümün bağımsız sahibi değildir.
+---
 
-Aynı sürüm bilgisi farklı belgeler tarafından bağımsız biçimde sahiplenilmemelidir.
+## 10. Blokerler
 
-------
-
-# 13. Blokerler
-
-Şu anda gerçek bir build blokeri bulunmamaktadır.
-
-Mevcut durum:
+Şu anda bir build veya entegrasyon blokeri bulunmamaktadır.
 
 ```text
-Blocker:
-Yok
-
-Required Gate:
-Tamamlandı — Planning audit Approved
-
-Next Build Target:
-engine/
+Blocker: Yok
+Active Task: Integration Fixes Completed (Wave 01–05)
+Next Step: Final Re-Audit (FINAL_REAUDIT.md)
 ```
 
-------
+---
 
-# 14. Sonraki Eylem
+## 11. Sonraki Eylem
 
-Sıradaki tek aktif görev:
+Entegrasyon düzeltmeleri tamamlandığı için sonraki eylem **Final Re-Audit (`Product_Engine_Final_Integration_Fix_Prompts/FINAL_REAUDIT.md`)** adımıdır.
 
-```text
-ENGINE_FOLDER_SPEC'e göre engine/ klasörünü build et.
-```
+---
 
-------
+## 12. Güncelleme Kaydı
 
-# 15. Değişiklik Güncelleme Protokolü
+### 2026-08-10 — Wave 05 & Final Integration Fixes Update
+- Integration Fixes (Wave 01–05) tamamlandı.
+- Tarihsel `PROMPT_XX*` build prompt'ları `planning/build-prompts/` altına taşındı.
+- Naming drift'ler (`.md.md`) `.md` olarak düzeltildi.
+- Kök `README.md` hızlı başlangıç ve navigasyon rehberi ile güncellendi.
+- Overall repository status `Ready for Final Re-Audit` olarak güncellendi.
 
-Bu dosya aşağıdaki olaylarda güncellenmelidir:
-
-- Planning audit başladığında
-- Planning audit tamamlandığında
-- Bir spec revize edildiğinde
-- Bir klasör build aşamasına geçtiğinde
-- Bir klasör üretildiğinde
-- Audit sonucu alındığında
-- Düzeltme tamamlandığında
-- Bir klasör Approved veya Locked olduğunda
-- Yeni bir bloker oluştuğunda
-- Aktif çalışma değiştiğinde
-- Manuel Product Engine testi tamamlandığında
-
-Her küçük metin düzenlemesinde bu dosya güncellenmemelidir.
-
-------
-
-# 16. Güncelleme İlkesi
-
-Durumlar gerçeği yansıtmalıdır.
-
-Aşağıdaki davranışlardan kaçınılmalıdır:
-
-- Üretilmemiş klasörü `Built` göstermek
-- Audit edilmemiş spec’i `Approved` göstermek
-- Açık kritik bulgu varken klasörü onaylamak
-- Başlamamış işi `In Progress` olarak bırakmak
-- Eski next action bilgisini güncellememek
-- Tamamlanmamış planning setini kilitli göstermek
-
-Bu dosya iyimser tahmin değil, mevcut gerçeklik kaydıdır.
-
-------
-
-# 17. Güncelleme Kaydı
-
-## 2026-08-06
-
-### Tamamlananlar
-
-- Product Engine ana klasör yapısı belirlendi.
-- Bütün ana klasörler için planning spec belgeleri hazırlandı.
-- `planning/README.md` hazırlandı.
-- `planning/BUILD_STATUS.md` hazırlandı.
-- Planning seti çapraz audit tamamlandı (Sonuç: CONDITIONAL PASS).
-- Audit bulguları doğrultusunda gerekli düzeltmeler uygulandı.
-- Tüm açık kararlar kapatıldı.
-- Planning seti engine/ build için Approved kabul edildi.
-
-### Mevcut Aşama
-
-engine/ klasör build hazırlığı.
-
-### Henüz Başlamayanlar
-
-- Gerçek klasör build'leri
-- Klasör bazlı audit'ler
-- Example senaryoları
-- Manuel Product Engine testi
-- Final entegrasyon
-- Kilitleme
-
-### Sıradaki İş
-
-`ENGINE_FOLDER_SPEC.md`'ye göre `engine/` klasörünü build etmek.
-
-------
-
-# 18. Nihai Hedef
-
-Product Engine build süreci tamamlandığında bu belge şunları açık biçimde gösterebilmelidir:
-
-- Hangi spec’lerin onaylandığını
-- Hangi klasörlerin üretildiğini
-- Hangi klasörlerin audit edildiğini
-- Hangi düzeltmelerin tamamlandığını
-- Hangi sürümlerin aktif olduğunu
-- Hangi yapıların kilitlendiğini
-- Sistemin manuel testten geçip geçmediğini
-- Sıradaki bakım veya geliştirme işini
-
-Başarı modeli:
-
-```text
-Hazır Planning Seti
-+
-Çapraz Audit
-+
-Klasör Bazlı Build
-+
-Bağımsız Audit
-+
-Kontrollü Düzeltme
-+
-Manuel Product Engine Testi
-=
-Onaylı ve Kullanılabilir Product Engine V0
-```
-
-Bu dosyanın başarısı ayrıntılı çalışma geçmişi taşımasıyla değil; Product Engine’in mevcut durumunu birkaç dakika içinde doğru ve tartışmasız biçimde gösterebilmesiyle ölçülmelidir.
+### 2026-08-10 — Wave 01 Update
+- Tüm klasör build durumları `CLOSED` olarak güncellendi.
+- Overall repository status `Integration Fix In Progress` olarak ayarlandı.
+- Aktif aşama `Wave 01 — Root Authority, Read Order & Build-State Closure` olarak donduruldu.
+- Belgenin runtime authority olmadığı, yalnızca build/integration status takibi yaptığı netleştirildi.

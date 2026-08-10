@@ -4,7 +4,7 @@
 run_id: RUN-20260101-001
 project_name: Task Tracker Demo App
 project_slug: task-tracker-demo
-engine_version: not_assigned
+engine_version: 0.1.0
 run_type: generation
 status: Completed
 created_at: 2026-01-01T00:00:00Z
@@ -19,6 +19,7 @@ documents_produced:
   - README.md
   - PROJECT_BRAIN.md
   - PRODUCT_RULES.md
+  - DESIGN_RULES.md
 validation_result: PASS
 output_version: v0.1
 output_ref: outputs/demos/task-tracker-demo/versions/v0.1/
@@ -32,7 +33,7 @@ output_ref: outputs/demos/task-tracker-demo/versions/v0.1/
 - **Proje**: Task Tracker Demo App (`task-tracker-demo`)
 - **Seçilen Paket**: `demo-frontend`
 - **Delivery Profile**: `Prototype`
-- **Engine Version**: `not_assigned`
+- **Engine Version**: `0.1.0`
 
 ---
 

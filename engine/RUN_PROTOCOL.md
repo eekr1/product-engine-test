@@ -233,15 +233,14 @@ Resume:
 
 ## Başarılı Run Kapanışı
 
-Aşağıdaki koşulların tamamı sağlandığında run "Completed" olarak kapatılır:
+Başarılı yayınlama kapısı (publication gate eligibility) tamamlandıktan sonra aşağıdaki adımlar sırasıyla uygulanarak run "Completed" olarak kapatılır:
 
 ```text
-1. Tüm required dokümanlar üretildi.
-2. Validation sonucu PASS veya onaylı CONDITIONAL PASS.
-3. Final output OUTPUT_STRUCTURE.md'ye göre yerleştirildi.
-4. latest/ güncellendi.
-5. RUN_MANIFEST.md tamamlandı.
-6. Run klasörü runs/completed/<run-id>/ konumuna taşındı.
+1. Tüm zorunlu dokümanlar üretildi ve doğrulama sonucu PASS veya kabul edilmiş CONDITIONAL PASS alındı.
+2. Sürüm numarası (output_version) tahsis edilip final output versions/<output_version>/ klasörüne yayınlandı.
+3. latest/ türetilmiş görünümü yeni sürümle güncellendi.
+4. RUN_MANIFEST.md belgesinde output_ref, output_version ve status: Completed alanları donduruldu.
+5. Run klasörü runs/completed/<run-id>/ konumuna taşındı.
 ```
 
 ---

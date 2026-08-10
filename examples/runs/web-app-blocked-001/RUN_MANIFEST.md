@@ -4,7 +4,7 @@
 run_id: RUN-20260101-002
 project_name: Realtime Sync App Demo
 project_slug: realtime-sync-app
-engine_version: not_assigned
+engine_version: 0.1.0
 run_type: generation
 status: Blocked
 created_at: 2026-01-01T00:00:00Z
@@ -29,7 +29,7 @@ output_ref: null
 - **Proje**: Realtime Sync App Demo (`realtime-sync-app`)
 - **Seçilen Paket**: `demo-frontend`
 - **Delivery Profile**: `Prototype`
-- **Engine Version**: `not_assigned`
+- **Engine Version**: `0.1.0`
 
 ---
 
