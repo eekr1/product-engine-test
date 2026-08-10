@@ -165,7 +165,7 @@ Tarihsel `PROMPT_XX*` orchestration dosyaları `planning/build-prompts/` dizinin
 ```text
 Blocker: Yok
 Active Task: Yok
-Next Step:Tamamlandı - CLOSED
+Next Step: None — Repository CLOSED
 ```
 
 ---
