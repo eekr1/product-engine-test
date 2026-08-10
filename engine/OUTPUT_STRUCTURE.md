@@ -4,6 +4,8 @@
 
 Bu belge, Product Engine'in ürettiği final proje dokümantasyon paketinin nasıl yapılandırılacağını ve nereye yerleştirileceğini tanımlar.
 
+`VALIDATION_RULES` working-output'u publication öncesinde doğrular. `OUTPUT_STRUCTURE` ise successful validation sonrasında published output fiziksel yapısını yönetir.
+
 ## Kapsam Dışı
 
 - Dokümanların tam metin içerikleri → `templates/`

@@ -18,7 +18,7 @@ Bu sayede kullanılan ajanın Codex, Claude, Gemini veya başka bir sistem olmas
 
 ---
 
-## Girdi Sebagai Ne Alır?
+## Girdi Olarak Ne Alır?
 
 - Projenin fikri ve amacı
 - Ürün gereksinimleri
@@ -31,7 +31,7 @@ Bu sayede kullanılan ajanın Codex, Claude, Gemini veya başka bir sistem olmas
 
 ---
 
-## Çıktı Sebagai Ne Verir?
+## Çıktı Olarak Ne Verir?
 
 Projeye göre uyarlanmış, birbiriyle tutarlı ve doğrudan kullanılabilir dokümantasyon paketi:
 

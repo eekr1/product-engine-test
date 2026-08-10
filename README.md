@@ -26,7 +26,7 @@ Bu dosya (Root `README.md`), Product Engine'in tek birincil aktif sürüm otorit
 |---|---|
 | `README.md` | Repository giriş noktası, aktif sürüm otoritesi ve canonical boot order rehberi. |
 | `PRODUCT_ENGINE_BRAIN.md` | Product Engine'in amacı, vizyonu, girdileri, çıktıları ve temel operating philosophy belgesi. |
-| `engine/` | Çalıma zamanı sözleşmeleri (intake, package, generation, validation, run protocol). |
+| `engine/` | Çalışma zamanı sözleşmeleri (intake, package, generation, validation, run protocol). |
 | `packages/` | Farklı proje türleri ve teslim olgunluk seviyeleri için tanımlanmış doküman paketleri. |
 | `templates/` | Dokümanların standart şablonları, bölüm yapıları ve placeholder kuralları. |
 | `inputs/` | Proje fikirlerinin kabul edildiği, doğrulandığı ve onaylandığı girdi katmanı. |
@@ -36,7 +36,6 @@ Bu dosya (Root `README.md`), Product Engine'in tek birincil aktif sürüm otorit
 | `examples/` | Doğru/hatalı çalışma örnekleri ve test senaryoları (non-authoritative). |
 | `archive/` | Aktif kullanımdan kaldırılmış tarihsel materyal ve izole edilmiş belgeler. |
 | `planning/` | İnşa süreci şartnameleri ve tarihsel build takibi (runtime authority değildir). |
-| `Product_Engine_Final_Integration_Fix_Prompts/` | Entegrasyon düzeltme dalgaları (fix waves) talimatları. |
 
 ---
 

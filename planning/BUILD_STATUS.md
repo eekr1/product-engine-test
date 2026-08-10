@@ -164,15 +164,15 @@ Tarihsel `PROMPT_XX*` orchestration dosyaları `planning/build-prompts/` dizinin
 
 ```text
 Blocker: Yok
-Active Task: Integration Fixes Completed (Wave 01–05)
-Next Step: Final Re-Audit (FINAL_REAUDIT.md)
+Active Task: Integration Fixes & Cleanup Completed
+Next Step: Final Re-Audit
 ```
 
 ---
 
 ## 11. Sonraki Eylem
 
-Entegrasyon düzeltmeleri tamamlandığı için sonraki eylem **Final Re-Audit (`Product_Engine_Final_Integration_Fix_Prompts/FINAL_REAUDIT.md`)** adımıdır.
+Entegrasyon ve cleanup düzeltmeleri tamamlandığı için sonraki eylem **Final Re-Audit** adımıdır.
 
 ---
 

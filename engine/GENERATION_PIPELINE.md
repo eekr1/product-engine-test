@@ -171,7 +171,7 @@ Not: Bağımlılık sırasındaki her dependency dokümanı, yalnızca aktif `pr
 
 ```text
 Girdi   : Working output
-Eylem   : VALIDATION_RULES.md'deki tüm kontroller uygulanır.
+Eylem   : VALIDATION_RULES.md'deki pre-publication kontrolleri uygulanır.
           Her doküman hem kendi içinde hem de diğer dokümanlarla tutarlılık açısından kontrol edilir.
 Çıktı   : Validation raporu (PASS / CONDITIONAL PASS / FAIL)
 Durma   : FAIL durumunda repair (Aşama 10) aşamasına geçilir.

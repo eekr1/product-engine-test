@@ -13,6 +13,10 @@ Validation, working output'un final output olarak kabul edilip edilemeyeceğini 
 - Pipeline'ın tam akışı → `GENERATION_PIPELINE.md`
 - Template yapılarının içerikleri → `templates/`
 
+## Sorumluluk ve Sınır
+
+`VALIDATION_RULES` working-output'u publication öncesinde doğrular. `OUTPUT_STRUCTURE` ise successful validation sonrasında published output fiziksel yapısını yönetir.
+
 ---
 
 ## Validation Sonuç Kategorileri
@@ -39,15 +43,18 @@ FAIL
 ### 1. Yapı Doğrulaması (Structure Validation)
 
 ```text
-Kontrol: Output klasörü OUTPUT_STRUCTURE.md'de tanımlanan yapıya uygun mu?
-  - latest/ klasörü mevcut mu?
-  - versions/ klasörü mevcut mu?
-  - Dosya adları DOCUMENT_CATALOG.md ile uyumlu mu?
-  - Pakette olmayan dosyalar output'a eklenmiş mi?
+Kontrol: Pre-publication working-output doküman seti seçilen package ve DOCUMENT_CATALOG.md ile tanımlanan yapıya uygun mu?
+  - working-output doküman seti seçilen package ile uyumlu mu?
+  - gerekli/applicable dokümanlar mevcut mu?
+  - fazladan veya package dışı doküman var mı?
+  - dosya adları DOCUMENT_CATALOG.md / package contract ile uyumlu mu?
+  - working-output içinde final output'a sızmaması gereken runtime/temp dosyaları var mı?
+
+Not: `latest/`, `versions/` veya yayınlanmış sürüm klasörlerinin mevcudiyeti pre-publication validation kontrolüne dahil değildir; yayınlama (publication/traceability) sonrasında doğrulanabilecek operasyonel output durumlarıdır.
 
 Hata Seviyesi:
-  - Yanlış klasör yapısı → FAIL
-  - Pakette olmayan dosya mevcut → FAIL
+  - Paket/katalog dışı veya geçici dosya mevcut → FAIL
+  - Eksik veya yanlış adlandırılmış doküman → FAIL
 ```
 
 ---
