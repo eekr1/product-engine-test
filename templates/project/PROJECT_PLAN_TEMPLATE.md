@@ -6,82 +6,72 @@
 template_id: project-plan-template
 template_name: Project Plan Template
 document_id: PROJ-PLAN
-version: 1.0.0
+version: 1.1.0
 status: active
 template_type: document
 category: project
 supported_packages:
-  - saas
-  - corporate-website
-  - demo-frontend
-  - api-service
-  - existing-project
+  - all
 supported_delivery_profiles:
+  - foundation
+  - prototype
   - implementation-ready
   - production-ready
+supported_implementation_planning:
+  - standard
+  - full
 required_inputs:
   - approved_intake
-conditional_inputs: []
+  - project_brain
+  - wave_map
 dependencies:
   - PROJECT-BRAIN
+  - WAVE-MAP
 output_filename: PROJECT_PLAN.md
 ```
 
 ## Amaç
 
-Projenin teslim aşamalarını (phases), kilometre taşlarını (milestones), zaman çizelgesini, teslimatlarını ve kabul koşullarını tanımlamak.
+Projenin approved scope'unu üst seviyede teslim aşamalarına, milestone'lara ve wave sistemine bağlayan execution roadmap belgesidir.
 
 ## Kullanım Koşulları
 
-Implementation Ready ve Production Ready projelerde zorunludur/koşulludur.
-
-## Girdi Kaynakları
-
-- Approved Project Intake (`engine/PROJECT_INTAKE.md`)
-- `PROJECT_BRAIN.md`, `WAVE_MAP.md` (varsa)
+`implementation_planning: standard | full` olan implementation-bearing projelerde zorunludur. Delivery profile Prototype olsa bile kaldırılmaz.
 
 ## Zorunlu Bölümler
 
-- Proje Aşamaları ve Kilometre Taşları (Phases & Milestones)
-- Bağımlılık Haritası (Dependencies Map)
-- Teslimatlar ve Çıktılar (Deliverables)
-- Aşamalı Kabul Koşulları (Acceptance Conditions)
-
-## Koşullu Bölümler
-
-- `[CONDITIONAL: include only if wave system is not used]` Zaman Çizelgesi ve Sıralama
+- Delivery Strategy
+- Phases / Milestones
+- Wave Relationship
+- Dependency Overview
+- Deliverables
+- Acceptance Conditions
+- Scope Growth / Upgrade Boundaries
 
 ## İçerik Üretim Kuralları
 
-- Wave sistemi (`WAVE_MAP.md`) kullanılıyorsa, `PROJECT_PLAN.md` onun yerine geçmemeli; üst seviye teslimat aşamalarını özetlemelidir.
-- Plan onaylı kapsam ile tamamen tutarlı olmalıdır.
+- `WAVE_MAP.md` detayını tekrar etmez; üst seviye roadmap ve milestone ilişkisini açıklar.
+- Plan approved scope dışına yeni feature ekleyemez.
+- Demo/prototype için gelecekte production'a büyüme ihtimali varsa bunu roadmap boundary olarak gösterebilir; future scope bugünkü committed scope gibi yazılamaz.
+- Implementation planning full ise daha ayrıntılı cross-system dependency/risk notları eklenebilir.
+- Yapay takvim/deadline uydurulmaz. Tarih verilmemişse dependency/order temelli plan kullanılır.
 
 ## Placeholder Tanımları
 
-- `{{PROJECT_NAME}}`: Proje adı.
-- `{{PHASES_LIST}}`: Proje aşamaları ve kilit kilometre taşları.
-- `{{DEPENDENCIES_MAP}}`: Aşamalar arası bağımlılıklar.
-- `{{DELIVERABLES_LIST}}`: Her aşamada teslim edilecek somut çıktılar.
-- `{{ACCEPTANCE_CONDITIONS_BLOCK}}`: Teslimat kabul koşulları.
-
-## Kapsam Dışı
-
-- Anlık görev listesi (bkz: `NEXT_TASKS.md`)
-- Detaylı wave görev kırılımı (bkz: `WAVE_PLAN.md`)
-
-## Diğer Dokümanlarla İlişki
-
-- Primary Owner: `project_phases`, `milestones`, `timeline`, `resource_plan`.
-- Referenced By: `WAVE_MAP.md`, `README.md`.
-
-## Delivery Profile Davranışı
-
-- **Implementation Ready**: Net aşama hedefleri ve bağımlılık haritası.
-- **Production Ready**: Canlıya geçiş risk yönetimi ve kabul kriterleri eklentisi.
+- `{{PROJECT_NAME}}`
+- `{{DELIVERY_STRATEGY}}`
+- `{{PHASES_MILESTONES}}`
+- `{{WAVE_RELATIONSHIP}}`
+- `{{DEPENDENCY_OVERVIEW}}`
+- `{{DELIVERABLES}}`
+- `{{ACCEPTANCE_CONDITIONS}}`
+- `{{UPGRADE_BOUNDARIES}}`
 
 ## Validation Beklentileri
 
-- Onaylı intake kapsamı dışına çıkan aşama icat edilmemelidir.
+- WAVE_MAP ile aynı uygulama sırasını anlatmalı.
+- Approved intake kapsamı dışına çıkmamalı.
+- Future scope ile current scope ayrılmalı.
 
 ---
 
@@ -89,25 +79,32 @@ Implementation Ready ve Production Ready projelerde zorunludur/koşulludur.
 
 # {{PROJECT_NAME}} — Project Plan
 
-## 1. Proje Aşamaları ve Kilometre Taşları
+## 1. Delivery Strategy
 
-{{PHASES_LIST}}
+{{DELIVERY_STRATEGY}}
 
-## 2. Bağımlılık Haritası
+## 2. Phases / Milestones
 
-{{DEPENDENCIES_MAP}}
+{{PHASES_MILESTONES}}
 
-## 3. Teslimatlar ve Çıktılar
+## 3. Wave Relationship
 
-{{DELIVERABLES_LIST}}
+{{WAVE_RELATIONSHIP}}
 
-## 4. Aşamalı Kabul Koşulları
+## 4. Dependency Overview
 
-{{ACCEPTANCE_CONDITIONS_BLOCK}}
+{{DEPENDENCY_OVERVIEW}}
 
-[CONDITIONAL: include only if wave system is not used]
-## 5. Zaman Çizelgesi ve Sıralama
+## 5. Deliverables
 
-- Dalga mimarisi kullanılmadığında geçerli üst seviye zaman planı.
+{{DELIVERABLES}}
+
+## 6. Acceptance Conditions
+
+{{ACCEPTANCE_CONDITIONS}}
+
+## 7. Scope Growth / Upgrade Boundaries
+
+{{UPGRADE_BOUNDARIES}}
 
 # OUTPUT DOCUMENT END
