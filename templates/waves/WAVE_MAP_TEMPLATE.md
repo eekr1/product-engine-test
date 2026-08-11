@@ -4,84 +4,82 @@
 
 ```yaml
 template_id: wave-map-template
-template_name: Wave Map Template
+template_name: Canonical Wave Map Template
 document_id: WAVE-MAP
-version: 1.0.0
+version: 2.0.0
 status: active
 template_type: document
 category: waves
 supported_packages:
-  - saas
-  - api-service
-  - demo-frontend
-  - corporate-website
-  - existing-project
+  - all
 supported_delivery_profiles:
+  - foundation
+  - prototype
   - implementation-ready
   - production-ready
+supported_implementation_planning:
+  - standard
+  - full
 required_inputs:
   - approved_intake
-conditional_inputs: []
+  - project_brain
+  - product_rules
+  - tech_context
+conditional_inputs:
+  - design_documents
+  - data_model
+  - api_contracts
+  - test_strategy
 dependencies:
   - PROJECT-BRAIN
   - PRODUCT-RULES
+  - TECH-CTX
 output_filename: WAVE_MAP.md
 ```
 
 ## Amaç
 
-Projenin teslimat dalgalarını (waves), her dalganın amacını, kapsama sınırlarını, ana teslimatlarını, bağımlılıklarını ve çıkış (exit) kriterlerini üst seviyede haritalandırmak.
+Projenin implementation yolunu baştan sona anlamlı delivery wave'lerine bölen; her wave'in amacı, scope boundary'si, dependency'si, ana deliverable'ı ve exit kriterini üst seviyede tanımlayan canonical haritadır.
 
 ## Kullanım Koşulları
 
-Dalga bazlı teslimat mimarisi kullanan projelerde zorunludur/koşulludur.
-
-## Girdi Kaynakları
-
-- Approved Project Intake (`engine/PROJECT_INTAKE.md`)
-- `PROJECT_BRAIN.md`, `PRODUCT_RULES.md`
+`implementation_planning: standard | full` olan implementation-bearing projelerde zorunludur. Delivery profile'ın Prototype olması bu belgeyi kapsam dışı bırakmaz.
 
 ## Zorunlu Bölümler
 
-- Dalga Mimarisi Özeti (Wave Architecture Overview)
-- Dalga Haritası ve Sıralama (Wave Map Summary Table)
-- Dalga Bazlı Kapsam Sınırları (Wave Scope Boundaries)
-- Genel Çıkış Kriterleri (Exit Criteria)
-
-## Koşullu Bölümler
-
-- `[CONDITIONAL: include only if parallel waves exist]` Paralel Dalga Kuralları
+- Wave Architecture Principles
+- Wave Map Summary
+- Dependency Chain
+- Wave Entries
+- Cross-Wave Invariants
+- Global Exit / Handoff Rules
 
 ## İçerik Üretim Kuralları
 
-- Her dalga için: Wave ID, Adı, Amacı, Kapsamı, Bağımlılıkları, Ana Teslimatları, Çıkış Kriterleri ve Durumu desteklenmelidir.
-- Dalga sayısı gerçekçi olmalı ve onaylı kapsamı tam karşılamalıdır.
+- Wave'ler repository folder'larına göre değil anlamlı teslim sonuçlarına göre bölünmelidir.
+- Wave 00, projenin ilk uygulanabilir foundation/bootstrapping adımını temsil etmelidir; boş formalite wave'i olmamalıdır.
+- Her wave tek bir anlamlı goal taşır.
+- Dependency zinciri açık olmalı; circular dependency olamaz.
+- Design/data/API/test belgeleri applicable ise wave scope bunlarla hizalanmalıdır.
+- `full` planning daha granüler dependency/risk planning getirebilir; yapay wave çoğaltamaz.
+- Bütün approved scope en az bir wave'e map edilmeli, hiçbir wave approved scope dışı iş icat etmemelidir.
 
 ## Placeholder Tanımları
 
-- `{{PROJECT_NAME}}`: Proje adı.
-- `{{WAVE_MAP_OVERVIEW}}`: Dalga teslimat yaklaşımının açıklaması.
-- `{{WAVES_SUMMARY_TABLE}}`: Wave ID, Name, Goal, Status tablosu.
-- `{{WAVE_ENTRIES_LIST}}`: Her dalganın üst seviye detay bloğu listesi.
-
-## Kapsam Dışı
-
-- Tekil dalganın detaylı görev planı (bkz: `WAVE_PLAN.md`)
-- Kodlama seviyesi görevler (bkz: `NEXT_TASKS.md`)
-
-## Diğer Dokümanlarla İlişki
-
-- Primary Owner: `wave_structure`, `wave_goals`, `wave_scope_boundaries`.
-- Referenced By: `WAVE_PLAN.md`, `README.md`, `PROJECT_PLAN.md`.
-
-## Delivery Profile Davranışı
-
-- **Implementation Ready**: Net sıralanmış dalga haritası ve bağımlılık yapısı.
-- **Production Ready**: Her dalga için canlıya çıkış/staging kabul kriterleri.
+- `{{PROJECT_NAME}}`
+- `{{WAVE_ARCHITECTURE_PRINCIPLES}}`
+- `{{WAVES_SUMMARY_TABLE}}`
+- `{{DEPENDENCY_CHAIN}}`
+- `{{WAVE_ENTRIES_LIST}}`
+- `{{CROSS_WAVE_INVARIANTS}}`
+- `{{GLOBAL_EXIT_HANDOFF_RULES}}`
 
 ## Validation Beklentileri
 
-- Dalga hedefleri `PROJECT_BRAIN.md` hedefleriyle tam örtüşmelidir.
+- Approved scope coverage tam olmalı.
+- Wave dependency chain acyclic ve uygulanabilir olmalı.
+- Her wave için WAVE-PLAN dynamic instance üretilebilmelidir.
+- WAVE_MAP ile PROJECT_PLAN aynı teslim sırasını anlatmalıdır.
 
 ---
 
@@ -89,25 +87,28 @@ Dalga bazlı teslimat mimarisi kullanan projelerde zorunludur/koşulludur.
 
 # {{PROJECT_NAME}} — Wave Map
 
-## 1. Dalga Mimarisi Özeti
+## 1. Wave Architecture Principles
 
-{{WAVE_MAP_OVERVIEW}}
+{{WAVE_ARCHITECTURE_PRINCIPLES}}
 
-## 2. Dalga Haritası Özet Tablosu
+## 2. Wave Map Summary
 
 {{WAVES_SUMMARY_TABLE}}
 
-## 3. Dalga Detayları ve Kapsam Sınırları
+## 3. Dependency Chain
+
+{{DEPENDENCY_CHAIN}}
+
+## 4. Wave Entries
 
 {{WAVE_ENTRIES_LIST}}
 
-## 4. Genel Çıkış ve Geçiş Kriterleri
+## 5. Cross-Wave Invariants
 
-- Bir dalgadan diğerine geçiş için zorunlu kalite ve test kriterleri.
+{{CROSS_WAVE_INVARIANTS}}
 
-[CONDITIONAL: include only if parallel waves exist]
-## 5. Paralel Dalga Kuralları
+## 6. Global Exit / Handoff Rules
 
-- Eşzamanlı yürütülen dalgalar arası senkronizasyon ve bağımlılık yönetimi.
+{{GLOBAL_EXIT_HANDOFF_RULES}}
 
 # OUTPUT DOCUMENT END
