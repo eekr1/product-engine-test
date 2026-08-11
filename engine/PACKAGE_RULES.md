@@ -4,11 +4,12 @@
 
 Bu belge, verilen proje bilgilerine göre hangi doküman paketinin seçileceğini tanımlar.
 
-Paket seçimi, gereksiz doküman üretimini engeller. Her proje yalnızca kendi bağlamına uygun dokümanları alır.
+Paket seçimi, gereksiz doküman üretimini engeller. Her proje yalnızca kendi bağlamına, delivery maturity seviyesine ve planning depth kararlarına uygun dokümanları alır.
 
 ## Kapsam Dışı
 
 - Paket dosyalarının gerçek içerikleri → `packages/`
+- Planning profile tanımları ve kalite tabanı → `PLANNING_PROFILES.md`
 - Dokümanların şablon içerikleri → `templates/`
 - Intake alanlarının tam listesi → `PROJECT_INTAKE.md`
 - Output klasör yapısının ayrıntıları → `OUTPUT_STRUCTURE.md`
@@ -19,18 +20,38 @@ Paket seçimi, gereksiz doküman üretimini engeller. Her proje yalnızca kendi 
 
 ### Delivery Profile
 
-Projenin hedef teslim olgunluk düzeyidir. Proje türünden bağımsız bir kavramdır.
+Projenin hedef teslim olgunluk düzeyidir. Proje türünden ve planning depth'ten bağımsız bir kavramdır.
 
 ```text
 Foundation           → Temel bağlam ve amaç belgelenmiş
-Prototype            → Hızlı deneme, minimum belge yükü
+Prototype            → Deneme/demo hedefli teslim olgunluğu; kalite tabanı düşmez
 Implementation Ready → Ajana üretime başlatacak yeterlilikte belge
 Production Ready     → Operasyon ve sürdürülebilirlik kapsamı güçlendirilmiş paket
 ```
 
+### Implementation Planning
+
+Projenin nasıl inşa edileceğine ilişkin execution planning derinliğidir.
+
+```text
+standard | full
+```
+
+Tam anlamı `PLANNING_PROFILES.md` tarafından yönetilir.
+
+### Design Planning
+
+UI/UX taşıyan projelerde tasarım planlama derinliğidir.
+
+```text
+light | standard | full
+```
+
+UI/UX taşımayan projelerde profile seçilmez; `none` adlı bir design profile yoktur.
+
 ### Project Type
 
-Projenin işlevsel kategorisidir. Delivery profile'dan bağımsızdır. Tanınan türler için bkz: `PROJECT_INTAKE.md`.
+Projenin işlevsel kategorisidir. Delivery profile ve planning profile'lardan bağımsızdır. Tanınan türler için bkz: `PROJECT_INTAKE.md`.
 
 ### Package
 
@@ -46,6 +67,33 @@ packages/
 ├── SAAS_PACKAGE.md
 ├── EXISTING_PROJECT_PACKAGE.md
 └── API_SERVICE_PACKAGE.md
+```
+
+---
+
+## Seçim Modeli
+
+Product Engine document resolution dört ayrı girdiyi birlikte değerlendirir:
+
+```text
+project_type
++
+delivery_profile
++
+implementation_planning
++
+design_planning (applicable ise)
+```
+
+Hiçbir eksen diğerinin yerine geçemez.
+
+Özellikle:
+
+```text
+Prototype ≠ planning azaltma talimatı
+light design ≠ düşük tasarım kalitesi
+standard implementation ≠ eksik implementation planı
+full ≠ gereksiz doküman üretme izni
 ```
 
 ---
@@ -72,9 +120,25 @@ Onaylı intake içindeki `project_type` alanı kullanılır.
 
 Belirsiz ise intake adımına geri dönülür. Bu alan assumption yapılamaz.
 
-### Adım 3 — Temel Paketi Seç
+### Adım 3 — Planning Profile'ları Belirle
 
-Delivery profile + project type kombinasyonuna göre `packages/` klasöründeki karşılık gelen paket dosyası belirlenir.
+Onaylı intake içindeki `implementation_planning` zorunlu olarak okunur.
+
+UI/UX taşıyan projelerde `design_planning` da zorunlu olarak okunur.
+
+```text
+implementation_planning: standard | full
+
+design_planning (applicable): light | standard | full
+```
+
+Planning profile eksik veya canonical enum dışında ise package/document resolution başlatılamaz; intake düzeltmesine dönülür.
+
+Paket seçim aşamasında profile tahmini yapılmaz. Profile önerisi pending intake aşamasında yapılmış ve explicit approval ile kesinleşmiş olmalıdır.
+
+### Adım 4 — Temel Paketi Seç
+
+Delivery profile + project type kombinasyonuna göre `packages/` klasöründeki karşılık gelen temel paket dosyası belirlenir.
 
 Paket dosyaları `packages/` altında düz yapıda konumlanmaktadır:
 
@@ -83,53 +147,101 @@ packages/<PACKAGE_NAME>.md
 Örnek: packages/SAAS_PACKAGE.md
 ```
 
-### Adım 4 — Uzantı Gereksinimlerini Değerlendir
+### Adım 5 — Implementation Planning Genişliğini Uygula
 
-Temel paket her projeye yeterli gelmeyebilir. Aşağıdaki durumlarda ek dokümanlar eklenir:
+Temel paket seçildikten sonra `implementation_planning`, execution-oriented document scope'un minimum derinliğini belirler.
+
+```text
+standard
+→ Product Engine'in agent-ready minimum execution planning kapsamı uygulanır.
+→ Prototype/demo olması planning katmanlarını otomatik olarak kaldıramaz.
+
+full
+→ standard kapsamı korunur.
+→ Projenin gerçek karmaşıklığına göre daha derin data/API/test/deployment/operations veya cross-system planning belgeleri değerlendirilir.
+```
+
+Exact document ID çözümlemesi `DOCUMENT_CATALOG.md` ve ilgili package contract'ları üzerinden yapılır.
+
+### Adım 6 — Design Planning Genişliğini Uygula
+
+UI/UX taşıyan projelerde `design_planning` design artifact scope'unu belirler.
+
+```text
+light
+→ Güçlü, projeye özgü ve uygulanabilir DESIGN_RULES tabanı.
+→ Generic/template tasarım veya sektör klişesi kullanma izni değildir.
+
+standard
+→ light tabanı + design system, global shell, page/screen ve system-state planning gibi applicable design katmanları değerlendirilir.
+
+full
+→ standard tabanı + feature-level, complex flow, auth/gate, admin/operational ve ileri state planning gibi yalnızca gerçek ihtiyacın gerektirdiği design katmanları değerlendirilir.
+```
+
+Exact design document selection ilerleyen design catalog/package contract'ları tarafından çözülür; bu belge profile semantiğinin alt sınırını tanımlar.
+
+### Adım 7 — Bağlamsal Uzantı Gereksinimlerini Değerlendir
+
+Temel paket ve planning profile'lar her projeye tek başına yeterli gelmeyebilir. Aşağıdaki durumlarda uygun canonical belgeler eklenir:
 
 ```text
 Mevcut proje (existing):
 → CURRENT_STATUS (STATUS) belgesi zorunlu hale gelir.
 
-API yüzeyi olan projeler:
-→ API_CONTRACTS (API) belgesi eklenir.
+Gerçek API yüzeyi kapsamdaysa:
+→ API_CONTRACTS (API) belgesi değerlendirilir.
 
-Dalga bazlı planlamaya ihtiyaç varsa:
-→ WAVE_MAP ve WAVE_PLAN eklenir.
+Karmaşık veya kalıcı veri modeli kapsamdaysa:
+→ DATA_MODEL (DATA) belgesi değerlendirilir.
 
 Production Ready + dış erişim varsa:
-→ DEPLOYMENT ve OPERATIONS belgeleri eklenir.
+→ DEPLOYMENT ve OPERATIONS belgeleri değerlendirilir.
 
-Karmaşık veri modeli olan projeler:
-→ DATA_MODEL (DATA) belgesi eklenir.
-
-Tasarım kararları belgelenmesi gereken projeler:
-→ DESIGN_RULES (DESIGN) belgesi eklenir.
-
-Ajan çalışma kuralları tanımlanacaksa:
-→ AGENT_INSTRUCTIONS (AGENT-INST) belgesi eklenir.
+Test planlaması implementation scope tarafından gerektiriliyorsa:
+→ TEST_STRATEGY değerlendirilir.
 ```
 
-### Adım 5 — Daraltma Gereksinimlerini Değerlendir
+### Adım 8 — Demo / Frontend Integration Readiness Kontrolü
 
-Küçük veya tek amaçlı projeler için bazı belgeler gereksiz olabilir.
+Sadece frontend demo olması, teknik planlama veya mimari kaliteyi düşürme gerekçesi değildir.
+
+Backend henüz gerçek kapsamda değilse:
+
+- sahte API endpoint'i veya database contract'ı üretilmez,
+- ancak mock/local data'nın presentation katmanına kontrolsüz gömülmediği,
+- service/data-access boundary'nin tanımlı olduğu,
+- gerçek backend geldiğinde entegrasyon noktasının belli olduğu,
+- environment/config sınırlarının korunduğu
+
+bir teknik planlama beklenir.
+
+Bu davranış `PLANNING_PROFILES.md` içindeki Backend / Integration Readiness Baseline'a tabidir.
+
+### Adım 9 — Daraltma Gereksinimlerini Değerlendir
+
+Daraltma yalnızca ilgili profile'ın minimum kapsamını ihlal etmiyorsa yapılabilir.
+
+Aşağıdaki eski tip yorumlar geçersizdir:
 
 ```text
-Prototype + hızlı teslim:
-→ WAVE_MAP, WAVE_PLAN, PROJECT_PLAN çıkarılabilir.
-
-Sadece frontend demo veya landing-page:
-→ DATA_MODEL, API_CONTRACTS, OPERATIONS çıkarılabilir.
-
-Tek kullanıcılı internal-tool:
-→ PRODUCT_STRATEGY, DESIGN_RULES çıkarılabilir.
+Prototype + hızlı teslim → wave/project planning'i otomatik çıkar
+Demo → teknik context veya integration readiness'i otomatik çıkar
+Light design → generic/minimal design yeterli
 ```
 
-Daraltma kararı assumption olarak kaydedilir.
+Daraltma kararı:
 
-### Adım 6 — Seçimi Gerekçelendir
+- `implementation_planning: standard` için agent-ready minimumu bozamaz,
+- `design_planning: light` için güçlü `DESIGN_RULES` tabanını kaldıramaz,
+- package/catalog tarafından required olan applicable belgeyi kaldıramaz,
+- yalnızca gerçekten applicable olmayan veya kullanıcı kapsamı dışında kalan conditional belgeleri eleyebilir.
 
-Seçilen paket ve yapılan genişleme veya daraltmalar run kaydına yazılır. Bkz: `RUN_PROTOCOL.md`.
+Daraltma kararı assumption/decision kaydında gerekçelendirilir.
+
+### Adım 10 — Seçimi Gerekçelendir
+
+Seçilen paket, planning profile'lar ve yapılan genişleme/daraltmalar run kaydına yazılır. Bkz: `RUN_PROTOCOL.md`.
 
 ---
 
@@ -137,9 +249,11 @@ Seçilen paket ve yapılan genişleme veya daraltmalar run kaydına yazılır. B
 
 Birden fazla paket geçerliyse (ör. birleşik sistem):
 
-1. En kapsamlı delivery profile esas alınır.
-2. Çakışan dokümanlar tek sefer üretilir; aynı doküman iki farklı kimlikle oluşturulamaz.
-3. `DOCUMENT_CATALOG.md` doküman kimliklerinin ortak referansıdır.
+1. Onaylı intake'teki delivery profile ve planning profile'lar korunur.
+2. En kapsamlı gerçek proje gereksinimini karşılayan package/extension kombinasyonu seçilir.
+3. Çakışan dokümanlar tek sefer üretilir; aynı doküman iki farklı kimlikle oluşturulamaz.
+4. `DOCUMENT_CATALOG.md` doküman kimliklerinin ortak referansıdır.
+5. Planning profile derinliği package default'u tarafından sessizce düşürülemez.
 
 ---
 
@@ -151,8 +265,12 @@ Aşağıdaki durumlarda ajan sessize çekilmeden önce şunları yapmalıdır:
 Çelişkili proje türü veya onaylı girdide eksik delivery_profile:
 → Paket seçimi başlamaz. Intake düzeltmesi istenir. Tahmin yapılmaz.
 
+Eksik/invalid implementation_planning veya applicable design_planning:
+→ Paket seçimi başlamaz. Intake düzeltmesi istenir.
+
 Proje büyüklüğü paket sınırında ise:
-→ Approved input'taki delivery_profile ne ise o profil temel alınır. Paketin daraltma/genişletme adımları uygulanır.
+→ Approved input'taki delivery_profile + planning profile kombinasyonu temel alınır.
+→ Paketin daraltma/genişletme adımları bu minimum sınırları ihlal etmeden uygulanır.
 ```
 
 ---
@@ -163,7 +281,7 @@ Paket seçimi tamamlanamadığında:
 
 - Üretim başlatılamaz.
 - Kullanıcıya hangi bilginin eksik veya belirsiz olduğu raporlanır.
-- Assumption listesi mevcut bilgiye dayanarak hazırlanır ve onay için sunulur.
+- Assumption/proposal listesi mevcut bilgiye dayanarak hazırlanır ve onay için sunulur.
 
 ---
 
@@ -171,7 +289,9 @@ Paket seçimi tamamlanamadığında:
 
 ```text
 MUST: Seçilen paketteki tüm required dokümanlar üretilmelidir.
-MUST NOT: Pakette olmayan ve gereklilik koşulunu karşılamayan dokümanlar üretilmemelidir.
+MUST: Approved planning profile minimumları korunmalıdır.
+MUST NOT: Prototype/demo etiketi kalite veya planning minimumunu düşürmek için kullanılmamalıdır.
+MUST NOT: Pakette olmayan ve gereklilik koşulunu karşılamayan dokümanlar keyfi olarak üretilmemelidir.
 SHOULD: Koşullu dokümanlar için uygunluk değerlendirmesi yapılmalıdır.
 MAY: İsteğe bağlı dokümanlar kullanıcı talebi veya açık gereksinim varsa eklenebilir.
 ```
@@ -184,4 +304,6 @@ Bu belge paket **seçim mantığını** tanımlar.
 
 Seçilen paketin gerçek doküman listesi ve bu dokümanlar için özel kurallar `packages/<PACKAGE_NAME>.md` dosyasında bulunur.
 
-Bu iki sorumluluk birbirine karıştırılmamalıdır.
+`PLANNING_PROFILES.md` planning depth'in kalite ve kapsam alt sınırını; package dosyaları ise bu sınırın gerçek belge matrisiyle nasıl karşılanacağını tanımlar.
+
+Bu sorumluluklar birbirine karıştırılmamalıdır.
