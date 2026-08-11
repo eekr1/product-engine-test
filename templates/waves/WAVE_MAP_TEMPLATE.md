@@ -6,7 +6,7 @@
 template_id: wave-map-template
 template_name: Canonical Wave Map Template
 document_id: WAVE-MAP
-version: 2.1.0
+version: 2.2.0
 status: active
 template_type: document
 category: waves
@@ -60,12 +60,14 @@ Projenin implementation yolunu baştan sona anlamlı delivery wave'lerine bölen
 - `Frontend Implementation`, `Build UI`, `Backend Work`, `Polish Everything` gibi birden fazla distinct teslimi tek torbaya atan mega-wave adları/scope'ları kullanılmamalıdır.
 - Wave 00, projenin ilk uygulanabilir foundation/bootstrapping adımını temsil etmelidir; boş formalite wave'i olmamalıdır.
 - Foundation sonrasında distinct user-facing surface, feature, flow veya coherent delivery unit'leri ayrı wave adayı olarak değerlendirilmelidir.
-- Bir surface kendi başına anlamlı biçimde tamamlanıp doğrulanabiliyorsa, başka bağımsız surface'lerle aynı wave'e yalnız teknik benzerlik nedeniyle sıkıştırılmamalıdır.
+- Bir surface kendi başına anlamlı biçimde tamamlanıp doğrulanabiliyorsa, başka bağımsız surface'lerle aynı wave'e yalnız teknik benzerlik veya aynı sayfada yer alma nedeniyle sıkıştırılmamalıdır.
+- Aynı page içinde `Home/Hero`, `Corporate/Trust`, `Services`, `Contact` gibi farklı kullanıcı sorumlulukları taşıyan büyük surface'ler küçük ve gerçekten tek-deliverable bir sayfa olmadığı sürece tek `Core Frontend` wave'ine yığılmamalıdır.
 - Bir wave'in scope'u başka bir wave'e ayrılabilecek birden fazla bağımsız anlamlı teslim içeriyorsa wave fazla büyüktür; split edilmelidir.
 - Bir wave sonunda tek başına anlamlı ve doğrulanabilir bir sonuç oluşmuyorsa wave fazla küçüktür; coherent komşu scope ile merge edilmelidir.
-- Aynı page/screen içinde birbirine sıkı bağlı section'lar tek surface wave'inde kalabilir; her section yapay biçimde ayrı wave yapılmaz.
+- Aynı surface içinde birbirine sıkı bağlı section'lar tek wave'de kalabilir; her section yapay biçimde ayrı wave yapılmaz.
 - Her wave tek bir anlamlı goal ve net bir completion boundary taşır.
 - Wave entry, o wave sonunda hangi kullanıcı yüzeyi/feature/foundation alanının **tamamlanmış** sayılacağını açıkça belirtmelidir.
+- Cross-project final integration/responsive/QA gerçekten cross-cutting ise ayrı wave olabilir; son feature wave'inin içine otomatik olarak gömülmemelidir.
 - Dependency zinciri açık olmalı; circular dependency olamaz.
 - Design/data/API/test belgeleri applicable ise wave scope bunlarla hizalanmalıdır.
 - `full` planning daha granüler dependency/risk planning getirebilir; yapay wave çoğaltamaz.
@@ -92,6 +94,29 @@ one coherent complete deliverable → KEEP
 
 Domain/package bağlamı decomposition'a yardımcı olabilir; ancak sabit bir wave reçetesi değildir. Gerçek approved scope'a göre split/merge yapılır.
 
+## Granularity Reference Example
+
+Aşağıdaki örnek **zorunlu wave listesi değildir**. Corporate / landing UI projelerinde beklenen decomposition granülerliğini göstermek içindir:
+
+```text
+WAVE_00 — Foundation
+WAVE_01 — Home / Hero + Primary Value Proposition
+WAVE_02 — Corporate / Trust / Authorized Service
+WAVE_03 — Services
+WAVE_04 — Contact
+WAVE_05 — Final Integration / Responsive / QA
+```
+
+Bu örneğin anlattığı kurallar:
+
+- Foundation, user-facing surface'lerden ayrılır.
+- Birbirinden ayrı kullanıcı sorumlulukları tek broad `Core Frontend` wave'ine yığılmaz.
+- `Header + Hero + About + Services + Contact` bütününün tek wave olması, yalnız kapsam gerçekten küçük ve tek coherent deliverable ise kabul edilebilir.
+- Final integration/QA, gerçekten cross-cutting ise son feature/contact wave'inden ayrılır.
+- Gerçek proje kapsamı daha küçükse wave'ler merge; daha karmaşıksa split edilebilir.
+
+Örnek bir reçete değil, **granularity calibration reference** olarak kullanılır.
+
 ## Placeholder Tanımları
 
 - `{{PROJECT_NAME}}`
@@ -108,6 +133,7 @@ Domain/package bağlamı decomposition'a yardımcı olabilir; ancak sabit bir wa
 - Wave dependency chain acyclic ve uygulanabilir olmalı.
 - Her wave meaningful, independently verifiable ve completion boundary'si net bir deliverable tanımlamalı.
 - Broad technical mega-wave içinde birden fazla bağımsız product surface/feature saklanmamalı.
+- Granularity, yukarıdaki reference example'ın anlattığı separation seviyesine makul biçimde yakın olmalı; örneğin birebir kopyalanması gerekmez.
 - Her wave için WAVE-PLAN dynamic instance üretilebilmelidir.
 - WAVE_MAP ile PROJECT_PLAN aynı teslim sırasını anlatmalıdır.
 
