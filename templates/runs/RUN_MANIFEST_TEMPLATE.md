@@ -6,7 +6,7 @@
 template_id: run-manifest-template
 template_name: Run Manifest Template
 document_id: RUN-MANIFEST
-version: 1.0.0
+version: 1.1.0
 status: active
 template_type: operational
 category: operational
@@ -19,71 +19,70 @@ supported_delivery_profiles:
   - production-ready
 required_inputs:
   - approved_intake
-conditional_inputs: []
 dependencies: []
 output_filename: RUN_MANIFEST.md
 ```
 
 ## Amaç
 
-Tek bir Product Engine çalışmasının kimliğini, yaşam döngüsü durumunu, seçilen paket ve profil bilgilerini, girdi snapshot sürümünü ve çıktı hedeflerini kayıt altına almak.
+Tek bir Product Engine run'ının kimliğini, yaşam döngüsünü, base package'ını, planning profile'larını, input snapshot'ını, seçilen document setini ve yayınlanan output'u izlenebilir biçimde kaydetmek.
 
 ## Kullanım Koşulları
 
-Her run için `runs/active/<run-id>/` altında oluşturulması zorunludur.
+Her run için zorunludur.
 
-## Girdi Kaynakları
+## Zorunlu Metadata
 
-- Approved Intake metadata
-- Package rules & Delivery profile selection
-
-## Zorunlu Bölümler
-
-- Run Kimlik Bilgileri (Run Identity)
-- Run Durumu ve Yaşam Döngüsü (Run Status & Lifecycle)
-- Seçilen Paket ve Profil (Selected Package & Delivery Profile)
-- Üretilen Belgeler ve Çıktı Konumu (Produced Documents & Output Target)
-
-## Koşullu Bölümler
-
-- `[CONDITIONAL: include only if run is blocked or failed]` Engelleme veya Başarısızlık Nedeni
+- run_id
+- project_name / project_slug
+- engine_version
+- status
+- timestamps
+- input_id / input_version
+- selected_package
+- implementation_planning
+- design_planning (applicable ise)
+- delivery_profile
+- documents_produced
+- dynamic_instances_produced
+- validation_result
+- output_version / output_ref
 
 ## İçerik Üretim Kuralları
 
-- Durumlar: `Created`, `Initialized`, `Running`, `Blocked`, `Paused`, `Resumed`, `Validation`, `Completed`, `Failed`, `Cancelled`, `Invalidated`.
-- `Cancelled` ve `Failed` durumları birbirinden kesinlikle ayrılmalıdır.
-- Validation sonucu `PASS`, `CONDITIONAL PASS` veya `FAIL` değerlerini almalıdır.
+- Planning profile değerleri approved input snapshot ile birebir aynı olmalıdır.
+- UI/UX applicable olmayan projede `design_planning` `N/A` olarak kaydedilebilir; `none` profile icat edilmez.
+- Dynamic instance listesinde page/feature/wave instance path'leri izlenebilir tutulmalıdır.
+- Status yalnız RUN_PROTOCOL canonical vocabulary'sinden seçilir.
 
 ## Placeholder Tanımları
 
-- `{{RUN_ID}}`: Run benzersiz kimliği (örn: `RUN-20260808-001`).
-- `{{PROJECT_NAME}}`: Proje adı.
-- `{{PROJECT_SLUG}}`: Proje slug.
-- `{{RUN_STATUS}}`: Anlık run durumu.
-- `{{CREATED_AT}}`: Başlatma zaman damgası.
-- `{{ENGINE_VERSION}}`: Runtime tarafından çözülen Product Engine sürümü.
-- `{{PACKAGE_ID}}`: Seçilen paket kimliği.
-- `{{DELIVERY_PROFILE}}`: Seçilen teslimat profili.
-- `{{VALIDATION_RESULT}}`: Validation sonucu (PASS | CONDITIONAL PASS | FAIL).
-- `{{OUTPUT_REF}}`: Nihai output dizin referansı (`outputs/<category>/<project-slug>/versions/<output-version>/`).
-
-## Kapsam Dışı
-
-- Ayrıntılı log akışı (bkz: `RUN_LOG_TEMPLATE.md`)
-- Varsayımlar listesi (bkz: `ASSUMPTIONS_TEMPLATE.md`)
-
-## Diğer Dokümanlarla İlişki
-
-- Primary Owner: `run_id`, `status`, `created_at`, `completed_at`, `agent_id`, `project_slug`, `selected_package`, `delivery_profile`, `documents_produced`, `validation_result`, `output_version`, `output_ref`.
-- Referenced By: Run operasyonel kayıtları.
-
-## Delivery Profile Davranışı
-
-- Run denetlenebilirliğini ve izlenebilirliğini tekil kimlikle güvenceye alır.
+- `{{RUN_ID}}`
+- `{{PROJECT_NAME}}`
+- `{{PROJECT_SLUG}}`
+- `{{ENGINE_VERSION}}`
+- `{{RUN_STATUS}}`
+- `{{CREATED_AT}}`
+- `{{UPDATED_AT}}`
+- `{{COMPLETED_AT}}`
+- `{{AGENT_ID}}`
+- `{{INPUT_ID}}`
+- `{{INPUT_VERSION}}`
+- `{{PACKAGE_ID}}`
+- `{{DELIVERY_PROFILE}}`
+- `{{IMPLEMENTATION_PLANNING}}`
+- `{{DESIGN_PLANNING}}`
+- `{{DOCUMENTS_PRODUCED}}`
+- `{{DYNAMIC_INSTANCES_PRODUCED}}`
+- `{{VALIDATION_RESULT}}`
+- `{{OUTPUT_VERSION}}`
+- `{{OUTPUT_REF}}`
 
 ## Validation Beklentileri
 
-- Run durumu tanımlı yaşam döngüsü statülerinden birine denk gelmelidir.
+- Approved input profile değerleriyle tam eşleşme.
+- Produced document listesi package + planning overlay resolution ile uyumlu olmalı.
+- Completed run active/ altında kalmamalı.
 
 ---
 
@@ -97,7 +96,7 @@ project_name: {{PROJECT_NAME}}
 project_slug: {{PROJECT_SLUG}}
 engine_version: {{ENGINE_VERSION}}
 run_type: generation
-status: {{RUN_STATUS}} # Created | Initialized | Running | Blocked | Paused | Resumed | Validation | Completed | Failed | Cancelled | Invalidated
+status: {{RUN_STATUS}}
 created_at: {{CREATED_AT}}
 updated_at: {{UPDATED_AT}}
 completed_at: {{COMPLETED_AT}}
@@ -106,35 +105,39 @@ input_id: {{INPUT_ID}}
 input_version: {{INPUT_VERSION}}
 selected_package: {{PACKAGE_ID}}
 delivery_profile: {{DELIVERY_PROFILE}}
+implementation_planning: {{IMPLEMENTATION_PLANNING}}
+design_planning: {{DESIGN_PLANNING}}
 documents_produced: {{DOCUMENTS_PRODUCED}}
-validation_result: {{VALIDATION_RESULT}} # PASS | CONDITIONAL PASS | FAIL
+dynamic_instances_produced: {{DYNAMIC_INSTANCES_PRODUCED}}
+validation_result: {{VALIDATION_RESULT}}
 output_version: {{OUTPUT_VERSION}}
 output_ref: {{OUTPUT_REF}}
 ```
 
-## 1. Run Kimliği ve Bağlam
+## 1. Run Identity
 
 - **Run ID**: {{RUN_ID}}
-- **Proje**: {{PROJECT_NAME}} ({{PROJECT_SLUG}})
-- **Seçilen Paket**: {{PACKAGE_ID}}
+- **Project**: {{PROJECT_NAME}} (`{{PROJECT_SLUG}}`)
+- **Package**: {{PACKAGE_ID}}
 - **Delivery Profile**: {{DELIVERY_PROFILE}}
+- **Implementation Planning**: {{IMPLEMENTATION_PLANNING}}
+- **Design Planning**: {{DESIGN_PLANNING}}
 - **Engine Version**: {{ENGINE_VERSION}}
 
-## 2. Yaşam Döngüsü ve Durum
+## 2. Lifecycle
 
-- **Mevcut Durum**: {{RUN_STATUS}}
-- **Mevcut Aşama**: {{CURRENT_STAGE}}
-- **Validation Sonucu**: {{VALIDATION_RESULT}}
+- **Status**: {{RUN_STATUS}}
+- **Stage**: {{CURRENT_STAGE}}
+- **Validation**: {{VALIDATION_RESULT}}
 
-## 3. Hedef Çıktı Konumu
+## 3. Produced Documents / Instances
 
-- **Output Version**: {{OUTPUT_VERSION}}
-- **Output Ref**: `{{OUTPUT_REF}}`
+- **Canonical Documents**: {{DOCUMENTS_PRODUCED}}
+- **Dynamic Instances**: {{DYNAMIC_INSTANCES_PRODUCED}}
 
-[CONDITIONAL: include only if run is blocked or failed]
-## 4. Engelleme veya Başarısızlık Nedeni
+## 4. Output
 
-- **Hata/Engelleme Türü**: Blocked / Failed / Cancelled
-- **Açıklama ve Gerekçe**: Durum nedeni ve detayları.
+- **Version**: {{OUTPUT_VERSION}}
+- **Ref**: `{{OUTPUT_REF}}`
 
 # OUTPUT DOCUMENT END
