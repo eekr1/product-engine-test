@@ -2,236 +2,316 @@
 
 ## Amaç
 
-Bu belge, Product Engine'in ürettiği final proje dokümantasyon paketinin nasıl yapılandırılacağını ve nereye yerleştirileceğini tanımlar.
+Bu belge, validation'dan geçen Product Engine çıktısının fiziksel klasör yapısını, versioning/publication kurallarını ve agent-ready read-order organizasyonunu tanımlar.
 
-`VALIDATION_RULES` working-output'u publication öncesinde doğrular. `OUTPUT_STRUCTURE` ise successful validation sonrasında published output fiziksel yapısını yönetir.
-
-## Kapsam Dışı
-
-- Dokümanların tam metin içerikleri → `templates/`
-- Run'ın kronolojik çalışma kaydı → `RUN_PROTOCOL.md`
-- Paket seçme karar ağacı → `PACKAGE_RULES.md`
-- Validation maddelerinin tamamı → `VALIDATION_RULES.md`
-- Intake alanları → `PROJECT_INTAKE.md`
+Run kayıtları `runs/` altında kalır; final project package yalnız temiz proje dokümantasyonunu içerir.
 
 ---
 
-## Temel Ayrım: Final Output ile Run Kayıtları
-
-```text
-Final Output
-  → Teslim edilebilir, temiz proje doküman paketi.
-  → outputs/ klasöründe tutulur.
-  → Başka bir ajan doğrudan bu paket üzerinden çalışabilir.
-
-Run Kayıtları
-  → Üretim sürecinin operasyonel izi.
-  → runs/ klasöründe tutulur.
-  → Final output içine sızmaz.
-```
-
-Run kayıtları final output klasörüne MUST NOT taşınır.
-
----
-
-## Onaylanan Klasör Yapısı
+# Canonical Published Output Structure
 
 ```text
 outputs/<category>/<project-slug>/
 ├── latest/
 │   ├── README.md
-│   ├── PROJECT_BRAIN.md
-│   ├── PRODUCT_RULES.md
-│   ├── TECH_CONTEXT.md
-│   ├── PRODUCT_STRATEGY.md   (koşullu)
-│   ├── DESIGN_RULES.md        (koşullu)
-│   ├── CURRENT_STATUS.md      (koşullu)
-│   ├── NEXT_TASKS.md          (koşullu)
-│   ├── DECISIONS.md           (koşullu)
-│   ├── AGENT_INSTRUCTIONS.md  (koşullu)
-│   ├── PROJECT_PLAN.md        (koşullu)
-│   ├── DATA_MODEL.md          (koşullu)
-│   ├── API_CONTRACTS.md       (koşullu)
-│   ├── DEPLOYMENT.md          (koşullu)
-│   ├── OPERATIONS.md          (koşullu)
-│   ├── TEST_STRATEGY.md       (koşullu)
-│   ├── WAVE_MAP.md            (koşullu)
-│   └── WAVE_PLAN.md           (koşullu)
+│   │
+│   ├── ai/
+│   │   ├── PROJECT_BRAIN.md
+│   │   ├── PRODUCT_RULES.md
+│   │   ├── TECH_CONTEXT.md
+│   │   ├── PRODUCT_STRATEGY.md       (conditional)
+│   │   ├── CURRENT_STATUS.md
+│   │   ├── NEXT_TASKS.md
+│   │   ├── AGENT_INSTRUCTIONS.md
+│   │   └── DECISIONS.md
+│   │
+│   ├── project/
+│   │   ├── PROJECT_PLAN.md
+│   │   ├── DATA_MODEL.md              (conditional)
+│   │   ├── API_CONTRACTS.md           (conditional)
+│   │   ├── TEST_STRATEGY.md           (conditional)
+│   │   ├── DEPLOYMENT.md              (conditional)
+│   │   └── OPERATIONS.md              (conditional)
+│   │
+│   ├── design/                         (UI/UX applicable ise)
+│   │   ├── DESIGN_RULES.md
+│   │   ├── DESIGN_SYSTEM.md            (standard/full)
+│   │   ├── GLOBAL_SHELL.md             (standard/full, applicable)
+│   │   ├── SYSTEM_STATES.md            (standard/full, interactive UI)
+│   │   ├── ADMIN_OPERATIONAL_DESIGN.md (full, conditional)
+│   │   ├── pages/                      (standard/full, dynamic)
+│   │   │   ├── <PAGE>_DESIGN_PACKAGE.md
+│   │   │   └── ...
+│   │   └── features/                   (full, dynamic/conditional)
+│   │       ├── <FEATURE>_DESIGN_PACKAGE.md
+│   │       └── ...
+│   │
+│   └── waves/
+│       ├── WAVE_MAP.md
+│       └── plans/
+│           ├── WAVE_00.md
+│           ├── WAVE_01.md
+│           └── ...
+│
 └── versions/
-    ├── v0.1/
+    ├── v0.1/   # latest/ ile aynı canonical internal structure
     ├── v0.2/
-    └── v1.0/
+    └── ...
 ```
 
-Outputs için üst seviye kategori yapısı:
+`README.md` root output entry point olarak tek başına üstte kalır; diğer canonical belgeler owner category klasörlerine yerleşir.
+
+---
+
+## Category
 
 ```text
-outputs/
-├── README.md
-├── demos/
-└── products/
+outputs/demos/
+→ demo/prototype/early deliverable category
+
+outputs/products/
+→ implementation/production product deliverable category
 ```
 
-`demos/` → Sunulabilir, test edilebilir veya erken aşama teslimler
+Category primarily delivery context tarafından belirlenir; planning depth category'yi tek başına değiştirmez.
 
-`products/` → Implementation Ready veya Production Ready kapsamındaki teslimler
+Örneğin:
 
----
+```yaml
+delivery_profile: Prototype
+implementation_planning: standard
+design_planning: light
+```
 
-## Klasör Kuralları
-
-### `latest/`
-
-- En son geçerli, validation'dan geçmiş ve yayınlanmış çıktının türetilmiş görünümüdür (derived view of current valid published output).
-- En son üretilen değil, en son doğrulanan ve yayınlanan çıktıyı gösterir.
-- Validation'dan geçmeyen output MUST NOT `latest/` olarak işaretlenir.
-- Invalidated output `latest/` konumunda tutulamaz.
-- `latest/` her zaman tek bir geçerli sürüme işaret eder.
-
-### `versions/`
-
-- Her başarılı yayınlama kapısını (publication gate) geçen çalışmadan sonra o run'ın çıktısı `versions/` altında saklanır.
-- Eski sürümler silinmez; `versions/` altında korunur.
-- Sürüm numarası numerik majör ve minör numaralandırmayı takip eder (`v0.1`, `v0.2`... `v0.10`... `v1.0`...).
-- Sürüm numaraları run manifest'inde izlenebilir olmalıdır.
+çıktısı `demos/` altında olabilir ama yine agent-ready implementation planning belgelerini taşır.
 
 ---
 
-## Kategori ve Project Slug Kuralları
-
-### `<category>`
-
-Projenin genel türünü tanımlayan kısa klasör adı. Seçilen paket ve delivery profile'a göre `demos/` veya `products/` olarak belirlenir.
-
-### `<project-slug>`
-
-Projenin benzersiz, kısa, URL-uyumlu tanımlayıcısı.
-
-Kurallar:
+# Owner Category → Output Path Mapping
 
 ```text
-- Küçük harf
-- Kelimeler tire ile ayrılır
-- Özel karakter içermez
-- Proje adından türetilir (ör. "My App" → "my-app")
-- Slug bir kez belirlendikten sonra değiştirilmez
+README-DOC      → /README.md
+
+PROJECT-BRAIN   → /ai/PROJECT_BRAIN.md
+PRODUCT-RULES   → /ai/PRODUCT_RULES.md
+TECH-CTX        → /ai/TECH_CONTEXT.md
+PROD-STRAT      → /ai/PRODUCT_STRATEGY.md
+STATUS          → /ai/CURRENT_STATUS.md
+TASKS           → /ai/NEXT_TASKS.md
+AGENT-INST      → /ai/AGENT_INSTRUCTIONS.md
+DECISIONS       → /ai/DECISIONS.md
+
+PROJ-PLAN       → /project/PROJECT_PLAN.md
+DATA            → /project/DATA_MODEL.md
+API             → /project/API_CONTRACTS.md
+TEST            → /project/TEST_STRATEGY.md
+DEPLOY          → /project/DEPLOYMENT.md
+OPS             → /project/OPERATIONS.md
+
+DESIGN          → /design/DESIGN_RULES.md
+DESIGN-SYSTEM   → /design/DESIGN_SYSTEM.md
+GLOBAL-SHELL    → /design/GLOBAL_SHELL.md
+SYSTEM-STATES   → /design/SYSTEM_STATES.md
+ADMIN-DESIGN    → /design/ADMIN_OPERATIONAL_DESIGN.md
+PAGE-DESIGN     → /design/pages/<PAGE_OR_SCREEN_SLUG>_DESIGN_PACKAGE.md
+FEATURE-DESIGN  → /design/features/<FEATURE_SLUG>_DESIGN_PACKAGE.md
+
+WAVE-MAP        → /waves/WAVE_MAP.md
+WAVE-PLAN       → /waves/plans/WAVE_<NN>.md
 ```
+
+Dynamic instance registry run manifest'te gerçek path'leriyle kaydedilir.
 
 ---
 
-## Zorunlu Output Artefaktları
+# Planning Profile Output Minimumları
 
-Her run'da, seçilen paketten bağımsız olarak aşağıdakiler final output'ta yer almalıdır:
+## Implementation `standard`
+
+Applicable projede final output en az şunları taşımalıdır:
 
 ```text
 README.md
-  → Projenin başlangıç noktası; diğer belgelere yönlendirir.
-
-PROJECT_BRAIN.md
-  → Projenin tüm bağlamını özetler; ajanın birincil başvuru belgesidir.
+ai/PROJECT_BRAIN.md
+ai/PRODUCT_RULES.md
+ai/TECH_CONTEXT.md
+ai/CURRENT_STATUS.md
+ai/NEXT_TASKS.md
+ai/AGENT_INSTRUCTIONS.md
+ai/DECISIONS.md
+project/PROJECT_PLAN.md
+waves/WAVE_MAP.md
+waves/plans/WAVE_<NN>.md  (WAVE_MAP'teki her implementation wave için)
 ```
 
-Seçilen pakete göre `PRODUCT_RULES.md` ve `TECH_CONTEXT.md` de zorunlu hale gelebilir.
+`full` bu seti korur ve real scope koşullarına göre DATA/API/TEST/PROD-STRAT/DEPLOY/OPS ekler.
 
-Bkz: `DOCUMENT_CATALOG.md` ve `PACKAGE_RULES.md`
-
----
-
-## Koşullu Output Artefaktları
-
-Koşullu dokümanlar yalnızca paket seçimi veya proje bağlamı gerektirdiğinde oluşturulur.
-
-Pakette olmayan dokümanlar output klasörüne MUST NOT eklenir.
-
-Pakette olmayan bir doküman için placeholder veya boş dosya MUST NOT oluşturulur.
-
----
-
-## Output Temizliği Kuralları
-
-Final output aşağıdakileri MUST NOT içerir:
+## Design `light`
 
 ```text
-- Doldurulmamış placeholder alanlar (ör. [BURAYA YAZ], TBD)
-- Template metadata satırları veya notları
-- Run operasyon dosyaları (run manifest, run log, working output dosyaları)
-- Başka bir projeye ait içerik
-- Onaylanmamış assumption'lar (tüm assumption'lar kayıtlı ve onaylı olmalı)
-- Çözülmemiş çelişkiler
+design/DESIGN_RULES.md
 ```
 
----
+## Design `standard`
 
-## Sürümleşme ve publication Kanonik Sırası
+Applicable olduğunda:
 
 ```text
-Başarılı doğrulama (PASS veya kabul edilmiş CONDITIONAL PASS) sonrasında publication gate geçildiğinde:
-  1. output_version tahsis edilir (v<major>.<minor>).
-  2. Temiz çıktı versions/<output_version>/ altına yazılır.
-  3. latest/ klasörünün içeriği yeni sürümün temiz kopyası ile güncellenir.
-  4. RUN_MANIFEST.md içerisindeki output_ref ve output_version alanları dondurulur.
-  5. Run durumu Completed olarak güncellenir ve run klasörü runs/completed/<run-id>/ konumuna taşınır.
-
-Validation'dan geçemeyen (FAIL) veya yayınlama hakkı kazanmayan (iptal edilen / duraklatılan / engellenen) çalışmalar:
-  → latest/ güncellenmez.
-  → versions/ altına eklenmez.
+design/DESIGN_RULES.md
+design/DESIGN_SYSTEM.md
+design/GLOBAL_SHELL.md
+design/SYSTEM_STATES.md
+design/pages/*_DESIGN_PACKAGE.md
 ```
 
----
+## Design `full`
 
-## Sürüm Tahsis ve Sıralama Kuralları (Output Version Allocation & Ordering)
-
-- **Format**: `v<major>.<minor>` (ör. `v0.1`, `v0.2`, `v1.0`). Major ve minor tamsayılardır.
-- **Sıralama (Comparison)**: Karşılaştırma alfabetik değil, numeriktir (önce numerik major, sonra numerik minor). Örnek: `v0.2` < `v0.9` < `v0.10` < `v1.0`.
-- **İlk Sürüm**: Proje için daha önce yayınlanmış çıktı yoksa varsayılan ilk sürüm `v0.1`'dir.
-- **Normal Yeniden Üretim (Regeneration)**: Aynı major sürüm korunur, minor sürüm +1 artırılır (`v0.1` → `v0.2`). `v0.9` → `v0.10` normal ilerlemedir.
-- **Major Artışı**: Major sürüm artışı (`v0.x` → `v1.0`) otomatik değildir; yalnızca açık engine/operatör migrasyon kararı ile gerçekleşir.
-- **Değişmezlik (No Overwrite)**: Yayınlanmış bir sürüm klasörü (`versions/vX.Y/`) silinemez, üzerine yazılamaz veya tekrar kullanılamaz.
-- **Tahsis Yetkisi**: Sürüm numarasını tahsis etme kuralı `engine/OUTPUT_STRUCTURE.md`'ye aittir; gerçekleşen sürüm `RUN_MANIFEST.md` belgesine dondurulur.
-
----
-
-## Invalidation Fallback ve No Valid Version Davranışı
-
-`latest/` klasörüne kaynaklık eden run `Completed → Invalidated` durumuna geçtiğinde:
-1. `versions/` altındaki tarihsel sürümler taranır.
-2. Kaynak run status değeri `Completed` olan geçerli tarihsel sürümler filtrelenir.
-3. Numerik olarak en yüksek sürüm numarasına sahip geçerli sürüm seçilir.
-4. `latest/` içeriği bu seçilen sürümün kopyasıyla güncellenir.
-
-Eğer projenin geçmişinde hiç geçerli tarihsel sürüm bulunmuyorsa (`status: Completed` olan kaynak run kalmamışsa):
-- `latest/` klasörü silinmez; ancak içeriği tamamen boş tutulur.
-- Geçerli çıktı bulunmadığı durumu, `runs/` katmanında `status: Completed` olan kaynak run bulunamaması üzerinden türetilir.
-- `outputs/` katmanı içinde ek bir durum dosyası (`INVALIDATED.txt`), durum manifesti veya türetilmiş bir status nesnesi oluşturulmaz.
-
----
-
-## İzlenebilirlik Gereksinimleri
-
-Final output içindeki her sürüm için aşağıdaki bilgiler izlenebilir olmalıdır:
+Standard set korunur ve gerçek scope gerekliyse:
 
 ```text
-- Kaynak run ID
-- Kullanılan input sürümü
-- Seçilen paket
-- Delivery profile
-- Validation sonucu
-- Üretim tarihi
+design/features/*_DESIGN_PACKAGE.md
+design/ADMIN_OPERATIONAL_DESIGN.md
 ```
 
-Bu bilgiler `RUN_MANIFEST.md`'de tutulur. Bkz: `RUN_PROTOCOL.md`.
+eklenir.
 
 ---
 
-## Working Output ile Final Output Ayrımı
+# Root README / Agent Read Order
+
+Published `README.md` yeni agent'a en az şu sırayı göstermelidir:
 
 ```text
-Working Output
-  → Üretim sürecindeki geçici dokümanlar.
-  → Validation tamamlanmadan final output klasörüne taşınmaz.
-  → runs/active/<run-id>/working-output/ altında tutulur.
-
-Final Output
-  → Validation'dan geçmiş, temiz doküman paketi.
-  → outputs/<category>/<project-slug>/latest/ altında yer alır.
+1. README.md
+2. ai/PROJECT_BRAIN.md
+3. ai/PRODUCT_RULES.md
+4. ai/TECH_CONTEXT.md
+5. design/DESIGN_RULES.md                   (UI applicable)
+6. design/DESIGN_SYSTEM.md + GLOBAL_SHELL  (if present)
+7. relevant page/feature design package(s) (if present)
+8. project/PROJECT_PLAN.md
+9. waves/WAVE_MAP.md
+10. ai/CURRENT_STATUS.md
+11. active waves/plans/WAVE_<NN>.md
+12. ai/NEXT_TASKS.md
+13. ai/AGENT_INSTRUCTIONS.md
+14. ai/DECISIONS.md and conditional technical docs as needed
 ```
+
+Amaç bütün dosyaları her görevde zorla okutmak değil; agent'ın authority ve active execution context'i kaybetmemesidir.
+
+---
+
+# Final Output / Run Record Ayrımı
+
+MUST NOT final output içinde bulunur:
+
+```text
+RUN_MANIFEST.md
+RUN_LOG.md
+INPUT_SNAPSHOT.md
+ASSUMPTIONS.md (run operational copy)
+CONFLICTS.md (run operational copy)
+VALIDATION_REPORT.md
+COMPLETION_REPORT.md
+working-output/
+```
+
+Bunlar `runs/` katmanına aittir.
+
+Proje-level `ai/DECISIONS.md` final output'tur; run-level `runs/.../DECISIONS.md` operasyonel kayıtla karıştırılmaz.
+
+---
+
+# Output Cleanliness
+
+Final output MUST NOT içerir:
+
+- template metadata veya placeholder,
+- `[TBD]`, `[BURAYA YAZ]` gibi çözülmemiş zorunlu alan,
+- başka proje içeriği,
+- private chain-of-thought,
+- run operasyon dosyası,
+- çözülememiş critical conflict,
+- gerçekmiş gibi yazılmış onaylanmamış backend/API/database/deployment kararı.
+
+Unresolved fakat current scope'u bloklamayan future kararlar canonical owner belgede açıkça `unresolved / future` olarak tutulabilir.
+
+---
+
+# Versioning / Publication
+
+Publication gate sonrası sıra:
+
+```text
+1. output_version numerik olarak tahsis edilir.
+2. Clean package versions/<output_version>/ içine immutable olarak yazılır.
+3. latest/ aynı canonical internal structure ile güncellenir.
+4. RUN_MANIFEST output_version/output_ref ile dondurulur.
+5. Run Completed olur ve runs/completed/ altına taşınır.
+```
+
+## Version Format
+
+```text
+v<major>.<minor>
+```
+
+İlk sürüm: `v0.1`.
+
+Normal regeneration: minor +1.
+
+Major artışı otomatik değildir; açık migration/release kararı gerekir.
+
+Published version klasörü overwrite/silinemez.
+
+Karşılaştırma numeriktir (`v0.9 < v0.10 < v1.0`).
+
+---
+
+# latest/ Integrity
+
+`latest/`:
+
+- en son **valid published** output'un kopyasıdır,
+- failed/blocked/cancelled run tarafından güncellenemez,
+- invalidated source run'a işaret edemez.
+
+Latest source invalidated olursa önceki en yüksek valid Completed version restore edilir. Hiç valid version yoksa `latest/` boş tutulur; output katmanında ayrı fake status dosyası oluşturulmaz.
+
+---
+
+# Traceability
+
+Her published version için run katmanından şu bilgiler izlenebilir olmalıdır:
+
+```text
+run_id
+input_id / version
+base package
+delivery_profile
+implementation_planning
+design_planning
+canonical document set
+dynamic instance paths
+validation result
+output version
+publication timestamp
+```
+
+---
+
+# Agent-Ready Output Invariant
+
+Final package yalnız "dokümanların bulunduğu klasör" değildir.
+
+Yeni yetkin agent:
+
+1. README ile read order'ı bulabilmeli,
+2. PROJECT_BRAIN/PRODUCT_RULES/TECH_CONTEXT ile proje gerçekliğini anlayabilmeli,
+3. UI varsa design authority ve ilgili page/feature contract'larını bulabilmeli,
+4. PROJECT_PLAN/WAVE_MAP ile teslim yolunu anlayabilmeli,
+5. CURRENT_STATUS ile aktif wave'i bulabilmeli,
+6. aktif WAVE_<NN> + NEXT_TASKS ile yeni planlama yapmadan implementation'a başlayabilmelidir.
+
+Bu invariant sağlanmıyorsa final output yapısal olarak eksiktir.
