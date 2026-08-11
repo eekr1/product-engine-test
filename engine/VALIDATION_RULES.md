@@ -2,292 +2,476 @@
 
 ## Amaç
 
-Bu belge, Product Engine'in ürettiği çıktının geçerli sayılması için gerekli kontrolleri tanımlar.
+Bu belge, Product Engine working output'unun final published output olmaya gerçekten hazır olup olmadığını doğrular.
 
-Validation, working output'un final output olarak kabul edilip edilemeyeceğini belirler.
-
-## Kapsam Dışı
-
-- Çelişkilerin hangi otoriteye göre çözüleceği → `CONFLICT_RESOLUTION.md`
-- Varsayım yapma izinlerinin tamamı → `ASSUMPTION_RULES.md`
-- Pipeline'ın tam akışı → `GENERATION_PIPELINE.md`
-- Template yapılarının içerikleri → `templates/`
-
-## Sorumluluk ve Sınır
-
-`VALIDATION_RULES` working-output'u publication öncesinde doğrular. `OUTPUT_STRUCTURE` ise successful validation sonrasında published output fiziksel yapısını yönetir.
+Validation yalnız dosya varlığı kontrolü değildir; package/profile compliance, information ownership, dynamic instance coverage, design/architecture quality invariants, lifecycle integrity ve **agent-readiness** kontrolüdür.
 
 ---
 
-## Validation Sonuç Kategorileri
+# Sonuç Kategorileri
 
 ```text
 PASS
-  → Tüm zorunlu kontroller geçildi. Output final yapılabilir.
+→ Bütün blocking kontroller geçti; publication yapılabilir.
 
 CONDITIONAL PASS
-  → Engellemeyen (non-blocking) doğrulama bulguları mevcut. Kullanıcı/operatör bilgilendirilir.
-    İki geçerli yol mevcuttur:
-    A) accepted CONDITIONAL PASS → Publication gate'e devam edilir (final yapılabilir).
-    B) repair requested → İsteğe bağlı olarak repair adımı seçilebilir.
+→ Non-blocking bulgu var; kullanıcı/operatör kabul ederse publication yapılabilir.
 
 FAIL
-  → Kritik sorun var. Output final yapılamaz.
-    Zorunlu repair aşamasına geçilir; düzeltilemezse run başarısız (Failed) sayılır.
+→ Blocking contract ihlali var; publication yapılamaz, repair zorunludur.
 ```
+
+İkinci repair validation'ında da blocking FAIL sürerse run `Failed` kapanır.
 
 ---
 
-## Validation Katmanları
+# 1. Approved Input / Approval Integrity
 
-### 1. Yapı Doğrulaması (Structure Validation)
-
-```text
-Kontrol: Pre-publication working-output doküman seti seçilen package ve DOCUMENT_CATALOG.md ile tanımlanan yapıya uygun mu?
-  - working-output doküman seti seçilen package ile uyumlu mu?
-  - gerekli/applicable dokümanlar mevcut mu?
-  - fazladan veya package dışı doküman var mı?
-  - dosya adları DOCUMENT_CATALOG.md / package contract ile uyumlu mu?
-  - working-output içinde final output'a sızmaması gereken runtime/temp dosyaları var mı?
-
-Not: `latest/`, `versions/` veya yayınlanmış sürüm klasörlerinin mevcudiyeti pre-publication validation kontrolüne dahil değildir; yayınlama (publication/traceability) sonrasında doğrulanabilecek operasyonel output durumlarıdır.
-
-Hata Seviyesi:
-  - Paket/katalog dışı veya geçici dosya mevcut → FAIL
-  - Eksik veya yanlış adlandırılmış doküman → FAIL
-```
-
----
-
-### 2. Zorunlu Doküman Doğrulaması (Required Document Validation)
-
-```text
-Kontrol: Seçilen paket tarafından required olan ve aktif project_type + delivery_profile kombinasyonu için applicable olan tüm dokümanlar ile onların applicable bağımlılıkları üretildi mi?
-
-Not: Aktif project_type + delivery_profile için DOCUMENT_CATALOG.md tarafından applicable olmadığı için skip edilen bir dependency dokümanının üretilmemiş olması FAIL sebebi değildir.
-Ancak aktif project_type + delivery_profile için applicable olan bir dependency dokümanı eksikse bu durum FAIL sebebidir.
-
-Hata Seviyesi:
-  - Zorunlu doküman eksik → FAIL
-  - Applicable olan zorunlu bağımlılık dokümanı eksik → FAIL
-  - Applicable olan koşullu doküman eksik (uygunluk koşulu karşılanmışsa) → FAIL
-```
-
----
-
-### 3. İçerik Tamlığı (Content Completeness)
-
-```text
-Kontrol: Üretilen her dokümanda doldurulmamış placeholder var mı?
-  - [BURAYA YAZ], TBD, TODO gibi işaretler
-  - Boş bırakılmış zorunlu bölümler
-  - Template metadata'sı veya üretim notları
-
-Hata Seviyesi:
-  - Zorunlu bölümde placeholder → FAIL
-  - İsteğe bağlı bölümde açıkça işaretlenmiş "unresolved" alan → CONDITIONAL PASS
-```
-
----
-
-### 4. Bilgi Sahipliği Doğrulaması (Information Ownership)
-
-```text
-Kontrol: INFORMATION_MAP.md'e göre bilgiler doğru dokümanlarda mı?
-  - Teknik stack PRODUCT_RULES'de mi tutuluyor? (olmamalı)
-  - Kullanıcı akışları TECH_CONTEXT'te mi tanımlanıyor? (olmamalı)
-  - Primary owner dışında bilgi sahiplenilmiş mi?
-
-Hata Seviyesi:
-  - Sahiplik ihlali çelişkiye yol açıyorsa → FAIL
-  - Sahiplik ihlali yalnızca tekrara yol açıyorsa → CONDITIONAL PASS
-```
-
----
-
-### 5. Belgeler Arası Tutarlılık (Cross-Document Consistency)
-
-```text
 Kontrol:
-  - PROJECT_BRAIN'deki kapsam PRODUCT_RULES ile tutarlı mı?
-  - Teknik stack seçimi tutarlı mı (PROJECT_BRAIN → TECH_CONTEXT → DEPLOYMENT)?
-  - Kullanıcı akışları PRODUCT_RULES ve WAVE_MAP arasında uyumlu mu?
-  - Veri modeli (DATA_MODEL) API sözleşmesiyle (API_CONTRACTS) tutarlı mı?
-  - CURRENT_STATUS ile NEXT_TASKS birbirine uyumlu mu?
 
-Hata Seviyesi:
-  - Kapsam çelişkisi → FAIL
-  - Teknik stack çelişkisi → FAIL
-  - Küçük terminoloji farkı → CONDITIONAL PASS
-```
+- Input `status: approved` mı?
+- `project_type`, `delivery_profile`, `implementation_planning`, `primary_language` mevcut ve canonical mı?
+- UI/UX applicable ise `design_planning: light | standard | full` mevcut mu?
+- Canonical explicit user approval kanıtı var mı?
+- `approved_by: user` gerçek doğrudan kullanıcı onayıyla destekleniyor mu?
+- IDE/tool/plan/auto-approval canonical approval gibi kullanılmış mı?
 
----
+FAIL:
 
-### 6. Paket Uyumluluğu (Package Compliance)
-
-```text
-Kontrol: Üretilen doküman seti seçilen paketle uyumlu mu?
-  - Fazladan doküman üretilmiş mi?
-  - Paket genişletme/daraltma kararları kaydedilmiş mi?
-
-Hata Seviyesi:
-  - Gerekçesiz fazla doküman → CONDITIONAL PASS
-  - Paket seçim kararı kayıt dışı → CONDITIONAL PASS
-```
+- pending input ile generation,
+- invalid/missing planning profile,
+- auto-approval ile approved snapshot,
+- kanıtsız `approved_by: user`.
 
 ---
 
-### 7. Template Uyumluluğu (Template Compliance)
+# 2. Package + Planning Overlay Compliance
+
+Resolved document set:
 
 ```text
-Kontrol: Üretilen dokümanlar ilgili template yapısına uygun mu?
-  - Zorunlu bölümler mevcut mu?
-  - Bölüm isimleri template ile uyumlu mu?
-
-Hata Seviyesi:
-  - Zorunlu bölüm eksik → FAIL
-  - Bölüm sırası farklı → CONDITIONAL PASS
+base package
++
+packages/PLANNING_PROFILE_OVERLAY.md
++
+contextual conditions
 ```
 
----
+ile birebir uyumlu olmalıdır.
 
-### 8. Assumption Uyumluluğu (Assumption Compliance)
-
-```text
 Kontrol:
-  - Yapılan tüm assumption'lar kaydedilmiş mi?
-  - Assumption yapılamayacak alanlarda sessiz varsayım yapılmış mı?
-  - ASSUMPTION_RULES.md'de prohibited olan alanlarda assumption yok mu?
-  - `confirmed` durumundaki her assumption için kullanıcı explicit approval veya authoritative approved-input kanıtı var mı?
-  - Birden fazla makul teknik tercih arasından seçilen kararlar yanlışlıkla `safe` sınıfına sokulmuş mu?
 
-Hata Seviyesi:
-  - Kayıt dışı assumption → FAIL
-  - Prohibited alanda assumption → FAIL
-  - Kanıtsız `confirmed` assumption → FAIL
-  - Teknik/ürün etkili çok-seçenekli assumption yanlışlıkla `safe` sınıfında → CONDITIONAL PASS; kritik etki yaratıyorsa FAIL
-  - Kaydedilmiş assumption, onay bekliyorsa → CONDITIONAL PASS
-```
+- Base package doğru mu?
+- Approved implementation/design profile korunmuş mu?
+- Package reduction profile minimumunu düşürmüş mü?
+- Gerekçesiz extra canonical document var mı?
+- Conditional document gerçek scope koşuluyla gerekçeli mi?
+
+FAIL:
+
+- Standard implementation minimumundan belge eksiltmek,
+- Light design'da DESIGN'i çıkarmak,
+- required applicable belge eksikliği,
+- gerçek scope olmadan sahte DATA/API/DEPLOY gibi contract üretmek.
+
+Gerekçesiz fakat blocking olmayan extra belge → CONDITIONAL PASS.
 
 ---
 
-### 9. Çelişki Çözüm Uyumluluğu (Conflict Resolution Compliance)
+# 3. Standard Implementation Minimum
+
+Applicable implementation-bearing projede `implementation_planning: standard | full` için minimum:
 
 ```text
+README-DOC
+PROJECT-BRAIN
+PRODUCT-RULES
+TECH-CTX
+STATUS
+TASKS
+DECISIONS
+AGENT-INST
+PROJ-PLAN
+WAVE-MAP
+WAVE-PLAN instances
+```
+
+Bu setten applicable required artifact eksikse → FAIL.
+
+Prototype/demo etiketi eksikliği mazur göstermez.
+
+---
+
+# 4. Wave Coverage / Execution Integrity
+
 Kontrol:
-  - CONFLICT_RESOLUTION.md'ye göre çözülen çelişkiler kayıt altında mı?
-  - Çözülemeyen çelişkiler kullanıcıya taşınmış mı?
-  - Sessiz çelişki çözümü (overwrite) yapılmış mı?
 
-Hata Seviyesi:
-  - Çözülmemiş kritik çelişki → FAIL
-  - Kayıt dışı çelişki çözümü → CONDITIONAL PASS
-```
+- `WAVE_MAP.md` approved scope'u tamamen kapsıyor mu?
+- Dependency chain uygulanabilir ve acyclic mi?
+- Her implementation wave için `waves/plans/WAVE_<NN>.md` instance'ı var mı?
+- Wave ID'leri map ile plan instance'larında birebir mi?
+- Her wave in/out scope, atomic tasks, acceptance criteria ve verification taşıyor mu?
+- WAVE_PLAN kendi WAVE_MAP scope'unu aşıyor mu?
+- Wave 00 anlamlı bir first implementation foundation mı?
 
----
+FAIL:
 
-### 10. Proje Sızıntısı Kontrolü (Project Leakage Detection)
-
-```text
-Kontrol: Başka projeye ait içerik bu projenin output'una sızmış mı?
-  - Farklı proje adı, şirket adı, müşteri bilgisi var mı?
-  - Ref belgelerinden proje içeriği kopyalanmış mı?
-
-Hata Seviyesi:
-  - Farklı proje içeriği bulundu → FAIL
-```
+- Map'te wave var, plan instance yok,
+- plan scope map'i aşıyor,
+- critical approved scope hiçbir wave'e map edilmemiş,
+- circular dependency,
+- active wave uygulanabilir task/acceptance içermiyor.
 
 ---
 
-### 11. Output Temizliği (Output Cleanliness)
+# 5. Project Plan / Wave Consistency
 
-```text
 Kontrol:
-  - Run log, working output veya geçici dosyalar final output'a taşınmış mı?
-  - Template metadata veya üretim talimatları kalmış mı?
 
-Hata Seviyesi:
-  - Run kayıtları output içinde → FAIL
-  - Template metadata kalmış → FAIL
-```
+- PROJECT_PLAN milestone/phase sırası WAVE_MAP ile aynı execution mantığını anlatıyor mu?
+- Future scope current committed scope gibi gösterilmiş mi?
+- Kullanıcı vermediği halde yapay deadline/timeline uydurulmuş mu?
+
+Kapsam/sıra çelişkisi → FAIL.
+
+Küçük terminoloji drift'i → CONDITIONAL PASS.
 
 ---
 
-### 12. İzlenebilirlik (Traceability)
+# 6. Current Status / Next Tasks / Active Wave Integrity
 
-```text
 Kontrol:
-  - Run ID, input sürümü, paket ve delivery profile izlenebilir mi?
-  - Validation sonucu run manifest'inde kayıtlı mı?
 
-Hata Seviyesi:
-  - İzlenebilirlik bilgisi eksik → CONDITIONAL PASS
+- CURRENT_STATUS aktif wave'i gerçek WAVE_MAP/WAVE_PLAN ile eşleştiriyor mu?
+- NEXT_TASKS yalnız aktif wave'in immediate queue'su mu?
+- Tamamlanan iş next task olarak kalmış mı?
+- Future wave işi yanlışlıkla primary task olmuş mu?
+- Blocker varken task sessizce executable gösterilmiş mi?
+
+FAIL:
+
+- active wave mismatch,
+- NEXT_TASKS aktif wave scope'u dışında,
+- completed/blocked gerçekliğinin yanlış temsil edilmesi.
+
+---
+
+# 7. Tech Context / Integration Readiness
+
+Özellikle frontend demo/prototype için kontrol:
+
+- Current data source belli mi?
+- Mock/local data boundary açık mı?
+- UI ile service/data-access boundary tanımlı mı?
+- Future real backend adapter noktası anlaşılır mı?
+- Environment/config ayrımı belirtilmiş mi?
+- Backend/API/database henüz approved değilse unresolved olarak mı tutulmuş?
+
+FAIL:
+
+- mock data'nın architectural boundary olmadan presentation'a dağılması öneriliyorsa,
+- demo gerekçesiyle throwaway architecture tarif ediliyorsa,
+- onaylanmamış API endpoint/database/backend stack gerçekmiş gibi üretilmişse.
+
+```text
+integration-ready → required where relevant
+invented backend → prohibited
 ```
 
 ---
 
-### 13. Approval Integrity (Canonical User Approval)
+# 8. Design Profile Compliance
+
+## `light`
+
+Required:
 
 ```text
+DESIGN_RULES.md
+```
+
+Belge tek başına güçlü visual concept, differentiation rationale, composition, color/typography direction, interaction, responsive ve accessibility guidance vermelidir.
+
+## `standard`
+
+Applicable ise required:
+
+```text
+DESIGN_RULES.md
+DESIGN_SYSTEM.md
+GLOBAL_SHELL.md
+SYSTEM_STATES.md
+PAGE-DESIGN instances
+```
+
+## `full`
+
+Standard set + gerçek scope koşulu varsa:
+
+```text
+FEATURE-DESIGN instances
+ADMIN_OPERATIONAL_DESIGN.md
+```
+
+Eksik required applicable design artifact → FAIL.
+
+---
+
+# 9. Design Quality / Anti-Template Integrity
+
+Bu kontrol estetik zevk puanı değildir; açık contract drift'ini arar.
+
 Kontrol:
-  - Run'ın kullandığı input gerçekten `status: approved` mı?
-  - Approved input için PROJECT_INTAKE.md'de tanımlanan canonical explicit user approval kanıtı var mı?
-  - `approved_by: user` kaydı gerçek doğrudan kullanıcı onayıyla destekleniyor mu?
-  - IDE/tool/plan/auto-approval yanlışlıkla canonical Product Engine approval olarak yorumlanmış mı?
 
-Hata Seviyesi:
-  - Canonical explicit user approval kanıtı olmadan approved input oluşturulmuş → FAIL
-  - IDE/tool/plan/auto-approval `approved_by: user` olarak kaydedilmiş → FAIL
-  - Pending input ile generation run başlatılmış → FAIL
-```
+- Visual concept proje bağlamından gerekçelendirilmiş mi?
+- Tasarım yalnız sektör klişesine mi dayanıyor?
+- Generic hazır tema yapısı default olarak mı seçilmiş?
+- Color palette tek başına concept gibi sunulmuş mu?
+- Trend pattern'i (gradient, glass, bento vb.) içerik/UX gerekçesi olmadan mı kullanılmış?
+- Non-generic olma uğruna usability/accessibility bozulmuş mu?
+- Light profile düşük tasarım kalitesi gerekçesi yapılmış mı?
 
-Bu kontrol publication öncesi zorunludur. Approval integrity FAIL ise output yayınlanamaz.
+FAIL:
+
+- açıkça `light/demo olduğu için generic/basic template yeterli` mantığı,
+- sektör klişesini tek tasarım gerekçesi yapmak,
+- accessibility/usability'yi bilinçli ihlal eden design direction.
+
+Yeterli farklılaşma gerekçesi zayıf ama repair olmadan kullanılabilir ise → CONDITIONAL PASS.
 
 ---
 
-### 14. Run Lifecycle Location Integrity
+# 10. Page / Screen Design Coverage
 
-```text
+`design_planning: standard | full` için:
+
+1. Approved scope + product flows'tan distinct implementation surface registry çıkarılmış mı?
+2. Her distinct page/screen için bir `PAGE-DESIGN` instance var mı?
+3. Yapay page package çoğaltılmış mı?
+4. Page package route/entry, hierarchy, layout, actions, states, responsive, accessibility ve data touchpoints içeriyor mu?
+5. Page package global token/shell'i yeniden icat ediyor mu?
+
+FAIL:
+
+- gerçek distinct surface için page package eksik,
+- page package PRODUCT_RULES/GLOBAL_SHELL/DESIGN_SYSTEM ile çelişiyor,
+- page kendi bağımsız global design system'ini icat ediyor.
+
+Gereksiz micro-surface package çoğaltımı → CONDITIONAL PASS; ciddi drift yaratıyorsa FAIL.
+
+---
+
+# 11. Feature / Admin Design Conditional Coverage
+
+`design_planning: full` için:
+
+- Gerçek cross-screen/complex feature varsa uygun FEATURE-DESIGN instance var mı?
+- Basit page interaction gereksiz feature package'a çevrilmiş mi?
+- Admin/moderation/operational UI gerçek scope'taysa ADMIN-DESIGN var mı?
+- Permission/business truth design belgesinde uydurulmuş mu?
+
+Eksik required-by-real-scope feature/admin design → FAIL.
+
+Gereksiz feature decomposition → CONDITIONAL PASS.
+
+---
+
+# 12. Design System / Shell / State Consistency
+
 Kontrol:
-  - Aynı run-id aynı anda `runs/active/`, `runs/completed/` veya `runs/failed/` altında birden fazla yerde bulunuyor mu?
-  - `status: Completed` olan run yalnızca `runs/completed/<run-id>/` altında mı?
-  - `status: Failed` veya `Cancelled` olan kapanmış run `runs/active/` altında kopya bırakmış mı?
 
-Hata Seviyesi:
-  - Aynı run-id hem active hem completed/failed altında → FAIL
-  - Manifest status ile fiziksel lifecycle konumu uyuşmuyor → FAIL
-```
+- DESIGN_RULES visual direction ile DESIGN_SYSTEM tokenları uyumlu mu?
+- Page/feature docs canonical tokenları kullanıyor mu?
+- GLOBAL_SHELL navigation gerçek page setiyle uyumlu mu?
+- SYSTEM_STATES ortak state language'ı page/feature docs tarafından korunuyor mu?
+- Override varsa gerekçelendirilmiş mi?
 
-Bu kontrol final completion sırasında zorunludur. Run location exclusivity sağlanmadan run kapanmış sayılmaz.
+Çelişki → FAIL.
 
----
-
-## Hangi Durumda Ne Olur
-
-| Sonuç | Anlamı | Eylem |
-|---|---|---|
-| PASS | Tüm zorunlu kontroller geçildi | Publication gate'e geçilir; output yayınlanır ve latest/ güncellenir |
-| CONDITIONAL PASS | Engellemeyen bulgular var | Kullanıcı/operatör bilgilendirilir; kabul edilerek publication gate'e geçilebilir veya repair talep edilebilir |
-| FAIL | Kritik sorun var | Zorunlu repair aşamasına geçilir; ikinci denemede de çözülemezse run Failed kapatılır |
-
-İkinci validation'dan sonra da FAIL alınırsa run başarısız kapatılır. Bkz: `RUN_PROTOCOL.md`.
+Yalnız tekrar/terminoloji drift'i → CONDITIONAL PASS.
 
 ---
 
-## Validation Raporu Gereksinimleri
+# 13. Information Ownership Compliance
 
-Her validation sonrasında aşağıdaki bilgileri içeren bir rapor üretilir:
+`INFORMATION_MAP.md` primary owner sınırları uygulanır.
+
+Örnek FAIL:
+
+- PRODUCT_RULES teknik stack sahibi olmuş,
+- PAGE-DESIGN kendi global token sistemini tanımlamış,
+- FEATURE-DESIGN page layout owner'lığını ele geçirmiş,
+- TECH_CONTEXT business rule uydurmuş,
+- WAVE_PLAN WAVE_MAP scope'unu değiştirmiş.
+
+Sadece gereksiz tekrar → CONDITIONAL PASS.
+
+Çelişen independent truth → FAIL.
+
+---
+
+# 14. Assumption Compliance
+
+Kontrol:
+
+- Bütün assumption'lar kayıtlı mı?
+- Prohibited assumption yapılmış mı?
+- `confirmed` için gerçek approval/authority kanıtı var mı?
+- Multiple-choice teknik karar yanlışlıkla safe mi sınıflandırılmış?
+
+FAIL:
+
+- kayıt dışı assumption,
+- prohibited assumption,
+- kanıtsız confirmed,
+- critical teknik/product etkili sessiz assumption.
+
+Pending-review non-blocking assumption → CONDITIONAL PASS.
+
+---
+
+# 15. Conflict Resolution Compliance
+
+- Critical conflict çözülmeden generation/publication → FAIL.
+- Sessiz overwrite / kayıt dışı conflict resolution → en az CONDITIONAL PASS; scope/architecture etkiliyorsa FAIL.
+
+---
+
+# 16. Template / Single-Skeleton Compliance
+
+Kontrol:
+
+- Her canonical Document ID doğru template'ten mi üretildi?
+- Dynamic page/feature/wave instance yeni Document ID veya alternatif skeleton icat etmiş mi?
+- Required sections mevcut mu?
+- Template metadata final output'a sızmış mı?
+
+FAIL:
+
+- missing required section,
+- conflicting alternate skeleton,
+- template metadata final output'ta.
+
+Bölüm sırası küçük farklılık → CONDITIONAL PASS.
+
+---
+
+# 17. Content Completeness / Placeholder Cleanliness
+
+FAIL:
+
+- zorunlu bölüm boş,
+- `[BURAYA YAZ]`, template placeholder, unresolved required marker,
+- üretim talimatı final output'ta.
+
+Current scope'u bloklamayan açık future unresolved item → CONDITIONAL PASS olabilir.
+
+---
+
+# 18. Project Leakage
+
+Başka projeye ait isim, müşteri, stack, tasarım kararı veya ref içeriği yanlışlıkla output'a taşınmışsa → FAIL.
+
+`ref/` yalnız pattern/quality reference olabilir; proje truth kaynağı değildir.
+
+---
+
+# 19. Output Structure / Cleanliness
+
+`OUTPUT_STRUCTURE.md` path mapping uygulanmalıdır.
+
+FAIL:
+
+- owner category yanlış klasörde,
+- run operational dosyası final output içinde,
+- dynamic instance yanlış path'te,
+- required canonical root README yok,
+- runtime/working temp artifact sızıntısı.
+
+Pre-publication aşamasında `latest/` veya `versions/` henüz oluşmamış olması hata değildir.
+
+---
+
+# 20. Traceability
+
+RUN_MANIFEST şunları izlenebilir tutmalıdır:
 
 ```text
-- Validation Tarihi
-- Run ID
-- Sonuç: PASS / CONDITIONAL PASS / FAIL
-- Geçilen kontrol sayısı
-- Başarısız olan kontroller ve hata seviyeleri
-- Uyarı listesi (varsa)
-- Önerilen repair adımları (FAIL durumunda)
-- Approval Integrity sonucu
-- Run Lifecycle Location Integrity sonucu (completion aşamasında)
+run_id
+input id/version
+base package
+delivery_profile
+implementation_planning
+design_planning
+canonical documents
+dynamic instance paths
+validation result
+output version/ref
 ```
 
-Bu rapor `VALIDATION_REPORT.md` olarak run klasörüne eklenir. Bkz: `RUN_PROTOCOL.md`.
+Critical traceability kaybı → FAIL; küçük metadata eksikliği → CONDITIONAL PASS.
+
+---
+
+# 21. Agent-Ready Acceptance Test
+
+Validation sonunda şu hipotetik test uygulanır:
+
+> Projeyi hiç görmemiş yetkin yeni bir ajan final package'ı açtı.
+
+Ajan yalnız output üzerinden:
+
+1. read order'ı bulabiliyor mu?
+2. projenin amacını/scope'unu anlayabiliyor mu?
+3. teknik mimari ve integration boundary'lerini anlayabiliyor mu?
+4. UI varsa design authority ve ilgili page/feature contract'ını bulabiliyor mu?
+5. project roadmap ve wave map'i anlayabiliyor mu?
+6. aktif wave'i CURRENT_STATUS'tan belirleyebiliyor mu?
+7. ilgili `WAVE_<NN>.md` ve NEXT_TASKS ile **yeni mimari planlama yapmadan implementation'a başlayabiliyor mu?**
+8. ne zaman durması/clarification istemesi gerektiğini AGENT_INSTRUCTIONS'tan anlayabiliyor mu?
+
+7. madde sağlanmıyorsa → FAIL.
+
+Diğer maddelerde küçük navigasyon/clarity sorunu varsa → CONDITIONAL PASS; kritik bağlam kaybı varsa FAIL.
+
+Bu test Product Engine'in nihai acceptance invariant'ıdır.
+
+---
+
+# 22. Run Lifecycle Location Integrity
+
+Completion aşamasında:
+
+- aynı run ID aynı anda active/completed/failed altında bulunamaz,
+- `Completed` yalnız `runs/completed/<run-id>/`,
+- `Failed`/`Cancelled` kapanmış run active altında kopya bırakamaz.
+
+İhlal → FAIL.
+
+---
+
+# Validation Report Gereksinimleri
+
+Her `VALIDATION_REPORT.md` en az şunları içerir:
+
+```text
+Validation timestamp
+Run ID
+Result: PASS | CONDITIONAL PASS | FAIL
+Base package
+Delivery profile
+Implementation planning
+Design planning
+Canonical document coverage
+Dynamic wave/page/feature instance coverage
+Failed checks + severity
+Warnings
+Approval Integrity result
+Integration Readiness result (applicable)
+Design Profile/Quality result (applicable)
+Agent-Ready Acceptance Test result
+Repair actions (FAIL ise)
+Lifecycle Location Integrity (completion kontrolünde)
+```
+
+Publication yalnız PASS veya kullanıcı/operatör tarafından açıkça kabul edilmiş CONDITIONAL PASS sonrası yapılabilir.
