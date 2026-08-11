@@ -4,118 +4,169 @@
 
 ```yaml
 template_id: wave-plan-template
-template_name: Wave Plan Template
+template_name: Canonical Wave Plan Template
 document_id: WAVE-PLAN
-version: 1.0.0
+version: 2.0.0
 status: active
-template_type: document
+template_type: dynamic-document
 category: waves
 supported_packages:
-  - saas
-  - api-service
-  - demo-frontend
-  - corporate-website
-  - existing-project
+  - all
 supported_delivery_profiles:
+  - foundation
+  - prototype
   - implementation-ready
   - production-ready
+supported_implementation_planning:
+  - standard
+  - full
 required_inputs:
   - wave_map
-conditional_inputs: []
+  - tech_context
+conditional_inputs:
+  - product_rules
+  - design_documents
+  - test_strategy
 dependencies:
   - WAVE-MAP
-output_filename: WAVE_PLAN.md
+  - TECH-CTX
+output_filename_pattern: waves/plans/WAVE_<NN>.md
 ```
 
 ## Amaç
 
-Belirli bir dalganın (wave) ayrıntılı uygulama planını, görevlerini, bağımlılıklarını, kabul kriterlerini (acceptance criteria), doğrulama adımlarını ve kapsam dışı maddelerini tanımlamak.
+Tek bir implementation wave'ini başka bir mimari planlama turu gerektirmeden uygulanabilir hâle getiren canonical execution contract'ıdır.
 
-## Kullanım Koşulları
+Her wave için aynı template kullanılır. Yeni wave yeni Document ID değildir.
 
-`WAVE_MAP.md` üretilmiş projelerde her aktif dalga için ayrı ayrı üretilebilir (`Required: conditional`).
+## Wave Boyutu İlkesi
 
-## Girdi Kaynakları
+Bir wave:
 
-- `WAVE_MAP.md`
-- `PRODUCT_RULES.md`, `TECH_CONTEXT.md`
+- tek anlamlı teslim üretmeli,
+- bağımsız doğrulanabilmeli,
+- dependency zinciri açık olmalı,
+- makul bir çalışma oturumunda ilerletilebilir olmalı,
+- gereksiz mikro-wave veya dev mega-wave olmamalıdır.
+
+Görev sayısı kota değildir; scope coherence esastır.
 
 ## Zorunlu Bölümler
 
-- Dalga Kimliği ve Amacı (Wave Identity & Goal)
-- Dalga Kapsamı ve Sınırlar (Wave Scope Boundaries)
-- Görev Kırılımı ve Sıralama (Task Breakdown & Sequence)
-- Kabul Kriterleri (Acceptance Criteria)
-- Doğrulama ve Test Adımları (Validation & Testing)
-- Kapsam Dışı Maddeler (Out of Scope for this Wave)
-
-## Koşullu Bölümler
-
-- `[CONDITIONAL: include only if wave has specific risk]` Riskler ve Azaltma Planı
+- Wave Identity & Status
+- Goal
+- Why This Wave / Dependency Rationale
+- Canonical Sources to Read
+- Dependencies
+- In Scope / Out of Scope
+- Implementation Checklist
+- State / Role / Responsive Coverage
+- Automated Verification
+- Manual QA
+- Acceptance / Exit Criteria
+- Handoff / Stop Rule
+- Wave Result (completion sonrası)
 
 ## İçerik Üretim Kuralları
 
-- `WAVE_MAP.md` olmadan bağımsız olarak üretilemez.
-- Dalganın tüm somut çıktıları ve tamamlanma koşulları açıkça ölçülebilir olmalıdır.
+- WAVE_MAP scope'unu aşamaz.
+- Her task atomic ve doğrulanabilir olmalıdır.
+- TECH_CONTEXT boundary'lerini değiştirecek iş varsa bunun explicit decision/clarification gerektirip gerektirmediği belirtilmelidir.
+- Design scope varsa ilgili canonical design docs listelenmelidir.
+- Her wave'in dependency chain'i açıkça yazılmalıdır; okuyucuya tahmin ettirilmez.
+- Test/QA komutları gerçek stack biliniyorsa yazılır; bilinmeyen komut uydurulmaz.
+- Kullanıcı onayı gereken checkpoint varsa açık stop rule belirtilir.
+- Wave tamamlanmadan sonuç bölümü başarıyla doldurulmuş gibi gösterilmez.
 
 ## Placeholder Tanımları
 
-- `{{PROJECT_NAME}}`: Proje adı.
-- `{{WAVE_ID}}`: Dalga kimliği (örn: `WAVE-01`).
-- `{{WAVE_NAME}}`: Dalga adı.
-- `{{WAVE_GOAL}}`: Dalganın temel hedefi.
-- `{{WAVE_TASKS_LIST}}`: Dalga içi görevlerin detaylı listesi.
-- `{{ACCEPTANCE_CRITERIA_LIST}}`: Kabul kriterleri listesi.
-- `{{OUT_OF_SCOPE_LIST}}`: Bu dalgada yapılmayacak işler.
-
-## Kapsam Dışı
-
-- Diğer dalgaların detaylı görevleri (bkz: ilgili `WAVE_PLAN.md`)
-- Projenin genel vizyonu (bkz: `PROJECT_BRAIN.md`)
-
-## Diğer Dokümanlarla İlişki
-
-- Primary Owner: `wave_tasks`, `task_breakdown`, `acceptance_criteria`, `wave_timeline`.
-- Referenced By: `NEXT_TASKS.md`.
-
-## Delivery Profile Davranışı
-
-- Geliştiricinin ilgili dalgayı başka hiçbir yere bakmadan tamamlayabilmesi için gereken detay düzeyini sağlar.
+- `{{PROJECT_NAME}}`
+- `{{WAVE_ID}}`
+- `{{WAVE_NAME}}`
+- `{{WAVE_STATUS}}`
+- `{{WAVE_GOAL}}`
+- `{{WHY_THIS_WAVE}}`
+- `{{CANONICAL_SOURCES}}`
+- `{{DEPENDENCIES}}`
+- `{{IN_SCOPE}}`
+- `{{OUT_OF_SCOPE}}`
+- `{{IMPLEMENTATION_CHECKLIST}}`
+- `{{STATE_ROLE_COVERAGE}}`
+- `{{AUTOMATED_VERIFICATION}}`
+- `{{MANUAL_QA}}`
+- `{{ACCEPTANCE_CRITERIA}}`
+- `{{HANDOFF_STOP_RULE}}`
+- `{{WAVE_RESULT_PLACEHOLDER}}`
 
 ## Validation Beklentileri
 
-- Görevler `WAVE_MAP.md` içinde tanımlanan dalga kapsamını aşmamalıdır.
+- Wave map'teki scope ve dependency ile birebir uyumlu olmalı.
+- Acceptance criteria task listesinin gerçek sonucunu ölçmeli.
+- NEXT_TASKS aktif wave'in ilk uygulanabilir görevleriyle uyumlu olmalı.
+- Kapsam dışı maddeler açık olmalı.
+- Kanıt olmadan tamamlanmış state yazılmamalı.
 
 ---
 
 # OUTPUT DOCUMENT START
 
-# {{PROJECT_NAME}} — Wave Plan: {{WAVE_ID}} ({{WAVE_NAME}})
+# {{PROJECT_NAME}} — {{WAVE_ID}}: {{WAVE_NAME}}
 
-- **Wave ID**: {{WAVE_ID}}
-- **Wave Name**: {{WAVE_NAME}}
-- **Amaç**: {{WAVE_GOAL}}
+- **Status**: {{WAVE_STATUS}}
+- **Goal**: {{WAVE_GOAL}}
 
-## 1. Dalga Kapsamı
+## 1. Why This Wave / Dependency Rationale
 
-- **Kapsam İçi**: {{WAVE_IN_SCOPE_SUMMARY}}
-- **Kapsam Dışı**: {{OUT_OF_SCOPE_LIST}}
+{{WHY_THIS_WAVE}}
 
-## 2. Görev Kırılımı ve Sıralama
+## 2. Canonical Sources to Read
 
-{{WAVE_TASKS_LIST}}
+{{CANONICAL_SOURCES}}
 
-## 3. Kabul Kriterleri (Acceptance Criteria)
+## 3. Dependencies
 
-{{ACCEPTANCE_CRITERIA_LIST}}
+{{DEPENDENCIES}}
 
-## 4. Doğrulama ve Test Adımları
+## 4. Scope
 
-- Dalga tamamlandığında çalıştırılacak doğrulama testleri ve kontroller.
+### In Scope
 
-[CONDITIONAL: include only if wave has specific risk]
-## 5. Riskler ve Azaltma Planı
+{{IN_SCOPE}}
 
-- Bu dalgaya özel teknik/operasyonel riskler ve çözüm planı.
+### Out of Scope
+
+{{OUT_OF_SCOPE}}
+
+## 5. Implementation Checklist
+
+{{IMPLEMENTATION_CHECKLIST}}
+
+## 6. State / Role / Responsive Coverage
+
+{{STATE_ROLE_COVERAGE}}
+
+## 7. Automated Verification
+
+{{AUTOMATED_VERIFICATION}}
+
+## 8. Manual QA
+
+{{MANUAL_QA}}
+
+## 9. Acceptance / Exit Criteria
+
+{{ACCEPTANCE_CRITERIA}}
+
+## 10. Handoff / Stop Rule
+
+{{HANDOFF_STOP_RULE}}
+
+---
+
+## Wave Result
+
+> Bu bölüm wave tamamlandıktan sonra gerçek sonuç, değişen önemli alanlar, validation sonucu ve varsa kullanıcı approval bilgisiyle doldurulur. Wave başlamadan başarı sonucu uydurulmaz.
+
+{{WAVE_RESULT_PLACEHOLDER}}
 
 # OUTPUT DOCUMENT END
