@@ -6,7 +6,7 @@
 template_id: wave-plan-template
 template_name: Canonical Wave Plan Template
 document_id: WAVE-PLAN
-version: 2.0.0
+version: 2.1.0
 status: active
 template_type: dynamic-document
 category: waves
@@ -35,7 +35,9 @@ output_filename_pattern: waves/plans/WAVE_<NN>.md
 
 ## Amaç
 
-Tek bir implementation wave'ini başka bir mimari planlama turu gerektirmeden uygulanabilir hâle getiren canonical execution contract'ıdır.
+Tek bir implementation wave'ini başka bir mimari/teknik planlama turu gerektirmeden uygulanabilir hâle getiren canonical execution contract'ıdır.
+
+> **A wave is not a task summary. It is an execution contract.**
 
 Her wave için aynı template kullanılır. Yeni wave yeni Document ID değildir.
 
@@ -49,7 +51,7 @@ Bir wave:
 - makul bir çalışma oturumunda ilerletilebilir olmalı,
 - gereksiz mikro-wave veya dev mega-wave olmamalıdır.
 
-Görev sayısı kota değildir; scope coherence esastır.
+Implementation checklist çoğu normal wave'de yaklaşık **10–20 doğrulanabilir görev** derinliğine ulaşabilir. Bu kota değildir; önemli olan agent'ın tekrar plan çıkarmak zorunda kalmamasıdır.
 
 ## Zorunlu Bölümler
 
@@ -59,24 +61,42 @@ Görev sayısı kota değildir; scope coherence esastır.
 - Canonical Sources to Read
 - Dependencies
 - In Scope / Out of Scope
+- Expected Result / Target Structure
 - Implementation Checklist
 - State / Role / Responsive Coverage
 - Automated Verification
-- Manual QA
+- Manual QA / Debug Verification
 - Acceptance / Exit Criteria
 - Handoff / Stop Rule
-- Wave Result (completion sonrası)
+- Wave Result
 
 ## İçerik Üretim Kuralları
 
 - WAVE_MAP scope'unu aşamaz.
-- Her task atomic ve doğrulanabilir olmalıdır.
-- TECH_CONTEXT boundary'lerini değiştirecek iş varsa bunun explicit decision/clarification gerektirip gerektirmediği belirtilmelidir.
-- Design scope varsa ilgili canonical design docs listelenmelidir.
-- Her wave'in dependency chain'i açıkça yazılmalıdır; okuyucuya tahmin ettirilmez.
-- Test/QA komutları gerçek stack biliniyorsa yazılır; bilinmeyen komut uydurulmaz.
+- Checklist kısa görev özeti olamaz; anlamlı alt başlıklara bölünür.
+- Her görev atomic, doğrulanabilir ve gerçek bir çıktı üretir.
+- Her wave sonunda beklenen dosya/klasör/bileşen/state sonucu açıkça anlaşılmalıdır.
+- Teknik boundary, design authority ve data/service sınırları task seviyesinde korunur.
+- TECH_CONTEXT boundary'lerini değiştirecek iş varsa bunun explicit decision/clarification gerektirip gerektirmediği belirtilir.
+- Design scope varsa ilgili canonical design docs listelenir.
+- Her wave'in dependency chain'i açıkça yazılır; okuyucuya tahmin ettirilmez.
+- Test/QA komutları yalnız gerçek execution stack kesinleşmişse yazılır; bilinmeyen komut uydurulmaz.
+- Aktif wave'i uygulamak için gerekli stack/tool/architecture kararı unresolved ise wave `Ready for Execution` olamaz; stop/clarification gerekir.
 - Kullanıcı onayı gereken checkpoint varsa açık stop rule belirtilir.
 - Wave tamamlanmadan sonuç bölümü başarıyla doldurulmuş gibi gösterilmez.
+
+## Task Derinlik Standardı
+
+Her anlamlı task veya task grubu şu dört soruya cevap vermelidir:
+
+```text
+Ne yapılacak?
+Hangi boundary/kurallar korunacak?
+Beklenen somut sonuç nedir?
+Done olduğu nasıl doğrulanacak?
+```
+
+Uzun tutorial yazılmaz; fakat agent'ın yeniden implementation planı üretmesine ihtiyaç bırakılmaz.
 
 ## Placeholder Tanımları
 
@@ -90,6 +110,7 @@ Görev sayısı kota değildir; scope coherence esastır.
 - `{{DEPENDENCIES}}`
 - `{{IN_SCOPE}}`
 - `{{OUT_OF_SCOPE}}`
+- `{{EXPECTED_RESULT}}`
 - `{{IMPLEMENTATION_CHECKLIST}}`
 - `{{STATE_ROLE_COVERAGE}}`
 - `{{AUTOMATED_VERIFICATION}}`
@@ -101,6 +122,8 @@ Görev sayısı kota değildir; scope coherence esastır.
 ## Validation Beklentileri
 
 - Wave map'teki scope ve dependency ile birebir uyumlu olmalı.
+- Active wave başka bir planlama turu olmadan uygulanabilir olmalı.
+- Expected Result ile checklist ve acceptance criteria aynı teslimi tarif etmeli.
 - Acceptance criteria task listesinin gerçek sonucunu ölçmeli.
 - NEXT_TASKS aktif wave'in ilk uygulanabilir görevleriyle uyumlu olmalı.
 - Kapsam dışı maddeler açık olmalı.
@@ -137,27 +160,31 @@ Görev sayısı kota değildir; scope coherence esastır.
 
 {{OUT_OF_SCOPE}}
 
-## 5. Implementation Checklist
+## 5. Expected Result / Target Structure
+
+{{EXPECTED_RESULT}}
+
+## 6. Implementation Checklist
 
 {{IMPLEMENTATION_CHECKLIST}}
 
-## 6. State / Role / Responsive Coverage
+## 7. State / Role / Responsive Coverage
 
 {{STATE_ROLE_COVERAGE}}
 
-## 7. Automated Verification
+## 8. Automated Verification
 
 {{AUTOMATED_VERIFICATION}}
 
-## 8. Manual QA
+## 9. Manual QA / Debug Verification
 
 {{MANUAL_QA}}
 
-## 9. Acceptance / Exit Criteria
+## 10. Acceptance / Exit Criteria
 
 {{ACCEPTANCE_CRITERIA}}
 
-## 10. Handoff / Stop Rule
+## 11. Handoff / Stop Rule
 
 {{HANDOFF_STOP_RULE}}
 
