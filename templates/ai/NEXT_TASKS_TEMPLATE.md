@@ -6,78 +6,68 @@
 template_id: next-tasks-template
 template_name: Next Tasks Template
 document_id: TASKS
-version: 1.0.0
+version: 1.1.0
 status: active
 template_type: document
 category: ai
 supported_packages:
   - all
 supported_delivery_profiles:
+  - foundation
+  - prototype
   - implementation-ready
   - production-ready
+supported_implementation_planning:
+  - standard
+  - full
 required_inputs:
   - current_status
-  - wave_plan
-conditional_inputs: []
+  - active_wave_plan
 dependencies:
   - STATUS
+  - WAVE-PLAN
 output_filename: NEXT_TASKS.md
 ```
 
 ## Amaç
 
-Ajanın veya ekibin sıradaki somut, ölçülebilir, sıralı ve bağımlılıkları net görevlerini listelemek.
+Aktif wave içinde sıradaki somut, ölçülebilir ve uygulanabilir görevleri kısa execution queue olarak tutmak.
 
 ## Kullanım Koşulları
 
-Implementation Ready ve Production Ready profillerinde zorunludur.
-
-## Girdi Kaynakları
-
-- `CURRENT_STATUS.md`
-- `WAVE_PLAN.md` (varsa)
+`implementation_planning: standard | full` projelerde zorunludur.
 
 ## Zorunlu Bölümler
 
-- Sıradaki Somut Görevler (Immediate Tasks)
-- Öncelik Sıralaması ve Karmaşıklık (Task Priorities & Complexity)
-- Görev Bağımlılıkları (Task Dependencies)
-- Kabul Kriterleri (Acceptance Criteria per Task)
-
-## Koşullu Bölümler
-
-- `[CONDITIONAL: include only if wave architecture is used]` İlgili Dalga Bağlantıları
+- Active Wave Reference
+- Immediate Tasks
+- Dependencies / Preconditions
+- Per-Task Done Criteria
+- Stop / Clarification Conditions
 
 ## İçerik Üretim Kuralları
 
-- Görevler belirsiz veya soyut backlog maddeleri olmamalı; doğrudan uygulanabilir somut adımlardan oluşmalıdır.
-- Her görevin açık bir kabul kriteri ve çıktısı belirtilmelidir.
+- NEXT_TASKS yalnız aktif WAVE-PLAN scope'undan türetilir.
+- Uzun vadeli backlog veya gelecekteki wave işleri primary next task olarak yazılmaz.
+- Her görev atomic, uygulanabilir ve done kriteri olan bir eylemdir.
+- Blocked/clarification gerektiren görev sessiz varsayımla devam ettirilmez.
+- Aktif wave tamamlanınca NEXT_TASKS bir sonraki wave'e göre güncellenir.
 
 ## Placeholder Tanımları
 
-- `{{PROJECT_NAME}}`: Proje adı.
-- `{{IMMEDIATE_TASKS_LIST}}`: Numaralandırılmış somut görevler listesi.
-- `{{TASK_DEPENDENCIES_TABLE}}`: Görev bağımlılıkları ve önkoşul tablosu.
-- `{{ACCEPTANCE_CRITERIA_BLOCK}}`: Her görev için kabul kriterleri.
-
-## Kapsam Dışı
-
-- Uzun vadeli stratejik yol haritası (bkz: `PROJECT_PLAN.md`)
-- Tamamlanmış geçmiş görevler (bkz: `CURRENT_STATUS.md`)
-
-## Diğer Dokümanlarla İlişki
-
-- Primary Owner: `immediate_tasks`, `task_priority`, `task_dependencies`.
-- Referenced By: `WAVE_PLAN.md`.
-
-## Delivery Profile Davranışı
-
-- **Implementation Ready**: Tam bağımlılıkları ve kabul kriterleriyle hazırlanmış kısa vadeli uygulanabilir görev seti.
-- **Production Ready**: Güvenlik, test ve CI/CD adımlarını içeren görev kı kırılımları.
+- `{{PROJECT_NAME}}`
+- `{{ACTIVE_WAVE_ID}}`
+- `{{ACTIVE_WAVE_PLAN_PATH}}`
+- `{{IMMEDIATE_TASKS}}`
+- `{{DEPENDENCIES_PRECONDITIONS}}`
+- `{{TASK_DONE_CRITERIA}}`
+- `{{STOP_CLARIFICATION_CONDITIONS}}`
 
 ## Validation Beklentileri
 
-- Görevler `CURRENT_STATUS.md` belgesindeki engellerle çelişmemelidir.
+- Tüm primary tasks aktif wave scope'unda olmalı.
+- CURRENT_STATUS blocker'larıyla çelişmemeli.
+- Tamamlanmış task sıradaki iş gibi kalmamalı.
 
 ---
 
@@ -85,21 +75,25 @@ Implementation Ready ve Production Ready profillerinde zorunludur.
 
 # {{PROJECT_NAME}} — Next Tasks
 
-## 1. Sıradaki Somut Görevler
+## 1. Active Wave
 
-{{IMMEDIATE_TASKS_LIST}}
+- **Wave**: {{ACTIVE_WAVE_ID}}
+- **Plan**: `{{ACTIVE_WAVE_PLAN_PATH}}`
 
-## 2. Görev Bağımlılıkları Tablosu
+## 2. Immediate Tasks
 
-{{TASK_DEPENDENCIES_TABLE}}
+{{IMMEDIATE_TASKS}}
 
-## 3. Görev Bazlı Kabul Kriterleri
+## 3. Dependencies / Preconditions
 
-{{ACCEPTANCE_CRITERIA_BLOCK}}
+{{DEPENDENCIES_PRECONDITIONS}}
 
-[CONDITIONAL: include only if wave architecture is used]
-## 4. İlgili Dalga Bağlantıları
+## 4. Per-Task Done Criteria
 
-- Görevlerin ait olduğu Wave ID ve Wave Plan referansları.
+{{TASK_DONE_CRITERIA}}
+
+## 5. Stop / Clarification Conditions
+
+{{STOP_CLARIFICATION_CONDITIONS}}
 
 # OUTPUT DOCUMENT END
