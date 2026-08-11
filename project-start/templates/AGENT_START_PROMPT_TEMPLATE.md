@@ -18,6 +18,8 @@ Proje kaynak dosyası:
 6. Açıkça belirtilmiş proje kararlarını ve kısıtlarını, bir Engine authority ile çelişmedikleri sürece koru; bir çelişki varsa bunu açıkça belirt.
 7. Gerekli bilgi eksikse sessizce tahmin yürütmek yerine Engine'in mevcut missing-input/approval davranışını kullan.
 8. Approval gerektiğinde canonical approval gate'te dur.
+9. IDE, tool, plan, execution veya otomatik onay mekanizmalarını Product Engine explicit user approval olarak kabul etme. Canonical intake approval yalnızca kullanıcının pending proje girdisini veya açıkça sunulan intake kararlarını doğrudan ve bilinçli biçimde onaylayan mesajıyla verilebilir.
+10. Explicit user approval alınmadan `status: approved`, `approved_by: user` veya eşdeğer bir onay kaydı üretme; approved input oluşturma ve generation run başlatma.
 
 ## Beklenen İlk Sonuç
 
