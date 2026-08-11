@@ -1,71 +1,137 @@
 # Product Engine Templates
 
-Product Engine'in `templates/` katmanı, seçilen dokümanların nasıl ve hangi yapıda üretileceğini tanımlayan model-bağımsız üretim sözleşmeleridir.
+`templates/` Product Engine tarafından seçilmiş canonical document'ların ve destek artifact'lerinin **tek skeleton authority** katmanıdır.
 
-## Amaç ve Sorumluluk Sınırı
-
-`templates/` klasörü şu soruların yanıtını verir:
-- Seçilen doküman hangi yapı ve standart ile oluşturulmalıdır?
-- Hangi bölümler zorunlu, hangi bölümler koşulludur?
-- Hangi bilgi hangi kaynaktan alınmalı veya türetilmelidir?
-- Eksik veya belirsiz bilgiyle `ASSUMPTION_RULES.md` uyarınca nasıl davranılmalıdır?
-- Farklı Delivery Profile seviyelerinde (Foundation, Prototype, Implementation Ready, Production Ready) ayrıntı seviyesi nasıl ölçeklenmelidir?
-- Nihai çıktı dokümanı nasıl görünmelidir?
-
-### Template Ne Değildir?
-- Doküman varlık veya zorunluluk kararlarının merkezi değildir (`engine/DOCUMENT_CATALOG.md` ve `packages/` owner'dır).
-- Bilgi sahipliği dağıtım haritası değildir (`engine/INFORMATION_MAP.md` owner'dır).
-- Eksik bilgi kurallarının karar merkezi değildir (`engine/ASSUMPTION_RULES.md` owner'dır).
-- Gerçek run operasyon verilerinin tutulduğu yer değildir (Authority buradadır, uygulama `runs/` klasöründedir).
-- Model-özel (Claude, Gemini, GPT) prompt deposu değildir.
+Template selection kararı burada verilmez; `DOCUMENT_CATALOG.md`, package resolution ve planning profiles tarafından verilir.
 
 ---
 
-## Template Kategorileri
+# Template Kategorileri
 
-`templates/` klasörü 6 ana alt klasörden oluşur:
+```text
+templates/
+├── ai/
+├── project/
+├── design/
+├── waves/
+├── prompts/
+└── runs/
+```
 
-1. **`ai/` (AI Context & Rule Templates)**:
-   - Ajanın okuyacağı ve projenin bağlamını, ürün kurallarını, teknik sınırlarını, karar kayıtlarını ve durumunu yöneten ana doküman template'leri (`PROJECT_BRAIN`, `PRODUCT_RULES`, `TECH_CONTEXT`, `PRODUCT_STRATEGY`, `CURRENT_STATUS`, `NEXT_TASKS`, `DECISIONS`, `AGENT_INSTRUCTIONS`).
+## `ai/`
 
-2. **`project/` (Project Specs & Architecture Templates)**:
-   - Proje teslimi, mimarisi ve operasyonuna yönelik doküman template'leri (`README`, `PROJECT_PLAN`, `DATA_MODEL`, `API_CONTRACTS`, `DEPLOYMENT`, `OPERATIONS`, `TEST_STRATEGY`, `ENV_EXAMPLE`).
+Canonical context/state/agent belgeleri:
 
-3. **`design/` (Design Rules & UI Structural Templates)**:
-   - Görsel dil, UI bileşenleri, sayfa spesifikasyonları ve sistem durumlarına ait tasarım template'leri (`DESIGN_RULES`, `DESIGN_SYSTEM`, `DESIGN_PACKAGE`, `GLOBAL_SHELL`, `PAGE_SPEC`, `COMPONENT_SPEC`, `SYSTEM_STATES`).
+```text
+PROJECT_BRAIN_TEMPLATE.md
+PRODUCT_RULES_TEMPLATE.md
+TECH_CONTEXT_TEMPLATE.md
+PRODUCT_STRATEGY_TEMPLATE.md
+CURRENT_STATUS_TEMPLATE.md
+NEXT_TASKS_TEMPLATE.md
+DECISIONS_TEMPLATE.md
+AGENT_INSTRUCTIONS_TEMPLATE.md
+```
 
-4. **`waves/` (Delivery Wave Templates)**:
-   - Aşamalı teslimat (wave) süreçlerine ait harita, plan ve standart dalga template'leri (`WAVE_MAP`, `WAVE_PLAN`, `STANDARD_WAVE`).
+## `project/`
 
-5. **`prompts/` (Agent Execution Prompts)**:
-   - Ajanı repository-first ve authoritative belgelere yönlendirerek çalıştıran model-bağımsız prompt template'leri (`START_PROJECT_PROMPT`, `START_WAVE_PROMPT`, `CONTINUE_WAVE_PROMPT`, `UPDATE_DOCS_PROMPT`, `VALIDATE_PROJECT_PROMPT`).
+Project architecture/delivery belgeleri:
 
-6. **`runs/` (Run Operational Templates)**:
-   - Run yaşam döngüsündeki operasyonel kayıt ve rapor şablonları (`RUN_MANIFEST`, `INPUT_SNAPSHOT`, `PACKAGE_SELECTION`, `SOURCE_REGISTER`, `ASSUMPTIONS`, `CONFLICTS`, `DECISIONS`, `RUN_LOG`, `PROGRESS`, `VALIDATION_REPORT`, `COMPLETION_REPORT`).
+```text
+README_TEMPLATE.md
+PROJECT_PLAN_TEMPLATE.md
+DATA_MODEL_TEMPLATE.md
+API_CONTRACTS_TEMPLATE.md
+TEST_STRATEGY_TEMPLATE.md
+DEPLOYMENT_TEMPLATE.md
+OPERATIONS_TEMPLATE.md
+```
+
+Structural support template'leri (örn. `.env.example`) catalog document değildir.
+
+## `design/`
+
+Canonical design document skeleton'ları:
+
+```text
+DESIGN_RULES_TEMPLATE.md                 → DESIGN
+DESIGN_SYSTEM_TEMPLATE.md                → DESIGN-SYSTEM
+GLOBAL_SHELL_TEMPLATE.md                 → GLOBAL-SHELL
+PAGE_DESIGN_PACKAGE_TEMPLATE.md          → PAGE-DESIGN dynamic instances
+FEATURE_DESIGN_PACKAGE_TEMPLATE.md       → FEATURE-DESIGN dynamic instances
+SYSTEM_STATES_TEMPLATE.md                → SYSTEM-STATES
+ADMIN_OPERATIONAL_TEMPLATE.md            → ADMIN-DESIGN
+```
+
+Diğer component/asset structural helper template'leri varsa yalnız destek yapısıdır; canonical Document ID yerine geçmez.
+
+### Dynamic Design Single-Skeleton Rule
+
+```text
+PAGE_DESIGN_PACKAGE_TEMPLATE
+→ HOME_DESIGN_PACKAGE.md
+→ ROOM_DESIGN_PACKAGE.md
+→ SERVICES_DESIGN_PACKAGE.md
+
+FEATURE_DESIGN_PACKAGE_TEMPLATE
+→ MATCHING_FLOW_DESIGN_PACKAGE.md
+→ ROOM_LIFECYCLE_DESIGN_PACKAGE.md
+```
+
+Her instance aynı canonical ID/template'i kullanır. Yeni page/feature için alternatif schema/template oluşturulmaz.
+
+## `waves/`
+
+```text
+WAVE_MAP_TEMPLATE.md   → bütün proje wave architecture
+WAVE_PLAN_TEMPLATE.md  → her WAVE_<NN>.md dynamic execution plan instance
+```
+
+Tek canonical wave-plan skeleton vardır. Yeni wave için yeni template oluşturulmaz.
+
+## `prompts/`
+
+Runtime/project execution prompt helper'larıdır. Product Engine authority contract'larını ezemez.
+
+## `runs/`
+
+Run operational record template'leridir. Final project output'a sızmaz.
 
 ---
 
-## Template Türleri
+# Template Types
 
-- **Document Templates (`template_type: document`)**: `engine/DOCUMENT_CATALOG.md` içerisinde tanımlı `Document ID` karşılığı olan bağımsız doküman üretim şablonlarıdır.
-- **Structural Templates (`template_type: structural`)**: Başka dokümanların içinde tekrar eden bileşen, sayfa veya wave yapılarını tanımlayan şablonlardır (`document_id: not_applicable`).
-- **Prompt Templates (`template_type: prompt`)**: Ajan çalışma döngülerini başlatan model-bağımsız talimat şablonlarıdır (`document_id: not_applicable`).
-- **Operational Templates (`template_type: operational`)**: `RUN_MANIFEST` dışındaki run kayıtlarının operasyonel şablonlarıdır (`RUN_MANIFEST` hariç `document_id: not_applicable`).
+```text
+document
+→ tek canonical document output
+
+dynamic-document
+→ tek canonical Document ID/template'den birden fazla project-specific instance
+
+structural
+→ catalog dışı yardımcı yapı / support artifact
+
+prompt
+→ model-independent execution instruction
+
+operational
+→ run evidence / manifest / report
+```
 
 ---
 
-## Metadata Standardı
+# Metadata Standardı
 
-Tüm template dosyaları YAML formatında aşağıdaki ortak metadata bloğunu taşır:
+Canonical document template metadata'sı ihtiyaç kadar şu alanları kullanır:
 
 ```yaml
-template_id: <unique-template-id>
-template_name: <Template Name>
-document_id: <CATALOG-ID | not_applicable>
-version: 1.0.0
+template_id: <unique>
+template_name: <name>
+document_id: <CATALOG-ID>
+version: <semver>
 status: active
-template_type: document | structural | prompt | operational
-category: ai | project | design | waves | prompts | operational
+template_type: document | dynamic-document
+category: ai | project | design | waves
 supported_packages:
   - all
 supported_delivery_profiles:
@@ -73,64 +139,95 @@ supported_delivery_profiles:
   - prototype
   - implementation-ready
   - production-ready
-required_inputs:
-  - intake_data
+supported_implementation_planning:
+  - standard
+  - full
+supported_design_planning:
+  - light
+  - standard
+  - full
+required_inputs: []
 conditional_inputs: []
 dependencies: []
-output_filename: <OUTPUT_FILENAME.md | not_applicable>
+output_filename: <file>
+# veya dynamic:
+output_filename_pattern: <pattern>
 ```
 
-### Delivery Profile Normalization Mapping
-
-`templates/` metadata filtresi ile canonical runtime/input değerleri arasındaki dönüşüm aşağıdaki standart mapping tablosuna göre yapılır:
-
-| Canonical Input/Package/Runtime Value (Title Case) | Template Metadata Value (Normalized Machine Form) |
-|---|---|
-| `Foundation` | `foundation` |
-| `Prototype` | `prototype` |
-| `Implementation Ready` | `implementation-ready` |
-| `Production Ready` | `production-ready` |
-
-**Açık Kurallar:**
-- Template metadata alias'ları (küçük harfli/tireli formlar) projenin bağlayıcı proje gerçeği (project truth) değildir.
-- Input, package ve runtime katmanlarındaki kanonik değerler kesinlikle Title Case biçiminde kalır (`Foundation`, `Prototype`, `Implementation Ready`, `Production Ready`).
-- Normalized machine form'lar yalnızca template filtreleme metadata'sında (`supported_delivery_profiles`) kullanılır.
+Bir template yalnız ilgili planning axis applicable ise o metadata alanını taşımalıdır.
 
 ---
 
-## Yapısal Destek Çıktıları (Structural Support Artifacts)
+# Delivery Profile Normalization
 
-Bazı yapısal şablonlar (`template_type: structural`, `document_id: not_applicable`), `.env.example` (örn: `ENV_EXAMPLE_TEMPLATE.md`) gibi bağımsız destek çıktıları üretebilir.
+Template metadata machine-form:
 
-- **Katalog Dışı Olma Kuralı:** Bazı yapısal şablonlar katalog dışı destek ürünleri (`non-catalog support artifacts`) üretebilir. Bunlar proje dokümanı değildir ve Document Catalog ID'si almazlar (`document_id: not_applicable`).
-- **Uygulanabilirlik Kısıtı:** Bu çıktıların dahil edilmesi doğrudan paket/şablon uygulanabilirliğine (`package/template applicability`) bağlıdır ve ayrı olarak doğrulanır.
-- **Pipeline ve Çıktı Kuralları:**
-  1. Doküman seçim pipeline'ını bozmaz veya katalog dokümanı zorlaması yaratmaz.
-  2. Pakette gerekmiyorsa veya teknik bağlamda uygulanabilir değilse üretilmez.
-  3. Üretildiğinde nihai çıktı temizlik kurallarına (`output cleanliness rules`) tam olarak tabidir.
+```text
+Foundation           → foundation
+Prototype            → prototype
+Implementation Ready → implementation-ready
+Production Ready     → production-ready
+```
+
+Project truth içinde canonical Title Case korunur.
+
+Planning profile değerleri zaten canonical lowercase enum'dur:
+
+```text
+implementation: standard | full
+design: light | standard | full
+```
 
 ---
 
-## Placeholder Standardı
+# Single-Skeleton Invariant
 
-Template'lerde dinamik olarak doldurulacak alanlar için aşağıdaki standart kullanılır:
+MUST NOT:
+
+- aynı Document ID için iki active canonical template,
+- page-specific ayrı schema template,
+- feature-specific ayrı schema template,
+- her wave için farklı template,
+- `STANDARD_WAVE_TEMPLATE` gibi WAVE_PLAN ile paralel ikinci skeleton,
+- `PAGE_SPEC_TEMPLATE` gibi PAGE-DESIGN ile aynı responsibility'yi taşıyan paralel active skeleton.
+
+---
+
+# Placeholder / Conditional Standard
 
 ```text
 {{PLACEHOLDER_NAME}}
+[CONDITIONAL: include only if <condition>]
 ```
 
-- Kurallar: Büyük harf, İngilizce, alt çizgi (`_`) ile ayrılmış, açık ve standart isimlendirme (örn: `{{PROJECT_NAME}}`, `{{TECH_STACK}}`, `{{TARGET_USERS_LIST}}`).
-- Koşullu Bölümler: `[CONDITIONAL: include only if <condition>]` bloğu ile işaretlenir.
+Final output'ta template placeholder veya metadata kalamaz.
 
 ---
 
-## Template Referans ve Kullanım Sırası
+# Generation Reference Order
 
-> [!IMPORTANT]
-> **Kavram Ayrımı: Agent Boot Read Order ≠ Runtime Execution Flow**
-> Bu rehberdeki adımlar şablon seçimi ve doküman üretim montajı için **referans başvuru sırasıdır**. Sistemin genel okuma sırası **Agent Boot Read Order** (Root [README.md](../README.md) otoritesi), adım adım çalıştırma akışı ise **Runtime Execution Flow** ([`engine/GENERATION_PIPELINE.md`](../engine/GENERATION_PIPELINE.md) otoritesi) altındadır.
+```text
+1. DOCUMENT_CATALOG
+2. PLANNING_PROFILES / resolved package + overlay
+3. INFORMATION_MAP
+4. selected canonical template
+5. dependency templates
+6. approved input + resolved instance context
+7. generate working output
+8. validate
+```
 
-1. `engine/DOCUMENT_CATALOG.md` ve `engine/INFORMATION_MAP.md` ile sorumluluk sınırlarını doğrula.
-2. Üretilecek dokümanın `templates/` altındaki ilgili template'ini seç.
-3. Metadata ve üretim kurallarını incele.
-4. `# OUTPUT DOCUMENT START` ile `# OUTPUT DOCUMENT END` arasındaki iskeleti doldurarak nihai dokümanı oluştur.
+Runtime full order `engine/GENERATION_PIPELINE.md` authority'sidir.
+
+---
+
+# Quality Invariants
+
+Template hiçbir profile için kaliteyi düşüren talimat veremez.
+
+```text
+Prototype ≠ throwaway
+light design ≠ generic/basic
+full ≠ generate everything
+integration-ready ≠ invent backend
+```
