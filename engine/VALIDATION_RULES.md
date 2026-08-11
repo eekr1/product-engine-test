@@ -158,10 +158,14 @@ Kontrol:
   - Yapılan tüm assumption'lar kaydedilmiş mi?
   - Assumption yapılamayacak alanlarda sessiz varsayım yapılmış mı?
   - ASSUMPTION_RULES.md'de prohibited olan alanlarda assumption yok mu?
+  - `confirmed` durumundaki her assumption için kullanıcı explicit approval veya authoritative approved-input kanıtı var mı?
+  - Birden fazla makul teknik tercih arasından seçilen kararlar yanlışlıkla `safe` sınıfına sokulmuş mu?
 
 Hata Seviyesi:
   - Kayıt dışı assumption → FAIL
   - Prohibited alanda assumption → FAIL
+  - Kanıtsız `confirmed` assumption → FAIL
+  - Teknik/ürün etkili çok-seçenekli assumption yanlışlıkla `safe` sınıfında → CONDITIONAL PASS; kritik etki yaratıyorsa FAIL
   - Kaydedilmiş assumption, onay bekliyorsa → CONDITIONAL PASS
 ```
 
@@ -222,6 +226,42 @@ Hata Seviyesi:
 
 ---
 
+### 13. Approval Integrity (Canonical User Approval)
+
+```text
+Kontrol:
+  - Run'ın kullandığı input gerçekten `status: approved` mı?
+  - Approved input için PROJECT_INTAKE.md'de tanımlanan canonical explicit user approval kanıtı var mı?
+  - `approved_by: user` kaydı gerçek doğrudan kullanıcı onayıyla destekleniyor mu?
+  - IDE/tool/plan/auto-approval yanlışlıkla canonical Product Engine approval olarak yorumlanmış mı?
+
+Hata Seviyesi:
+  - Canonical explicit user approval kanıtı olmadan approved input oluşturulmuş → FAIL
+  - IDE/tool/plan/auto-approval `approved_by: user` olarak kaydedilmiş → FAIL
+  - Pending input ile generation run başlatılmış → FAIL
+```
+
+Bu kontrol publication öncesi zorunludur. Approval integrity FAIL ise output yayınlanamaz.
+
+---
+
+### 14. Run Lifecycle Location Integrity
+
+```text
+Kontrol:
+  - Aynı run-id aynı anda `runs/active/`, `runs/completed/` veya `runs/failed/` altında birden fazla yerde bulunuyor mu?
+  - `status: Completed` olan run yalnızca `runs/completed/<run-id>/` altında mı?
+  - `status: Failed` veya `Cancelled` olan kapanmış run `runs/active/` altında kopya bırakmış mı?
+
+Hata Seviyesi:
+  - Aynı run-id hem active hem completed/failed altında → FAIL
+  - Manifest status ile fiziksel lifecycle konumu uyuşmuyor → FAIL
+```
+
+Bu kontrol final completion sırasında zorunludur. Run location exclusivity sağlanmadan run kapanmış sayılmaz.
+
+---
+
 ## Hangi Durumda Ne Olur
 
 | Sonuç | Anlamı | Eylem |
@@ -246,6 +286,8 @@ Her validation sonrasında aşağıdaki bilgileri içeren bir rapor üretilir:
 - Başarısız olan kontroller ve hata seviyeleri
 - Uyarı listesi (varsa)
 - Önerilen repair adımları (FAIL durumunda)
+- Approval Integrity sonucu
+- Run Lifecycle Location Integrity sonucu (completion aşamasında)
 ```
 
 Bu rapor `VALIDATION_REPORT.md` olarak run klasörüne eklenir. Bkz: `RUN_PROTOCOL.md`.
