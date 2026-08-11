@@ -6,7 +6,7 @@ Bu klasör, Product Engine'in çalışma zamanı sözleşmelerini içerir.
 
 Bir ajan bu klasördeki belgeleri okuyarak Product Engine'in nasıl davrandığını anlayabilmeli ve yalnızca bu belgeler ile proje girdisi üzerinden doğru şekilde çalışabilmelidir.
 
-Bu klasör; hangi bilgileri kabul edeceğini, hangi sırayla hareket edeceğini, eksik veya çelişkili bilgiyle nasıl başa çıkacağını, çıktının nasıl doğrulanacağını ve bir çalışmanın nasıl yönetileceğini tanımlar.
+Bu klasör; hangi bilgileri kabul edeceğini, hangi sırayla hareket edeceğini, planning derinliğini nasıl belirleyeceğini, eksik veya çelişkili bilgiyle nasıl başa çıkacağını, çıktının nasıl doğrulanacağını ve bir çalışmanın nasıl yönetileceğini tanımlar.
 
 ---
 
@@ -16,6 +16,7 @@ Bu klasör; hangi bilgileri kabul edeceğini, hangi sırayla hareket edeceğini,
 |---|---|
 | `README.md` | Navigasyon ve başlangıç belgesi. Bu dosya. |
 | `PROJECT_INTAKE.md` | Proje bilgilerinin nasıl alınacağını ve onaylanacağını tanımlar. |
+| `PLANNING_PROFILES.md` | Implementation/design planning derinliğini, kalite tabanını ve demo/integration readiness kurallarını tanımlar. |
 | `DOCUMENT_CATALOG.md` | Product Engine'in tanıdığı doküman türlerinin kayıt merkezi. |
 | `PACKAGE_RULES.md` | Hangi proje için hangi doküman paketi seçileceğini belirler. |
 | `INFORMATION_MAP.md` | Her bilgi türünün hangi dokümana ait olduğunu tanımlar. |
@@ -42,18 +43,19 @@ Bir Product Engine çalışması başlatılmadan önce referans okuma sırası:
 2.  PRODUCT_ENGINE_BRAIN.md       (kök klasör — Product Engine nedir, vizyon ve sınırlar)
 3.  engine/README.md               (bu dosya — navigasyon)
 4.  engine/PROJECT_INTAKE.md       (hangi bilgiler gerekli?)
-5.  engine/DOCUMENT_CATALOG.md     (hangi dokümanlar tanınır?)
-6.  engine/PACKAGE_RULES.md        (hangi paket seçilir?)
-7.  engine/ASSUMPTION_RULES.md     (eksik bilgide ne yapılır?)
-8.  engine/CONFLICT_RESOLUTION.md  (çelişkide ne yapılır?)
-9.  engine/INFORMATION_MAP.md      (bilgi hangi dokümana yazılır?)
-10. engine/GENERATION_PIPELINE.md  (üretim sırası nedir?)
-11. engine/OUTPUT_STRUCTURE.md     (çıktı nasıl teslim edilir?)
-12. engine/VALIDATION_RULES.md     (çıktı geçerli mi?)
-13. engine/RUN_PROTOCOL.md         (çalışma nasıl yönetilir?)
-14. Seçilen packages/ belgeleri
-15. İlgili templates/ belgeleri
-16. Aktif proje girdisi
+5.  engine/PLANNING_PROFILES.md    (implementation/design planning derinliği nedir?)
+6.  engine/DOCUMENT_CATALOG.md     (hangi dokümanlar tanınır?)
+7.  engine/PACKAGE_RULES.md        (hangi paket seçilir?)
+8.  engine/ASSUMPTION_RULES.md     (eksik bilgide ne yapılır?)
+9.  engine/CONFLICT_RESOLUTION.md  (çelişkide ne yapılır?)
+10. engine/INFORMATION_MAP.md      (bilgi hangi dokümana yazılır?)
+11. engine/GENERATION_PIPELINE.md  (üretim sırası nedir?)
+12. engine/OUTPUT_STRUCTURE.md     (çıktı nasıl teslim edilir?)
+13. engine/VALIDATION_RULES.md     (çıktı geçerli mi?)
+14. engine/RUN_PROTOCOL.md         (çalışma nasıl yönetilir?)
+15. Seçilen packages/ belgeleri
+16. İlgili templates/ belgeleri
+17. Aktif proje girdisi
 ```
 
 Tüm belgelerin her run öncesinde baştan okunması zorunlu değildir. Ajan gerekli belgeleri iş akışı sırasında başvuru amacıyla kullanabilir.
@@ -65,6 +67,8 @@ Tüm belgelerin her run öncesinde baştan okunması zorunlu değildir. Ajan ger
 | Soru | Authoritative Dosya |
 |---|---|
 | Hangi proje bilgileri gerekli? | `PROJECT_INTAKE.md` |
+| Implementation/design planning ne kadar derin olmalı? | `PLANNING_PROFILES.md` |
+| Demo/prototype mimari kalite tabanı nedir? | `PLANNING_PROFILES.md` |
 | Hangi dokümanlar var ve görevleri nedir? | `DOCUMENT_CATALOG.md` |
 | Hangi paketi seçmeliyim? | `PACKAGE_RULES.md` |
 | Bu bilgi hangi dokümana yazılmalı? | `INFORMATION_MAP.md` |
@@ -118,6 +122,9 @@ ref/
 | Terim | Tanım |
 |---|---|
 | **Project Intake** | Proje bilgisinin Product Engine'e kabul edilme süreci |
+| **Delivery Profile** | Projenin hedef teslim olgunluk düzeyi |
+| **Implementation Planning** | Projenin nasıl inşa edileceğine ilişkin execution planning derinliği (`standard | full`) |
+| **Design Planning** | UI/UX tasarım planlama derinliği (`light | standard | full`, applicable projelerde) |
 | **Package** | Bir proje bağlamı için seçilen doküman grubu |
 | **Template** | Bir dokümanın üretim yapısını ve iskeletini tanımlayan dosya |
 | **Ref** | Kalite referansı olarak kullanılan harici kaynak; authoritative değil |
@@ -130,7 +137,6 @@ ref/
 | **Information Owner** | Bir bilgi türünü birincil olarak sahibi olan doküman |
 | **Input Snapshot** | Bir run başlangıcında alınan proje girdisi anlık görüntüsü |
 | **Run Manifest** | Bir run'ın kimliğini, kararlarını ve durumunu tutan kayıt |
-| **Delivery Profile** | Projenin hedef teslim olgunluk düzeyi |
 
 ---
 
