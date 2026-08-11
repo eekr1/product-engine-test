@@ -2,476 +2,232 @@
 
 ## Amaç
 
-Bu belge, Product Engine working output'unun final published output olmaya gerçekten hazır olup olmadığını doğrular.
+Product Engine working output'unun yalnız eksiksiz değil, gerçekten **agent-ready** olup olmadığını doğrular.
 
-Validation yalnız dosya varlığı kontrolü değildir; package/profile compliance, information ownership, dynamic instance coverage, design/architecture quality invariants, lifecycle integrity ve **agent-readiness** kontrolüdür.
-
----
-
-# Sonuç Kategorileri
+## Sonuçlar
 
 ```text
-PASS
-→ Bütün blocking kontroller geçti; publication yapılabilir.
-
-CONDITIONAL PASS
-→ Non-blocking bulgu var; kullanıcı/operatör kabul ederse publication yapılabilir.
-
-FAIL
-→ Blocking contract ihlali var; publication yapılamaz, repair zorunludur.
-```
-
-İkinci repair validation'ında da blocking FAIL sürerse run `Failed` kapanır.
-
----
-
-# 1. Approved Input / Approval Integrity
-
-Kontrol:
-
-- Input `status: approved` mı?
-- `project_type`, `delivery_profile`, `implementation_planning`, `primary_language` mevcut ve canonical mı?
-- UI/UX applicable ise `design_planning: light | standard | full` mevcut mu?
-- Canonical explicit user approval kanıtı var mı?
-- `approved_by: user` gerçek doğrudan kullanıcı onayıyla destekleniyor mu?
-- IDE/tool/plan/auto-approval canonical approval gibi kullanılmış mı?
-
-FAIL:
-
-- pending input ile generation,
-- invalid/missing planning profile,
-- auto-approval ile approved snapshot,
-- kanıtsız `approved_by: user`.
-
----
-
-# 2. Package + Planning Overlay Compliance
-
-Resolved document set:
-
-```text
-base package
-+
-packages/PLANNING_PROFILE_OVERLAY.md
-+
-contextual conditions
-```
-
-ile birebir uyumlu olmalıdır.
-
-Kontrol:
-
-- Base package doğru mu?
-- Approved implementation/design profile korunmuş mu?
-- Package reduction profile minimumunu düşürmüş mü?
-- Gerekçesiz extra canonical document var mı?
-- Conditional document gerçek scope koşuluyla gerekçeli mi?
-
-FAIL:
-
-- Standard implementation minimumundan belge eksiltmek,
-- Light design'da DESIGN'i çıkarmak,
-- required applicable belge eksikliği,
-- gerçek scope olmadan sahte DATA/API/DEPLOY gibi contract üretmek.
-
-Gerekçesiz fakat blocking olmayan extra belge → CONDITIONAL PASS.
-
----
-
-# 3. Standard Implementation Minimum
-
-Applicable implementation-bearing projede `implementation_planning: standard | full` için minimum:
-
-```text
-README-DOC
-PROJECT-BRAIN
-PRODUCT-RULES
-TECH-CTX
-STATUS
-TASKS
-DECISIONS
-AGENT-INST
-PROJ-PLAN
-WAVE-MAP
-WAVE-PLAN instances
-```
-
-Bu setten applicable required artifact eksikse → FAIL.
-
-Prototype/demo etiketi eksikliği mazur göstermez.
-
----
-
-# 4. Wave Coverage / Execution Integrity
-
-Kontrol:
-
-- `WAVE_MAP.md` approved scope'u tamamen kapsıyor mu?
-- Dependency chain uygulanabilir ve acyclic mi?
-- Her implementation wave için `waves/plans/WAVE_<NN>.md` instance'ı var mı?
-- Wave ID'leri map ile plan instance'larında birebir mi?
-- Her wave in/out scope, atomic tasks, acceptance criteria ve verification taşıyor mu?
-- WAVE_PLAN kendi WAVE_MAP scope'unu aşıyor mu?
-- Wave 00 anlamlı bir first implementation foundation mı?
-
-FAIL:
-
-- Map'te wave var, plan instance yok,
-- plan scope map'i aşıyor,
-- critical approved scope hiçbir wave'e map edilmemiş,
-- circular dependency,
-- active wave uygulanabilir task/acceptance içermiyor.
-
----
-
-# 5. Project Plan / Wave Consistency
-
-Kontrol:
-
-- PROJECT_PLAN milestone/phase sırası WAVE_MAP ile aynı execution mantığını anlatıyor mu?
-- Future scope current committed scope gibi gösterilmiş mi?
-- Kullanıcı vermediği halde yapay deadline/timeline uydurulmuş mu?
-
-Kapsam/sıra çelişkisi → FAIL.
-
-Küçük terminoloji drift'i → CONDITIONAL PASS.
-
----
-
-# 6. Current Status / Next Tasks / Active Wave Integrity
-
-Kontrol:
-
-- CURRENT_STATUS aktif wave'i gerçek WAVE_MAP/WAVE_PLAN ile eşleştiriyor mu?
-- NEXT_TASKS yalnız aktif wave'in immediate queue'su mu?
-- Tamamlanan iş next task olarak kalmış mı?
-- Future wave işi yanlışlıkla primary task olmuş mu?
-- Blocker varken task sessizce executable gösterilmiş mi?
-
-FAIL:
-
-- active wave mismatch,
-- NEXT_TASKS aktif wave scope'u dışında,
-- completed/blocked gerçekliğinin yanlış temsil edilmesi.
-
----
-
-# 7. Tech Context / Integration Readiness
-
-Özellikle frontend demo/prototype için kontrol:
-
-- Current data source belli mi?
-- Mock/local data boundary açık mı?
-- UI ile service/data-access boundary tanımlı mı?
-- Future real backend adapter noktası anlaşılır mı?
-- Environment/config ayrımı belirtilmiş mi?
-- Backend/API/database henüz approved değilse unresolved olarak mı tutulmuş?
-
-FAIL:
-
-- mock data'nın architectural boundary olmadan presentation'a dağılması öneriliyorsa,
-- demo gerekçesiyle throwaway architecture tarif ediliyorsa,
-- onaylanmamış API endpoint/database/backend stack gerçekmiş gibi üretilmişse.
-
-```text
-integration-ready → required where relevant
-invented backend → prohibited
+PASS             → publication yapılabilir
+CONDITIONAL PASS → yalnız non-blocking bulgu vardır
+FAIL             → blocking contract ihlali vardır; publication yapılamaz
 ```
 
 ---
 
-# 8. Design Profile Compliance
+# Blocking Validation Set
 
-## `light`
+## 1. Approval Integrity
 
-Required:
-
-```text
-DESIGN_RULES.md
-```
-
-Belge tek başına güçlü visual concept, differentiation rationale, composition, color/typography direction, interaction, responsive ve accessibility guidance vermelidir.
-
-## `standard`
-
-Applicable ise required:
-
-```text
-DESIGN_RULES.md
-DESIGN_SYSTEM.md
-GLOBAL_SHELL.md
-SYSTEM_STATES.md
-PAGE-DESIGN instances
-```
-
-## `full`
-
-Standard set + gerçek scope koşulu varsa:
-
-```text
-FEATURE-DESIGN instances
-ADMIN_OPERATIONAL_DESIGN.md
-```
-
-Eksik required applicable design artifact → FAIL.
-
----
-
-# 9. Design Quality / Anti-Template Integrity
-
-Bu kontrol estetik zevk puanı değildir; açık contract drift'ini arar.
-
-Kontrol:
-
-- Visual concept proje bağlamından gerekçelendirilmiş mi?
-- Tasarım yalnız sektör klişesine mi dayanıyor?
-- Generic hazır tema yapısı default olarak mı seçilmiş?
-- Color palette tek başına concept gibi sunulmuş mu?
-- Trend pattern'i (gradient, glass, bento vb.) içerik/UX gerekçesi olmadan mı kullanılmış?
-- Non-generic olma uğruna usability/accessibility bozulmuş mu?
-- Light profile düşük tasarım kalitesi gerekçesi yapılmış mı?
-
-FAIL:
-
-- açıkça `light/demo olduğu için generic/basic template yeterli` mantığı,
-- sektör klişesini tek tasarım gerekçesi yapmak,
-- accessibility/usability'yi bilinçli ihlal eden design direction.
-
-Yeterli farklılaşma gerekçesi zayıf ama repair olmadan kullanılabilir ise → CONDITIONAL PASS.
-
----
-
-# 10. Page / Screen Design Coverage
-
-`design_planning: standard | full` için:
-
-1. Approved scope + product flows'tan distinct implementation surface registry çıkarılmış mı?
-2. Her distinct page/screen için bir `PAGE-DESIGN` instance var mı?
-3. Yapay page package çoğaltılmış mı?
-4. Page package route/entry, hierarchy, layout, actions, states, responsive, accessibility ve data touchpoints içeriyor mu?
-5. Page package global token/shell'i yeniden icat ediyor mu?
-
-FAIL:
-
-- gerçek distinct surface için page package eksik,
-- page package PRODUCT_RULES/GLOBAL_SHELL/DESIGN_SYSTEM ile çelişiyor,
-- page kendi bağımsız global design system'ini icat ediyor.
-
-Gereksiz micro-surface package çoğaltımı → CONDITIONAL PASS; ciddi drift yaratıyorsa FAIL.
-
----
-
-# 11. Feature / Admin Design Conditional Coverage
-
-`design_planning: full` için:
-
-- Gerçek cross-screen/complex feature varsa uygun FEATURE-DESIGN instance var mı?
-- Basit page interaction gereksiz feature package'a çevrilmiş mi?
-- Admin/moderation/operational UI gerçek scope'taysa ADMIN-DESIGN var mı?
-- Permission/business truth design belgesinde uydurulmuş mu?
-
-Eksik required-by-real-scope feature/admin design → FAIL.
-
-Gereksiz feature decomposition → CONDITIONAL PASS.
-
----
-
-# 12. Design System / Shell / State Consistency
-
-Kontrol:
-
-- DESIGN_RULES visual direction ile DESIGN_SYSTEM tokenları uyumlu mu?
-- Page/feature docs canonical tokenları kullanıyor mu?
-- GLOBAL_SHELL navigation gerçek page setiyle uyumlu mu?
-- SYSTEM_STATES ortak state language'ı page/feature docs tarafından korunuyor mu?
-- Override varsa gerekçelendirilmiş mi?
-
-Çelişki → FAIL.
-
-Yalnız tekrar/terminoloji drift'i → CONDITIONAL PASS.
-
----
-
-# 13. Information Ownership Compliance
-
-`INFORMATION_MAP.md` primary owner sınırları uygulanır.
-
-Örnek FAIL:
-
-- PRODUCT_RULES teknik stack sahibi olmuş,
-- PAGE-DESIGN kendi global token sistemini tanımlamış,
-- FEATURE-DESIGN page layout owner'lığını ele geçirmiş,
-- TECH_CONTEXT business rule uydurmuş,
-- WAVE_PLAN WAVE_MAP scope'unu değiştirmiş.
-
-Sadece gereksiz tekrar → CONDITIONAL PASS.
-
-Çelişen independent truth → FAIL.
-
----
-
-# 14. Assumption Compliance
-
-Kontrol:
-
-- Bütün assumption'lar kayıtlı mı?
-- Prohibited assumption yapılmış mı?
-- `confirmed` için gerçek approval/authority kanıtı var mı?
-- Multiple-choice teknik karar yanlışlıkla safe mi sınıflandırılmış?
-
-FAIL:
-
-- kayıt dışı assumption,
-- prohibited assumption,
-- kanıtsız confirmed,
-- critical teknik/product etkili sessiz assumption.
-
-Pending-review non-blocking assumption → CONDITIONAL PASS.
-
----
-
-# 15. Conflict Resolution Compliance
-
-- Critical conflict çözülmeden generation/publication → FAIL.
-- Sessiz overwrite / kayıt dışı conflict resolution → en az CONDITIONAL PASS; scope/architecture etkiliyorsa FAIL.
-
----
-
-# 16. Template / Single-Skeleton Compliance
-
-Kontrol:
-
-- Her canonical Document ID doğru template'ten mi üretildi?
-- Dynamic page/feature/wave instance yeni Document ID veya alternatif skeleton icat etmiş mi?
-- Required sections mevcut mu?
-- Template metadata final output'a sızmış mı?
-
-FAIL:
-
-- missing required section,
-- conflicting alternate skeleton,
-- template metadata final output'ta.
-
-Bölüm sırası küçük farklılık → CONDITIONAL PASS.
-
----
-
-# 17. Content Completeness / Placeholder Cleanliness
-
-FAIL:
-
-- zorunlu bölüm boş,
-- `[BURAYA YAZ]`, template placeholder, unresolved required marker,
-- üretim talimatı final output'ta.
-
-Current scope'u bloklamayan açık future unresolved item → CONDITIONAL PASS olabilir.
-
----
-
-# 18. Project Leakage
-
-Başka projeye ait isim, müşteri, stack, tasarım kararı veya ref içeriği yanlışlıkla output'a taşınmışsa → FAIL.
-
-`ref/` yalnız pattern/quality reference olabilir; proje truth kaynağı değildir.
-
----
-
-# 19. Output Structure / Cleanliness
-
-`OUTPUT_STRUCTURE.md` path mapping uygulanmalıdır.
-
-FAIL:
-
-- owner category yanlış klasörde,
-- run operational dosyası final output içinde,
-- dynamic instance yanlış path'te,
-- required canonical root README yok,
-- runtime/working temp artifact sızıntısı.
-
-Pre-publication aşamasında `latest/` veya `versions/` henüz oluşmamış olması hata değildir.
-
----
-
-# 20. Traceability
-
-RUN_MANIFEST şunları izlenebilir tutmalıdır:
-
-```text
-run_id
-input id/version
-base package
-delivery_profile
-implementation_planning
-design_planning
-canonical documents
-dynamic instance paths
-validation result
-output version/ref
-```
-
-Critical traceability kaybı → FAIL; küçük metadata eksikliği → CONDITIONAL PASS.
-
----
-
-# 21. Agent-Ready Acceptance Test
-
-Validation sonunda şu hipotetik test uygulanır:
-
-> Projeyi hiç görmemiş yetkin yeni bir ajan final package'ı açtı.
-
-Ajan yalnız output üzerinden:
-
-1. read order'ı bulabiliyor mu?
-2. projenin amacını/scope'unu anlayabiliyor mu?
-3. teknik mimari ve integration boundary'lerini anlayabiliyor mu?
-4. UI varsa design authority ve ilgili page/feature contract'ını bulabiliyor mu?
-5. project roadmap ve wave map'i anlayabiliyor mu?
-6. aktif wave'i CURRENT_STATUS'tan belirleyebiliyor mu?
-7. ilgili `WAVE_<NN>.md` ve NEXT_TASKS ile **yeni mimari planlama yapmadan implementation'a başlayabiliyor mu?**
-8. ne zaman durması/clarification istemesi gerektiğini AGENT_INSTRUCTIONS'tan anlayabiliyor mu?
-
-7. madde sağlanmıyorsa → FAIL.
-
-Diğer maddelerde küçük navigasyon/clarity sorunu varsa → CONDITIONAL PASS; kritik bağlam kaybı varsa FAIL.
-
-Bu test Product Engine'in nihai acceptance invariant'ıdır.
-
----
-
-# 22. Run Lifecycle Location Integrity
-
-Completion aşamasında:
-
-- aynı run ID aynı anda active/completed/failed altında bulunamaz,
-- `Completed` yalnız `runs/completed/<run-id>/`,
-- `Failed`/`Cancelled` kapanmış run active altında kopya bırakamaz.
+- approved input mevcut mu?
+- canonical planning profile alanları geçerli mi?
+- `approved_by: user` gerçek explicit user approval'a dayanıyor mu?
+- auto/tool/plan approval kullanılmış mı?
 
 İhlal → FAIL.
 
----
+## 2. Package + Planning Compliance
 
-# Validation Report Gereksinimleri
-
-Her `VALIDATION_REPORT.md` en az şunları içerir:
+Resolved set:
 
 ```text
-Validation timestamp
-Run ID
-Result: PASS | CONDITIONAL PASS | FAIL
-Base package
-Delivery profile
-Implementation planning
-Design planning
-Canonical document coverage
-Dynamic wave/page/feature instance coverage
-Failed checks + severity
-Warnings
-Approval Integrity result
-Integration Readiness result (applicable)
-Design Profile/Quality result (applicable)
-Agent-Ready Acceptance Test result
-Repair actions (FAIL ise)
-Lifecycle Location Integrity (completion kontrolünde)
+base package + planning overlay + contextual conditions
 ```
 
-Publication yalnız PASS veya kullanıcı/operatör tarafından açıkça kabul edilmiş CONDITIONAL PASS sonrası yapılabilir.
+ile uyumlu olmalıdır. Standard implementation minimumu veya applicable design minimumu eksikse FAIL.
+
+## 3. Canonical Document / Dynamic Instance Coverage
+
+- required canonical documents mevcut mu?
+- WAVE_MAP'teki her wave için WAVE_PLAN var mı?
+- standard/full design'da gereken page/feature instances mevcut mu?
+- gereksiz alternate Document ID/skeleton icat edilmiş mi?
+
+Eksik required coverage → FAIL.
+
+## 4. Wave Execution Depth
+
+Her wave bir task özeti değil execution contract olmalıdır.
+
+Kontrol:
+
+- goal/dependency/in-out scope açık mı?
+- expected result / target structure anlaşılır mı?
+- implementation checklist anlamlı alt gruplara ayrılmış mı?
+- görevler atomic ve doğrulanabilir mi?
+- normal kapsamlı wave yeterli implementation derinliğine sahip mi (çoğu durumda yaklaşık 10–20 doğrulanabilir görev; kota değildir)?
+- state/role/responsive coverage applicable alanları kapsıyor mu?
+- verification + manual QA/debug + exit criteria somut mu?
+- agent wave'i okuyunca tekrar mini implementation planı üretmek zorunda mı?
+
+Son sorunun cevabı evet ise → FAIL.
+
+## 5. Execution-Critical Decision Completeness
+
+Aktif/ilk wave'i uygulama yolunu değiştiren unresolved karar var mı?
+
+Örnek:
+
+```text
+TECH_CONTEXT: Vite veya Vanilla
+README: npm run dev
+WAVE_00: Vite/React veya JS
+```
+
+Bu durumda output executable değildir → FAIL.
+
+Execution-critical unresolved karar varken:
+
+- active wave `Ready for Execution` olamaz,
+- CURRENT_STATUS blocker yok diyemez,
+- NEXT_TASKS executable queue veremez,
+- README kesin command yazamaz.
+
+## 6. Cross-Document Execution Consistency
+
+Şunlar aynı execution reality'yi anlatmalıdır:
+
+```text
+README
+TECH_CONTEXT
+CURRENT_STATUS
+NEXT_TASKS
+active WAVE_PLAN
+DECISIONS
+```
+
+Stack/tool/build command/architecture boundary çelişkisi → FAIL.
+
+Küçük terminoloji drift'i → CONDITIONAL PASS.
+
+## 7. Decision Provenance
+
+Allowed project decision statuses:
+
+```text
+User Approved
+Engine Resolved
+Pending Review
+Superseded
+```
+
+- `User Approved` için canonical user approval kaynağı olmalı.
+- `Engine Resolved` approved scope'u değiştirmemeli.
+- Kullanıcı kararı gerektiren kritik konu `Engine Resolved` yapılamaz.
+- execution-critical `Pending Review` varken agent-ready PASS verilemez.
+
+İhlal → FAIL.
+
+## 8. Tech Context / Integration Readiness
+
+Frontend/demo için:
+
+- current data source açık mı?
+- mock/local data boundary var mı?
+- presentation ↔ service/data boundary belli mi?
+- future real adapter noktası belli mi?
+- approved olmayan backend/API/database uydurulmuş mu?
+
+Throwaway architecture veya invented backend → FAIL.
+
+## 9. Design Profile + Quality
+
+- `light` → güçlü, project-specific DESIGN_RULES
+- `standard` → applicable design system/shell/page/state coverage
+- `full` → standard + justified feature/admin coverage
+
+`light` düşük kalite/generic template gerekçesi olamaz. Sektör klişesi tek visual concept gerekçesi olamaz.
+
+## 10. Project Plan / Wave / State Alignment
+
+- PROJECT_PLAN ↔ WAVE_MAP sıra/scope uyumlu mu?
+- CURRENT_STATUS gerçek active wave'i gösteriyor mu?
+- NEXT_TASKS active wave'in immediate queue'su mu?
+- blocker varsa executable gibi gösterilmiş mi?
+
+Critical mismatch → FAIL.
+
+## 11. Information Ownership / Assumption / Conflict Integrity
+
+- canonical owner sınırları korunuyor mu?
+- prohibited/kayıtsız assumption var mı?
+- `confirmed` için gerçek authority var mı?
+- critical conflict çözülmüş mü?
+
+Critical ihlal → FAIL.
+
+## 12. Template / Placeholder / Project Leakage
+
+- tek canonical skeleton kullanılmış mı?
+- required sections dolu mu?
+- placeholder/template instruction sızmış mı?
+- başka projeye ait truth/design/stack sızmış mı?
+
+Critical ihlal → FAIL.
+
+## 13. Output + Operational Path Integrity
+
+Final output path'leri `OUTPUT_STRUCTURE.md` ile birebir uyumlu olmalıdır.
+
+Operational records (`PACKAGE_SELECTION`, manifest, progress vb.) canonical path'i kendileri icat edemez; gerçek resolved/published path'i kaydetmelidir.
+
+Örnek:
+
+```text
+project/PROJECT_PLAN.md
+waves/WAVE_MAP.md
+waves/plans/WAVE_00.md
+design/DESIGN_RULES.md
+```
+
+Gerçek output ile operational record path'i çelişiyorsa → FAIL.
+
+## 14. Traceability + Lifecycle
+
+Manifest en az input/package/profiles/documents/dynamic instances/validation/output refs taşır.
+
+Aynı run ID yalnız bir lifecycle location'da bulunabilir.
+
+```text
+Completed → runs/completed/<run-id>/
+```
+
+Active kopya kalırsa → FAIL.
+
+---
+
+# Agent-Ready Acceptance Test
+
+Projeyi hiç görmemiş yetkin yeni bir ajan yalnız final package ile:
+
+1. read order'ı bulabiliyor mu?
+2. scope ve teknik/design authority'yi anlayabiliyor mu?
+3. active wave'i belirleyebiliyor mu?
+4. active WAVE_PLAN + NEXT_TASKS ile **yeni planlama veya kritik teknik seçim yapmadan** implementation'a başlayabiliyor mu?
+5. done/QA/stop koşullarını anlayabiliyor mu?
+
+4. madde sağlanmıyorsa → FAIL.
+
+---
+
+# Validation Report Minimumu
+
+```text
+result
+run_id
+base package + profiles
+canonical document coverage
+dynamic instance coverage
+wave execution depth result
+execution-critical decision result
+cross-document execution consistency
+approval integrity
+decision provenance
+integration readiness
+design quality
+operational path integrity
+agent-ready acceptance
+lifecycle location integrity
+failed checks / warnings / repair actions
+```
+
+Publication yalnız PASS veya gerçekten non-blocking ve açıkça kabul edilmiş CONDITIONAL PASS sonrası yapılabilir.
