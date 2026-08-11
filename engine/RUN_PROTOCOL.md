@@ -64,6 +64,30 @@ Başarılı run tamamlandığında: `runs/completed/<run-id>/`
 
 Başarısız run: `runs/failed/<run-id>/`
 
+### Run Location Exclusivity
+
+Aynı `run-id` aynı anda birden fazla lifecycle klasöründe MUST NOT bulunur.
+
+```text
+Geçerli:
+runs/active/RUN-X/
+
+veya
+
+runs/completed/RUN-X/
+
+veya
+
+runs/failed/RUN-X/
+
+Geçersiz:
+runs/active/RUN-X/
++
+runs/completed/RUN-X/
+```
+
+Bir run `completed/` veya `failed/` konumuna taşındığında önceki `active/` kopyası fiziksel olarak kaldırılmış olmalıdır. Kopyalama + eski klasörü bırakma, "move" sayılmaz.
+
 ---
 
 ## Run Oluşturma
@@ -241,6 +265,17 @@ Başarılı yayınlama kapısı (publication gate eligibility) tamamlandıktan s
 3. latest/ türetilmiş görünümü yeni sürümle güncellendi.
 4. RUN_MANIFEST.md belgesinde output_ref, output_version ve status: Completed alanları donduruldu.
 5. Run klasörü runs/completed/<run-id>/ konumuna taşındı.
+6. Aynı <run-id> için runs/active/ altında hiçbir klasör veya dosya kalmadığı doğrulandı.
+```
+
+`status: Completed` yazmak tek başına kapanış değildir. Fiziksel lifecycle konumu ile manifest durumu eşleşmelidir.
+
+Aşağıdaki durum contract ihlalidir ve completion geçerli sayılmaz:
+
+```text
+runs/completed/<run-id>/ mevcut
+AND
+runs/active/<run-id>/ de mevcut
 ```
 
 ---
@@ -259,6 +294,7 @@ Başarısız run:
 - Final output olarak işlenmez.
 - `latest/` güncellenmez.
 - Run klasörü `runs/failed/<run-id>/` konumuna taşınır.
+- Aynı `run-id` için `runs/active/` altında kopya MUST NOT kalır.
 
 ---
 
@@ -271,6 +307,7 @@ Kullanıcı tarafından bilinçli olarak iptal edilen run "Cancelled" durumuna g
 - `RUN_MANIFEST.md` içerisindeki `status` değeri `Cancelled` olarak kalır (`Failed` yapılmaz).
 - Final output üretilmez ve `latest/` güncellenmez.
 - Fiziksel olarak ayrı bir `runs/cancelled/` klasörü tanımlı olmadığı için kayıt `runs/failed/<run-id>/` altında tutulabilir; ancak durum bilgisi her zaman `Cancelled` kalır.
+- Aynı `run-id` için `runs/active/` altında kopya bırakılmaz.
 
 ---
 
