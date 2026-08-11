@@ -1,161 +1,76 @@
 # EXISTING_PROJECT_PACKAGE
 
-## 1. Package Kimliği
+## Package Kimliği
 
 ```yaml
 package_id: existing-project
-package_name: Existing Project Package
-package_type: base
-version: 1.3.0
+package_name: Existing Project Extension
+package_type: extension
+version: 2.0.0
 status: active
-default_delivery_profile: Implementation Ready
 compatible_project_types:
-  - web-app
-  - api-service
-  - mobile-app
-  - internal-tool
-  - landing-page
-  - content-platform
-  - integration
-  - infrastructure
-  - prototype
-  - other
-compatible_extensions:
-  - saas
-  - api-service
-  - corporate-website
-  - demo-frontend
-incompatible_packages: []
+  - all
 ```
 
----
+## Amaç
 
-## 2. Amaç
+Existing/brownfield projelerde current reality, target state ve transition scope'un korunmasını sağlayan extension context'idir.
 
-`EXISTING_PROJECT_PACKAGE`, halihazırda mevcut bir kod tabanına (codebase), yürürlükte olan bir projeye veya geçmiş dokümantasyona sahip sistemler için dokümantasyon kapsamını tanımlar.
-
-Ana hedefleri:
-- Mevcut proje gerçekliğini (Current State) anlamak, analiz etmek ve güvenli biçimde dokümante etmek.
-- Mevcut kodları, mimariyi, tamamlanmış özellikleri, yarım kalan işleri ve açık engelleyicileri (blockers) tespit etmek.
-- Kullanıcı açıkça yeniden tasarım (redesign) veya mimari taşıma (migration) istemedikçe **mevcut durum (current state)** ile **hedeflenin durum (desired state)** konularını birbirine karıştırmamak ve sessizce yeniden tasarım yapmamak.
-- Eski, geçerliliğini yitirmiş belgeler ile güncel proje gerçeklerini birbirinden ayırmak.
-- Mevcut projenin üzerine güvenle yeni özellikler eklenmesini veya geliştirici ajanların projeyi hızla devralmasını sağlamak.
+Tek başına planning depth belirlemez; base package + `PLANNING_PROFILE_OVERLAY.md` ile birlikte uygulanır.
 
 ---
 
-## 3. Doküman Seçimi Filtreleme İlkesi ve Deterministik Fallback Algoritması
-
-Desteklenen her `project_type + delivery_profile` kombinasyonunda hangi dokümanların geçerli olduğunu belirlemek için aşağıdaki **Deterministik Doküman Çözümleme Algoritması** uygulanır:
+## Existing Project Invariants
 
 ```text
-1. Seçilen delivery_profile için paketin aday doküman setini al (Candidate Document Set).
-2. engine/DOCUMENT_CATALOG.md "Applicable Profiles" filtresini uygula:
-   └─ Dokümanın Applicable Profiles listesi seçilen delivery_profile'ı içeriyor mu? (İçermiyorsa elenir).
-3. engine/DOCUMENT_CATALOG.md "Applicable Types" filtresini uygula:
-   └─ Dokümanın Applicable Types listesi seçilen project_type'ı içeriyor mu? (İçermiyorsa elenir).
-4. İki filtreyi de geçen doküman kümesi, ilgili kombinasyonun geçerli doküman kapsamını oluşturur.
-5. Aşağıda açıkça örneklenmemiş kombinasyonlar bu deterministik kural ile yorumsuz çözülür.
+Current Reality
+≠
+Target State
+≠
+Current Run / Transition Scope
 ```
 
----
+Ajan:
 
-## 4. Desteklenen Project Type + Delivery Profile Doküman Matrisi
-
-### 4.1 Tüm Proje Türleri İçin Her Zaman Geçerli Çekirdek Set
-- **Tüm Desteklenen Profiller:** `README-DOC` (`README.md`), `PROJECT-BRAIN` (`PROJECT_BRAIN.md`), `STATUS` (`CURRENT_STATUS.md` - **Kritik:** Mevcut durum, tamamlanan işler, açık sorunlar).
-
-### 4.2 Proje Türü ve Profil Bazında Doküman Kapsamları
-
-- **`web-app`, `mobile-app`, `api-service` Türlerinde:**
-  - *Foundation Profile:* `README-DOC`, `PROJECT-BRAIN`, `STATUS`, `TECH-CTX` (`TECH_CONTEXT.md`), `PRODUCT-RULES` (`PRODUCT_RULES.md`).
-  - *Prototype Profile:* `README-DOC`, `PROJECT-BRAIN`, `STATUS`, `PRODUCT-RULES`, `DESIGN` (`web-app`/`mobile-app` için).
-  - *Implementation Ready Profile (Varsayılan):* `README-DOC`, `PROJECT-BRAIN`, `STATUS`, `TECH-CTX`, `PRODUCT-RULES`, `DATA` (`DATA_MODEL.md`), `API` (`API_CONTRACTS.md`).
-  - *Production Ready Profile:* `README-DOC`, `PROJECT-BRAIN`, `STATUS`, `TECH-CTX`, `PRODUCT-RULES`, `DATA`, `API`, `DEPLOY` (`DEPLOYMENT.md`), `OPS` (`OPERATIONS.md` - `web-app`/`api-service` için).
-- **`integration` veya `infrastructure` Türlerinde:**
-  - *Foundation / Implementation Ready Profile:* `README-DOC`, `PROJECT-BRAIN`, `STATUS`, `TECH-CTX`.
-  - *Production Ready Profile:* `README-DOC`, `PROJECT-BRAIN`, `STATUS`, `TECH-CTX`, `DEPLOY` (`infrastructure` için).
-  - *Elenenler:* `PRODUCT-RULES`, `DATA`, `DESIGN` (`integration`/`infrastructure` türlerinde catalog gereği geçerli değildir).
-- **`content-platform` Türünde:**
-  - *Implementation Ready Profile:* `README-DOC`, `PROJECT-BRAIN`, `STATUS`, `PRODUCT-RULES`, `DATA` (`DATA_MODEL.md`).
-  - *Elenenler:* `TECH-CTX` (Catalog uyarınca `content-platform` türünde geçerli değildir).
-- **`landing-page`, `prototype`, `internal-tool`, `other` Türlerinde:**
-  - *Tüm Profiller:* `README-DOC`, `PROJECT-BRAIN`, `STATUS`.
-  - *Elenenler:* `TECH-CTX`, `PRODUCT-RULES` (bu türlerde catalog gereği geçerli değildir).
+- mevcut çalışan sistemi future target gibi yeniden yazamaz,
+- future target'ı mevcut gerçeklik gibi gösteremez,
+- mevcut repo/docs içindeki stale bilgiyi sessizce authoritative kabul edemez,
+- mevcut valid kararları gerekçesiz overwrite edemez.
 
 ---
 
-## 5. Intake Gereksinimleri
+## Required Context
 
-### Zorunlu Intake Bilgileri (MUST)
-- `project_name`: Mevcut proje adı.
-- `project_purpose`: Projenin varlık amacı.
-- `project_type`: `PROJECT_INTAKE.md` içindeki proje türlerinden biri.
-- `project_state`: `existing` (zorunlu olarak `existing` olmalıdır).
-- `existing_resources`: Mevcut kod deposu bağlantıları, mevcut dokümanlar, sistem mimarisi bilgisi.
-- `delivery_profile`: Seçilen olgunluk seviyesi.
-- `primary_language`: Çıktı dili.
+Existing project intake en az:
 
----
+- current code/repo/docs sources,
+- current stack ve çalışan özellikler,
+- known debt/issues,
+- target state,
+- bu run'ın transition scope'u
 
-## 6. Sahiplik (Information Ownership) Kuralları
+bilgilerini çözümlemelidir.
 
-`engine/INFORMATION_MAP.md` uyarınca:
-- **`CURRENT_STATUS.md` (`STATUS`)**: Mevcut proje durumu, son tamamlanan işler, açık sorunlar ve bilinen engelleyicilerin tek birincil sahibidir (primary owner).
-- **`TECH_CONTEXT.md` (`TECH-CTX`)**: Mevcut kullanılan teknik stack, verili mimari kararlar ve teknik sınırların birincil sahibidir (geçerli türlerde).
+`STATUS` planning overlay standard setinin zaten parçasıdır; existing project'te özellikle current reality'nin primary owner'ı olarak kritik önem taşır.
 
 ---
 
-## 7. Extension ve Reduction Kuralları
+## Extension Effects
 
-### Extension (Genişletme) Kuralları
-- `EXISTING_PROJECT_PACKAGE` hem temel bir paket hem de diğer paketlere uygulanabilen bir **Extension** olarak çalışır.
-- Örneğin `EXISTING_PROJECT_PACKAGE` + `SAAS_PACKAGE` birleşimi: Mevcut bir kod tabanı üzerine yeni SaaS modülleri eklenirken hem `CURRENT_STATUS.md` hem de SaaS paketinin geçerli zorunlu belgeleri tek bir tutarlı dokümantasyon setinde birleştirilir. Aynı doküman asla iki kez üretilmez.
+Real existing context'e göre:
 
-### Reduction (Daraltma) Kuralları
-- Çekirdek belgeler (`README-DOC`, `PROJECT-BRAIN`, `STATUS`) hiçbir koşulda çıkarılamaz.
-- Deterministik fallback algoritması sonucunda elenen belgeler otomatik filtrelenir.
-
----
-
-## 8. Delivery Profile Derinlik Beklentileri (Depth Expectations)
-
-- **Foundation Level:** Mevcut sistemin ana bileşenleri, mevcut durumu ve bilinen sorunları özet seviyededir.
-- **Prototype Level:** Mevcut sisteme eklenecek ilk deneme özelliğinin dokümantasyonu.
-- **Implementation Ready Level:** Mevcut kod yapısı, dosya/klasör düzeni, mevcut API'ler, veri şeması ve ajanın yapacağı düzeltme/ekleme görevleri ayrıntılı olarak belgelenmiştir.
-- **Production Ready Level:** Mevcut canlı ortam, performans darboğazları, güvenlik açıkları ve operasyonel prosedürler eksiksiz tanımlanmıştır.
+- CURRENT_STATUS başlangıçta mevcut gerçeği yansıtır,
+- TECH_CONTEXT mevcut stack + target boundary ayrımını korur,
+- PROJECT_PLAN migration/transition milestone'larını gösterebilir,
+- WAVE_MAP ilk wave'leri safe transition/foundation olarak kurgular,
+- DATA/API/design docs yalnız mevcut veya approved target scope kadar üretilir.
 
 ---
 
-## 9. Validation Beklentileri
+## Validation
 
-`engine/VALIDATION_RULES.md` kurallarına ek olarak bu pakete özel kontroller:
-
-1. **Deterministik Fallback Doğrulaması:** `landing-page`, `content-platform` veya `infrastructure` gibi mevcut projelerde catalog dışı `TECH-CTX` veya `PRODUCT-RULES` zorlamasının yapılmadığı doğrulanmalıdır.
-2. **Mevcut Gerçeklik Koruması:** Üretilen belgeler mevcut kod depolarındaki gerçeklerle çelişmemelidir.
-3. **Current vs Desired State Ayrımı:** Mevcut durum (`CURRENT_STATUS.md`) ile hedeflenen yeni durum net biçimde birbirinden ayrılmış olmalıdır.
-
----
-
-## 10. Output Beklentileri
-
-- Çıktı klasörü: `outputs/products/<project-slug>/latest/` (Proje türüne göre `demos` veya `products`).
-- Mevcut durum ve yeni hedefler çelişkisiz biçimde teslim edilir.
-
----
-
-## 11. Büyüme ve Geçiş Yolu (Upgrade Path)
-
-1. **Mevcut Durum Analizi (`STATUS`)** → Mevcut kod ve dokümanlar incelenir, `CURRENT_STATUS.md` oluşturulur.
-2. **Kapsam Genişletme** -> Yeni özellikler için ilgili hedef paket (ör. `SAAS_PACKAGE` veya `API_SERVICE_PACKAGE`) extension olarak eklenir.
-3. **Geliştirme (`NEXT_TASKS`)** -> Ajanlar mevcut projeyi bozmadan yeni görevleri sırayla uygular.
-
----
-
-## 12. Tamamlanma Kriterleri
-
-Bu paket çalışması tamamlandığında aşağıdaki kriterlerin karşılandığı doğrulanmalıdır:
-
-1. **Deterministik Çözümleme Uyumluğu:** Seçilen `project_type` ve `delivery_profile` kombinasyonlarının deterministik fallback kuralıyla net çözülebilmesi.
-2. **`STATUS` Varlığı:** `CURRENT_STATUS.md` belgesinin üretilmiş ve mevcut tamamlanan işler ile engelleyicileri eksiksiz yansıtması.
-3. **Current vs Desired State Ayrımı:** Mevcut durum ile hedeflenen durumun birbirine karıştırılmamış olması.
-4. **Temiz Output:** Üretilen belgelerin `outputs/products/<project-slug>/latest/` klasöründe eksiksiz ve doğrulanmış şekilde teslim edilebilir durumda olması.
+- Current vs target drift yok.
+- Existing facts assumption olarak yeniden uydurulmamış.
+- Stale/uncertain source görünür işaretlenmiş.
+- Planning overlay minimumu korunmuş.
+- Transition wave'leri mevcut sistemi gereksiz kırmadan ilerliyor.
