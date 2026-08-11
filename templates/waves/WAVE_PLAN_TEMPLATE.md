@@ -6,7 +6,7 @@
 template_id: wave-plan-template
 template_name: Canonical Wave Plan Template
 document_id: WAVE-PLAN
-version: 2.1.0
+version: 2.2.0
 status: active
 template_type: dynamic-document
 category: waves
@@ -45,13 +45,34 @@ Her wave için aynı template kullanılır. Yeni wave yeni Document ID değildir
 
 Bir wave:
 
-- tek anlamlı teslim üretmeli,
+- WAVE_MAP tarafından atanmış tek coherent deliverable'ı tamamlamalı,
 - bağımsız doğrulanabilmeli,
 - dependency zinciri açık olmalı,
 - makul bir çalışma oturumunda ilerletilebilir olmalı,
 - gereksiz mikro-wave veya dev mega-wave olmamalıdır.
 
-Implementation checklist çoğu normal wave'de yaklaşık **10–20 doğrulanabilir görev** derinliğine ulaşabilir. Bu kota değildir; önemli olan agent'ın tekrar plan çıkarmak zorunda kalmamasıdır.
+WAVE_PLAN, kötü decomposition'ı task numaralarıyla gizleyemez. Map'te tek wave altında birbirinden bağımsız birkaç product surface/feature bulunuyorsa plan bunları `1.1 / 1.2 / 1.3` task'lara çevirip geçmek yerine decomposition problemi olarak işaretlemelidir.
+
+Implementation checklist çoğu normal wave'de yaklaşık **10–20 doğrulanabilir görev** derinliğine ulaşabilir. Bu kota değildir; önemli olan agent'ın tekrar plan çıkarmak zorunda kalmaması ve seçilmiş deliverable'ın wave sonunda gerçekten complete olmasıdır.
+
+## Complete Deliverable Kuralı
+
+WAVE_MAP örneğin bir wave'e `Home`, `Auth`, `Search`, `Checkout`, `API Foundation` veya başka coherent bir delivery unit atadıysa, o wave sonunda bu unit applicable kapsamıyla tamamlanmış olmalıdır.
+
+User-facing surface için applicable olduğunda birlikte ele alınır:
+
+```text
+structure/content
+visual hierarchy
+interaction states
+responsive behavior
+loading/empty/error states
+accessibility/keyboard behavior
+service/data boundary integration
+verification/manual QA
+```
+
+Bunlardan applicable olanlar başka bir belirsiz "polish later" wave'ine itilerek surface yarım bırakılamaz. Cross-project final QA veya gerçekten cross-cutting polish ayrı wave olabilir; fakat bir surface'in temel completion sorumluluğunu devralamaz.
 
 ## Zorunlu Bölümler
 
@@ -72,9 +93,9 @@ Implementation checklist çoğu normal wave'de yaklaşık **10–20 doğrulanabi
 
 ## İçerik Üretim Kuralları
 
-- WAVE_MAP scope'unu aşamaz.
-- Checklist kısa görev özeti olamaz; anlamlı alt başlıklara bölünür.
-- Her görev atomic, doğrulanabilir ve gerçek bir çıktı üretir.
+- WAVE_MAP scope'unu aşamaz veya map'te başka wave'e ait deliverable'ı içine çekemez.
+- Checklist kısa görev özeti olamaz; coherent implementation groups altında atomic ve doğrulanabilir görevlere ayrılır.
+- Her görev gerçek bir çıktı üretmeli ve done koşulu anlaşılmalıdır.
 - Her wave sonunda beklenen dosya/klasör/bileşen/state sonucu açıkça anlaşılmalıdır.
 - Teknik boundary, design authority ve data/service sınırları task seviyesinde korunur.
 - TECH_CONTEXT boundary'lerini değiştirecek iş varsa bunun explicit decision/clarification gerektirip gerektirmediği belirtilir.
@@ -84,6 +105,7 @@ Implementation checklist çoğu normal wave'de yaklaşık **10–20 doğrulanabi
 - Aktif wave'i uygulamak için gerekli stack/tool/architecture kararı unresolved ise wave `Ready for Execution` olamaz; stop/clarification gerekir.
 - Kullanıcı onayı gereken checkpoint varsa açık stop rule belirtilir.
 - Wave tamamlanmadan sonuç bölümü başarıyla doldurulmuş gibi gösterilmez.
+- Acceptance criteria yalnız genel kalite sıfatları değil, wave deliverable'ının tamamlandığını ölçen somut sonuçlar içermelidir.
 
 ## Task Derinlik Standardı
 
@@ -122,8 +144,10 @@ Uzun tutorial yazılmaz; fakat agent'ın yeniden implementation planı üretmesi
 ## Validation Beklentileri
 
 - Wave map'teki scope ve dependency ile birebir uyumlu olmalı.
+- Map'teki assigned deliverable wave sonunda complete olmalı; temel işleri belirsiz sonraki wave'e bırakılmamalı.
 - Active wave başka bir planlama turu olmadan uygulanabilir olmalı.
 - Expected Result ile checklist ve acceptance criteria aynı teslimi tarif etmeli.
+- Checklist, başka wave olması gereken bağımsız deliverable'ları task numaraları altında saklamamalı.
 - Acceptance criteria task listesinin gerçek sonucunu ölçmeli.
 - NEXT_TASKS aktif wave'in ilk uygulanabilir görevleriyle uyumlu olmalı.
 - Kapsam dışı maddeler açık olmalı.
