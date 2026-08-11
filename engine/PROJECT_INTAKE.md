@@ -212,6 +212,35 @@ Approved girdide:
 
 Onay geriye dönük olarak değiştirilemez. Girdi değişirse yeni bir snapshot oluşturulmalıdır. Bkz: `RUN_PROTOCOL.md`.
 
+### Canonical Explicit Approval Kaynağı
+
+Product Engine intake approval'ı yalnızca kullanıcının Product Engine tarafından sunulan pending girdi veya açık intake kararlarını doğrudan ve bilinçli biçimde onaylayan mesajından doğabilir.
+
+```text
+Geçerli explicit approval örnekleri:
+- "Onaylıyorum, devam et."
+- "Bu pending input doğru, approved yap."
+- Sunulan intake kararlarını açıkça kabul eden eşdeğer doğrudan kullanıcı mesajı.
+
+Geçerli approval SAYILMAYAN olaylar:
+- IDE plan approval / auto-approve
+- Tool permission veya execution approval
+- Dosya yazma / terminal / patch / commit izni
+- Agent'ın kendi planını tamamlaması
+- Sessiz, implicit veya inferred approval
+- Kullanıcının yalnızca başka bir operasyonu onaylaması
+```
+
+IDE/tool/plan approval ile Product Engine intake approval aynı kavram değildir ve MUST NOT birbirinin yerine kullanılır.
+
+Canonical explicit approval kanıtı yoksa:
+
+- input `status: pending` kalır,
+- `approved_at` ve `approved_by` boş kalır,
+- `approved_by: user` yazılamaz,
+- `inputs/approved/` snapshot'ı oluşturulamaz,
+- generation run başlatılamaz.
+
 ---
 
 ## Eksik Bilgi Sınıflandırması
@@ -267,4 +296,5 @@ Bir girdi aşağıdaki koşulların tamamını karşıladığında approved olar
 3. `project_state` belirlenmiş; mevcut proje ise kaynaklar listelenmiştir.
 4. Kritik çelişkiler çözülmüştür.
 5. Assumption yapılan alanlar açıkça kaydedilmiştir.
-6. Kullanıcı onayı alınmıştır (sessiz onay değil, açık onay).
+6. Kullanıcının canonical explicit approval mesajı alınmıştır; IDE/tool/plan/auto-approval bu koşulu karşılamaz.
+7. `approved_by: user` yalnızca 6. koşul için doğrudan kanıt varsa yazılmıştır.
