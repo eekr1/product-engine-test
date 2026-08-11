@@ -6,7 +6,7 @@
 template_id: decisions-template
 template_name: Decisions Template
 document_id: DECISIONS
-version: 1.1.0
+version: 1.2.0
 status: active
 template_type: document
 category: ai
@@ -29,7 +29,7 @@ output_filename: DECISIONS.md
 
 ## Amaç
 
-Proje süresince alınan kalıcı mimari, ürün, kapsam ve tasarım kararlarını kısa gerekçeleri ve durumlarıyla denetlenebilir biçimde tutmak.
+Proje süresince alınan kalıcı mimari, ürün, kapsam ve tasarım kararlarını kısa gerekçeleri ve **karar kaynağı** ile denetlenebilir biçimde tutmak.
 
 ## Kullanım Koşulları
 
@@ -43,13 +43,34 @@ Proje süresince alınan kalıcı mimari, ürün, kapsam ve tasarım kararların
 - Design / UX Decisions
 - Deprecated / Superseded Decisions
 
+## Karar Durumu Vocabulary
+
+Yalnız şu durumlar kullanılır:
+
+```text
+User Approved
+→ kullanıcı tarafından canonical approval / approved input ile açıkça kabul edilmiş karar
+
+Engine Resolved
+→ approved scope ve Engine contract'ları içinde, kullanıcı onayı gerektirmeden generation sırasında çözülen teknik/uygulama kararı
+
+Pending Review
+→ implementation için henüz kesinleşmesi gereken karar
+
+Superseded
+→ daha yeni bir karar tarafından yürürlükten kaldırılan kayıt
+```
+
+`Engine Resolved` kullanıcı onayı değildir. Kullanıcının seçmesi gereken kritik ürün/teknik karar bu statüyle sessizce çözülemez.
+
 ## İçerik Üretim Kuralları
 
 - Private chain-of-thought saklanmaz; yalnız karar sonucu, kısa gerekçe, alternatif özeti ve etkiler kaydedilir.
-- `Proposed` karar ile `Approved` karar ayrılır.
-- Assumption, decision gibi gösterilmez; assumption'ın kaynağı ve approval durumu korunur.
-- Kullanıcı tarafından onaylanması gereken ürün/teknik kararları agent kendi kendine `Approved` yapamaz.
-- Karar değişirse eski kayıt silinmez; `Deprecated`/`Superseded` olarak izlenebilir kalır.
+- Assumption decision gibi gösterilmez.
+- Kullanıcı tarafından onaylanması gereken karar agent tarafından `User Approved` veya `Engine Resolved` yapılamaz.
+- Engine contract'ından türeyen implementation kararı `Engine Resolved` olarak kaynaklandırılır.
+- Karar değişirse eski kayıt silinmez; `Superseded` olarak izlenebilir kalır.
+- `Approval Source` yalnız `User Approved` için kullanılır; `Engine Source` ise Engine Resolved kararın dayandığı contract/document referansını gösterir.
 
 ## Placeholder Tanımları
 
@@ -64,18 +85,18 @@ Proje süresince alınan kalıcı mimari, ürün, kapsam ve tasarım kararların
 - **ID**: DEC-XXX
 - **Tarih**: YYYY-MM-DD
 - **Konu**
-- **Bağlam**
 - **Karar**
 - **Kısa Gerekçe**
-- **Alternatif Özeti**
 - **Etkiler**
-- **Durum**: Proposed | Approved | Deprecated | Superseded
-- **Approval Source**: applicable ise canonical kullanıcı onayı / approved intake referansı
+- **Durum**: User Approved | Engine Resolved | Pending Review | Superseded
+- **Source**: approved input / canonical Engine contract / ilgili document
 
 ## Validation Beklentileri
 
 - TECH_CONTEXT / PRODUCT_RULES / DESIGN belgeleriyle çelişmemeli.
-- Approved etiketi için gerçek authority/approval kaynağı bulunmalı.
+- `User Approved` etiketi için gerçek kullanıcı approval kaynağı bulunmalı.
+- `Engine Resolved` karar approved scope'u değiştirmemeli ve kullanıcı kararı gerektiren alanı sessizce kapatmamalı.
+- `Pending Review` execution-critical ise active wave `Ready for Execution` olamaz.
 
 ---
 
@@ -85,7 +106,7 @@ Proje süresince alınan kalıcı mimari, ürün, kapsam ve tasarım kararların
 
 ## 1. Decision Record Standard
 
-Yukarıdaki canonical karar formatı kullanılır.
+Yukarıdaki canonical karar formatı ve provenance vocabulary kullanılır.
 
 ## 2. Architectural / Technical Decisions
 
