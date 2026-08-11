@@ -4,6 +4,10 @@
 
 Product Engine working output'unun yalnız eksiksiz değil, gerçekten **agent-ready** olup olmadığını doğrular.
 
+Validation generator'ın kendi beyanlarını tekrar etmez; produced artifact'ları, canonical truth'u ve mevcut observable evidence'ı karşılaştırır.
+
+> Self-report is evidence metadata, not ground truth.
+
 ## Sonuçlar
 
 ```text
@@ -65,7 +69,7 @@ Validation önce WAVE_MAP decomposition'ını, sonra her WAVE_PLAN execution con
 - tek wave içinde birbirinden bağımsız birkaç product surface/feature/flow gizlenmiş mi?
 - distinct bir surface/feature kendi başına tamamlanıp doğrulanabiliyorsa yalnız teknik benzerlik veya aynı sayfada yer alma nedeniyle başka bağımsız teslimlerle birleştirilmiş mi?
 - corporate/landing UI gibi projelerde `Home/Hero`, `Corporate/Trust`, `Services`, `Contact` gibi distinct responsibilities gereksiz biçimde tek `Core Frontend` wave'ine yığılmış mı?
-- gerçekten cross-cutting final integration/responsive/QA işi son feature wave'ine gizlenmiş mi?
+- gerçekten cross-cutting final integration/responsive/QA işi son feature/contact wave'ine gizlenmiş mi?
 - wave sonunda hangi deliverable'ın complete sayılacağı açık mı?
 - yapay mikro-wave üretilmiş mi?
 
@@ -74,6 +78,7 @@ Kural:
 ```text
 multiple independent meaningful deliverables hidden in one wave → FAIL / repair WAVE_MAP
 no meaningful standalone result → FAIL / merge or redefine
+cross-cutting whole-project QA hidden in final feature wave → FAIL / split QA
 coherent complete deliverable → valid candidate
 ```
 
@@ -110,41 +115,19 @@ Acceptance / Exit Criteria checkbox = [ ]
 Wave Result = pending / not executed
 ```
 
-- Pre-execution wave'de `[x]` completion kriteri bulunamaz.
-- `Ready for Execution` tamamlandı anlamına gelmez.
-- Wave Result başarı/tamamlanma iddia edemez.
-- Pre-execution status + completed checkbox/result birlikteyse lifecycle contradiction vardır.
-
-İhlal → FAIL.
+Pre-execution wave'de `[x]` completion kriteri bulunamaz. İhlal → FAIL.
 
 ## 5. Execution-Critical Decision Completeness
 
 Aktif/ilk wave'i uygulama yolunu değiştiren unresolved karar var mı?
 
-Örnek:
+Execution-critical unresolved karar varken active wave executable gösterilemez.
 
-```text
-TECH_CONTEXT: Vite veya Vanilla
-README: npm run dev
-WAVE_00: Vite/React veya JS
-```
-
-Bu durumda output executable değildir → FAIL.
-
-Execution-critical unresolved karar varken:
-
-- active wave `Ready for Execution` olamaz,
-- CURRENT_STATUS blocker yok diyemez,
-- NEXT_TASKS executable queue veremez,
-- README kesin command yazamaz.
-
-Exact stack/tooling unresolved ise `npm`, `pnpm`, `yarn`, `vite`, framework-specific command veya eşdeğer stack-specific assumption/command herhangi bir canonical/operational belgede gerçekmiş gibi yazılamaz. Stack-neutral preview/development ifadesi kullanılmalıdır.
+Exact stack/tooling unresolved ise `npm`, `pnpm`, `yarn`, `vite`, framework-specific command veya eşdeğer stack-specific assumption/command gerçekmiş gibi yazılamaz.
 
 İhlal → FAIL.
 
 ## 6. Cross-Document Execution Consistency
-
-Şunlar aynı execution reality'yi anlatmalıdır:
 
 ```text
 README
@@ -155,8 +138,9 @@ active WAVE_PLAN
 DECISIONS
 ```
 
-Stack/tool/build command/architecture boundary çelişkisi → FAIL.
+aynı execution reality'yi anlatmalıdır.
 
+Stack/tool/build command/architecture boundary çelişkisi → FAIL.
 Küçük terminoloji drift'i → CONDITIONAL PASS.
 
 ## 7. Decision Provenance
@@ -179,15 +163,9 @@ Superseded
 
 ## 8. Tech Context / Integration Readiness
 
-Frontend/demo için:
+Frontend/demo için current data source, mock/local data boundary, presentation ↔ service/data boundary ve future adapter noktası açık olmalıdır.
 
-- current data source açık mı?
-- mock/local data boundary var mı?
-- presentation ↔ service/data boundary belli mi?
-- future real adapter noktası belli mi?
-- approved olmayan backend/API/database uydurulmuş mu?
-
-Throwaway architecture veya invented backend → FAIL.
+Approved olmayan backend/API/database uydurulmuşsa → FAIL.
 
 ## 9. Design Profile + Quality
 
@@ -195,14 +173,11 @@ Throwaway architecture veya invented backend → FAIL.
 - `standard` → applicable design system/shell/page/state coverage
 - `full` → standard + justified feature/admin coverage
 
-`light` düşük kalite/generic template gerekçesi olamaz. Sektör klişesi tek visual concept gerekçesi olamaz.
+`light` düşük kalite/generic template gerekçesi olamaz.
 
 ## 10. Project Plan / Wave / State Alignment
 
-- PROJECT_PLAN ↔ WAVE_MAP sıra/scope uyumlu mu?
-- CURRENT_STATUS gerçek active wave'i gösteriyor mu?
-- NEXT_TASKS active wave'in immediate queue'su mu?
-- blocker varsa executable gibi gösterilmiş mi?
+PROJECT_PLAN ↔ WAVE_MAP ↔ CURRENT_STATUS ↔ NEXT_TASKS aynı sıra/scope/active-wave gerçekliğini anlatmalıdır.
 
 Critical mismatch → FAIL.
 
@@ -216,7 +191,29 @@ Critical mismatch → FAIL.
 
 Critical ihlal → FAIL.
 
-## 12. Template / Placeholder / Project Leakage
+## 12. Source Claim Integrity
+
+Project output ve execution plans içindeki business/product/service factual claim'ler approved/verified truth ile traceable olmalıdır.
+
+Validation özellikle şu alanları approved input, INPUT_SNAPSHOT, SOURCE_REGISTER ve PRODUCT_RULES ile karşılaştırır:
+
+```text
+hizmet kapsamı
+7/24 / süre / hız iddiaları
+garanti
+sertifika / yetkilendirme
+ekip büyüklüğü / mobil ekip
+aynı gün / hızlı teslim / müdahale süresi
+performans / başarı oranı
+coğrafi kapsama ilişkin yeni iddialar
+müşteri / referans / partner iddiaları
+```
+
+Design treatment veya UI wording yeni factual business claim'e dönüşemez.
+
+Canonical source'da açık destek bulunmayan claim → FAIL veya generation repair.
+
+## 13. Template / Placeholder / Project Leakage
 
 - tek canonical skeleton kullanılmış mı?
 - required sections dolu mu?
@@ -225,64 +222,77 @@ Critical ihlal → FAIL.
 
 Critical ihlal → FAIL.
 
-## 13. Point-of-Use Refresh Evidence
+## 14. Point-of-Use Trace Integrity
 
-Artifact Production Loop uygulanmış olmalıdır; yalnız "template okundu" varsayımı yeterli değildir.
+Operational self-report tek başına refresh kanıtı değildir.
 
-Run'ın mevcut progress/log kayıtlarında her canonical artifact ve her dynamic instance için en az şu evidence bulunmalıdır:
-
-```text
-artifact / instance identity
-canonical template refreshed
-primary authorities refreshed
-local contract check result
-repair performed: yes/no
-```
-
-Özellikle dynamic instances ayrı doğrulanır:
+Validation iki katmanlı çalışır:
 
 ```text
-WAVE_00 refresh evidence
-WAVE_01 refresh evidence
-...
+observable execution/tool trace available
+→ trace is primary authority
+→ PROGRESS/RUN_LOG must agree with trace
+
+trace unavailable
+→ operational evidence may support audit
+→ validator must not claim stronger proof than available evidence
 ```
 
-Tek bir genel `WAVE_PLAN_TEMPLATE refreshed` kaydı birden fazla wave'i kapsayamaz.
+Her canonical artifact ve her dynamic instance için ilgili template/authority read event'i artifact üretiminden önce gerçekleşmiş olmalıdır.
 
-Evidence yoksa, instance üretiminden önce refresh yapılmadığı görünüyorsa veya local-check sonucu kayıtlı değilse → FAIL.
+Özellikle:
 
-## 14. Output + Operational Path Integrity
+```text
+read WAVE_PLAN_TEMPLATE
+→ generate WAVE_00
+read WAVE_PLAN_TEMPLATE again
+→ generate WAVE_01
+```
+
+Batch read sonrası birden fazla instance generation point-of-use compliance değildir.
+
+Trace mevcutken PROGRESS/RUN_LOG `refreshed` diyor fakat actual read event yoksa → FAIL.
+
+## 15. Engine Boundary Integrity
+
+Normal project generation run aşağıdaki protected Engine surfaces'i mutate edemez:
+
+```text
+PRODUCT_ENGINE_BRAIN.md
+root README engine-version authority
+engine/
+packages/
+templates/
+logs/ENGINE_CHANGELOG.md
+```
+
+Operational writable örnekler:
+
+```text
+inputs/
+runs/
+outputs/
+logs/RUN_INDEX.md
+```
+
+Project run'ın tek başına başarılı olması `ENGINE_CHANGELOG.md` girdisi değildir.
+
+Protected surface mutation project run sırasında görülürse → FAIL.
+
+## 16. Output + Operational Path Integrity
 
 Final output path'leri `OUTPUT_STRUCTURE.md` ile birebir uyumlu olmalıdır.
+Operational records gerçek resolved/published path'i kaydetmelidir.
 
-Operational records (`PACKAGE_SELECTION`, manifest, progress vb.) canonical path'i kendileri icat edemez; gerçek resolved/published path'i kaydetmelidir.
+Mismatch → FAIL.
 
-Örnek:
+## 17. Traceability + Lifecycle
 
-```text
-project/PROJECT_PLAN.md
-waves/WAVE_MAP.md
-waves/plans/WAVE_00.md
-design/DESIGN_RULES.md
-```
-
-Gerçek output ile operational record path'i çelişiyorsa → FAIL.
-
-## 15. Traceability + Lifecycle
-
-Manifest en az input/package/profiles/documents/dynamic instances/validation/output refs taşır.
+Manifest input/package/profiles/documents/dynamic instances/validation/output refs taşır.
 
 Aynı run ID yalnız bir lifecycle location'da bulunabilir.
 
-```text
-Completed → runs/completed/<run-id>/
-Failed    → runs/failed/<run-id>/
-Active    → runs/active/<run-id>/
-```
-
-Lifecycle location ile operational record status'ları uyumlu olmalıdır.
-
-Completed run için completion transition yapılmadan önce en az:
+Completed run için:
 
 ```text
 RUN_MANIFEST status → Completed
@@ -291,9 +301,7 @@ RUN_LOG final lifecycle event → Completed
 COMPLETION_REPORT → successful completion
 ```
 
-olarak kapanış gerçekliğiyle uyumlu hale getirilmelidir. `runs/completed/` altında `Status: Running` veya eşdeğer aktif state kalması → FAIL.
-
-Active kopya kalırsa veya operational state/location çelişirse → FAIL.
+`runs/completed/` altında aktif state veya active kopya → FAIL.
 
 ---
 
@@ -304,7 +312,7 @@ Projeyi hiç görmemiş yetkin yeni bir ajan yalnız final package ile:
 1. read order'ı bulabiliyor mu?
 2. scope ve teknik/design authority'yi anlayabiliyor mu?
 3. active wave'i belirleyebiliyor mu?
-4. active WAVE_PLAN + NEXT_TASKS ile **yeni planlama veya kritik teknik seçim yapmadan** implementation'a başlayabiliyor mu?
+4. active WAVE_PLAN + NEXT_TASKS ile yeni planlama veya kritik teknik seçim yapmadan implementation'a başlayabiliyor mu?
 5. selected wave deliverable'ının ne zaman gerçekten complete olduğunu anlayabiliyor mu?
 6. done/QA/stop koşullarını anlayabiliyor mu?
 
@@ -327,7 +335,9 @@ execution-critical decision result
 cross-document execution consistency
 approval + project_state integrity
 decision provenance
-point-of-use refresh evidence
+source claim integrity
+point-of-use trace integrity
+engine boundary integrity
 integration readiness
 design quality
 operational path integrity
