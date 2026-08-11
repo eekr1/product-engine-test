@@ -63,7 +63,9 @@ Validation önce WAVE_MAP decomposition'ını, sonra her WAVE_PLAN execution con
 
 - wave'ler broad teknik fazlar yerine meaningful, independently verifiable deliverable'lara bölünmüş mü?
 - tek wave içinde birbirinden bağımsız birkaç product surface/feature/flow gizlenmiş mi?
-- distinct bir surface/feature kendi başına tamamlanıp doğrulanabiliyorsa yalnız teknik benzerlik nedeniyle başka bağımsız teslimlerle birleştirilmiş mi?
+- distinct bir surface/feature kendi başına tamamlanıp doğrulanabiliyorsa yalnız teknik benzerlik veya aynı sayfada yer alma nedeniyle başka bağımsız teslimlerle birleştirilmiş mi?
+- corporate/landing UI gibi projelerde `Home/Hero`, `Corporate/Trust`, `Services`, `Contact` gibi distinct responsibilities gereksiz biçimde tek `Core Frontend` wave'ine yığılmış mı?
+- gerçekten cross-cutting final integration/responsive/QA işi son feature wave'ine gizlenmiş mi?
 - wave sonunda hangi deliverable'ın complete sayılacağı açık mı?
 - yapay mikro-wave üretilmiş mi?
 
@@ -74,6 +76,8 @@ multiple independent meaningful deliverables hidden in one wave → FAIL / repai
 no meaningful standalone result → FAIL / merge or redefine
 coherent complete deliverable → valid candidate
 ```
+
+Granularity değerlendirmesi `WAVE_MAP_TEMPLATE.md` içindeki reference example'ın birebir kopyasını istemez; örneğin gösterdiği separation seviyesini kalibre etmek için kullanır.
 
 ### WAVE_PLAN Execution Depth
 
@@ -94,6 +98,24 @@ Kontrol:
 - agent wave'i okuyunca tekrar mini implementation planı üretmek zorunda mı?
 
 Son sorunun cevabı evet ise veya selected deliverable wave sonunda yarım kalıyorsa → FAIL.
+
+### Pre-Execution State Integrity
+
+Wave planı generation sırasında henüz execute edilmemişse:
+
+```text
+Status = Ready for Execution | Pending Execution | Blocked
+Implementation Checklist checkbox = [ ]
+Acceptance / Exit Criteria checkbox = [ ]
+Wave Result = pending / not executed
+```
+
+- Pre-execution wave'de `[x]` completion kriteri bulunamaz.
+- `Ready for Execution` tamamlandı anlamına gelmez.
+- Wave Result başarı/tamamlanma iddia edemez.
+- Pre-execution status + completed checkbox/result birlikteyse lifecycle contradiction vardır.
+
+İhlal → FAIL.
 
 ## 5. Execution-Critical Decision Completeness
 
@@ -254,9 +276,24 @@ Aynı run ID yalnız bir lifecycle location'da bulunabilir.
 
 ```text
 Completed → runs/completed/<run-id>/
+Failed    → runs/failed/<run-id>/
+Active    → runs/active/<run-id>/
 ```
 
-Active kopya kalırsa → FAIL.
+Lifecycle location ile operational record status'ları uyumlu olmalıdır.
+
+Completed run için completion transition yapılmadan önce en az:
+
+```text
+RUN_MANIFEST status → Completed
+PROGRESS status → Completed
+RUN_LOG final lifecycle event → Completed
+COMPLETION_REPORT → successful completion
+```
+
+olarak kapanış gerçekliğiyle uyumlu hale getirilmelidir. `runs/completed/` altında `Status: Running` veya eşdeğer aktif state kalması → FAIL.
+
+Active kopya kalırsa veya operational state/location çelişirse → FAIL.
 
 ---
 
@@ -285,6 +322,7 @@ canonical document coverage
 dynamic instance coverage
 wave decomposition result
 wave execution depth result
+pre-execution wave state integrity
 execution-critical decision result
 cross-document execution consistency
 approval + project_state integrity
@@ -294,7 +332,7 @@ integration readiness
 design quality
 operational path integrity
 agent-ready acceptance
-lifecycle location integrity
+lifecycle location + operational state integrity
 failed checks / warnings / repair actions
 ```
 
