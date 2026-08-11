@@ -6,7 +6,7 @@
 template_id: wave-plan-template
 template_name: Canonical Wave Plan Template
 document_id: WAVE-PLAN
-version: 2.2.0
+version: 2.3.0
 status: active
 template_type: dynamic-document
 category: waves
@@ -74,6 +74,26 @@ verification/manual QA
 
 Bunlardan applicable olanlar başka bir belirsiz "polish later" wave'ine itilerek surface yarım bırakılamaz. Cross-project final QA veya gerçekten cross-cutting polish ayrı wave olabilir; fakat bir surface'in temel completion sorumluluğunu devralamaz.
 
+## Pre-Execution State Semantics
+
+WAVE_PLAN generation zamanı implementation henüz çalıştırılmamıştır. Bu nedenle plan ile execution evidence birbirine karıştırılamaz.
+
+```text
+Ready for Execution / Pending Execution / Blocked
+→ plan state
+
+[x] completion checkbox / successful Wave Result
+→ execution evidence
+```
+
+Kurallar:
+
+- Wave henüz execute edilmediyse Implementation Checklist ve Acceptance / Exit Criteria checkbox'ları **`[ ]`** kalmalıdır.
+- `Ready for Execution` yalnız planın uygulanabilir olduğunu gösterir; task veya acceptance kriterlerinin tamamlandığını göstermez.
+- `[x]` yalnız ilgili iş gerçekten uygulanmış ve doğrulanmışsa yazılabilir.
+- Wave Result pre-execution durumda `PENDING EXECUTION`, eşdeğer nötr ifade veya boş placeholder olmalıdır; başarı sonucu yazılamaz.
+- Aynı belgede `Ready/Pending Execution` ile tamamlanmış `[x]` kriterlerin birlikte bulunması lifecycle contradiction'dır.
+
 ## Zorunlu Bölümler
 
 - Wave Identity & Status
@@ -105,6 +125,7 @@ Bunlardan applicable olanlar başka bir belirsiz "polish later" wave'ine itilere
 - Aktif wave'i uygulamak için gerekli stack/tool/architecture kararı unresolved ise wave `Ready for Execution` olamaz; stop/clarification gerekir.
 - Kullanıcı onayı gereken checkpoint varsa açık stop rule belirtilir.
 - Wave tamamlanmadan sonuç bölümü başarıyla doldurulmuş gibi gösterilmez.
+- Pre-execution wave'lerde completion checkbox'ları işaretlenmez.
 - Acceptance criteria yalnız genel kalite sıfatları değil, wave deliverable'ının tamamlandığını ölçen somut sonuçlar içermelidir.
 
 ## Task Derinlik Standardı
@@ -149,6 +170,7 @@ Uzun tutorial yazılmaz; fakat agent'ın yeniden implementation planı üretmesi
 - Expected Result ile checklist ve acceptance criteria aynı teslimi tarif etmeli.
 - Checklist, başka wave olması gereken bağımsız deliverable'ları task numaraları altında saklamamalı.
 - Acceptance criteria task listesinin gerçek sonucunu ölçmeli.
+- Pre-execution status varsa checklist/acceptance checkbox'ları `[ ]` olmalı ve Wave Result başarı iddia etmemeli.
 - NEXT_TASKS aktif wave'in ilk uygulanabilir görevleriyle uyumlu olmalı.
 - Kapsam dışı maddeler açık olmalı.
 - Kanıt olmadan tamamlanmış state yazılmamalı.
