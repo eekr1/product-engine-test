@@ -34,6 +34,7 @@ Proje kapsamını, teknik mimarisini veya iş modelini etkilemeyen; paket varsay
 - Varsayım yapılır.
 - Açıkça kaydedilir: ne varsayıldığı ve neden.
 - Validation sırasında gözden geçirilir.
+- Kullanıcı tarafından açıkça onaylanmadıysa durum varsayılan olarak `pending_review` kalır.
 
 **Örnekler:**
 
@@ -58,6 +59,7 @@ Teknik veya ürün kararlarının çevre bilgisine göre makul biçimde tahmin e
 **Davranış:**
 
 - En makul seçenek seçilir ve gerekçesi kaydedilir.
+- Durum `pending_review` olarak tutulur.
 - Kullanıcıya run tamamlandığında bildirilir ve onayı istenir.
 - Onaylanmazsa bir sonraki run'da revize edilir.
 
@@ -66,6 +68,7 @@ Teknik veya ürün kararlarının çevre bilgisine göre makul biçimde tahmin e
 ```text
 - ORM tercihi belirtilmemişse proje stack'iyle uyumlu yaygın tercih varsayılır.
 - Test kapsamı yüzdesi belirtilmemişse %80 hedef varsayılır ve not edilir.
+- Bir frontend demo için birden fazla makul stack seçeneği varsa (ör. Vanilla JS, React, başka bir framework), seçilen stack bounded assumption olarak kaydedilir; safe assumption sayılmaz.
 ```
 
 ---
@@ -135,6 +138,25 @@ Durum         : pending_review | confirmed | revised
 
 Assumption kayıtları `ASSUMPTIONS.md` olarak run klasörüne eklenir. Bkz: `RUN_PROTOCOL.md`.
 
+### `confirmed` Durumu İçin Kanıt Kuralı
+
+Bir assumption yalnızca aşağıdaki durumlardan biri varsa `confirmed` olabilir:
+
+1. Kullanıcı assumption değerini doğrudan ve açıkça onaylamıştır; veya
+2. Değer artık assumption olmaktan çıkmış, authoritative approved input içinde açık gerçek/karar olarak yer almıştır.
+
+Aşağıdakiler confirmation kanıtı değildir:
+
+```text
+- IDE/tool/plan auto-approval
+- Agent'ın kendi planını tamamlaması
+- Bir dosyanın yazılmasına izin verilmesi
+- Genel execution/terminal/patch izni
+- Sessiz veya inferred approval
+```
+
+Kanıt yoksa safe veya bounded assumption MUST `pending_review` kalır. Agent kendi ürettiği bir kararı aynı run içinde kendiliğinden `confirmed` yapamaz.
+
 ---
 
 ## Assumption'ların Geçicilik Durumu
@@ -142,11 +164,13 @@ Assumption kayıtları `ASSUMPTIONS.md` olarak run klasörüne eklenir. Bkz: `RU
 ```text
 Geçici Assumption
   → Kullanıcı onayı bekleniyor.
+  → Durum: pending_review.
   → Validation sırasında görünür olmalı.
   → Bir sonraki run öncesinde kullanıcı onaylamalı.
 
 Kalıcı Assumption
-  → Kullanıcı tarafından onaylandı.
+  → Kullanıcı tarafından açıkça onaylandı veya authoritative approved input gerçeğine dönüştü.
+  → Durum: confirmed.
   → Approved girdi kapsamına alınır.
   → Sonraki run'larda tekrar sorgulanmaz.
 ```
@@ -159,7 +183,9 @@ Validation aşamasında:
 
 - Tüm assumption'ların kaydedilip kaydedilmediği kontrol edilir.
 - Prohibited alanlarda sessiz varsayım yapılıp yapılmadığı kontrol edilir.
+- `confirmed` işaretli her assumption için confirmation kanıtı kontrol edilir.
 - Pending review assumption'lar CONDITIONAL PASS olarak işaretlenir.
+- Kanıtsız `confirmed` assumption → FAIL.
 
 Bkz: `VALIDATION_RULES.md`
 
