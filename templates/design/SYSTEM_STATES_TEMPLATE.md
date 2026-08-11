@@ -4,106 +4,112 @@
 
 ```yaml
 template_id: system-states-template
-template_name: System States Structural Template
-document_id: not_applicable
-version: 1.0.0
+template_name: System States Template
+document_id: SYSTEM-STATES
+version: 1.1.0
 status: active
-template_type: structural
+template_type: document
 category: design
 supported_packages:
-  - corporate-website
-  - demo-frontend
-  - saas
-  - existing-project
+  - all-ui
 supported_delivery_profiles:
+  - foundation
   - prototype
   - implementation-ready
   - production-ready
+supported_design_planning:
+  - standard
+  - full
 required_inputs:
   - design_rules
+  - design_system
   - product_rules
-conditional_inputs: []
 dependencies:
   - DESIGN
-output_filename: not_applicable
+  - DESIGN-SYSTEM
+  - PRODUCT-RULES
+output_filename: SYSTEM_STATES.md
 ```
 
 ## Amaç
 
-Sistemdeki ortak arayüz durumlarını (Loading, Empty, Error, Success, Disabled, Offline) standartlaştıran yapısal şablon sunmak.
+Sistemdeki ortak loading, empty, error, success, disabled, unavailable, permission ve feedback durumlarını tek canonical UX sözleşmesinde standardize etmek.
 
 ## Kullanım Koşulları
 
-Tüm UI projelerinde sistem genelindeki durum standartlarını belirlemek için kullanılır.
-
-## Girdi Kaynakları
-
-- `DESIGN_RULES.md`, `PRODUCT_RULES.md`
+`design_planning: standard | full` olan interactive UI projelerinde zorunludur.
 
 ## Zorunlu Bölümler
 
-- Yüklenme Durumu (Loading State)
-- Boş Veri Durumu (Empty State)
-- Hata Durumu (Error State)
-- Başarı / Onay Durumu (Success State)
+- Loading State
+- Empty State
+- Error State
+- Success / Confirmation State
+- Disabled / Unavailable State
+- Shared Feedback Patterns
 
 ## Koşullu Bölümler
 
-- `[CONDITIONAL: include only if offline mode is supported]` Çevrimdışı (Offline) Durumu
+- Offline State
+- Permission / Access Denied State
+- Rate Limit / Retry State
+- Session Expired State
 
 ## İçerik Üretim Kuralları
 
-- Bağımsız Document Catalog ID'si içermemelidir (`document_id: not_applicable`).
-- Her durum için kullanıcıya gösterilecek mesaj, görsel/ikon ve aksiyon (retry, go back vb.) kurallarını tanımlamalıdır.
+- Her state için görünüm, mesaj tonu, kullanıcı aksiyonu ve recovery path tanımlanmalıdır.
+- Page/feature belgeleri ortak state davranışını yeniden icat edemez; yalnız özel override varsa gerekçelendirir.
+- State tasarımları salt ikon/metin listesi değil gerçek kullanım akışını tamamlayan davranış sözleşmesi olmalıdır.
+- Accessibility ve keyboard/focus davranışı applicable state'lerde belirtilmelidir.
 
 ## Placeholder Tanımları
 
-- `{{LOADING_STATE_SPEC}}`: Skeleton/Spinner görsel ve UX standartları.
-- `{{EMPTY_STATE_SPEC}}`: Veri olmadığında gösterilecek ilustrasyon/metin ve yönlendirme butonu.
-- `{{ERROR_STATE_SPEC}}`: Hata mesajı, ikonu ve tekrar deneme (Retry) mekanizması.
-
-## Kapsam Dışı
-
-- Tekil sayfa tasarımları (bkz: `PAGE_SPEC_TEMPLATE.md`)
-
-## Diğer Dokümanlarla İlişki
-
-- Primary Owner: Ortak sistem durumları sözleşmesi.
-- Referenced By: `DESIGN_RULES.md`, `PAGE_SPEC_TEMPLATE.md`.
-
-## Delivery Profile Davranışı
-
-- Kullanıcıya her senaryoda tutarlı geri bildirim verilmesini sağlar.
+- `{{PROJECT_NAME}}`
+- `{{LOADING_STATE_SPEC}}`
+- `{{EMPTY_STATE_SPEC}}`
+- `{{ERROR_STATE_SPEC}}`
+- `{{SUCCESS_STATE_SPEC}}`
+- `{{DISABLED_STATE_SPEC}}`
+- `{{SHARED_FEEDBACK_PATTERNS}}`
+- `{{CONDITIONAL_STATE_SPECS}}`
 
 ## Validation Beklentileri
 
-- Standart arayüz durumlarının tümünü kapsamalıdır.
+- Product rules ile state davranışları çelişmemeli.
+- Page/feature package'ları global state language'ını korumalı.
 
 ---
 
 # OUTPUT DOCUMENT START
 
-# System States Specification
+# {{PROJECT_NAME}} — System States
 
-## 1. Yüklenme Durumu (Loading State)
+## 1. Loading State
 
 {{LOADING_STATE_SPEC}}
 
-## 2. Boş Veri Durumu (Empty State)
+## 2. Empty State
 
 {{EMPTY_STATE_SPEC}}
 
-## 3. Hata Durumu (Error State)
+## 3. Error State
 
 {{ERROR_STATE_SPEC}}
 
-## 4. Başarı / Onay Durumu (Success State)
+## 4. Success / Confirmation State
 
-- İşlem başarılı olduğunda gösterilecek toast/modal/bildirim standartları.
+{{SUCCESS_STATE_SPEC}}
 
-[CONDITIONAL: include only if offline mode is supported]
-## 5. Çevrimdışı (Offline) Durumu
+## 5. Disabled / Unavailable State
 
-- İnternet bağlantısı kesildiğinde gösterilecek uyarı ve offline önbellek davranışı.
+{{DISABLED_STATE_SPEC}}
+
+## 6. Shared Feedback Patterns
+
+{{SHARED_FEEDBACK_PATTERNS}}
+
+## 7. Conditional States
+
+{{CONDITIONAL_STATE_SPECS}}
 
 # OUTPUT DOCUMENT END
