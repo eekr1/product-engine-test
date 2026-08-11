@@ -102,6 +102,36 @@ Vocabulary dışı lifecycle status icat edilmez.
 
 ---
 
+# Writable / Protected Surfaces
+
+Normal project generation run'ı yalnız proje/run/output operasyon yüzeylerine yazabilir.
+
+Writable örnekler:
+
+```text
+inputs/
+runs/
+outputs/
+logs/RUN_INDEX.md
+```
+
+Protected Engine surfaces:
+
+```text
+PRODUCT_ENGINE_BRAIN.md
+root README engine-version authority
+engine/
+packages/
+templates/
+logs/ENGINE_CHANGELOG.md
+```
+
+Protected yüzeyler project run sırasında read-only'dir. Bunlar yalnız explicit Engine maintenance/hardening/version-change çalışmasında değiştirilebilir.
+
+Bir project run'ın başarıyla tamamlanması kendi başına `ENGINE_CHANGELOG.md` girdisi üretmez. Tek-run operational history `RUN_INDEX.md` / run records içinde tutulur.
+
+---
+
 # RUN_MANIFEST
 
 En az:
