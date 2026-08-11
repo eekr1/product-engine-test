@@ -6,7 +6,7 @@
 template_id: wave-map-template
 template_name: Canonical Wave Map Template
 document_id: WAVE-MAP
-version: 2.2.0
+version: 2.3.0
 status: active
 template_type: document
 category: waves
@@ -67,7 +67,8 @@ Projenin implementation yolunu baştan sona anlamlı delivery wave'lerine bölen
 - Aynı surface içinde birbirine sıkı bağlı section'lar tek wave'de kalabilir; her section yapay biçimde ayrı wave yapılmaz.
 - Her wave tek bir anlamlı goal ve net bir completion boundary taşır.
 - Wave entry, o wave sonunda hangi kullanıcı yüzeyi/feature/foundation alanının **tamamlanmış** sayılacağını açıkça belirtmelidir.
-- Cross-project final integration/responsive/QA gerçekten cross-cutting ise ayrı wave olabilir; son feature wave'inin içine otomatik olarak gömülmemelidir.
+- Bir feature/surface wave'i yalnız kendi deliverable'ının responsive/state/QA sorumluluğunu taşır.
+- Tüm proje yüzeylerini yeniden doğrulayan cross-cutting final integration, cross-browser, regression veya full responsive QA işi varsa bu iş son feature/contact wave'ine gömülmemeli; ayrı final integration/QA wave adayı olarak değerlendirilmelidir.
 - Dependency zinciri açık olmalı; circular dependency olamaz.
 - Design/data/API/test belgeleri applicable ise wave scope bunlarla hizalanmalıdır.
 - `full` planning daha granüler dependency/risk planning getirebilir; yapay wave çoğaltamaz.
@@ -82,6 +83,7 @@ Wave map hazırlanırken her candidate scope için şu sorular cevaplanır:
 2. Wave sonunda bu deliverable complete ve bağımsız doğrulanabilir olacak mı?
 3. İçinde başka bağımsız surface/feature/flow'lar gizleniyor mu?
 4. Bunları ayırmak coherence'i artırır mı, yoksa yapay mikro-wave mi üretir?
+5. Son surface wave'i aynı zamanda bütün projeyi test eden cross-cutting QA yükünü taşıyor mu?
 ```
 
 Kural:
@@ -90,6 +92,7 @@ Kural:
 multiple independent deliverables inside one wave → SPLIT
 no meaningful standalone result → MERGE
 one coherent complete deliverable → KEEP
+cross-cutting whole-project QA hidden in final feature wave → SPLIT QA
 ```
 
 Domain/package bağlamı decomposition'a yardımcı olabilir; ancak sabit bir wave reçetesi değildir. Gerçek approved scope'a göre split/merge yapılır.
@@ -112,7 +115,8 @@ Bu örneğin anlattığı kurallar:
 - Foundation, user-facing surface'lerden ayrılır.
 - Birbirinden ayrı kullanıcı sorumlulukları tek broad `Core Frontend` wave'ine yığılmaz.
 - `Header + Hero + About + Services + Contact` bütününün tek wave olması, yalnız kapsam gerçekten küçük ve tek coherent deliverable ise kabul edilebilir.
-- Final integration/QA, gerçekten cross-cutting ise son feature/contact wave'inden ayrılır.
+- Contact wave kendi contact deliverable'ını responsive/state/QA ile tamamlar; bütün proje regression/cross-browser/final responsive QA bundan ayrı bir cross-cutting sorumluluktur.
+- Final integration/QA gerçekten cross-cutting ise son feature/contact wave'inden ayrılır.
 - Gerçek proje kapsamı daha küçükse wave'ler merge; daha karmaşıksa split edilebilir.
 
 Örnek bir reçete değil, **granularity calibration reference** olarak kullanılır.
@@ -133,6 +137,7 @@ Bu örneğin anlattığı kurallar:
 - Wave dependency chain acyclic ve uygulanabilir olmalı.
 - Her wave meaningful, independently verifiable ve completion boundary'si net bir deliverable tanımlamalı.
 - Broad technical mega-wave içinde birden fazla bağımsız product surface/feature saklanmamalı.
+- Cross-cutting whole-project QA son feature/surface wave'ine gizlenmemeli.
 - Granularity, yukarıdaki reference example'ın anlattığı separation seviyesine makul biçimde yakın olmalı; örneğin birebir kopyalanması gerekmez.
 - Her wave için WAVE-PLAN dynamic instance üretilebilmelidir.
 - WAVE_MAP ile PROJECT_PLAN aynı teslim sırasını anlatmalıdır.
