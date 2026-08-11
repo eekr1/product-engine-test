@@ -6,7 +6,7 @@
 template_id: wave-map-template
 template_name: Canonical Wave Map Template
 document_id: WAVE-MAP
-version: 2.0.0
+version: 2.1.0
 status: active
 template_type: document
 category: waves
@@ -56,13 +56,41 @@ Projenin implementation yolunu baştan sona anlamlı delivery wave'lerine bölen
 
 ## İçerik Üretim Kuralları
 
-- Wave'ler repository folder'larına göre değil anlamlı teslim sonuçlarına göre bölünmelidir.
+- Wave'ler repository folder'larına veya broad teknik fazlara göre değil, anlamlı ve bağımsız doğrulanabilir teslim sonuçlarına göre bölünmelidir.
+- `Frontend Implementation`, `Build UI`, `Backend Work`, `Polish Everything` gibi birden fazla distinct teslimi tek torbaya atan mega-wave adları/scope'ları kullanılmamalıdır.
 - Wave 00, projenin ilk uygulanabilir foundation/bootstrapping adımını temsil etmelidir; boş formalite wave'i olmamalıdır.
-- Her wave tek bir anlamlı goal taşır.
+- Foundation sonrasında distinct user-facing surface, feature, flow veya coherent delivery unit'leri ayrı wave adayı olarak değerlendirilmelidir.
+- Bir surface kendi başına anlamlı biçimde tamamlanıp doğrulanabiliyorsa, başka bağımsız surface'lerle aynı wave'e yalnız teknik benzerlik nedeniyle sıkıştırılmamalıdır.
+- Bir wave'in scope'u başka bir wave'e ayrılabilecek birden fazla bağımsız anlamlı teslim içeriyorsa wave fazla büyüktür; split edilmelidir.
+- Bir wave sonunda tek başına anlamlı ve doğrulanabilir bir sonuç oluşmuyorsa wave fazla küçüktür; coherent komşu scope ile merge edilmelidir.
+- Aynı page/screen içinde birbirine sıkı bağlı section'lar tek surface wave'inde kalabilir; her section yapay biçimde ayrı wave yapılmaz.
+- Her wave tek bir anlamlı goal ve net bir completion boundary taşır.
+- Wave entry, o wave sonunda hangi kullanıcı yüzeyi/feature/foundation alanının **tamamlanmış** sayılacağını açıkça belirtmelidir.
 - Dependency zinciri açık olmalı; circular dependency olamaz.
 - Design/data/API/test belgeleri applicable ise wave scope bunlarla hizalanmalıdır.
 - `full` planning daha granüler dependency/risk planning getirebilir; yapay wave çoğaltamaz.
 - Bütün approved scope en az bir wave'e map edilmeli, hiçbir wave approved scope dışı iş icat etmemelidir.
+
+## Decomposition Heuristic
+
+Wave map hazırlanırken her candidate scope için şu sorular cevaplanır:
+
+```text
+1. Bu scope tek başına anlamlı bir deliverable mı?
+2. Wave sonunda bu deliverable complete ve bağımsız doğrulanabilir olacak mı?
+3. İçinde başka bağımsız surface/feature/flow'lar gizleniyor mu?
+4. Bunları ayırmak coherence'i artırır mı, yoksa yapay mikro-wave mi üretir?
+```
+
+Kural:
+
+```text
+multiple independent deliverables inside one wave → SPLIT
+no meaningful standalone result → MERGE
+one coherent complete deliverable → KEEP
+```
+
+Domain/package bağlamı decomposition'a yardımcı olabilir; ancak sabit bir wave reçetesi değildir. Gerçek approved scope'a göre split/merge yapılır.
 
 ## Placeholder Tanımları
 
@@ -78,6 +106,8 @@ Projenin implementation yolunu baştan sona anlamlı delivery wave'lerine bölen
 
 - Approved scope coverage tam olmalı.
 - Wave dependency chain acyclic ve uygulanabilir olmalı.
+- Her wave meaningful, independently verifiable ve completion boundary'si net bir deliverable tanımlamalı.
+- Broad technical mega-wave içinde birden fazla bağımsız product surface/feature saklanmamalı.
 - Her wave için WAVE-PLAN dynamic instance üretilebilmelidir.
 - WAVE_MAP ile PROJECT_PLAN aynı teslim sırasını anlatmalıdır.
 
