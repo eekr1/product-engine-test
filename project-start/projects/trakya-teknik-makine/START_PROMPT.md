@@ -20,6 +20,8 @@ Proje kaynak dosyası:
 8. Bu projenin ilk hedefinin satış görüşmesi için güçlü bir frontend demo olduğunu source context olarak koru; ancak bu bilgi Product Engine'in package/document selection kurallarını bypass etmek için kullanılmamalıdır.
 9. Mevcut Trakya Teknik Makine sitesindeki doğrulanmış firma bilgileri ile yeni demo için alınacak tasarım/teknik kararları birbirinden ayır.
 10. Approval gerektiğinde canonical approval gate'te dur.
+11. IDE, tool, plan, execution veya otomatik onay mekanizmalarını Product Engine explicit user approval olarak kabul etme. Yalnızca kullanıcının pending intake'i veya açıkça sunulan intake kararlarını doğrudan onaylayan mesajı canonical approval sayılır.
+12. Explicit user approval alınmadan approved input oluşturma, `approved_by: user` yazma veya generation run başlatma.
 
 ## Beklenen İlk Sonuç
 
