@@ -27,6 +27,19 @@ Canonical kural:
 
 Bir artifact üretilmeden veya lifecycle transition yapılmadan hemen önce, o işi yöneten canonical authority/template yeniden açılır. Önceden topluca okunmuş template'lere memory'den güvenilmez.
 
+## Observable Refresh Semantics
+
+Refresh yalnız run kaydına `refreshed` yazılması değildir. Gerçek refresh, artifact/instance üretiminden önce ilgili canonical kaynağın yeniden okunmasıdır.
+
+```text
+self-reported refresh record ≠ proof of refresh
+observable read/open event      = primary evidence when available
+```
+
+Çalışma ortamı tool/IDE execution trace sağlıyorsa bu trace refresh kanıtının birincil otoritesidir. `PROGRESS.md` / `RUN_LOG.md` kayıtları trace ile çelişemez ve trace'de görülmeyen bir read event'i olmuş gibi gösteremez.
+
+Trace mevcut değilse operational evidence audit desteği sağlar; ancak kendi başına point-of-use compliance'ı ispatladığı varsayılmaz. Böyle ortamlarda agent refresh'i eylem olarak yine gerçekleştirmek zorundadır ve validation mevcut kanıt sınırını açıkça belirtmelidir.
+
 ## Artifact Production Loop
 
 Her canonical document ve her dynamic instance **ayrı ayrı** şu döngüden geçer:
@@ -50,7 +63,8 @@ Her canonical document ve her dynamic instance **ayrı ayrı** şu döngüden ge
 - Aynı template'ten birden fazla dynamic instance çıkıyorsa her instance öncesinde template yeniden açılır.
 - Örnek: `WAVE_00` öncesinde `WAVE_PLAN_TEMPLATE.md` açıldıysa, `WAVE_01` öncesinde de yeniden açılır.
 - Local self-check final validation'ın yerine geçmez; yalnız artifact'ın kendi contract'ına uygun çıkmasını sağlar.
-- Refresh/local-check yalnız zihinsel veya varsayılan bir eylem sayılamaz; run'ın mevcut `PROGRESS.md` veya `RUN_LOG.md` kaydında artifact bazında görünür kanıt bırakmalıdır.
+- Refresh/local-check yalnız zihinsel veya varsayılan bir eylem sayılamaz; run'ın mevcut `PROGRESS.md` veya `RUN_LOG.md` kaydında artifact bazında görünür kayıt bırakmalıdır.
+- Operational record, gerçekleşmemiş bir read/refresh event'i sonradan olmuş gibi iddia edemez.
 
 Minimum evidence:
 
@@ -63,6 +77,34 @@ repair performed: yes/no
 ```
 
 Dynamic instance evidence instance-specific olmalıdır. `WAVE_PLAN_TEMPLATE refreshed` şeklinde tek genel kayıt bütün wave'leri kapsamaz.
+
+## Project Run Write Boundary
+
+Normal bir project generation run'ı Product Engine'in kendi authority/history yüzeylerini **read-only** kullanır.
+
+Project run tarafından mutate edilemeyecek protected surfaces:
+
+```text
+PRODUCT_ENGINE_BRAIN.md
+root README engine-version authority
+engine/
+packages/
+templates/
+logs/ENGINE_CHANGELOG.md
+```
+
+Bu yüzeyler yalnız explicit Engine maintenance/hardening/version-change işi kapsamında değiştirilebilir.
+
+Project run sırasında writable operational surfaces örnekleri:
+
+```text
+inputs/
+runs/
+outputs/
+logs/RUN_INDEX.md
+```
+
+Bir project generation run'ının başarılı olması Engine contract/history değişikliği anlamına gelmez. Tek-run sonucu `ENGINE_CHANGELOG.md` kaydı üretmez.
 
 ## Transition Authority Refresh
 
