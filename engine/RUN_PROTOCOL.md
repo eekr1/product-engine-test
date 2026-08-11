@@ -2,37 +2,15 @@
 
 ## Amaç
 
-Bu belge, tek bir Product Engine çalışmasının (run) nasıl başlatılacağını, yönetileceğini ve kapatılacağını tanımlar.
+Bu belge tek bir Product Engine run'ının operasyonel yaşam döngüsünü, kayıtlarını, profile/package snapshot'larını ve kapanış konumunu tanımlar.
 
-Bu belge üretim sürecinin mantığını tanımlamaz — o `GENERATION_PIPELINE.md`'nin sorumluluğundadır.
+Generation mantığı `GENERATION_PIPELINE.md`'ye aittir.
 
-Bu belge bir run'ın:
-
-- nasıl oluşturulduğunu,
-- kimliğinin nasıl belirlendiğini,
-- run klasörü yapısını,
-- durum geçişlerini,
-- kayıt belgelerini,
-- kapanış sürecini
-
-tanımlar.
-
-Run kayıtları private chain-of-thought içermez. Yalnızca sonuç, karar ve kısa gerekçe tutulur.
-
-Run template'lerinin authoritative konumu: `templates/runs/`
-
-## Kapsam Dışı
-
-- Engine üretim mantığının tam tekrarı → `GENERATION_PIPELINE.md`
-- Kalıcı Engine Changelog → `logs/ENGINE_CHANGELOG.md`
-- Template içerikleri → `templates/`
-- Paketlerin gerçek içerik listeleri → `packages/`
+Run kayıtları private chain-of-thought içermez; yalnız sonuç, karar, kısa gerekçe ve izlenebilir metadata tutulur.
 
 ---
 
-## Run Klasör Yapısı
-
-Runs klasörünün genel yapısı:
+# Run Klasör Yapısı
 
 ```text
 runs/
@@ -42,7 +20,7 @@ runs/
 └── failed/
 ```
 
-Bir run kendi klasöründe tutulur:
+Aktif run:
 
 ```text
 runs/active/<run-id>/
@@ -60,72 +38,69 @@ runs/active/<run-id>/
 └── working-output/
 ```
 
-Başarılı run tamamlandığında: `runs/completed/<run-id>/`
+---
 
-Başarısız run: `runs/failed/<run-id>/`
+# Run Location Exclusivity
 
-### Run Location Exclusivity
-
-Aynı `run-id` aynı anda birden fazla lifecycle klasöründe MUST NOT bulunur.
+Aynı `run-id` aynı anda yalnız bir lifecycle klasöründe bulunabilir.
 
 ```text
-Geçerli:
-runs/active/RUN-X/
+active
+OR completed
+OR failed
+```
 
-veya
+MUST NOT:
 
-runs/completed/RUN-X/
-
-veya
-
-runs/failed/RUN-X/
-
-Geçersiz:
+```text
 runs/active/RUN-X/
 +
 runs/completed/RUN-X/
 ```
 
-Bir run `completed/` veya `failed/` konumuna taşındığında önceki `active/` kopyası fiziksel olarak kaldırılmış olmalıdır. Kopyalama + eski klasörü bırakma, "move" sayılmaz.
+Completion/failure move işleminde source `active/` kopyası fiziksel olarak kaldırılmalıdır.
 
 ---
 
-## Run Oluşturma
+# Run Başlatma Koşulları
 
-Yeni bir run şu koşullarda oluşturulur:
+Yeni generation run yalnız:
+
+1. canonical explicit approval almış approved input varsa,
+2. approved input canonical planning profile alanlarını taşıyorsa,
+3. aynı proje/scope için çakışan active run yoksa
+
+başlatılır.
+
+Required approved snapshot alanları:
 
 ```text
-1. Onaylı proje girdisi (approved input) mevcuttur.
-2. Aynı proje ve aynı aktif scope için çakışan başka bir aktif run yoktur.
-3. Mevcut run tamamlanmış, başarısız veya geçersiz kılınmıştır.
+input_id / input_version
+project_slug
+project_type
+project_state
+delivery_profile
+implementation_planning
+design_planning (UI/UX applicable ise)
 ```
 
-Aynı proje ve aynı aktif scope için birden fazla çakışan aktif run MUST NOT açık tutulur.
-
-Farklı projeler için paralel run'lar mümkündür.
+Planning profile package stage'inde yeniden tahmin edilmez.
 
 ---
 
-## Run Kimliği
-
-Her run'a benzersiz bir Run ID atanır.
-
-Önerilen format:
+# Run ID
 
 ```text
 RUN-<YYYYMMDD>-<sequence>
-Örnek: RUN-20260808-001
 ```
 
-Sequence, o tarih içindeki sıra numarasını gösterir. Aynı gün birden fazla run açılabilir.
-
-Run ID bir kez atandıktan sonra değiştirilemez (MUST NOT).
+Run ID immutable ve benzersizdir.
 
 ---
 
-## Run Durum Yaşam Döngüsü
+# Lifecycle
 
-Ana akış:
+Canonical ana akış:
 
 ```text
 Created
@@ -135,224 +110,215 @@ Created
 → Completed
 ```
 
-Alternatif durumlar:
+Alternatifler:
 
 ```text
-Running → Blocked → Running (clarification sonrası)
-Running → Paused → Resumed
-Running → Failed
-Validation → Failed
+Running → Blocked → Running
+Running → Paused → Resumed → Running
+Running/Validation → Failed
 Running → Cancelled
 Completed → Invalidated
 ```
 
-Run durumu `RUN_MANIFEST.md` içerisinde açıkça kaydedilir.
-
-### Durum Tanımları
-
-```text
-Created      : Run kimliği oluşturuldu, başlatılmadı.
-Initialized  : Run başlatıldı; input snapshot alındı, paket seçildi.
-Running      : Üretim aşaması aktif.
-Validation   : Validation aşamasında.
-Completed    : Validation'dan geçti, final output hazır.
-Blocked      : Çözülemeyen çelişki veya kritik eksiklik nedeniyle durduruldu.
-Paused       : Kullanıcı kararı veya clarification bekleniyor.
-Resumed      : Paused durumdan devam edildi.
-Failed       : Teknik hata, üretim hatası veya validation başarısızlığı nedeniyle tamamlanamayan run.
-Cancelled    : Kullanıcı tarafından bilinçli olarak iptal edilen run. Status değeri Cancelled kalır.
-Invalidated  : Tamamlanmış run sonradan geçersiz kılındı.
-```
+Status vocabulary dışı değer icat edilmez.
 
 ---
 
-## Run Belgeleri ve Sorumlulukları
+# RUN_MANIFEST Minimumu
 
-### RUN_MANIFEST.md
-
-Run'ın kimliğini, durumunu ve önemli kararların özetini tutar.
+Manifest en az:
 
 ```text
-run_id            : RUN-YYYYMMDD-XXX
-status            : (güncel run durumu)
-created_at        : ISO 8601 tarih
-completed_at      : ISO 8601 tarih (tamamlandığında)
-agent_id          : Çalıştıran ajan kimliği (izlenebilirlik için)
-project_slug      : Proje tanımlayıcısı
-selected_package  : packages/<PACKAGE_NAME>.md
-delivery_profile  : Foundation | Prototype | Implementation Ready | Production Ready
-documents_produced: Üretilen doküman ID listesi
-validation_result : PASS | CONDITIONAL PASS | FAIL
-output_version    : Atanan çıktı sürümü (ör. v0.1)
-output_ref        : outputs/<category>/<project-slug>/versions/<output_version>/
+run_id
+status
+created_at / updated_at / completed_at
+agent_id
+project_slug
+input_id / input_version
+selected_package
+delivery_profile
+implementation_planning
+design_planning (or N/A only non-UI)
+documents_produced
+dynamic_instances_produced
+validation_result
+output_version
+output_ref
 ```
 
-### INPUT_SNAPSHOT.md
+tutmalıdır.
 
-Run başlangıcında alınan onaylı girdi anlık görüntüsü.
+`dynamic_instances_produced` gerçek path'leriyle en az:
 
-### PACKAGE_SELECTION.md
+- WAVE-PLAN instance'larını,
+- PAGE-DESIGN instance'larını,
+- FEATURE-DESIGN instance'larını
 
-Seçilen paketin gerekçesi ve genişletme/daraltma kararları.
+izlenebilir kılar.
 
-### SOURCE_REGISTER.md
-
-Kullanılan paket, template dosyaları ve ref belgelerinin listesi.
-
-### ASSUMPTIONS.md
-
-Yapılan tüm assumption kayıtları. Bkz: `ASSUMPTION_RULES.md`.
-
-### CONFLICTS.md
-
-Çözülen veya blocked durumundaki çelişki kayıtları. Bkz: `CONFLICT_RESOLUTION.md`.
-
-### DECISIONS.md
-
-Run süresince alınan önemli kararlar.
-
-### RUN_LOG.md
-
-Run sırasındaki önemli olayların kronolojik kaydı. RUN_MANIFEST'in özetini tekrar etmez.
-
-### PROGRESS.md
-
-Üretim aşamalarının tamamlanma durumu.
-
-### VALIDATION_REPORT.md
-
-Validation sonuçları, geçen ve başarısız olan kontroller.
-
-### COMPLETION_REPORT.md
-
-Run'ın kapanış özeti.
+Manifest planning profile değerleri INPUT_SNAPSHOT ile birebir eşleşmelidir.
 
 ---
 
-## Input Snapshot
+# INPUT_SNAPSHOT
 
-Run başlangıcında, approved girdi anlık görüntüsü alınır ve `INPUT_SNAPSHOT.md`'e kaydedilir.
+Run Initialized olurken aktif approved input immutable operasyonel snapshot olarak alınır.
 
-Girdi snapshot alındıktan sonra run süresince değiştirilemez (MUST NOT).
+Run başladıktan sonra approved project truth yeni version'a geçse bile snapshot değiştirilmez.
 
-Girdi değişmesi gerekiyorsa mevcut run geçersiz kılınır ve yeni run açılır.
-
----
-
-## Pause ve Resume
-
-```text
-Pause:
-→ Kullanıcı kararı bekleniyor veya clarification sorusu yanıtlanmamış.
-→ Run durumu "Paused" olarak güncellenir.
-→ Bekleyen sorular PROGRESS.md veya RUN_MANIFEST.md'e yazılır.
-
-Resume:
-→ Kullanıcı yanıt verdi veya onay sağladı.
-→ Run "Resumed" sonrası "Running" durumuna geçer.
-→ Input snapshot değişmediyse yeni snapshot gerekmez.
-```
+Yeni input truth → yeni run.
 
 ---
 
-## Başarılı Run Kapanışı
+# PACKAGE_SELECTION
 
-Başarılı yayınlama kapısı (publication gate eligibility) tamamlandıktan sonra aşağıdaki adımlar sırasıyla uygulanarak run "Completed" olarak kapatılır:
-
-```text
-1. Tüm zorunlu dokümanlar üretildi ve doğrulama sonucu PASS veya kabul edilmiş CONDITIONAL PASS alındı.
-2. Sürüm numarası (output_version) tahsis edilip final output versions/<output_version>/ klasörüne yayınlandı.
-3. latest/ türetilmiş görünümü yeni sürümle güncellendi.
-4. RUN_MANIFEST.md belgesinde output_ref, output_version ve status: Completed alanları donduruldu.
-5. Run klasörü runs/completed/<run-id>/ konumuna taşındı.
-6. Aynı <run-id> için runs/active/ altında hiçbir klasör veya dosya kalmadığı doğrulandı.
-```
-
-`status: Completed` yazmak tek başına kapanış değildir. Fiziksel lifecycle konumu ile manifest durumu eşleşmelidir.
-
-Aşağıdaki durum contract ihlalidir ve completion geçerli sayılmaz:
+Package selection kaydı:
 
 ```text
-runs/completed/<run-id>/ mevcut
-AND
-runs/active/<run-id>/ de mevcut
+base package
+planning profile overlay
+implementation planning
+design planning
+resolved canonical document IDs
+conditional include/exclude decisions
+dynamic instance resolution summary
 ```
+
+içermelidir.
+
+Planning overlay reduction ile düşürülemez.
 
 ---
 
-## Başarısız Run Kapanışı (Failed)
+# SOURCE_REGISTER
 
-Aşağıdaki durumlardan biri oluştuğunda run "Failed" olarak kapatılır:
+En az kullanılan:
 
-```text
-1. İkinci validation'dan sonra da FAIL alındı.
-2. Üretim teknik veya kritik bir hatayla durdu ve kurtarılamadı.
-```
+- approved input,
+- base package,
+- `packages/PLANNING_PROFILE_OVERLAY.md`,
+- relevant engine contracts,
+- canonical templates,
+- project-provided/repository/ref sources
 
-Başarısız run:
+kaydedilir.
 
-- Final output olarak işlenmez.
-- `latest/` güncellenmez.
-- Run klasörü `runs/failed/<run-id>/` konumuna taşınır.
-- Aynı `run-id` için `runs/active/` altında kopya MUST NOT kalır.
-
----
-
-## İptal Edilen Run Kapanışı (Cancelled)
-
-Kullanıcı tarafından bilinçli olarak iptal edilen run "Cancelled" durumuna geçer.
-
-İptal edilen run:
-
-- `RUN_MANIFEST.md` içerisindeki `status` değeri `Cancelled` olarak kalır (`Failed` yapılmaz).
-- Final output üretilmez ve `latest/` güncellenmez.
-- Fiziksel olarak ayrı bir `runs/cancelled/` klasörü tanımlı olmadığı için kayıt `runs/failed/<run-id>/` altında tutulabilir; ancak durum bilgisi her zaman `Cancelled` kalır.
-- Aynı `run-id` için `runs/active/` altında kopya bırakılmaz.
+`ref/` source'ları Reference Only olarak ayrılır; project truth gibi gösterilmez.
 
 ---
 
-## Run Geçersiz Kılma (Invalidation)
+# ASSUMPTIONS / CONFLICTS / DECISIONS
 
-Tamamlanmış bir run aşağıdaki durumlarda "Invalidated" olarak işaretlenir:
-
-```text
-- Proje kapsamı önemli ölçüde değişti.
-- Temel teknik kararlar değişti.
-- Approved girdi revize edildi.
-- Output'un mevcut durumu yanlış temsil ettiği anlaşıldı.
-```
-
-Geçersiz kılınan run:
-
-- `runs/completed/` veya `runs/failed/` altındaki kaydı korunur (silinmez).
-- `latest/` geçersiz run'a işaret etmemelidir.
-- Yeni run açılır.
+- Assumption kayıtları `ASSUMPTION_RULES.md` formatına uyar.
+- Conflict kayıtları `CONFLICT_RESOLUTION.md`'ye uyar.
+- Run-level decisions operasyon sırasında alınan kısa karar kayıtlarıdır; final project `ai/DECISIONS.md` ile aynı dosya değildir.
+- Private reasoning saklanmaz.
 
 ---
 
-## Yeni Run Gerektiren Durumlar
+# PROGRESS
 
-Mevcut run devam ettirilemez, yeni run açılmalıdır:
+Progress canonical generation pipeline stage'lerini izler.
+
+Dynamic instance üretiminde yalnız toplam yüzde değil gerçek coverage görünür olmalıdır:
 
 ```text
-- Approved girdi run başladıktan sonra değiştirilmek isteniyor.
-- Run scope'u değişiyor (yeni doküman türleri eklenecek veya çıkarılacak).
-- Proje slug veya kategorisi değişiyor.
-- Önceki run "Failed", "Cancelled" veya "Invalidated" durumunda.
+WAVE plans: 4/4
+Page design instances: 5/5
+Feature design instances: 2/2
 ```
+
+applicable ise.
 
 ---
 
-## Run Kayıtlarının Final Output ile İlişkisi
+# Pause / Blocked
 
-Run kayıtları final output içine MUST NOT sızmaz.
+Kullanıcı kararı veya clarification bekleniyorsa run uygun status'a alınır.
+
+Input snapshot'ı değiştirecek scope/profile değişikliği gerekiyorsa active run üzerinde mutate edilmez; yeni pending/approved input + yeni run gerekir.
+
+---
+
+# Validation
+
+`VALIDATION_REPORT.md` en az:
+
+- canonical document coverage,
+- dynamic instance coverage,
+- planning profile compliance,
+- approval integrity,
+- integration readiness,
+- design profile/quality checks,
+- agent-ready acceptance test,
+- lifecycle location integrity (completion sırasında)
+
+sonuçlarını taşır.
+
+---
+
+# Başarılı Kapanış
+
+Sıra:
 
 ```text
-runs/active/<run-id>/
-  → Sadece run operasyon kayıtları ve working-output/
-
-outputs/<category>/<project-slug>/
-  → Sadece temiz, doğrulanmış proje dokümanları
+1. Required canonical documents + dynamic instances üretildi.
+2. Validation PASS veya accepted CONDITIONAL PASS alındı.
+3. output_version tahsis edildi.
+4. versions/<version>/ canonical package yayınlandı.
+5. latest/ güncellendi.
+6. RUN_MANIFEST output refs + status Completed ile donduruldu.
+7. COMPLETION_REPORT yazıldı.
+8. Run klasörü runs/completed/<run-id>/ konumuna taşındı.
+9. runs/active/<run-id>/ artık mevcut olmadığı doğrulandı.
 ```
 
-Bu ayrım `OUTPUT_STRUCTURE.md` ile birlikte korunur.
+`status: Completed` yazmak fiziksel move olmadan yeterli değildir.
+
+---
+
+# Failed / Cancelled
+
+Failed:
+
+- final output yayınlanmaz,
+- latest değişmez,
+- run `runs/failed/<run-id>/` altına taşınır,
+- active kopya kalmaz.
+
+Cancelled:
+
+- status `Cancelled` kalır,
+- ayrı cancelled folder olmadığı için `runs/failed/<run-id>/` altında tutulabilir,
+- final output/latest yok,
+- active kopya yok.
+
+---
+
+# Invalidation
+
+Completed run sonradan:
+
+- approved truth değişti,
+- major scope/architecture değişti,
+- output'un yanlış gerçeği temsil ettiği anlaşıldı
+
+ise `Invalidated` olabilir.
+
+History silinmez. `latest/` invalidated run'a bağlı kalamaz. Yeni run açılır.
+
+---
+
+# Final Output Boundary
+
+Run operasyon dosyaları final output içine MUST NOT sızar.
+
+```text
+runs/
+→ execution evidence
+
+outputs/
+→ clean agent-ready project package
+```
+
+Bu ayrım `OUTPUT_STRUCTURE.md` tarafından fiziksel olarak enforce edilir.
