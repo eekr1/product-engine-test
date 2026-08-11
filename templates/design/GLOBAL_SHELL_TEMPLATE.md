@@ -4,106 +4,106 @@
 
 ```yaml
 template_id: global-shell-template
-template_name: Global Shell Structural Template
-document_id: not_applicable
-version: 1.0.0
+template_name: Global Shell Template
+document_id: GLOBAL-SHELL
+version: 1.1.0
 status: active
-template_type: structural
+template_type: document
 category: design
 supported_packages:
-  - corporate-website
-  - demo-frontend
-  - saas
-  - existing-project
+  - all-ui
 supported_delivery_profiles:
+  - foundation
   - prototype
   - implementation-ready
   - production-ready
+supported_design_planning:
+  - standard
+  - full
 required_inputs:
   - design_rules
+  - design_system
   - product_rules
-conditional_inputs: []
 dependencies:
   - DESIGN
-output_filename: not_applicable
+  - DESIGN-SYSTEM
+output_filename: GLOBAL_SHELL.md
 ```
 
 ## Amaç
 
-Uygulamanın genel ekran düzeni kabuğunu (Header/Navbar, Footer, Sidebar, Main Content Area, Modal Overlay) tanımlayan yapısal şablon sunmak.
+Uygulamanın ortak layout shell'ini, navigation modelini, header/sidebar/footer/overlay sınırlarını ve responsive shell davranışını tanımlamak.
 
 ## Kullanım Koşulları
 
-UI düzen mimarisine sahip web ve mobil uygulamalarında yapısal şablon olarak kullanılır.
-
-## Girdi Kaynakları
-
-- `DESIGN_RULES.md`, `PRODUCT_RULES.md`
+`design_planning: standard | full` olan ve ortak shell/navigation yapısı bulunan UI projelerinde zorunludur.
 
 ## Zorunlu Bölümler
 
-- Ekran Kabuk Yapısı ve Layout (Global Shell Layout)
-- Navigasyon Elemanları (Header & Navigation Bar)
-- İçerik Alanı Kısıtlamaları (Main Content Constraints)
+- Global Layout Shell
+- Navigation Architecture
+- Main Content Constraints
+- Responsive Shell Behavior
+- Global Overlay / Modal Layering
 
 ## Koşullu Bölümler
 
-- `[CONDITIONAL: include only if sidebar navigation exists]` Sidebar Düzen Kuralları
-- `[CONDITIONAL: include only if footer exists]` Footer Yapısı
+- Sidebar kuralları
+- Footer kuralları
+- Mobile bottom navigation
+- Authenticated vs public shell varyasyonları
 
 ## İçerik Üretim Kuralları
 
-- Bağımsız catalog document ID'si içermemelidir (`document_id: not_applicable`).
-- Mobil ve masaüstü breakpoint'lerde kabuğun nasıl davranacağını açıklamalıdır.
+- Shell yalnız global layout/navigation sahibi olmalıdır; page içeriğini sahiplenmemelidir.
+- Desktop ve mobile davranışları ayrı ayrı açıklanmalıdır.
+- Navigation isimleri `PRODUCT_RULES` ve gerçek page seti ile uyumlu olmalıdır.
+- Generic navbar/footer template'i otomatik seçilmemeli; shell projenin kullanım bağlamına göre tasarlanmalıdır.
+- Z-index/overlay ilişkileri implementation sırasında belirsiz kalmayacak düzeyde tanımlanmalıdır.
 
 ## Placeholder Tanımları
 
-- `{{SHELL_LAYOUT_DIAGRAM_OR_SPEC}}`: Shell yerleşim alanları ve z-index hiyerarşisi.
-- `{{NAVBAR_SPECIFICATION}}`: Header/Navbar yapısı, logo yerleşimi ve navigasyon linkleri.
+- `{{PROJECT_NAME}}`
+- `{{SHELL_LAYOUT_SPEC}}`
+- `{{NAVIGATION_ARCHITECTURE}}`
+- `{{CONTENT_CONSTRAINTS}}`
+- `{{RESPONSIVE_SHELL_BEHAVIOR}}`
+- `{{GLOBAL_OVERLAY_RULES}}`
 
 ## Kapsam Dışı
 
-- Tekil sayfa içerikleri (bkz: `PAGE_SPEC_TEMPLATE.md`)
-
-## Diğer Dokümanlarla İlişki
-
-- Primary Owner: Uygulama kabuk düzeni.
-- Referenced By: `DESIGN_RULES.md`, `PAGE_SPEC_TEMPLATE.md`.
-
-## Delivery Profile Davranışı
-
-- Tüm sayfalarda tutarlı kabuk yapısı ve navigasyon deneyimi sağlar.
+- Page-specific section/layout detayları
+- Feature-specific state/flow
 
 ## Validation Beklentileri
 
-- Responsive kırılma noktaları belirtilmelidir.
+- Page design package'ları shell ile çelişmemeli.
+- Navigasyon gerçek route/surface setiyle tutarlı olmalı.
 
 ---
 
 # OUTPUT DOCUMENT START
 
-# Global Layout Shell Specification
+# {{PROJECT_NAME}} — Global Shell
 
-## 1. Ekran Kabuk Yapısı (Global Shell Layout)
+## 1. Global Layout Shell
 
-{{SHELL_LAYOUT_DIAGRAM_OR_SPEC}}
+{{SHELL_LAYOUT_SPEC}}
 
-## 2. Navigasyon Elemanları (Header & Navbar)
+## 2. Navigation Architecture
 
-{{NAVBAR_SPECIFICATION}}
+{{NAVIGATION_ARCHITECTURE}}
 
-## 3. İçerik Alanı Kısıtlamaları (Main Content Area)
+## 3. Main Content Constraints
 
-- Maksimum genişlik (max-width), padding ve merkezleme kuralları.
+{{CONTENT_CONSTRAINTS}}
 
-[CONDITIONAL: include only if sidebar navigation exists]
-## 4. Sidebar Düzen Kuralları
+## 4. Responsive Shell Behavior
 
-- Daraltılabilir (collapsible) sidebar yapısı ve durumları.
+{{RESPONSIVE_SHELL_BEHAVIOR}}
 
-[CONDITIONAL: include only if footer exists]
-## 5. Footer Yapısı
+## 5. Global Overlay / Layering Rules
 
-- Alt bilgi alanı, telif hakkı ve ikincil linkler.
+{{GLOBAL_OVERLAY_RULES}}
 
 # OUTPUT DOCUMENT END
