@@ -4,94 +4,109 @@
 
 ```yaml
 template_id: design-system-template
-template_name: Design System Structural Template
-document_id: not_applicable
-version: 1.0.0
+template_name: Design System Template
+document_id: DESIGN-SYSTEM
+version: 1.1.0
 status: active
-template_type: structural
+template_type: document
 category: design
 supported_packages:
-  - corporate-website
-  - demo-frontend
-  - saas
-  - existing-project
+  - all-ui
 supported_delivery_profiles:
+  - foundation
   - prototype
   - implementation-ready
   - production-ready
+supported_design_planning:
+  - standard
+  - full
 required_inputs:
   - design_rules
-conditional_inputs: []
 dependencies:
   - DESIGN
-output_filename: not_applicable
+output_filename: DESIGN_SYSTEM.md
 ```
 
 ## Amaç
 
-Tasarım sistemi token'larını (renk, tipografi, gölge, border-radius, spacing) ve temel UI yapı taşlarını tanımlayan tekrar kullanılabilir bir yapısal şablon sunmak.
+Tasarım sistemi token'larını, semantic color rollerini, tipografi/spacing/radius/shadow sistemini ve temel UI primitive'lerini tek canonical sözleşmede tanımlamak.
 
 ## Kullanım Koşulları
 
-Tasarım dokümantasyonlarında veya `DESIGN_RULES.md` içindeki sistemik token tanımlamalarında kullanılır.
+`design_planning: standard | full` olan UI/UX projelerinde zorunludur.
 
 ## Girdi Kaynakları
 
 - `DESIGN_RULES.md`
+- Approved intake/design context
 
 ## Zorunlu Bölümler
 
-- Tasarım Token'ları (Design Tokens: Colors, Typography, Spacing, Shadows, Radii)
-- Temel UI Yapı Taşları (Foundational UI Elements)
-
-## Koşullu Bölümler
-
-- `[CONDITIONAL: include only if icon system is defined]` İkon Sistemi Standartları
+- Design Token Sistemi
+- Semantic Color Roles
+- Typography System
+- Spacing / Radius / Shadow System
+- Foundational Components / Primitives
+- Interaction State Tokens
 
 ## İçerik Üretim Kuralları
 
-- Yeni bir Document Catalog ID'si icat edilmemelidir (`document_id: not_applicable`).
-- CSS değişkenleri veya token isimleri İngilizce ve standart formatta sunulmalıdır.
+- Token'lar `DESIGN_RULES.md` visual concept'inden türemeli; generic library default'u kopyalanmamalıdır.
+- Renkler yalnız sektör klişesinden türetilmemelidir.
+- Semantic roller (`surface`, `text`, `accent`, `danger` vb.) raw renk değerlerinden ayrılmalıdır.
+- Page/feature belgeleri yeni token sistemi icat edemez; bu belgeyi kullanır.
+- Framework-specific code zorunlu değildir; implementation-ready isimlendirme ve değer ilişkileri zorunludur.
 
 ## Placeholder Tanımları
 
-- `{{DESIGN_TOKENS_BLOCK}}`: Renk, spacing, gölge ve tipografi token değişkenleri.
-- `{{FOUNDATION_ELEMENTS_SUMMARY}}`: Butonlar, inputlar ve card yapı taşlarının standartları.
+- `{{PROJECT_NAME}}`
+- `{{DESIGN_TOKENS_BLOCK}}`
+- `{{SEMANTIC_COLOR_ROLES}}`
+- `{{TYPOGRAPHY_SYSTEM}}`
+- `{{SPACING_RADIUS_SHADOW_SYSTEM}}`
+- `{{FOUNDATIONAL_COMPONENTS}}`
+- `{{INTERACTION_STATE_TOKENS}}`
 
 ## Kapsam Dışı
 
-- Sayfa özel düzenleri (bkz: `PAGE_SPEC_TEMPLATE.md`)
-
-## Diğer Dokümanlarla İlişki
-
-- Primary Owner: Tasarım token ve yapı taşı sözleşmesi.
-- Referenced By: `DESIGN_RULES.md`, `COMPONENT_SPEC_TEMPLATE.md`.
-
-## Delivery Profile Davranışı
-
-- Tasarım bütünlüğü için tutarlı token rehberliği sağlar.
+- Page-specific layout
+- Feature-specific flow
+- Ürün iş kuralları
 
 ## Validation Beklentileri
 
-- Token değerleri ve isimleri tutarlı olmalıdır.
+- Token sistemi kendi içinde tutarlı olmalı.
+- `DESIGN_RULES.md` ile visual direction çelişkisi olmamalı.
+- Duplicate/raw hard-coded style kararları azaltılmalı.
 
 ---
 
 # OUTPUT DOCUMENT START
 
-# Design System Specification
+# {{PROJECT_NAME}} — Design System
 
-## 1. Tasarım Token'ları (Design Tokens)
+## 1. Design Token Sistemi
 
 {{DESIGN_TOKENS_BLOCK}}
 
-## 2. Temel UI Yapı Taşları
+## 2. Semantic Color Roles
 
-{{FOUNDATION_ELEMENTS_SUMMARY}}
+{{SEMANTIC_COLOR_ROLES}}
 
-[CONDITIONAL: include only if icon system is defined]
-## 3. İkon Sistemi Standartları
+## 3. Typography System
 
-- Kullanılacak ikon kütüphanesi, boyutlandırma ve renk eşleşme kuralları.
+{{TYPOGRAPHY_SYSTEM}}
+
+## 4. Spacing, Radius ve Shadow System
+
+{{SPACING_RADIUS_SHADOW_SYSTEM}}
+
+## 5. Foundational Components / Primitives
+
+{{FOUNDATIONAL_COMPONENTS}}
+
+## 6. Interaction State Tokens
+
+{{INTERACTION_STATE_TOKENS}}
 
 # OUTPUT DOCUMENT END
