@@ -6,76 +6,79 @@
 template_id: agent-instructions-template
 template_name: Agent Instructions Template
 document_id: AGENT-INST
-version: 1.0.0
+version: 1.1.0
 status: active
 template_type: document
 category: ai
 supported_packages:
   - all
 supported_delivery_profiles:
+  - foundation
+  - prototype
   - implementation-ready
   - production-ready
+supported_implementation_planning:
+  - standard
+  - full
 required_inputs:
   - approved_intake
-conditional_inputs: []
+  - project_brain
+  - product_rules
+  - tech_context
+  - wave_map
 dependencies:
   - PROJECT-BRAIN
   - PRODUCT-RULES
+  - TECH-CTX
+  - WAVE-MAP
 output_filename: AGENT_INSTRUCTIONS.md
 ```
 
 ## Amaç
 
-Projede görev alacak yapay zeka ajanı için projeye özel çalışma kurallarını, kodlama konvansiyonlarını, iletişim tarzını ve davranış önceliklerini tanımlamak.
+Projede çalışacak herhangi bir yetkin AI agent için model-bağımsız çalışma, read-order, active-wave execution, code quality, verification ve documentation handoff kurallarını tanımlamak.
 
 ## Kullanım Koşulları
 
-Implementation Ready ve Production Ready projelerde zorunludur.
-
-## Girdi Kaynakları
-
-- `PROJECT_BRAIN.md`, `PRODUCT_RULES.md`, `TECH_CONTEXT.md`
+`implementation_planning: standard | full` projelerde zorunludur.
 
 ## Zorunlu Bölümler
 
-- Ajan Davranış Kuralları (Agent Behavior Rules)
-- Kodlama Konvansiyonları ve Standartları (Coding Conventions)
-- İletişim ve Raporlama Tarzı (Communication Style)
-- Doğrulama ve Test Yükümlülükleri (Verification Mandates)
-
-## Koşullu Bölümler
-
-- `[CONDITIONAL: include only if project has strict security rules]` Güvenlik ve Gizlilik Kuralları
+- Canonical Read Order
+- Agent Behavior Rules
+- Active Wave Execution Rule
+- Coding / Architecture Conventions
+- Verification Mandates
+- Documentation Update / Handoff Rule
+- Stop / Clarification Rules
 
 ## İçerik Üretim Kuralları
 
-- Model bağımsız olmalıdır (Claude, Gemini, GPT veya Codex'e özel ifade veya davranış yazılmamalıdır).
-- Product Engine sözleşmeleriyle (`engine/`) çelişen talimatlar verilmemelidir.
+- Claude/Gemini/GPT/Codex gibi modele özel çalışma kuralı yazılmaz.
+- Product Engine runtime authority ile çelişemez.
+- Agent aktif WAVE_PLAN scope'u dışına sessizce çıkamaz.
+- Yeni mimari karar gerektiğinde DECISIONS/clarification mekanizması kullanılmalıdır.
+- Demo/prototype gerekçesiyle quality floor düşürülemez.
+- Wave sonunda gerçek ilerleme CURRENT_STATUS ve NEXT_TASKS'a yansıtılmalıdır.
+- Alınan önemli kalıcı kararlar DECISIONS'a kaydedilmelidir.
+- Tamamlanmamış iş completed gösterilemez.
 
 ## Placeholder Tanımları
 
-- `{{PROJECT_NAME}}`: Proje adı.
-- `{{BEHAVIOR_RULES_LIST}}`: Projeye özel ajan davranış ilkeleri.
-- `{{CODING_CONVENTIONS_LIST}}`: Kodlama standartları ve dosya düzeni kuralları.
-- `{{COMMUNICATION_STYLE_RULES}}`: Raporlama ve açıklama formatı kuralları.
-
-## Kapsam Dışı
-
-- Ürün iş mantığı kuralları (bkz: `PRODUCT_RULES.md`)
-- Genel Product Engine çalıştırma kuralları (bkz: `engine/RUN_PROTOCOL.md`)
-
-## Diğer Dokümanlarla İlişki
-
-- Primary Owner: `agent_behavior_rules`, `working_priorities`, `coding_conventions`, `communication_style`.
-- Referenced By: `PROJECT_BRAIN.md`, `README.md`.
-
-## Delivery Profile Davranışı
-
-- Projeye atanan ajanın koda müdahale etmeden önce uyması gereken sınırları tam ve net bir dille belirtir.
+- `{{PROJECT_NAME}}`
+- `{{CANONICAL_READ_ORDER}}`
+- `{{BEHAVIOR_RULES}}`
+- `{{ACTIVE_WAVE_RULES}}`
+- `{{CODING_ARCHITECTURE_CONVENTIONS}}`
+- `{{VERIFICATION_MANDATES}}`
+- `{{DOCUMENTATION_HANDOFF_RULES}}`
+- `{{STOP_CLARIFICATION_RULES}}`
 
 ## Validation Beklentileri
 
-- Hiçbir model spesifik prompt veya private chain-of-thought talebi bulunmamalıdır.
+- Model-specific private reasoning/prompt talebi bulunmamalı.
+- Active wave ve documentation update kuralları açık olmalı.
+- TECH_CONTEXT architecture boundary'leriyle çelişmemeli.
 
 ---
 
@@ -83,25 +86,32 @@ Implementation Ready ve Production Ready projelerde zorunludur.
 
 # {{PROJECT_NAME}} — Agent Instructions
 
-## 1. Ajan Davranış Kuralları
+## 1. Canonical Read Order
 
-{{BEHAVIOR_RULES_LIST}}
+{{CANONICAL_READ_ORDER}}
 
-## 2. Kodlama Konvansiyonları ve Standartları
+## 2. Agent Behavior Rules
 
-{{CODING_CONVENTIONS_LIST}}
+{{BEHAVIOR_RULES}}
 
-## 3. İletişim ve Raporlama Tarzı
+## 3. Active Wave Execution Rule
 
-{{COMMUNICATION_STYLE_RULES}}
+{{ACTIVE_WAVE_RULES}}
 
-## 4. Doğrulama ve Test Yükümlülükleri
+## 4. Coding / Architecture Conventions
 
-- Değişiklikler sonrası kod derlenme ve test doğrulama kuralları.
+{{CODING_ARCHITECTURE_CONVENTIONS}}
 
-[CONDITIONAL: include only if project has strict security rules]
-## 5. Güvenlik ve Gizlilik Kuralları
+## 5. Verification Mandates
 
-- Hassas veriler, API key'ler ve yetkilendirme katmanları ile ilgili kısıtlamalar.
+{{VERIFICATION_MANDATES}}
+
+## 6. Documentation Update / Handoff Rule
+
+{{DOCUMENTATION_HANDOFF_RULES}}
+
+## 7. Stop / Clarification Rules
+
+{{STOP_CLARIFICATION_RULES}}
 
 # OUTPUT DOCUMENT END
