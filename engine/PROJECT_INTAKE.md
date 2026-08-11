@@ -19,11 +19,13 @@ Bu belge şunların sahibidir:
 - Eksik bilgi sınıflandırması
 - Clarification (netleştirme) gerektiren durumlar
 - Assumption yapılamayacak bilgi türleri
+- Planning profile alanlarının intake/approval durumu
 
 ## Kapsam Dışı
 
 Bu belge şunların sahibi değildir:
 
+- Planning profile değerlerinin tam anlamı → `PLANNING_PROFILES.md`
 - Doküman paketinin seçim mantığı → `PACKAGE_RULES.md`
 - Bilginin hangi dokümana yazılacağı → `INFORMATION_MAP.md`
 - Varsayım yapma izinlerinin tamamı → `ASSUMPTION_RULES.md`
@@ -56,9 +58,26 @@ delivery_profile
   Projenin hedef teslim olgunluk düzeyi.
   Değerler: Foundation | Prototype | Implementation Ready | Production Ready
 
+implementation_planning
+  Projenin execution/implementation planning derinliği.
+  Değerler: standard | full
+  Ayrıntılar: PLANNING_PROFILES.md
+
 primary_language
   Projenin birincil dili. Ajanlar bunu çıktı dilini belirlemek için kullanır.
 ```
+
+### UI/UX Taşıyan Projeler İçin Zorunlu Alan (MUST when applicable)
+
+```text
+design_planning
+  UI/UX design planning derinliği.
+  Değerler: light | standard | full
+  Applicable örnek türler: web-app, mobile-app, landing-page, content-platform,
+  UI taşıyan internal-tool veya diğer UI kapsamlı projeler.
+```
+
+UI/UX taşımayan projelerde `design_planning` için `none` adlı bir değer kullanılmaz; alan applicable değildir ve canonical profile seçimi yapılmaz.
 
 ### Önerilen Alanlar (SHOULD)
 
@@ -88,6 +107,10 @@ scope_boundaries
 
 known_constraints
   Bilinen teknik, yasal veya ticari kısıtlamalar.
+
+integration_readiness_context
+  Özellikle frontend/demo projelerinde bugünkü data source, mock/local veri sınırı,
+  gelecekteki backend/API entegrasyon beklentisi ve bilinen integration boundary bilgisi.
 ```
 
 ### İsteğe Bağlı Alanlar (MAY)
@@ -102,6 +125,33 @@ approved_facts
 additional_context
   Yukarıdaki kategorilere girmeyen bağlam bilgileri.
 ```
+
+---
+
+## Planning Profile Intake Kuralı
+
+`delivery_profile`, `implementation_planning` ve applicable ise `design_planning` farklı eksenlerdir.
+
+Ajan pending intake sırasında planning profile önerisi yapabilir; ancak package/document generation öncesinde değerler approved input içinde kesinleşmiş olmalıdır.
+
+Örnek geçerli kombinasyon:
+
+```yaml
+delivery_profile: Prototype
+implementation_planning: standard
+design_planning: light
+```
+
+Bu kombinasyon çelişkili değildir. Prototype delivery profile, implementation planning seviyesini otomatik olarak düşürmez.
+
+### Profile Approval
+
+Planning profile değerleri, diğer canonical intake kararlarıyla aynı explicit approval kuralına tabidir.
+
+- Ajan profile önerebilir.
+- Kullanıcı pending intake'i açıkça onayladığında profile değeri approved input gerçeği olur.
+- IDE/tool/plan auto-approval profile onayı değildir.
+- Approved input oluşturulduktan sonra planning profile değiştirilmek istenirse yeni input snapshot gerekir.
 
 ---
 
@@ -151,8 +201,8 @@ Foundation
   Ajan projeyi anlayabilir; ancak belirli teknik kararlar henüz verilmemiştir.
 
 Prototype
-  Hızlı deneme veya PoC amaçlı. Belge yoğunluğu minimumdur.
-  Kritik kararlar kaydedilir; ancak tam implementation detayları beklenmez.
+  Hızlı deneme veya PoC amaçlı. Teslim olgunluğu sınırlıdır ancak kalite tabanı düşmez.
+  Prototype olması throwaway mimari veya eksik execution planning anlamına gelmez.
 
 Implementation Ready
   Bir ajanın koda başlayabileceği yeterlilikte dokümantasyon.
@@ -163,6 +213,8 @@ Production Ready
   daha olgun bir dokümantasyon profilidir. Gereksiz doküman üretme ilkesi devam
   eder; ancak production için gerekli belgeler atlanmaz.
 ```
+
+Planning profile ayrıntıları için bkz: `PLANNING_PROFILES.md`.
 
 ---
 
@@ -196,6 +248,7 @@ Pending girdide:
 
 - Eksik zorunlu alanlar kaydedilmiştir.
 - Belirsiz alanlar işaretlenmiştir.
+- Planning profile önerileri ve gerekçeleri görünürdür.
 - Kullanıcıya sorulması gereken sorular hazırlanmıştır.
 
 Pending girdiyle üretim başlatılamaz.
@@ -207,6 +260,8 @@ Kullanıcı girdinin içeriğini onaylamıştır.
 Approved girdide:
 
 - Tüm zorunlu alanlar doldurulmuştur veya kabul edilmiş assumption'larla tamamlanmıştır.
+- `implementation_planning` kesinleşmiştir.
+- UI/UX taşıyan projelerde `design_planning` kesinleşmiştir.
 - Açık çelişkiler çözülmüştür.
 - Ajan üretimi başlatabilir.
 
@@ -248,6 +303,7 @@ Canonical explicit approval kanıtı yoksa:
 | Durum | Tanım | Davranış |
 |---|---|---|
 | Kritik Eksiklik | Paket seçimi, proje türü veya kapsamı belirlenemiyor | Üretim durdurulur, kullanıcıya soru sorulur |
+| Planning Profile Eksikliği | `implementation_planning` veya applicable `design_planning` kesin değil | Pending intake'te öneri/clarification üretilir; approval öncesi kesinleşir |
 | Tamamlanabilir Eksiklik | Paket varsayılanıyla güvenli biçimde doldurulabilir | Assumption yapılır, kaydedilir |
 | Gelecekte Belirlenecek | Şu an için zorunlu değil, sonradan tamamlanacak | Unresolved item olarak işaretlenir |
 
@@ -261,9 +317,13 @@ Aşağıdaki durumlarda ajan MUST kullanıcıya soru sormalıdır:
 
 - `project_type` belirsiz veya çelişkili ise
 - `delivery_profile` belirtilmemişse (pending intake aşamasında netleştirilmeli veya safe inference ile belirlenip onay için kullanıcının onayına sunulmalıdır; approved input öncesi kesinleşmek zorundadır)
+- `implementation_planning` için `standard` ve `full` arasında proje kapsamını ciddi biçimde değiştiren bir belirsizlik varsa
+- UI/UX taşıyan projede `design_planning` için birden fazla makul derinlik varsa ve seçim document scope'u anlamlı biçimde değiştiriyorsa
 - `project_state` belirsiz ise (yani ne kadar mevcut materyal olduğu anlaşılamıyorsa)
 - Birden fazla kapsam yorumu mümkün ve bunlar farklı paket seçimine yol açıyorsa
 - Kullanıcı iki farklı proje hakkında bilgi vermiş gibi görünüyorsa (proje karışıklığı riski)
+
+Ajan açık bağlamdan makul planning profile önerisi yapabilir; ancak approved input öncesi bu öneri kullanıcıya görünür olmalıdır.
 
 ---
 
@@ -285,6 +345,8 @@ Aşağıdaki bilgiler hiçbir koşulda sessizce uydurulmamalıdır (MUST NOT):
 
 Bu bilgiler eksikse, üretim durdurulur ve kullanıcıya netleştirme sorusu yönlendirilir.
 
+Backend/integration readiness, henüz kararlaştırılmamış API endpoint'i, database veya backend stack'i uydurma izni vermez. Bkz: `PLANNING_PROFILES.md`.
+
 ---
 
 ## Intake'in Hazır Sayılma Koşulları
@@ -293,8 +355,10 @@ Bir girdi aşağıdaki koşulların tamamını karşıladığında approved olar
 
 1. Tüm zorunlu alanlar doldurulmuştur.
 2. `project_type` ve `delivery_profile` netleştirilmiştir.
-3. `project_state` belirlenmiş; mevcut proje ise kaynaklar listelenmiştir.
-4. Kritik çelişkiler çözülmüştür.
-5. Assumption yapılan alanlar açıkça kaydedilmiştir.
-6. Kullanıcının canonical explicit approval mesajı alınmıştır; IDE/tool/plan/auto-approval bu koşulu karşılamaz.
-7. `approved_by: user` yalnızca 6. koşul için doğrudan kanıt varsa yazılmıştır.
+3. `implementation_planning` `standard | full` olarak netleştirilmiştir.
+4. UI/UX taşıyan projelerde `design_planning` `light | standard | full` olarak netleştirilmiştir.
+5. `project_state` belirlenmiş; mevcut proje ise kaynaklar listelenmiştir.
+6. Kritik çelişkiler çözülmüştür.
+7. Assumption yapılan alanlar açıkça kaydedilmiştir.
+8. Kullanıcının canonical explicit approval mesajı alınmıştır; IDE/tool/plan/auto-approval bu koşulu karşılamaz.
+9. `approved_by: user` yalnızca 8. koşul için doğrudan kanıt varsa yazılmıştır.
