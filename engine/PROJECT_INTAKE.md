@@ -222,19 +222,38 @@ Planning profile ayrıntıları için bkz: `PLANNING_PROFILES.md`.
 
 ### Sıfırdan Proje (new)
 
-- Mevcut kod veya belge yoktur.
+- Mevcut ürün/site/codebase/doküman/önceki implementation bağlamı yoktur.
 - Girdi olarak fikir, amaç, kapsam ve tercihler beklenir.
 - Tüm dokümanlar yeni olarak üretilir.
 
 ### Mevcut Proje (existing)
 
-- Kod, doküman veya önceki çalışmalar mevcuttur.
-- Ek olarak şunlar beklenir:
-  - Mevcut kaynakların listesi veya bağlantısı
-  - Mevcut dokümanların durumu (güncel mi, geçerliliğini yitirmiş mi?)
-  - Üretilecek dokümanların mevcut olanlarla ilişkisi
-- Çıktı, mevcut gerçeklikle çelişmemelidir.
-- Mevcut projenin kabul edilen gerçekleri assumption olarak değil, onaylı girdi olarak işlenir.
+Aşağıdaki gerçekliklerden biri bile yeni çalışmanın source/transition context'i ise proje `existing` kabul edilir:
+
+```text
+mevcut website veya ürün
+mevcut codebase
+mevcut proje dokümantasyonu
+önceki implementation / çalışan sistem
+korunacak mevcut firma/ürün gerçekleri ve bunların bağlı olduğu mevcut sistem
+```
+
+Yeni hedef implementation'ın veya yeni codebase'in sıfırdan yazılması `project_state: new` yapmak için yeterli değildir.
+
+```text
+existing product/site + rewrite from scratch → existing
+existing system + new frontend implementation → existing
+idea with no existing project reality → new
+```
+
+Existing projede ayrıca şunlar beklenir:
+
+- Mevcut kaynakların listesi veya bağlantısı
+- Mevcut dokümanların durumu (güncel mi, geçerliliğini yitirmiş mi?)
+- Üretilecek dokümanların mevcut olanlarla ilişkisi
+- Current Reality / Target State / Transition Scope ayrımı
+
+Çıktı, mevcut gerçeklikle çelişmemelidir. Mevcut projenin kabul edilen gerçekleri assumption olarak değil, onaylı girdi olarak işlenir.
 
 ---
 
@@ -309,6 +328,25 @@ Canonical explicit approval kanıtı yoksa:
 
 Ayrıntılı assumption kuralları için bkz: `ASSUMPTION_RULES.md`.
 
+### Stack-Neutral Pending Kuralı
+
+Exact frontend/backend stack, runtime veya package manager unresolved ise pending intake ve assumption kayıtları stack-neutral kalmalıdır.
+
+```text
+Allowed:
+- local development/preview environment
+- suitable build/runtime after technical resolution
+
+Not allowed while unresolved:
+- npm run dev
+- pnpm/yarn command
+- Vite-specific command
+- React/Next/Vue-specific execution assumption
+- framework-specific file/runtime gerçeği
+```
+
+Bu kural safe assumption üretimini engellemez; yalnız henüz verilmemiş teknik kararı assumption üzerinden gizlice kesinleştirmeyi engeller.
+
 ---
 
 ## Clarification Gerektiren Durumlar
@@ -345,7 +383,7 @@ Aşağıdaki bilgiler hiçbir koşulda sessizce uydurulmamalıdır (MUST NOT):
 
 Bu bilgiler eksikse, üretim durdurulur ve kullanıcıya netleştirme sorusu yönlendirilir.
 
-Backend/integration readiness, henüz kararlaştırılmamış API endpoint'i, database veya backend stack'i uydurma izni vermez. Bkz: `PLANNING_PROFILES.md`.
+Backend/integration readiness, henüz kararlaştırılmamış API endpoint'i, database veya backend stack'i uydurma izni vermez. Exact stack unresolved iken stack-specific execution assumption da yapılamaz. Bkz: `PLANNING_PROFILES.md`.
 
 ---
 
@@ -357,8 +395,8 @@ Bir girdi aşağıdaki koşulların tamamını karşıladığında approved olar
 2. `project_type` ve `delivery_profile` netleştirilmiştir.
 3. `implementation_planning` `standard | full` olarak netleştirilmiştir.
 4. UI/UX taşıyan projelerde `design_planning` `light | standard | full` olarak netleştirilmiştir.
-5. `project_state` belirlenmiş; mevcut proje ise kaynaklar listelenmiştir.
+5. `project_state` mevcut proje gerçekliğiyle doğru sınıflandırılmış; existing ise kaynaklar ve transition context listelenmiştir.
 6. Kritik çelişkiler çözülmüştür.
-7. Assumption yapılan alanlar açıkça kaydedilmiştir.
+7. Assumption yapılan alanlar açıkça kaydedilmiştir ve unresolved stack hakkında stack-specific gerçeklik uydurulmamıştır.
 8. Kullanıcının canonical explicit approval mesajı alınmıştır; IDE/tool/plan/auto-approval bu koşulu karşılamaz.
 9. `approved_by: user` yalnızca 8. koşul için doğrudan kanıt varsa yazılmıştır.
