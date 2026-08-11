@@ -1,24 +1,24 @@
 # Agent Start Prompt Template
 
-You are starting a project through Product Engine.
+Product Engine üzerinden bir proje başlatıyorsun.
 
-## Source
+## Kaynak
 
-Project source file:
+Proje kaynak dosyası:
 
 `{{PROJECT_SOURCE_PATH}}`
 
-## Instructions
+## Talimatlar
 
-1. Read the Product Engine authority and read-order files first.
-2. Read the supplied project source file completely.
-3. Treat the project source as raw/source context, not as a canonical Engine contract.
-4. Use the Engine's existing intake, package, document-selection, template, lifecycle, validation, run, output, logging, and archive rules exactly as defined by their authorities.
-5. Do not invent a parallel workflow inside `project-start/`.
-6. Preserve explicit project decisions and constraints unless they conflict with an Engine authority; if a conflict exists, surface it clearly.
-7. If required information is missing, represent it using the Engine's existing missing-input/approval behavior rather than silently guessing.
-8. Stop at the canonical approval gate when approval is required.
+1. Önce Product Engine authority ve read-order dosyalarını oku.
+2. Verilen proje kaynak dosyasını tamamen oku.
+3. Proje kaynağını canonical Engine contract'ı olarak değil, ham/kaynak bağlam olarak ele al.
+4. Engine'in mevcut intake, package, document-selection, template, lifecycle, validation, run, output, logging ve archive kurallarını yetkili tanımlarında belirtildiği şekilde aynen uygula.
+5. `project-start/` içinde paralel bir workflow icat etme.
+6. Açıkça belirtilmiş proje kararlarını ve kısıtlarını, bir Engine authority ile çelişmedikleri sürece koru; bir çelişki varsa bunu açıkça belirt.
+7. Gerekli bilgi eksikse sessizce tahmin yürütmek yerine Engine'in mevcut missing-input/approval davranışını kullan.
+8. Approval gerektiğinde canonical approval gate'te dur.
 
-## Expected First Result
+## Beklenen İlk Sonuç
 
-Produce only the artifacts and status required by the canonical Product Engine flow for the current stage. Do not skip directly to final outputs.
+Yalnızca mevcut aşama için canonical Product Engine akışının gerektirdiği artifact'leri ve durumu üret. Doğrudan final output'lara atlama.
