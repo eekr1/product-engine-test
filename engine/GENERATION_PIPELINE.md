@@ -2,253 +2,409 @@
 
 ## Amaç
 
-Bu belge, Product Engine'in tek bir çalışmada uçtan uca hangi aşamalarla yürüdüğünü tanımlar.
+Bu belge, Product Engine'in tek bir run içinde approved project truth'u agent-ready, validated ve versioned proje dokümantasyon paketine dönüştürürken izlediği canonical runtime execution flow'u tanımlar.
 
-Her aşamanın girdisi, eylemi, beklenen çıktısı ve durma koşulları burada tanımlanır.
-
-Bu belge araç veya model bağımlı değildir.
+Bu pipeline model/tool bağımsızdır.
 
 ## Kapsam Dışı
 
-- Her intake alanının ayrıntılı açıklaması → `PROJECT_INTAKE.md`
-- Her validation maddesinin tam listesi → `VALIDATION_RULES.md`
-- Varsayım sınıflarının tamamı → `ASSUMPTION_RULES.md`
-- Output ağacının tüm ayrıntıları → `OUTPUT_STRUCTURE.md`
-- Template içerikleri → `templates/`
-- Run kayıt detayları → `RUN_PROTOCOL.md`
+- Intake alanlarının anlamı → `PROJECT_INTAKE.md`
+- Planning profile semantiği → `PLANNING_PROFILES.md`
+- Package seçim detayları → `PACKAGE_RULES.md`
+- Document registry → `DOCUMENT_CATALOG.md`
+- Bilgi sahipliği → `INFORMATION_MAP.md`
+- Validation ayrıntıları → `VALIDATION_RULES.md`
+- Run kayıt yaşam döngüsü → `RUN_PROTOCOL.md`
+- Output fiziksel yapısı → `OUTPUT_STRUCTURE.md`
 
 ---
 
-## Pipeline Aşamaları
+# Pipeline Aşamaları
 
-Aşağıdaki aşamalar zorunlu sırayla uygulanır.
-
----
-
-### Aşama 1 — Project Intake
+## Aşama 1 — Project Intake / Normalization
 
 ```text
-Girdi   : Ham proje bilgisi (serbest metin, yapılandırılmış form veya mevcut kaynaklar)
-Eylem   : Bilgi kabul kriterlerine göre değerlendirilir. Zorunlu alanlar kontrol edilir.
-          Eksik veya belirsiz zorunlu alanlar için kullanıcıya soru sorulur.
-          Assumption yapılabilecek alanlar kaydedilir.
-Çıktı   : Pending girdi (zorunlu alanlar doldurulmuş, clarification tamamlanmış)
-Durma   : Zorunlu alanlar tamamlanamıyorsa veya kritik belirsizlik giderilemiyorsa
-          → Kullanıcıya netleştirme sorusu yönlendirilir, pipeline beklemeye alınır.
+Girdi   : Ham proje brief'i, kaynak dosyaları, existing project context
+Eylem   : PROJECT_INTAKE kurallarıyla canonical alanlara normalize edilir.
+          delivery_profile, implementation_planning ve applicable ise design_planning için
+          açık öneri/gerekçe hazırlanır.
+          Missing input, assumption ve conflict'ler görünür hale getirilir.
+Çıktı   : inputs/pending/<project-slug>/PROJECT_INPUT.md
+Durma   : Critical missing/conflict veya karar gerektiren belirsizlik varsa kullanıcıya taşınır.
 ```
 
-Bkz: `PROJECT_INTAKE.md`
+Planning profile önerisi pending aşamada yapılabilir; canonical truth değildir.
 
 ---
 
-### Aşama 2 — Girdi Onayı
+## Aşama 2 — Canonical Explicit Approval Gate
 
 ```text
-Girdi   : Pending girdi
-Eylem   : Kullanıcı girdinin içeriğini onaylar.
-          Onay açık olmalıdır (sessiz onay kabul edilmez).
-          Assumption listesi kullanıcıya gösterilir.
-Çıktı   : Approved girdi (onaylı snapshot)
-Durma   : Kullanıcı onaylamıyorsa veya düzeltme talep ediyorsa
-          → Aşama 1'e geri dönülür.
+Girdi   : Pending input + açık karar/assumption/profile özeti
+Eylem   : Kullanıcı pending project truth'u doğrudan ve bilinçli biçimde onaylar.
+Çıktı   : inputs/approved/<project-slug>/vN/PROJECT_INPUT.md
+Durma   : Explicit user approval yoksa pipeline burada durur.
 ```
 
+IDE/tool/plan/auto-approval bu gate'i geçemez.
+
+Approved input oluşturulmadan package/document generation run başlatılamaz.
+
 ---
 
-### Aşama 3 — Paket Seçimi
+## Aşama 3 — Base Package + Planning Overlay Resolution
 
 ```text
-Girdi   : Approved girdi (project_type + delivery_profile)
-Eylem   : PACKAGE_RULES.md'ye göre temel paket belirlenir.
-          Uzantı ve daraltma değerlendirmesi yapılır.
-          Seçilen paket ve gerekçesi kaydedilir.
-Çıktı   : Seçilen paket kimliği ve doküman listesi
-Durma   : Paket belirlenemiyorsa (belirsiz tür/profil)
-          → Kullanıcıya soru sorulur. Tahmin yapılmaz.
+Girdi   : Approved input
+          project_type
+          delivery_profile
+          implementation_planning
+          design_planning (applicable ise)
+
+Eylem   :
+1. PACKAGE_RULES ile base package seçilir.
+2. packages/PLANNING_PROFILE_OVERLAY.md uygulanır.
+3. Base package domain-required belgeleri ile planning minimumları birleştirilir.
+4. Contextual extension/reduction koşulları uygulanır.
+5. Reduction planning profile minimumunu ihlal edemez.
+
+Çıktı   : Resolved package context + candidate canonical Document ID seti
+Durma   : Approved input profile/enum eksik veya invalid ise intake correction gerekir.
 ```
 
-Bkz: `PACKAGE_RULES.md`
-
----
-
-### Aşama 4 — Doküman Seçimi
+Önemli invariant:
 
 ```text
-Girdi   : Seçilen paket
-Eylem   : DOCUMENT_CATALOG.md üzerinden doküman kimlikleri çözümlenir.
-          Koşullu dokümanların uygunluğu değerlendirilir.
-          Her doküman için template konumu belirlenir.
-Çıktı   : Üretilecek doküman listesi (ID + template konumu)
-Durma   : Bir doküman için template bulunamazsa
-          → Eksiklik rapor edilir, kullanıcıya bildirilir.
-```
-
-Bkz: `DOCUMENT_CATALOG.md`
-
----
-
-### Aşama 5 — Template Çözümlemesi
-
-```text
-Girdi   : Doküman listesi
-Eylem   : Her doküman için ilgili template okunur.
-          Template içindeki yapı ve gerekli bilgi alanları belirlenir.
-Çıktı   : Her doküman için doldurulacak içerik alanlarının listesi
-Durma   : Template eksik veya bozuksa
-          → Eksiklik rapor edilir.
+base package
++
+planning overlay
++
+contextual conditions
+=
+resolved document scope
 ```
 
 ---
 
-### Aşama 6 — Bilgi Dağıtımı
+## Aşama 4 — Canonical Document + Dynamic Instance Resolution
+
+`DOCUMENT_CATALOG.md` candidate seti filtreler ve gerçek document/instance planını oluşturur.
+
+### 4.1 Canonical Document Resolution
+
+Her Document ID için sırayla:
+
+1. Project type applicable mı?
+2. Delivery profile applicable mı?
+3. Implementation planning condition applicable mı?
+4. Design planning condition applicable mı?
+5. Conditional scope gerçekten mevcut mu?
+6. Dependencies applicable mı?
+7. Canonical template mevcut mu?
+
+### 4.2 Wave Instance Resolution
+
+`implementation_planning: standard | full` ise:
 
 ```text
-Girdi   : Approved girdi + doküman listesi + INFORMATION_MAP.md
-Eylem   : Onaylı girdideki her bilgi parçası, INFORMATION_MAP.md'e göre
-          doğru dokümana yönlendirilir.
-          Birden fazla dokümanı etkileyen bilgiler primary owner'a yazılır;
-          diğerleri referans düzeyinde kullanır.
-Çıktı   : Her doküman için bilgi içeriği hazırlanmış
-Durma   : Bir bilginin sahipliği belirsizse
-          → CONFLICT_RESOLUTION.md uygulanır.
+WAVE-MAP
+→ bütün implementation wave'lerini çözer
+→ her implementation wave için bir WAVE-PLAN instance üretim planına eklenir
+
+waves/plans/WAVE_00.md
+waves/plans/WAVE_01.md
+...
 ```
 
-Bkz: `INFORMATION_MAP.md`
+Her wave yeni Document ID değildir; bütün instance'lar `WAVE-PLAN` kimliğini kullanır.
+
+### 4.3 Page / Screen Instance Resolution
+
+`design_planning: standard | full` ve UI page/screen surface'leri varsa:
+
+- approved scope ve product flows içindeki distinct implementation surface'ler belirlenir,
+- küçük section farklılıkları ayrı page sayılmaz,
+- her distinct surface için bir `PAGE-DESIGN` instance planlanır.
+
+Örnek:
+
+```text
+HOME_DESIGN_PACKAGE.md
+SERVICES_DESIGN_PACKAGE.md
+ROOM_DESIGN_PACKAGE.md
+```
+
+### 4.4 Feature Instance Resolution
+
+Yalnız `design_planning: full` ise ve gerçek cross-screen / complex interaction feature varsa `FEATURE-DESIGN` instance üretilir.
+
+Basit page davranışı feature package'a yükseltilmez.
+
+### 4.5 Admin / Operational Resolution
+
+`ADMIN-DESIGN` yalnız:
+
+- design planning full,
+- gerçek admin/moderation/operational UI approved scope'ta
+
+ise seçilir.
+
+Çıktı:
+
+```text
+Canonical Document ID seti
++
+Dynamic instance registry
++
+Template mapping
+```
+
+Template eksikse generation başlamaz; catalog/template contract hatası raporlanır.
 
 ---
 
-### Aşama 7 — Eksik ve Çelişkili Bilgi Yönetimi
+## Aşama 5 — Template Resolution
+
+Her canonical document/instance için ilgili template okunur.
 
 ```text
-Girdi   : Dağıtım sonucu + eksik veya çelişkili alanlar listesi
-Eylem   : ASSUMPTION_RULES.md uygulanır (eksik bilgi için).
-          CONFLICT_RESOLUTION.md uygulanır (çelişkili bilgi için).
-          Assumption yapılan alanlar kaydedilir.
-          Güvenli çözülemeyen çelişkiler kullanıcıya taşınır.
-Çıktı   : Tüm alanlar ya doldurulmuş, ya assumption yapılmış, ya da açık olarak işaretlenmiş
-Durma   : Kritik bilgi eksik ve assumption yapılamıyorsa
-          → Kullanıcıya soru sorulur, üretim beklemeye alınır.
-          Kritik çelişki çözülemiyorsa
-          → Pipeline blocked durumuna alınır, kullanıcıya bildirilir.
+Girdi   : Document + dynamic instance registry
+Eylem   : Template metadata, required sections, placeholders, dependencies okunur.
+Çıktı   : Generation-ready document plans
+Durma   : Missing/duplicate/conflicting canonical skeleton varsa FAIL / Engine contract repair gerekir.
 ```
 
-Bkz: `ASSUMPTION_RULES.md`, `CONFLICT_RESOLUTION.md`
+Single-Skeleton kuralı korunur:
+
+- yeni page instance → yeni template değil,
+- yeni feature instance → yeni template değil,
+- yeni wave → yeni template değil.
 
 ---
 
-### Aşama 8 — Doküman Üretimi
+## Aşama 6 — Information Distribution
+
+Approved input ve resolved project context, `INFORMATION_MAP.md` ownership kurallarıyla doğru belgelere dağıtılır.
+
+Primary owner dışındaki belgeler aynı bilgiyi yeniden sahiplenmez; gerektiğinde kısa referans verir.
+
+Örnek ownership zinciri:
 
 ```text
-Girdi   : Doldurulmuş içerik + template yapısı
-Eylem   : Her doküman template'i, onaylı bilgiyle doldurularak üretilir.
-          Dokümanlar bağımlılık sırasına göre üretilir (PROJECT_BRAIN önce, türevler sonra).
-          Üretim sırasında oluşan çalışma dosyaları working output olarak tutulur.
-Çıktı   : Working output (henüz doğrulanmamış doküman seti)
-Durma   : Bir doküman üretimi başarısız olursa
-          → Hata kaydedilir, etkilenen doküman atlanır ve sonraki işlenir.
-          Tüm zorunlu dokümanlar üretilemiyorsa → pipeline fail durumuna geçer.
-```
-
-Doküman üretim bağımlılık sırası (genel):
-
-```text
-PROJECT_BRAIN → PRODUCT_RULES, TECH_CONTEXT
-PROJECT_BRAIN → WAVE_MAP → WAVE_PLAN
-PROJECT_BRAIN → DESIGN_RULES (koşullu)
-PROJECT_BRAIN, TECH_CONTEXT → DATA_MODEL
-TECH_CONTEXT, DATA_MODEL → API_CONTRACTS
-TECH_CONTEXT → DEPLOYMENT
-PROJECT_BRAIN, TECH_CONTEXT → TEST_STRATEGY
-PROJECT_BRAIN → README
-CURRENT_STATUS → NEXT_TASKS
-```
-
-Not: Bağımlılık sırasındaki her dependency dokümanı, yalnızca aktif `project_type + delivery_profile` kombinasyonu için `DOCUMENT_CATALOG.md` uyarınca applicable ise zorunlu üretim bağımlılığı oluşturur. Applicable olmayan bağımlılıklar skip edilir ve kataloğun applicability sınırları aşılamaz.
-
----
-
-### Aşama 9 — Doğrulama (Validation)
-
-```text
-Girdi   : Working output
-Eylem   : VALIDATION_RULES.md'deki pre-publication kontrolleri uygulanır.
-          Her doküman hem kendi içinde hem de diğer dokümanlarla tutarlılık açısından kontrol edilir.
-Çıktı   : Validation raporu (PASS / CONDITIONAL PASS / FAIL)
-Durma   : FAIL durumunda repair (Aşama 10) aşamasına geçilir.
-          CONDITIONAL PASS durumunda kullanıcı/operatör bilgilendirilir; iki geçerli yol mevcuttur:
-          A) accepted CONDITIONAL PASS → Aşama 11 (Final Output Hazırlığı / Publication) adımıyla devam edilir.
-          B) repair requested → Aşama 10 (Repair) adımına geçilir.
-```
-
-Bkz: `VALIDATION_RULES.md`
-
----
-
-### Aşama 10 — Onarım (Repair)
-
-```text
-Girdi   : Validation raporu + working output
-Eylem   : FAIL durumunda (veya CONDITIONAL PASS sonrası repair talep edildiyse), validation bulgularına göre
-          ilgili dokümanlar düzeltilir.
-          Onarım sonrası validation (Aşama 9) tekrar çalıştırılır.
-Çıktı   : Onarılmış working output
-Durma   : İkinci validation'da da FAIL alınırsa
-          → Run başarısız kabul edilir (status: Failed). Kullanıcıya rapor verilir.
-```
-
----
-
-### Aşama 11 — Final Output Hazırlığı (Publication)
-
-```text
-Girdi   : PASS veya kabul edilmiş CONDITIONAL PASS working output (publication gate eligibility)
-Eylem   : Sürüm numarası (output_version) tahsis edilir.
-          Final output, OUTPUT_STRUCTURE.md uyarınca versions/<output_version>/ klasörüne yerleştirilir.
-          latest/ türetilmiş görünümü yeni sürümün kopyasıyla güncellenir.
-          RUN_MANIFEST.md belgesindeki output_ref ve output_version alanları dondurulur.
-Çıktı   : Yayınlanmış sürüm çıktısı (versions/<output_version>/ ve latest/)
-Durma   : Output yayınlama aşamasında hata oluşursa → düzeltilir ve tekrar kontrol edilir.
-```
-
-Bkz: `OUTPUT_STRUCTURE.md`
-
----
-
-### Aşama 12 — Run Tamamlama (Completion)
-
-```text
-Girdi   : Yayınlanmış sürüm çıktısı + dondurulmuş manifest
-Eylem   : Run kaydı tamamlanır. Run durumu "Completed" olarak güncellenir.
-          Üretilen dokümanlar, kullanılan paket, yapılan assumption'lar ve
-          validation sonucu RUN_MANIFEST.md ve COMPLETION_REPORT.md belgelerine işlenir.
-          Run klasörü runs/completed/<run-id>/ konumuna taşınır.
-Çıktı   : Kapalı run kaydı (status: Completed)
-Durma   : — (bu son aşamadır)
-```
-
-Bkz: `RUN_PROTOCOL.md`
-
----
-
-## Pipeline Geri Dönüş Noktaları
-
-```text
-Aşama 1'e geri dönülür:
-  → Girdi onaylanmamışsa veya düzeltme gerekiyorsa.
-
-Aşama 3'e geri dönülür:
-  → Paket seçimi belirsizleştiyse (proje kapsamı değiştiyse).
-
-Aşama 9'a geri dönülür:
-  → Repair sonrası validation yeniden çalıştırılır.
+technical architecture / integration readiness → TECH-CTX
+visual concept → DESIGN
+design tokens → DESIGN-SYSTEM
+global shell/navigation → GLOBAL-SHELL
+page-specific layout/actions → PAGE-DESIGN
+cross-screen feature flow → FEATURE-DESIGN
+shared UI states → SYSTEM-STATES
+wave architecture → WAVE-MAP
+wave execution tasks/acceptance → WAVE-PLAN
+current project truth → STATUS
+immediate active-wave queue → TASKS
 ```
 
 ---
 
-## Pipeline ve Run Protocol Ayrımı
+## Aşama 7 — Missing / Assumption / Conflict Handling
 
-Bu belge üretim sürecinin mantığını tanımlar.
+Generation öncesi ve sırasında ortaya çıkan eksik veya çelişkili bilgiler:
 
-`RUN_PROTOCOL.md` ise bir run'ın nasıl başlatıldığını, durum geçişlerini, kayıt yapısını ve kapanış sürecini tanımlar.
+- `ASSUMPTION_RULES.md`
+- `CONFLICT_RESOLUTION.md`
 
-İki belgenin sorumlulukları birbirine karıştırılmamalıdır.
+uyarınca ele alınır.
+
+### Critical Stop
+
+Aşağıdakiler varsayımla geçilemez:
+
+- approved scope'u değiştiren ürün kararı,
+- gerçek backend/API/database target'ı,
+- production deployment target'ı,
+- authentication/security kararı,
+- kullanıcı tarafından seçilmesi gereken kritik ürün tercihi.
+
+### Integration Readiness Sınırı
+
+Backend yokken clean boundary üretilebilir; fake endpoint/database üretilemez.
+
+---
+
+## Aşama 8 — Dependency-Ordered Generation
+
+Generation, resolved dependency graph sırasıyla yapılır.
+
+Genel sıra:
+
+```text
+Approved Input
+    ↓
+PROJECT-BRAIN
+    ↓
+PRODUCT-RULES
+    ↓
+TECH-CTX
+    ↓
+┌──────────────────────────────┬──────────────────────────────────┐
+│ Implementation Planning      │ Design Planning (UI applicable)  │
+│                              │                                  │
+│ WAVE-MAP                     │ DESIGN                           │
+│   ↓                          │   ↓                              │
+│ WAVE-PLAN instances          │ DESIGN-SYSTEM (std/full)         │
+│                              │   ↓                              │
+│ PROJ-PLAN                    │ GLOBAL-SHELL (if applicable)     │
+│                              │ PAGE-DESIGN instances            │
+│ STATUS                       │ SYSTEM-STATES (interactive)      │
+│   ↓                          │   ↓                              │
+│ TASKS                        │ FEATURE-DESIGN (full/conditional)│
+│                              │ ADMIN-DESIGN (full/conditional)  │
+└──────────────────────────────┴──────────────────────────────────┘
+    ↓
+AGENT-INST / DECISIONS / README-DOC
+    ↓
+conditional DATA / API / TEST / PROD-STRAT / DEPLOY / OPS
+```
+
+Dependency graph gerçek catalog applicability ile çözülür; bu diyagram zorla document üretmez.
+
+### Standard Implementation Minimum
+
+Applicable implementation-bearing projede `implementation_planning: standard` en az:
+
+```text
+README-DOC
+PROJECT-BRAIN
+PRODUCT-RULES
+TECH-CTX
+STATUS
+TASKS
+DECISIONS
+AGENT-INST
+PROJ-PLAN
+WAVE-MAP
+WAVE-PLAN instances
+```
+
+üretir.
+
+### Design Minimumları
+
+```text
+design light
+→ DESIGN
+
+design standard
+→ DESIGN
+→ DESIGN-SYSTEM
+→ GLOBAL-SHELL (if applicable)
+→ PAGE-DESIGN instances
+→ SYSTEM-STATES (interactive UI)
+
+design full
+→ standard set
+→ FEATURE-DESIGN instances (only if justified)
+→ ADMIN-DESIGN (only if justified)
+```
+
+---
+
+## Aşama 9 — Validation
+
+Working output `VALIDATION_RULES.md` ile doğrulanır.
+
+Validation yalnız dosya varlığını değil şunları da kontrol eder:
+
+- planning profile compliance,
+- dynamic instance coverage,
+- wave coverage,
+- page/feature coverage,
+- information ownership,
+- integration readiness,
+- design anti-template/quality invariants,
+- cross-document consistency,
+- agent-readiness,
+- approval integrity,
+- run lifecycle integrity.
+
+Sonuç:
+
+```text
+PASS
+CONDITIONAL PASS
+FAIL
+```
+
+FAIL → Aşama 10.
+
+Accepted CONDITIONAL PASS → publication'a ilerleyebilir.
+
+---
+
+## Aşama 10 — Repair
+
+Validation bulguları working output üzerinde düzeltilir ve validation tekrar çalıştırılır.
+
+İkinci validation sonrası kritik FAIL devam ediyorsa run `Failed` kapanır; final output yayınlanmaz.
+
+---
+
+## Aşama 11 — Publication
+
+PASS veya kabul edilmiş CONDITIONAL PASS sonrasında:
+
+1. `output_version` tahsis edilir.
+2. Clean final output `OUTPUT_STRUCTURE.md` canonical yapısıyla `versions/<version>/` içine yazılır.
+3. `latest/` aynı sürümün türetilmiş görünümü olarak güncellenir.
+4. Run manifest document/instance registry ve output ref ile dondurulur.
+
+Working/runtime kayıtları final project package'a sızmaz.
+
+---
+
+## Aşama 12 — Run Completion
+
+Run:
+
+- status `Completed`,
+- validation sonucu,
+- selected base package,
+- delivery profile,
+- implementation/design planning profiles,
+- canonical documents,
+- dynamic instances,
+- output version/ref
+
+ile dondurulur.
+
+Run klasörü `runs/completed/<run-id>/` konumuna taşınır ve aynı ID `runs/active/` altında kalamaz.
+
+---
+
+# Pipeline Geri Dönüş Noktaları
+
+```text
+Aşama 1
+← pending intake correction / clarification / approval reddi
+
+Aşama 3
+← approved scope/profile yeni input version ile değişti
+
+Aşama 4
+← package/catalog/template contract düzeltildi
+
+Aşama 9
+← repair sonrası re-validation
+```
+
+Approved input run başladıktan sonra değişirse aktif run üzerinde mutate edilmez; yeni approved input version + yeni run gerekir.
+
+---
+
+# Agent-Ready Completion Invariant
+
+Successful Product Engine output'un nihai uygulama testi şudur:
+
+> Yetkin, projeyi daha önce görmemiş yeni bir ajan output paketini açtığında canonical read order'ı, projenin teknik/tasarım sınırlarını, aktif wave'i ve sıradaki görevleri anlayabilmeli; yeni bir mimari planlama turu yapmadan aktif `WAVE_<NN>.md` planını uygulamaya başlayabilmelidir.
+
+Bu koşul sağlanmıyorsa dokümanlar biçimsel olarak doğru olsa dahi Product Engine hedefi tam karşılanmış sayılmaz.
