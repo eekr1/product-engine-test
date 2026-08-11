@@ -22,6 +22,17 @@ FAIL             → blocking contract ihlali vardır; publication yapılamaz
 - canonical planning profile alanları geçerli mi?
 - `approved_by: user` gerçek explicit user approval'a dayanıyor mu?
 - auto/tool/plan approval kullanılmış mı?
+- `project_state` mevcut proje gerçekliğiyle uyumlu mu?
+
+`project_state` sanity rule:
+
+```text
+existing website/product/code/docs/previous implementation context exists
+→ project_state = existing
+
+new codebase/rewrite from scratch alone
+→ project_state = new anlamına gelmez
+```
 
 İhlal → FAIL.
 
@@ -44,7 +55,27 @@ ile uyumlu olmalıdır. Standard implementation minimumu veya applicable design 
 
 Eksik required coverage → FAIL.
 
-## 4. Wave Execution Depth
+## 4. Wave Decomposition + Execution Depth
+
+Validation önce WAVE_MAP decomposition'ını, sonra her WAVE_PLAN execution contract'ını kontrol eder.
+
+### WAVE_MAP Decomposition
+
+- wave'ler broad teknik fazlar yerine meaningful, independently verifiable deliverable'lara bölünmüş mü?
+- tek wave içinde birbirinden bağımsız birkaç product surface/feature/flow gizlenmiş mi?
+- distinct bir surface/feature kendi başına tamamlanıp doğrulanabiliyorsa yalnız teknik benzerlik nedeniyle başka bağımsız teslimlerle birleştirilmiş mi?
+- wave sonunda hangi deliverable'ın complete sayılacağı açık mı?
+- yapay mikro-wave üretilmiş mi?
+
+Kural:
+
+```text
+multiple independent meaningful deliverables hidden in one wave → FAIL / repair WAVE_MAP
+no meaningful standalone result → FAIL / merge or redefine
+coherent complete deliverable → valid candidate
+```
+
+### WAVE_PLAN Execution Depth
 
 Her wave bir task özeti değil execution contract olmalıdır.
 
@@ -55,11 +86,14 @@ Kontrol:
 - implementation checklist anlamlı alt gruplara ayrılmış mı?
 - görevler atomic ve doğrulanabilir mi?
 - normal kapsamlı wave yeterli implementation derinliğine sahip mi (çoğu durumda yaklaşık 10–20 doğrulanabilir görev; kota değildir)?
+- map'teki assigned deliverable applicable scope'uyla wave sonunda complete oluyor mu?
+- checklist, başka wave olması gereken bağımsız deliverable'ları `1.1 / 1.2` benzeri task'lar altında saklıyor mu?
 - state/role/responsive coverage applicable alanları kapsıyor mu?
 - verification + manual QA/debug + exit criteria somut mu?
+- user-facing surface ise applicable structure/content, interaction, responsive, states, accessibility ve data/service integration sorumlulukları ele alınmış mı?
 - agent wave'i okuyunca tekrar mini implementation planı üretmek zorunda mı?
 
-Son sorunun cevabı evet ise → FAIL.
+Son sorunun cevabı evet ise veya selected deliverable wave sonunda yarım kalıyorsa → FAIL.
 
 ## 5. Execution-Critical Decision Completeness
 
@@ -81,6 +115,10 @@ Execution-critical unresolved karar varken:
 - CURRENT_STATUS blocker yok diyemez,
 - NEXT_TASKS executable queue veremez,
 - README kesin command yazamaz.
+
+Exact stack/tooling unresolved ise `npm`, `pnpm`, `yarn`, `vite`, framework-specific command veya eşdeğer stack-specific assumption/command herhangi bir canonical/operational belgede gerçekmiş gibi yazılamaz. Stack-neutral preview/development ifadesi kullanılmalıdır.
+
+İhlal → FAIL.
 
 ## 6. Cross-Document Execution Consistency
 
@@ -150,6 +188,7 @@ Critical mismatch → FAIL.
 
 - canonical owner sınırları korunuyor mu?
 - prohibited/kayıtsız assumption var mı?
+- unresolved stack/tooling varken stack-specific assumption sızmış mı?
 - `confirmed` için gerçek authority var mı?
 - critical conflict çözülmüş mü?
 
@@ -164,7 +203,33 @@ Critical ihlal → FAIL.
 
 Critical ihlal → FAIL.
 
-## 13. Output + Operational Path Integrity
+## 13. Point-of-Use Refresh Evidence
+
+Artifact Production Loop uygulanmış olmalıdır; yalnız "template okundu" varsayımı yeterli değildir.
+
+Run'ın mevcut progress/log kayıtlarında her canonical artifact ve her dynamic instance için en az şu evidence bulunmalıdır:
+
+```text
+artifact / instance identity
+canonical template refreshed
+primary authorities refreshed
+local contract check result
+repair performed: yes/no
+```
+
+Özellikle dynamic instances ayrı doğrulanır:
+
+```text
+WAVE_00 refresh evidence
+WAVE_01 refresh evidence
+...
+```
+
+Tek bir genel `WAVE_PLAN_TEMPLATE refreshed` kaydı birden fazla wave'i kapsayamaz.
+
+Evidence yoksa, instance üretiminden önce refresh yapılmadığı görünüyorsa veya local-check sonucu kayıtlı değilse → FAIL.
+
+## 14. Output + Operational Path Integrity
 
 Final output path'leri `OUTPUT_STRUCTURE.md` ile birebir uyumlu olmalıdır.
 
@@ -181,7 +246,7 @@ design/DESIGN_RULES.md
 
 Gerçek output ile operational record path'i çelişiyorsa → FAIL.
 
-## 14. Traceability + Lifecycle
+## 15. Traceability + Lifecycle
 
 Manifest en az input/package/profiles/documents/dynamic instances/validation/output refs taşır.
 
@@ -203,9 +268,10 @@ Projeyi hiç görmemiş yetkin yeni bir ajan yalnız final package ile:
 2. scope ve teknik/design authority'yi anlayabiliyor mu?
 3. active wave'i belirleyebiliyor mu?
 4. active WAVE_PLAN + NEXT_TASKS ile **yeni planlama veya kritik teknik seçim yapmadan** implementation'a başlayabiliyor mu?
-5. done/QA/stop koşullarını anlayabiliyor mu?
+5. selected wave deliverable'ının ne zaman gerçekten complete olduğunu anlayabiliyor mu?
+6. done/QA/stop koşullarını anlayabiliyor mu?
 
-4. madde sağlanmıyorsa → FAIL.
+4 veya 5. madde sağlanmıyorsa → FAIL.
 
 ---
 
@@ -217,11 +283,13 @@ run_id
 base package + profiles
 canonical document coverage
 dynamic instance coverage
+wave decomposition result
 wave execution depth result
 execution-critical decision result
 cross-document execution consistency
-approval integrity
+approval + project_state integrity
 decision provenance
+point-of-use refresh evidence
 integration readiness
 design quality
 operational path integrity
