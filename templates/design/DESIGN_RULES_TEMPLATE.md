@@ -6,19 +6,21 @@
 template_id: design-rules-template
 template_name: Design Rules Template
 document_id: DESIGN
-version: 1.0.0
+version: 1.1.0
 status: active
 template_type: document
 category: design
 supported_packages:
-  - corporate-website
-  - demo-frontend
-  - saas
-  - existing-project
+  - all-ui
 supported_delivery_profiles:
+  - foundation
   - prototype
   - implementation-ready
   - production-ready
+supported_design_planning:
+  - light
+  - standard
+  - full
 required_inputs:
   - approved_intake
 conditional_inputs:
@@ -31,62 +33,120 @@ output_filename: DESIGN_RULES.md
 
 ## Amaç
 
-Projenin görsel dilini, bileşen kurallarını, UI/UX etkileşim kalıplarını ve erişilebilirlik (accessibility) standartlarını tanımlamak.
+Projenin **kendine özgü** visual direction'ını, tasarım karakterini, layout/composition ilkelerini, interaction yaklaşımını ve accessibility tabanını tanımlamak.
+
+`DESIGN_RULES.md`, UI içeren her projede design planning'in minimum canonical belgesidir.
 
 ## Kullanım Koşulları
 
-Arayüz (UI) içeren tüm projelerde zorunludur/koşulludur.
+UI/UX applicable projelerde `design_planning: light | standard | full` değerlerinin tamamında zorunludur.
 
 ## Girdi Kaynakları
 
-- Approved Project Intake (`engine/PROJECT_INTAKE.md`)
-- `PROJECT_BRAIN.md`, `PRODUCT_RULES.md`
+- Approved Project Intake
+- `engine/PLANNING_PROFILES.md`
+- `PROJECT_BRAIN.md`
+- `PRODUCT_RULES.md`
+- Doğrulanmış brand/design assets ve kullanıcı tercihleri (varsa)
 
 ## Zorunlu Bölümler
 
-- Görsel Dil ve Estetik İkeler (Visual Language & Aesthetics)
-- Tipografi ve Renk Paleti (Typography & Color Palette)
-- Düzen, Spacing ve Responsive Kurallar (Layout & Spacing)
-- Etkileşim ve Animation Kuralları (Interactions & Micro-animations)
-- Erişilebilirlik Standartları (Accessibility Standards)
-
-## Koşullu Bölümler
-
-- `[CONDITIONAL: include only if dark mode is supported]` Dark Mode Kuralları
+- Visual Concept & Design Character
+- Differentiation / Anti-Template Rationale
+- Composition & Layout Principles
+- Color Direction & Semantic Roles
+- Typography Direction
+- Interaction & Motion Principles
+- Responsive Principles
+- Accessibility Baseline
+- Imagery / Iconography Direction
+- Explicit Design Anti-Patterns
 
 ## İçerik Üretim Kuralları
 
-- Tasarım kararları kullanıcı tercihlerine dayanmalı; sessizce renk/stil uydurulmamalıdır.
-- Modern web estetiği (zengin tipografi, dinamik renk tayfı, glassmorphism, responsive düzen) ilkelerini gözetmelidir.
+### 1. Profile Depth ≠ Design Quality
+
+`design_planning: light`, yalnız artifact sayısını sınırlar. Tasarım düşüncesi, visual concept kalitesi veya farklılaşma standardı düşürülemez.
+
+### 2. Sektör Klişesi Default Olamaz
+
+Aşağıdaki gibi otomatik eşlemeler yasaktır:
+
+```text
+sanayi/makine → lacivert + klasik kurumsal hero
+SaaS → mor/mavi gradient + üç feature card
+AI → neon mor/cyan dark theme
+kurumsal → hero + 3 card + logo strip + CTA
+```
+
+Bu motifler ancak proje bağlamı ve farklılaşma gerekçesiyle bilinçli olarak seçilebilir.
+
+### 3. Project-Specific Visual Concept
+
+Visual concept şu kaynakların birleşiminden türetilmelidir:
+
+- ürün/marka karakteri
+- hedef kullanıcı ve kullanım bağlamı
+- içerik yoğunluğu
+- ürünün ana eylemleri
+- mevcut marka varlıkları
+- rakiplerden/benzer Engine output'larından ayrışma ihtiyacı
+
+Renk paleti tek başına visual concept değildir.
+
+### 4. Modern ≠ Trend Kopyası
+
+Glassmorphism, gradients, bento grids, giant typography veya başka güncel pattern'ler otomatik olarak kullanılmaz. Pattern yalnız içerik, hierarchy ve interaction ihtiyacını güçlendiriyorsa seçilir.
+
+### 5. Novelty ≠ Usability Loss
+
+Farklılaşma navigasyon, okunabilirlik, accessibility veya task clarity'yi bozmaz.
+
+### 6. Design Decision Provenance
+
+Kullanıcı/brand tarafından açıkça verilmemiş tasarım kararları Engine tarafından yaratıcı design synthesis olarak üretilebilir; ancak **firma gerçeği** gibi gösterilemez. Visual karar ile approved business fact ayrımı korunur.
 
 ## Placeholder Tanımları
 
-- `{{PROJECT_NAME}}`: Proje adı.
-- `{{VISUAL_LANGUAGE_NARRATIVE}}`: Estetik yaklaşım ve görsel tema açıklaması.
-- `{{COLOR_PALETTE_BLOCK}}`: Ana, ikincil, nötr ve durum renkleri (HSL/HEX).
-- `{{TYPOGRAPHY_SCALES_BLOCK}}`: Font aileleri, boyutlar ve ağırlıklar.
-- `{{SPACING_AND_LAYOUT_RULES}}`: Grid sistemi, padding/margin standartları.
-- `{{ACCESSIBILITY_RULES_LIST}}`: WCAG uyumluluk ve kontras kuralları.
+- `{{PROJECT_NAME}}`
+- `{{VISUAL_CONCEPT_NARRATIVE}}`
+- `{{DIFFERENTIATION_RATIONALE}}`
+- `{{COMPOSITION_LAYOUT_PRINCIPLES}}`
+- `{{COLOR_DIRECTION}}`
+- `{{TYPOGRAPHY_DIRECTION}}`
+- `{{INTERACTION_MOTION_PRINCIPLES}}`
+- `{{RESPONSIVE_PRINCIPLES}}`
+- `{{ACCESSIBILITY_BASELINE}}`
+- `{{IMAGERY_ICONOGRAPHY_DIRECTION}}`
+- `{{DESIGN_ANTI_PATTERNS}}`
 
 ## Kapsam Dışı
 
-- Ürün iş kuralları (bkz: `PRODUCT_RULES.md`)
-- Frontend framework kodları
+- Ürün iş kuralları
+- Framework-specific implementation code
+- Standard/full profile'a ait token/page/feature ayrıntılarının tamamı
 
-## Diğer Dokümanlarla İlişki
+## Planning Profile Davranışı
 
-- Primary Owner: `visual_language`, `component_rules`, `interaction_patterns`, `accessibility_rules`.
-- Referenced By: `PROJECT_BRAIN.md`, `README.md`.
+### light
 
-## Delivery Profile Davranışı
+Bu belge kendi başına uygulanabilir design direction vermelidir. Ayrı DESIGN_SYSTEM/PAGE-DESIGN belgesi beklenmediği için temel token yönü, composition mantığı ve interaction karakteri yeterince net olmalıdır.
 
-- **Prototype**: Temel görsel dil, renkler, fontlar ve görünüm kuralları.
-- **Implementation Ready**: Tam bileşen kuralları, responsive kırılma noktaları ve etkileşim durumları.
-- **Production Ready**: Kapsamlı erişilebilirlik standartları, performanslı animasyon bütçesi.
+### standard
+
+Bu belge visual direction authority'sidir; detay token/component sistemi `DESIGN_SYSTEM`, shell/page/state belgelerine dağıtılır.
+
+### full
+
+Standard davranışı korunur; feature/admin gibi daha derin belgeler aynı visual authority'yi kullanır.
 
 ## Validation Beklentileri
 
-- Tasarım tercihleri `PRODUCT_RULES.md` ile çelişmemelidir.
+- Generic/template drift olmamalı.
+- Sektör klişesi tek gerekçe olamaz.
+- `PRODUCT_RULES.md` ile çelişmemeli.
+- Renk/typography/composition kararları aynı visual concept'e hizmet etmeli.
+- Accessibility tabanı görünür olmalı.
 
 ---
 
@@ -94,31 +154,44 @@ Arayüz (UI) içeren tüm projelerde zorunludur/koşulludur.
 
 # {{PROJECT_NAME}} — Design Rules
 
-## 1. Görsel Dil ve Estetik İlkeler
+## 1. Visual Concept & Design Character
 
-{{VISUAL_LANGUAGE_NARRATIVE}}
+{{VISUAL_CONCEPT_NARRATIVE}}
 
-## 2. Tipografi ve Renk Paleti
+## 2. Differentiation / Anti-Template Rationale
 
-{{COLOR_PALETTE_BLOCK}}
+{{DIFFERENTIATION_RATIONALE}}
 
-{{TYPOGRAPHY_SCALES_BLOCK}}
+## 3. Composition & Layout Principles
 
-## 3. Düzen, Spacing ve Responsive Kurallar
+{{COMPOSITION_LAYOUT_PRINCIPLES}}
 
-{{SPACING_AND_LAYOUT_RULES}}
+## 4. Color Direction & Semantic Roles
 
-## 4. Etkileşim ve Animasyon Kuralları
+{{COLOR_DIRECTION}}
 
-- Hover durumları, geçiş efektleri ve mikro-animasyon standartları.
+## 5. Typography Direction
 
-## 5. Erişilebilirlik Standartları (Accessibility)
+{{TYPOGRAPHY_DIRECTION}}
 
-{{ACCESSIBILITY_RULES_LIST}}
+## 6. Interaction & Motion Principles
 
-[CONDITIONAL: include only if dark mode is supported]
-## 6. Dark Mode Kuralları
+{{INTERACTION_MOTION_PRINCIPLES}}
 
-- Karanlık tema renk eşlemeleri ve geçiş dinamikleri.
+## 7. Responsive Principles
+
+{{RESPONSIVE_PRINCIPLES}}
+
+## 8. Accessibility Baseline
+
+{{ACCESSIBILITY_BASELINE}}
+
+## 9. Imagery / Iconography Direction
+
+{{IMAGERY_ICONOGRAPHY_DIRECTION}}
+
+## 10. Explicit Design Anti-Patterns
+
+{{DESIGN_ANTI_PATTERNS}}
 
 # OUTPUT DOCUMENT END
