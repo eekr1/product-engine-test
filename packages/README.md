@@ -1,122 +1,227 @@
-# Product Engine — Packages Klasörü
+# Product Engine — Packages
 
-## 1. Amaç ve Tanım
+## Amaç
 
-`packages/` klasörü, Product Engine'in farklı proje türleri ve teslim hedefleri için kullanılacak dokümantasyon üretim paketlerini (Package) içerir.
+`packages/` proje bağlamına göre **base domain package** kapsamını ve bütün base package'lara ortak uygulanan **planning profile overlay** katmanını tanımlar.
 
-Bir **Package** (Dokümantasyon Paketi):
-- Belirli bir proje bağlamı için hangi dokümanların üretileceğini,
-- Hangi dokümanların zorunlu (Required), hangilerinin koşullu (Conditional) veya isteğe bağlı (Optional) olduğunu,
-- Farklı teslim olgunluk düzeylerinde (Delivery Profile) ne kadar dokümantasyon derinliği gerektiğini,
-- Dokümanların hangi template'lerle üretileceğini ve hangi çıktı (Output) kategorilerine yerleştirileceğini,
-- Hangi paket özel doğrulama (Validation) beklentilerinin uygulanacağını
-
-tanımlayan bağlayıcı bir kapsam sözleşmesidir.
-
----
-
-## 2. Package Ne Değildir?
-
-Sistem sınırlarını ve sorumluluk ayrımını korumak için:
-
-- **Package bir karar alma motoru değildir:** Hangi projenin hangi package ile eşleşeceğini `engine/PACKAGE_RULES.md` belirler. Package dosyaları seçim mantığını sahiplenmez.
-- **Package yeni doküman kimliği kaynağı değildir:** Tanınan tüm doküman ID'lerinin tek authoritative kaynağı `engine/DOCUMENT_CATALOG.md` belgesidir. Package yeni document ID icat edemez.
-- **Package catalog kurallarını ezemez:** Bir dokümanın bir paket içinde Required veya Conditional olması, `engine/DOCUMENT_CATALOG.md` içindeki `Applicable Types` ve `Applicable Profiles` sınırlarını aşamaz.
-- **Package template içeriği deposu değildir:** Dokümanların iç yapısı, başlık detayları ve şablon metinleri `templates/` klasörünün sorumluluğundadır. Package şablon metni barındırmaz.
-- **Package çıktı klasörü değildir:** Gerçek proje belgelerinin üretildiği ve saklandığı yer `outputs/` klasörüdür.
-
----
-
-## 3. Doküman Seçimi Filtreleme İlkesi ve Deterministik Fallback Algoritması
-
-Her desteklenen `project_type + delivery_profile` kombinasyonunda hangi dokümanların geçerli olduğunu belirlemek için aşağıdaki **Deterministik Doküman Çözümleme Algoritması** uygulanır:
+Package sistemi artık iki parçalıdır:
 
 ```text
-1. Seçilen delivery_profile için paketin tanımındaki aday doküman setini (Candidate Document Set) al.
-2. engine/DOCUMENT_CATALOG.md içindeki "Applicable Profiles" filtresini uygula:
-   └─ Dokümanın Applicable Profiles listesi seçilen delivery_profile'ı içeriyor mu? (İçermiyorsa elenir).
-3. engine/DOCUMENT_CATALOG.md içindeki "Applicable Types" filtresini uygula:
-   └─ Dokümanın Applicable Types listesi seçilen project_type'ı içeriyor mu? (İçermiyorsa elenir).
-4. İki filtreyi de geçen doküman kümesi, ilgili kombinasyonun geçerli doküman kapsamını (Required/Conditional) oluşturur.
-5. Paket dosyasında örnek matriste metin olarak açıkça yazılmamış her kombinasyon bu deterministik kuralla çözülür.
+Base Package
+→ proje/domain bağlamının özel belge gereksinimleri
+
+PLANNING_PROFILE_OVERLAY
+→ approved implementation/design planning profile minimumları
 ```
 
-Bu kural sayesinde hiçbir ajan bir kombinasyon karşısında kendi kişisel yorumunu yapmak zorunda kalmaz.
+Resolved document scope:
+
+```text
+base package
++
+PLANNING_PROFILE_OVERLAY
++
+contextual conditions
+→ canonical document set
+```
 
 ---
 
-## 4. Temel Sorumluluk Haritası
+## Authority Ayrımı
 
 ```text
-engine/PACKAGE_RULES.md
-  ↳ Hangi package'ın ve hangi delivery profile'ın seçileceğini belirler.
+engine/PROJECT_INTAKE.md
+→ approved project truth için gereken alanlar
 
-packages/
-  ↳ Seçilen package'ın içereceği doküman grubunu ve kapsam derinliğini tanımlar.
+engine/PLANNING_PROFILES.md
+→ implementation/design planning profile anlamları ve kalite tabanı
+
+engine/PACKAGE_RULES.md
+→ base package + overlay resolution sırası
 
 engine/DOCUMENT_CATALOG.md
-  ↳ Doküman ID'lerinin ve Applicable Types / Profiles sınırlarının tek yetkili kataloğudur.
+→ canonical Document ID / applicability registry
+
+packages/<BASE_PACKAGE>.md
+→ domain-specific package gereksinimleri
+
+packages/PLANNING_PROFILE_OVERLAY.md
+→ bütün package'lar için shared planning minimumları
 
 templates/
-  ↳ Dokümanların fiziksel şablon yapısını ve üretim rehberini barındırır.
+→ canonical document skeleton'ları
+```
 
-engine/INFORMATION_MAP.md
-  ↳ Bilginin hangi dokümana yazılacağını ve sahiplik sınırlarını belirler.
+Package yeni Document ID icat edemez ve catalog/planning minimumunu ezemez.
 
-outputs/
-  ↳ Doğrulanmış ve teslim edilebilir nihai proje belgelerini tutar.
+---
+
+## Base Packages
+
+| Package | Ana Kullanım |
+|---|---|
+| `DEMO_FRONTEND_PACKAGE.md` | Frontend demo / satış prototipi / UI proof |
+| `CORPORATE_WEBSITE_PACKAGE.md` | Kurumsal site / içerik-hizmet sunumu |
+| `SAAS_PACKAGE.md` | Account/data/backend/API ağırlıklı ürün |
+| `EXISTING_PROJECT_PACKAGE.md` | Existing/brownfield proje extension bağlamı |
+| `API_SERVICE_PACKAGE.md` | API/backend/integration ağırlıklı servis |
+
+Shared overlay:
+
+| Dosya | Rol |
+|---|---|
+| `PLANNING_PROFILE_OVERLAY.md` | `implementation_planning` ve applicable `design_planning` profile minimumlarını bütün base package'lara uygular. |
+
+---
+
+## Package Ne Değildir?
+
+Package:
+
+- planning profile authority değildir,
+- template deposu değildir,
+- output klasörü değildir,
+- project truth kaynağı değildir,
+- runtime approval gate değildir.
+
+---
+
+## Deterministik Resolution
+
+Approved input üzerinden:
+
+```text
+1. project_type okunur
+2. delivery_profile okunur
+3. implementation_planning okunur
+4. design_planning (applicable ise) okunur
+5. base package seçilir
+6. base package domain candidate seti alınır
+7. PLANNING_PROFILE_OVERLAY uygulanır
+8. DOCUMENT_CATALOG type/profile/planning applicability filtreleri uygulanır
+9. contextual DATA/API/TEST/DEPLOY/OPS vb. koşullar değerlendirilir
+10. dynamic WAVE/PAGE/FEATURE instance registry çözülür
+```
+
+Profile tahmini bu aşamada yapılmaz; approved input'ta kesinleşmiş olmalıdır.
+
+---
+
+## Planning Overlay Minimumları
+
+### Implementation `standard`
+
+Applicable project type için agent-ready minimum:
+
+```text
+README-DOC
+PROJECT-BRAIN
+PRODUCT-RULES
+TECH-CTX
+STATUS
+TASKS
+DECISIONS
+AGENT-INST
+PROJ-PLAN
+WAVE-MAP
+WAVE-PLAN instances
+```
+
+### Implementation `full`
+
+Standard set korunur; gerçek scope/karmaşıklık koşuluna göre:
+
+```text
+DATA
+API
+TEST
+PROD-STRAT
+DEPLOY
+OPS
+```
+
+değerlendirilir.
+
+Full = hepsini otomatik üret demek değildir.
+
+### Design `light`
+
+```text
+DESIGN
+```
+
+Light artifact sayısı hafiftir; design quality düşük değildir.
+
+### Design `standard`
+
+Applicable ise:
+
+```text
+DESIGN
+DESIGN-SYSTEM
+GLOBAL-SHELL
+PAGE-DESIGN instances
+SYSTEM-STATES
+```
+
+### Design `full`
+
+Standard set + gerçek ihtiyaç varsa:
+
+```text
+FEATURE-DESIGN instances
+ADMIN-DESIGN
 ```
 
 ---
 
-## 5. `packages/` Klasöründeki Paketler
+## Demo / Prototype Invariant
 
-Klasör içerisinde 5 ana paket tanımı bulunmaktadır:
+```text
+demo ≠ throwaway architecture
+Prototype ≠ planning reduction
+design light ≠ generic design
+integration-ready ≠ invented backend
+```
 
-| Paket Dosyası | Sorumluluk ve Kapsam |
-|---|---|
-| [`DEMO_FRONTEND_PACKAGE.md`](./DEMO_FRONTEND_PACKAGE.md) | Frontend ağırlıklı, görsel olarak çalışan ve sunulabilir demolar/prototipler için dokümantasyon kapsamı. Atıl (throwaway) değildir; gelecekte gerçek ürüne dönüşebilir. |
-| [`CORPORATE_WEBSITE_PACKAGE.md`](./CORPORATE_WEBSITE_PACKAGE.md) | Kurumsal web siteleri, tanıtım, hizmet/ürün kataloğu, içerik ve entegre iletişim formları/panelleri için dokümantasyon kapsamı. Gereksiz SaaS bürokrasisi dayatmaz. |
-| [`SAAS_PACKAGE.md`](./SAAS_PACKAGE.md) | Kullanıcı hesapları, veri modeli, backend, API, yetkilendirme ve operasyon içeren SaaS yazılımları için dokümantasyon kapsamı. (Not: `saas` bir paket adıdır, `project_type` değildir). |
-| [`EXISTING_PROJECT_PACKAGE.md`](./EXISTING_PROJECT_PACKAGE.md) | Mevcut kod veya dokümantasyonu olan projelerde mevcut durumu (`CURRENT_STATUS.md`) anlayıp güvenle belgelemek için kullanılır. Sıfırdan tasarım yapmaz. |
-| [`API_SERVICE_PACKAGE.md`](./API_SERVICE_PACKAGE.md) | Arka uç servisleri, API'ler, mikroservisler ve entegrasyon projeleri için dokümantasyon kapsamı. Gereksiz frontend/tasarım belgeleri dayatmaz. |
+Örneğin `demo-frontend` base package +:
 
----
+```yaml
+delivery_profile: Prototype
+implementation_planning: standard
+design_planning: light
+```
 
-## 6. Base Package + Extension Mantığı
-
-- **Base Package (Temel Paket):** Projenin birincil amacını temsil eder (ör. `SAAS_PACKAGE` veya `CORPORATE_WEBSITE_PACKAGE`).
-- **Extension Package (Eklenti Paketi / Kapsamı):** Temel pakete ek işlevsel alanlar dahil olduğunda devreye girer (ör. Kurumsal siteye API entegrasyonu veya SaaS projesine mevcut projeden başlanması).
-
-### Birleşim (Merge) ve Çakışma Önleme Kuralları:
-1. **Tekil Üretim (No Duplication):** Aynı doküman (Document ID) asla iki kez üretilmez.
-2. **Katalog Otoritesi:** Eklenti paketleri veya birleşimler `engine/DOCUMENT_CATALOG.md` kimlikleri dışında yeni doküman tanımlayamaz ve catalog'da uygun olmayan dokümanları zorunlu kılamaz.
-3. **En Yüksek Olgunluk:** İki paket farklı derinlik gerektiriyorsa, hedef projenin seçilen `delivery_profile` seviyesindeki en kapsayıcı derinlik esas alınır.
+kombinasyonu, demo domain scope'unu korurken standard execution docs + strong DESIGN_RULES üretir.
 
 ---
 
-## 7. Agent Boot / Reference Read Order
+## Extension / Merge Kuralları
 
-> [!IMPORTANT]
-> **Kavram Ayrımı: Agent Boot Read Order ≠ Runtime Execution Flow**
-> Aşağıdaki okuma sırası bir ajanın paket sistemini ve doküman kapsamlarını anlamak için izlediği **Agent Boot / Reference Read Order** adımıdır. (Root [README.md](../README.md) bu ayrımın üst otoritesidir). Çalıştırma anındaki step-by-step veri akışı (`Runtime Execution Flow`) ise [`engine/GENERATION_PIPELINE.md`](../engine/GENERATION_PIPELINE.md) belgesinin yetkisindedir.
-
-1. `PRODUCT_ENGINE_BRAIN.md`
-2. `engine/PROJECT_INTAKE.md`
-3. `engine/DOCUMENT_CATALOG.md`
-4. `engine/PACKAGE_RULES.md` (Paket seçim kararı otoritesi)
-5. `packages/README.md` (Bu dosya — Navigasyon rehberi)
-6. İlgili `packages/<PACKAGE_NAME>.md` dosyası (Paket doküman kapsamı)
-7. İlgili `templates/` dosyaları
+1. Aynı Document ID iki kez üretilmez.
+2. Base + extension birleşiminde catalog applicability korunur.
+3. Planning overlay minimumu extension/reduction tarafından düşürülemez.
+4. Existing-project gibi extension context yeni project truth uyduramaz.
+5. Dynamic instance'lar aynı canonical ID/template'i kullanır.
 
 ---
 
-## 8. Paket Özet Tablosu (Varsayılan Profile & Ana Project Type Bağlamında)
+## Agent Reference Read Order
 
-| Package ID | Varsayılan Delivery Profile | Uyumlu Project Type Örnekleri | Varsayılan Profile Özel Çekirdek Zorunlu Dokümanlar |
-|---|---|---|---|
-| `demo-frontend` | Prototype | `web-app`, `landing-page`, `prototype`, `mobile-app` | `README-DOC`, `PROJECT-BRAIN`, `PRODUCT-RULES` (web-app/mobile-app), `DESIGN` (web-app/mobile-app/landing-page) |
-| `corporate-website` | Implementation Ready | `landing-page`, `web-app`, `content-platform` | `README-DOC`, `PROJECT-BRAIN`, `DESIGN`, `PRODUCT-RULES` (web-app/content-platform), `TECH-CTX` (web-app) |
-| `saas` | Implementation Ready | `web-app`, `api-service`, `mobile-app`, `content-platform` | `README-DOC`, `PROJECT-BRAIN`, `PRODUCT-RULES`, `DATA`, `WAVE-MAP`, `WAVE-PLAN`, `TECH-CTX` (web-app/api-service/mobile-app), `API` (web-app/api-service/mobile-app) |
-| `existing-project` | Implementation Ready | Tüm türler | `README-DOC`, `PROJECT-BRAIN`, `STATUS`, `TECH-CTX` (web-app/api-service/mobile-app/integration/infrastructure) |
-| `api-service` | Implementation Ready | `api-service`, `integration`, `infrastructure` | `README-DOC`, `PROJECT-BRAIN`, `TECH-CTX`, `API` (api-service/integration), `PRODUCT-RULES` (api-service), `DATA` (api-service) |
+Package sistemi için:
+
+```text
+1. Root README.md
+2. PRODUCT_ENGINE_BRAIN.md
+3. engine/README.md
+4. engine/PROJECT_INTAKE.md
+5. engine/PLANNING_PROFILES.md
+6. engine/DOCUMENT_CATALOG.md
+7. engine/PACKAGE_RULES.md
+8. packages/README.md
+9. selected base package
+10. packages/PLANNING_PROFILE_OVERLAY.md
+11. relevant templates
+```
+
+Runtime execution sırası `engine/GENERATION_PIPELINE.md` tarafından yönetilir.
