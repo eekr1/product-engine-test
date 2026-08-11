@@ -39,8 +39,9 @@ Her canonical document ve her dynamic instance **ayrı ayrı** şu döngüden ge
 5. Re-read template validation expectations
 6. Compare generated artifact against the template/authority
 7. Repair if needed
-8. Mark artifact locally complete
-9. Only then move to the next artifact
+8. Record refresh + local-check evidence in run progress/log
+9. Mark artifact locally complete
+10. Only then move to the next artifact
 ```
 
 Önemli:
@@ -49,6 +50,19 @@ Her canonical document ve her dynamic instance **ayrı ayrı** şu döngüden ge
 - Aynı template'ten birden fazla dynamic instance çıkıyorsa her instance öncesinde template yeniden açılır.
 - Örnek: `WAVE_00` öncesinde `WAVE_PLAN_TEMPLATE.md` açıldıysa, `WAVE_01` öncesinde de yeniden açılır.
 - Local self-check final validation'ın yerine geçmez; yalnız artifact'ın kendi contract'ına uygun çıkmasını sağlar.
+- Refresh/local-check yalnız zihinsel veya varsayılan bir eylem sayılamaz; run'ın mevcut `PROGRESS.md` veya `RUN_LOG.md` kaydında artifact bazında görünür kanıt bırakmalıdır.
+
+Minimum evidence:
+
+```text
+artifact / dynamic instance
+canonical template refreshed
+primary authorities refreshed
+local contract check result
+repair performed: yes/no
+```
+
+Dynamic instance evidence instance-specific olmalıdır. `WAVE_PLAN_TEMPLATE refreshed` şeklinde tek genel kayıt bütün wave'leri kapsamaz.
 
 ## Transition Authority Refresh
 
@@ -157,6 +171,8 @@ execution-critical unresolved decision
 → clarification / decision resolution gerekir
 ```
 
+Exact stack/tooling unresolved iken assumption, README, wave veya task kayıtlarında `npm`, `pnpm`, `yarn`, `vite`, framework-specific command veya benzeri stack-specific execution gerçeği yazılamaz. Stack çözülene kadar yalnız stack-neutral `local development/preview environment` gibi ifadeler kullanılabilir.
+
 Engine approved scope'u değiştirmeyen düşük-risk implementation detayını `Engine Resolved` olarak çözebilir. Kullanıcının seçmesi gereken kritik karar sessizce çözülemez.
 
 ## 8. Dependency-Ordered Generation
@@ -180,23 +196,42 @@ Approved Input
 → conditional DATA/API/TEST/DEPLOY/OPS
 ```
 
-Bu sıra Artifact Production Loop'u bypass etmez. Her satırda sıradaki artifact için template + primary authority/dependencies fresh-read edilir, artifact üretilir, local compare/repair tamamlanır; sonra sonraki artifact'a geçilir.
+Bu sıra Artifact Production Loop'u bypass etmez. Her satırda sıradaki artifact için template + primary authority/dependencies fresh-read edilir, artifact üretilir, local compare/repair tamamlanır ve evidence kaydedilir; sonra sonraki artifact'a geçilir.
+
+### WAVE-MAP Decomposition Refresh
+
+`WAVE_MAP` üretilmeden hemen önce:
+
+```text
+WAVE_MAP_TEMPLATE
+selected package / applicable contextual package
+PROJECT_BRAIN
+PRODUCT_RULES
+TECH_CONTEXT
+applicable DESIGN authority
+```
+
+yeniden okunur. Map broad teknik fazlara göre değil, coherent ve independently verifiable deliverable'lara göre decomposition yapmalıdır.
 
 ### Dynamic Instance Example
 
 ```text
 Resolve WAVE_00
-→ re-read WAVE_PLAN_TEMPLATE + WAVE_MAP + TECH_CONTEXT + applicable design authority
+→ re-read WAVE_PLAN_TEMPLATE + WAVE_MAP'teki WAVE_00 entry + TECH_CONTEXT + applicable design authority
 → generate WAVE_00
 → re-read template validation expectations
 → compare/repair
+→ record WAVE_00-specific refresh/local-check evidence
 
 Resolve WAVE_01
 → WAVE_PLAN_TEMPLATE'ı YENİDEN re-read et
-→ WAVE_MAP + relevant authorities yeniden oku
+→ WAVE_MAP'teki WAVE_01 entry + relevant authorities yeniden oku
 → generate WAVE_01
 → compare/repair
+→ record WAVE_01-specific refresh/local-check evidence
 ```
+
+Bir WAVE_PLAN, WAVE_MAP'teki decomposition hatasını bağımsız deliverable'ları alt-task olarak ezerek gizleyemez. Böyle bir durum local check sırasında WAVE_MAP repair'ına döner.
 
 ### Standard Implementation Minimum
 
