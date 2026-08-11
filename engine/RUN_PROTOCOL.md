@@ -212,11 +212,36 @@ Başarılı kapanış sırası:
 5. latest/ güncellendi.
 6. Manifest/output refs donduruldu.
 7. Completion report yazıldı.
-8. Run completed klasörüne move edildi.
-9. active kopyanın olmadığı doğrulandı.
+8. Operational closure state'leri Completed gerçekliğine güncellendi.
+9. Run completed klasörüne move edildi.
+10. active kopyanın olmadığı doğrulandı.
 ```
 
-FAIL run final output yayınlamaz ve failed lifecycle location'a taşınır.
+## Operational Closure Integrity
+
+Run fiziksel olarak `runs/completed/<run-id>/` altına taşınmadan önce mevcut operational records kapanış state'iyle uyumlu hale getirilir.
+
+Minimum successful completion consistency:
+
+```text
+RUN_MANIFEST.status = Completed
+PROGRESS.status = Completed
+RUN_LOG final lifecycle event = Completed
+VALIDATION_REPORT = PASS | accepted CONDITIONAL PASS
+COMPLETION_REPORT = successful completion
+```
+
+`PROGRESS.md` içindeki coverage/evidence geçmişi korunur; yalnız run-level lifecycle status kapanış gerçekliğine güncellenir.
+
+```text
+runs/completed/<run-id>/ + Status: Running → INVALID
+runs/completed/<run-id>/ + Status: Validation → INVALID
+runs/completed/<run-id>/ + operational records disagree → INVALID
+```
+
+Bu kapanış güncellemeleri move'dan **önce** yapılmalıdır. Dosyaları completed klasörüne taşımak tek başına lifecycle completion değildir.
+
+FAIL run final output yayınlamaz ve failed lifecycle location'a taşınır. Failed move öncesinde operational records da Failed gerçekliğine güncellenmelidir.
 
 Completed run sonradan invalidated olabilir; history silinmez ancak invalid output `latest/` olarak kalamaz.
 
