@@ -6,7 +6,7 @@
 template_id: current-status-template
 template_name: Current Status Template
 document_id: STATUS
-version: 1.0.0
+version: 1.1.0
 status: active
 template_type: document
 category: ai
@@ -17,70 +17,59 @@ supported_delivery_profiles:
   - prototype
   - implementation-ready
   - production-ready
+supported_implementation_planning:
+  - standard
+  - full
 required_inputs:
-  - run_state
-conditional_inputs: []
+  - project_brain
+  - wave_map
 dependencies:
   - PROJECT-BRAIN
+  - WAVE-MAP
 output_filename: CURRENT_STATUS.md
 ```
 
 ## Amaç
 
-Projenin anlık gerçeğini (current truth), tamamlanan işleri, devam eden çalışmaları, engelleri ve kısa vadeli öncelikleri açıkça kaydetmek.
+Projenin anlık gerçeğini; aktif phase/wave'i, tamamlanan işleri, devam eden çalışmaları, blocker'ları ve sıradaki yönü tek yerde tutmak.
 
 ## Kullanım Koşulları
 
-Mevcut projelerde (`existing-project`) zorunludur. Sıfırdan başlayan projelerde opsiyonel/koşulludur.
-
-## Girdi Kaynakları
-
-- Run Durumu ve Çalışma Geçmişi
-- `PROJECT_BRAIN.md`
+`implementation_planning: standard | full` projelerde zorunludur. New projede başlangıç state'i; existing projede mevcut gerçeklik state'i yazılır.
 
 ## Zorunlu Bölümler
 
-- Mevcut Aşamaya Genel Bakış (Current Phase Overview)
-- Tamamlanan İşler Listesi (Completed Items)
-- Devam Eden İşler Listesi (In-Progress Items)
-- Bilinen Engeller ve Blokajlar (Known Blockers)
-- Anlık Öncelikler (Immediate Priorities)
-
-## Koşullu Bölümler
-
-- `[CONDITIONAL: include only if project has technical debt]` Teknik Borç ve Riskler
+- Current Phase / Active Wave
+- Completed
+- In Progress
+- Known Blockers
+- Immediate Priorities
+- Last Verified State
 
 ## İçerik Üretim Kuralları
 
-- Mevcut durum (current state) ile hedeflenen durum (desired state) kesinlikle birbirine karıştırılmamalıdır.
-- Tamamlanmamış işler tamamlanmış gibi gösterilmemelidir.
+- Current truth ile desired state karıştırılmaz.
+- New projede henüz uygulanmamış wave'ler tamamlanmış gösterilmez.
+- Aktif wave WAVE_MAP ve ilgili WAVE_PLAN ile tutarlı olmalıdır.
+- Bir agent çalışma sonunda yaptığı gerçek ilerlemeye göre bu belgeyi güncellemelidir.
+- NEXT_TASKS sıradaki iş listesi; CURRENT_STATUS mevcut gerçeklik sahibidir.
 
 ## Placeholder Tanımları
 
-- `{{PROJECT_NAME}}`: Proje adı.
-- `{{CURRENT_PHASE_TITLE}}`: Aktif çalışma aşaması adı.
-- `{{COMPLETED_ITEMS_LIST}}`: Tamamlanan görev ve teslimatlar listesi.
-- `{{IN_PROGRESS_ITEMS_LIST}}`: Halen üzerinde çalışılan maddeler.
-- `{{KNOWN_BLOCKERS_LIST}}`: Çözüm bekleyen engeller ve bağımlılıklar.
-- `{{IMMEDIATE_PRIORITIES_LIST}}`: Sıradaki acil adımlar.
-
-## Kapsam Dışı
-
-- Gelecek dalgaların detaylı planları (bkz: `WAVE_MAP.md`, `WAVE_PLAN.md`)
-- Mimari kararların detayları (bkz: `DECISIONS.md`)
-
-## Diğer Dokümanlarla İlişki
-
-- Primary Owner: `current_phase`, `completed_items`, `next_priorities`, `known_blockers`.
-- Referenced By: `NEXT_TASKS.md`, `README.md`, `PROJECT_BRAIN.md`.
-
-## Delivery Profile Davranışı
-
-- Tüm Delivery Profile seviyelerinde anlık proje durumunu yalın ve doğrudan yansıtır.
+- `{{PROJECT_NAME}}`
+- `{{CURRENT_PHASE}}`
+- `{{ACTIVE_WAVE}}`
+- `{{COMPLETED_ITEMS}}`
+- `{{IN_PROGRESS_ITEMS}}`
+- `{{KNOWN_BLOCKERS}}`
+- `{{IMMEDIATE_PRIORITIES}}`
+- `{{LAST_VERIFIED_STATE}}`
+- `{{LAST_UPDATED_DATE}}`
 
 ## Validation Beklentileri
 
-- `NEXT_TASKS.md` ile çelişen durum bilgisi barındırmamalıdır.
+- WAVE_MAP/WAVE_PLAN ile aktif wave çelişkisi olmamalı.
+- NEXT_TASKS tamamlanmış işleri primary next task gibi göstermemeli.
 
 ---
 
@@ -88,30 +77,30 @@ Mevcut projelerde (`existing-project`) zorunludur. Sıfırdan başlayan projeler
 
 # {{PROJECT_NAME}} — Current Status
 
-## 1. Mevcut Aşamaya Genel Bakış
+## 1. Current Phase / Active Wave
 
-- **Aktif Aşama**: {{CURRENT_PHASE_TITLE}}
-- **Güncelleme Tarihi**: {{LAST_UPDATED_DATE}}
+- **Phase**: {{CURRENT_PHASE}}
+- **Active Wave**: {{ACTIVE_WAVE}}
+- **Last Updated**: {{LAST_UPDATED_DATE}}
 
-## 2. Tamamlanan İşler (Completed)
+## 2. Completed
 
-{{COMPLETED_ITEMS_LIST}}
+{{COMPLETED_ITEMS}}
 
-## 3. Devam Eden İşler (In-Progress)
+## 3. In Progress
 
-{{IN_PROGRESS_ITEMS_LIST}}
+{{IN_PROGRESS_ITEMS}}
 
-## 4. Bilinen Engeller ve Blokajlar (Known Blockers)
+## 4. Known Blockers
 
-{{KNOWN_BLOCKERS_LIST}}
+{{KNOWN_BLOCKERS}}
 
-## 5. Anlık Öncelikler (Immediate Priorities)
+## 5. Immediate Priorities
 
-{{IMMEDIATE_PRIORITIES_LIST}}
+{{IMMEDIATE_PRIORITIES}}
 
-[CONDITIONAL: include only if project has technical debt]
-## 6. Teknik Borç ve Riskler
+## 6. Last Verified State
 
-- Çözülmesi gereken teknik borçlar ve altyapı riskleri.
+{{LAST_VERIFIED_STATE}}
 
 # OUTPUT DOCUMENT END
