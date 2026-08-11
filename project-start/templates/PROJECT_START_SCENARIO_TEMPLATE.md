@@ -1,122 +1,122 @@
 # Project Start Scenario Template
 
-Use this single template for every structured project-start source file before Product Engine normalizes the project into its canonical intake/input lifecycle.
+Bu tek şablonu, Product Engine projeyi canonical intake/input yaşam döngüsüne normalize etmeden önce her yapılandırılmış proje başlangıç kaynak dosyası için kullan.
 
-Do not create project-specific schema variants. Every project instance should preserve this heading order. Use `N/A`, `None`, or `Not defined` when a section is not applicable or not yet known.
+Projeye özel şema varyantları oluşturma. Her proje instance'ı bu başlık sırasını korumalıdır. Bir bölüm uygulanabilir değilse veya henüz bilinmiyorsa `N/A`, `Yok` veya `Tanımlanmadı` kullan.
 
-## 1. Project Identity
+## 1. Proje Kimliği
 
-- Project name:
-- Project slug:
-- Project type:
-- Project mode: new / existing
-- One-sentence description:
-- Owner / client:
+- Proje adı:
+- Proje slug'ı:
+- Proje türü:
+- Proje modu: yeni / mevcut
+- Tek cümlelik açıklama:
+- Sahip / müşteri:
 
-## 2. Problem / Purpose
+## 2. Problem / Amaç
 
-What problem does the project solve, what need does it serve, and why should it exist?
+Proje hangi problemi çözüyor, hangi ihtiyaca hizmet ediyor ve neden var olmalı?
 
-## 3. Product / Business Context
+## 3. Ürün / İş Bağlamı
 
-Describe the product, client, business, commercial, internal-use, demo, validation, or operational context that materially affects the project.
+Projeyi maddi olarak etkileyen ürün, müşteri, iş, ticari, iç kullanım, demo, doğrulama veya operasyonel bağlamı açıkla.
 
-## 4. Target Users
+## 4. Hedef Kullanıcılar
 
-### Primary Users
-
-- 
-
-### Secondary Users
+### Birincil Kullanıcılar
 
 - 
 
-## 5. Core User Flows
-
-Describe the most important end-to-end actions users must be able to complete.
+### İkincil Kullanıcılar
 
 - 
 
-## 6. Scope
+## 5. Temel Kullanıcı Akışları
 
-### In Scope
-
-- 
-
-### Out of Scope
+Kullanıcıların baştan sona tamamlayabilmesi gereken en önemli eylemleri açıkla.
 
 - 
 
-## 7. Functional Requirements
+## 6. Kapsam
+
+### Kapsam Dahili
 
 - 
 
-## 8. Current State
-
-Describe what already exists today: concept only, research, design, code, deployed product, users, integrations, documentation, partial implementation, or other established state.
-
-## 9. Existing Assets / Source Material
-
-List existing repositories, docs, code, APIs, databases, screenshots, design files, content, client material, reference sites, credentials boundaries, or other reusable sources.
+### Kapsam Dışı
 
 - 
 
-## 10. Technical Context / Preferences
-
-Known or preferred stack, architecture, frontend/backend/database split, integrations, hosting, deployment, repository, platform, environment, compatibility, or implementation constraints.
-
-## 11. Data / Integrations
-
-Known data sources, storage needs, APIs, third-party services, authentication, external systems, import/export needs, or integration constraints.
-
-## 12. Design Direction
-
-Known visual direction, brand rules, reference products/sites, design language, responsive requirements, accessibility expectations, or existing design constraints.
-
-## 13. Deployment / Operations
-
-Known environments, domains, hosting providers, release expectations, monitoring, backups, operational ownership, or other deployment context.
-
-## 14. Important Decisions Already Made
-
-Record confirmed decisions that should be preserved unless they conflict with a higher Product Engine authority.
+## 7. Fonksiyonel Gereksinimler
 
 - 
 
-## 15. Known Constraints
+## 8. Mevcut Durum
 
-Budget, deadline, platform, compliance, dependency, compatibility, client, content, operational, legal, security, or other hard constraints.
+Bugün hâlihazırda var olan şeyi açıkla: yalnızca fikir, araştırma, tasarım, kod, deploy edilmiş ürün, kullanıcılar, entegrasyonlar, dokümantasyon, kısmi implementasyon veya diğer yerleşik durumlar.
 
-- 
+## 9. Mevcut Varlıklar / Kaynak Materyal
 
-## 16. Unknowns / Open Questions
-
-List material information that is missing, ambiguous, undecided, or requires confirmation.
+Mevcut repo'ları, dokümanları, kodu, API'leri, veritabanlarını, ekran görüntülerini, tasarım dosyalarını, içerikleri, müşteri materyallerini, referans siteleri, kimlik bilgisi sınırlarını veya diğer yeniden kullanılabilir kaynakları listele.
 
 - 
 
-## 17. Success Criteria
+## 10. Teknik Bağlam / Tercihler
 
-What must be true for the first meaningful version, demo, milestone, or delivery to count as successful?
+Bilinen veya tercih edilen stack, mimari, frontend/backend/database ayrımı, entegrasyonlar, hosting, deployment, repository, platform, environment, uyumluluk veya implementasyon kısıtlarını belirt.
+
+## 11. Veri / Entegrasyonlar
+
+Bilinen veri kaynakları, depolama ihtiyaçları, API'ler, üçüncü taraf servisler, authentication, dış sistemler, import/export ihtiyaçları veya entegrasyon kısıtlarını belirt.
+
+## 12. Tasarım Yönü
+
+Bilinen görsel yön, marka kuralları, referans ürünler/siteler, tasarım dili, responsive gereksinimler, erişilebilirlik beklentileri veya mevcut tasarım kısıtlarını belirt.
+
+## 13. Deployment / Operasyonlar
+
+Bilinen ortamlar, domain'ler, hosting sağlayıcıları, release beklentileri, monitoring, backup, operasyonel sahiplik veya diğer deployment bağlamını belirt.
+
+## 14. Daha Önce Alınmış Önemli Kararlar
+
+Daha yüksek bir Product Engine authority ile çelişmedikçe korunması gereken doğrulanmış kararları kaydet.
 
 - 
 
-## 18. Special Instructions
+## 15. Bilinen Kısıtlar
 
-Project-specific instructions that matter for Product Engine processing but do not belong in the sections above.
+Bütçe, deadline, platform, compliance, dependency, compatibility, müşteri, içerik, operasyonel, hukuki, güvenlik veya diğer kesin kısıtları belirt.
 
 - 
 
-## 19. References
+## 16. Bilinmeyenler / Açık Sorular
 
-List relevant URLs, repository paths, files, screenshots, documents, competitor/reference products, or other traceable source material.
+Eksik, belirsiz, kararsız veya doğrulama gerektiren önemli bilgileri listele.
+
+- 
+
+## 17. Başarı Kriterleri
+
+İlk anlamlı sürümün, demonun, milestone'un veya teslimatın başarılı sayılması için nelerin doğru olması gerekir?
+
+- 
+
+## 18. Özel Talimatlar
+
+Product Engine işlemesi açısından önemli olan ancak yukarıdaki bölümlere ait olmayan projeye özel talimatları belirt.
+
+- 
+
+## 19. Referanslar
+
+İlgili URL'leri, repository path'lerini, dosyaları, ekran görüntülerini, dokümanları, rakip/referans ürünleri veya izlenebilir diğer kaynak materyalleri listele.
 
 - 
 
 ---
 
-## Handoff Rule
+## Handoff Kuralı
 
-This file is project source material, not a canonical Product Engine contract or final Engine input.
+Bu dosya proje kaynak materyalidir; canonical Product Engine contract'ı veya final Engine input'u değildir.
 
-The agent must process it through the authoritative Product Engine read order, intake, package/document selection, lifecycle, validation, approval, run, output, logging, and archive contracts. Missing information must use the Engine's existing missing-input and approval behavior rather than speculative defaults.
+Ajan bu dosyayı Product Engine'in yetkili read order, intake, package/document selection, lifecycle, validation, approval, run, output, logging ve archive contract'ları üzerinden işlemelidir. Eksik bilgiler, spekülatif varsayımlar yerine Engine'in mevcut missing-input ve approval davranışıyla ele alınmalıdır.
