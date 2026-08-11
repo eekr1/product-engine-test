@@ -109,17 +109,17 @@ Gelecekte gerçekleştirilecek çalıştırmalar için referans tablo formatı �
 
 ---
 
-## 6. Güncel İndeks Durumu (Initial State)
+## 6. Güncel İndeks Durumu
 
 ```text
-Total Indexed Runs : 0
+Total Indexed Runs : 1
 Active Runs        : 0
-Completed Runs     : 0
+Completed Runs     : 1
 Failed Runs        : 0
 Invalidated Runs   : 0
 ```
 
-> [!NOTE]
-> Henüz gerçekleştirilmiş ve dondurulmuş gerçek bir Product Engine runtime çalışması bulunmamaktadır.
->
-> İlk çalıştırma başlatıldığında kanonik formata uygun olarak tabloya ilk indeks satırı eklenecektir. Sahte run verisi, git commit geçmişi veya uydurma proje isimleri indekse dahil edilmemiştir.
+| Run ID | Project Slug | Package | Profile | Status | Validation | Date | Output Ref | Note |
+|---|---|---|---|---|---|---|---|---|
+| RUN-20260812-001 | trakya-teknik-makine | demo-frontend | Prototype | Completed | PASS | 2026-08-12 | outputs/demos/trakya-teknik-makine/versions/v0.2 | Product Engine v0.2.0 Trakya Teknik Makine kurumsal demo run |
+

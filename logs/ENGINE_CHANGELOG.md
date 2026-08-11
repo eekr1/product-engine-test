@@ -259,11 +259,42 @@ Trakya Teknik Makine ikinci gerçek test için temiz source state'ine döndü. B
 
 ---
 
+## PE-CHANGE-007 — 2026-08-12
+
+- **Version:** v0.2.0
+- **Change Type:** Added
+- **Affected Area:** inputs/ | runs/ | outputs/ | logs/
+- **Breaking Change:** No
+- **Related Issue:** None
+- **Related Run:** RUN-20260812-001
+
+### Summary
+
+Trakya Teknik Makine kurumsal web sitesi yenileme projesinin ikinci gerçek çalıştırması (`RUN-20260812-001`) Product Engine v0.2.0 mimarisinde başarıyla gerçekleştirildi:
+
+- Explicit user approval gate işletildi ve `inputs/approved/trakya-teknik-makine/PROJECT_INPUT.md` donduruldu.
+- `demo-frontend` base package + `standard` implementation + `light` design planning overlay donduruldu.
+- Canonical document package (`README-DOC`, `PROJECT-BRAIN`, `PRODUCT-RULES`, `TECH-CTX`, `STATUS`, `TASKS`, `AGENT-INST`, `DECISIONS`, `PROJ-PLAN`, `DESIGN`, `WAVE-MAP`, `WAVE-PLAN`) ve 4 dynamic wave planı (`WAVE_00` .. `WAVE_03`) üretildi.
+- Artifact Production Loop & Point-of-Use Template Refresh kanıtları operasyonel kayıtlara yazıldı.
+- Validation PASS aldı. Temiz çıktı `outputs/demos/trakya-teknik-makine/versions/v0.2/` ve `outputs/demos/trakya-teknik-makine/latest/` konumunda yayınlandı.
+- Operational run kaydı `runs/completed/RUN-20260812-001/` konumuna taşındı.
+
+### Reason
+
+Product Engine v0.2.0 planning profile, design planning ve validation yeniliklerini temiz bir gerçek proje çalıştırması üzerinde uçtan uca doğrulamak.
+
+### Impact
+
+Product Engine v0.2.0 mimarisi ikinci gerçek proje run'ı ile başarıyla doğrulanmış ve dondurulmuştur.
+
+---
+
 ## 5. Güncel Durum
 
 ```text
 Active Engine Version Authority : Root README.md (v0.2.0)
 Version History Authority       : logs/ENGINE_CHANGELOG.md
-Recorded Change Entries         : 6
-Next Acceptance Gate            : Clean second real-project run
+Recorded Change Entries         : 7
+Next Acceptance Gate            : v0.2.0 Production Release / Next Project Verification
 ```
+
