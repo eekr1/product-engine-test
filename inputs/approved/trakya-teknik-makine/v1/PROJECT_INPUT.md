@@ -22,7 +22,7 @@ source_count: 2
 # Project Input: Trakya Teknik Makine Kurumsal Web Sitesi Yenileme Demo
 
 > [!IMPORTANT]
-> Bu belge Product Engine'in canonical project truth girdisidir. `pending` durumunda generation başlatılamaz. `approved` yalnız canonical explicit user approval ile oluşabilir; IDE/tool/plan auto-approval geçerli değildir.
+> Bu belge Product Engine'in canonical approved project truth girdisidir (`v1`). Canonical explicit user approval ile dondurulmuştur.
 
 ---
 
@@ -48,7 +48,7 @@ Trakya Teknik Makine kurumsal web sitesini, firmanın hizmetlerini daha profesyo
 ### Planning Profile Rationale
 
 - **Implementation:** Satış demosu ve frontend odaklı çalışma için `standard` implementation planning seçilmiştir. Bu profil, yeni bir ajanın ek mimari planlama yapmadan ilk wave'i uygulamaya başlayabileceği agent-ready minimum seviyeyi (`README-DOC`, `PROJECT-BRAIN`, `PRODUCT-RULES`, `TECH-CTX`, `STATUS`, `TASKS`, `DECISIONS`, `AGENT-INST`, `PROJ-PLAN`, `WAVE-MAP`, `WAVE-PLAN` instances) garanti eder.
-- **Design:** Sınırlı sayfa hiyerarşisi ve satış demosu odaklı çalışma için `light` design planning önerilmiştir. Light seviye belge sayısını hafif tutar (`DESIGN` / `DESIGN_RULES`), ancak projenin visual concept'ini, tipografi/kompozisyon/spacing ilkelerini ve anti-template tasarım kalitesini garanti eder. Sektör klişesi (ör. "sanayi = varsayılan lacivert") otomatik tasarım gerekçesi olarak kullanılmaz.
+- **Design:** Sınırlı sayfa hiyerarşisi ve satış demosu odaklı çalışma için `light` design planning seçilmiştir. Light seviye belge sayısını hafif tutar (`DESIGN` / `DESIGN_RULES`), ancak projenin visual concept'ini, tipografi/kompozisyon/spacing ilkelerini ve anti-template tasarım kalitesini garanti eder. Sektör klişesi (ör. "sanayi = varsayılan lacivert") otomatik tasarım gerekçesi olarak kullanılmaz.
 
 > `design_planning` için `none` profile yoktur. UI/UX applicable olduğundan `light` profile seçilmiştir.
 
@@ -75,7 +75,7 @@ Firmanın mevcut web sitesindeki Disan Hidrolik Makine Trakya Yetkili Servisi ta
 3. Firma uzmanlığı ve üç ana hizmet ziyaretçi tarafından hızlıca anlaşılmalıdır.
 4. Kullanıcı İletişim ve CTA noktalarına (telefon, e-posta) kolayca ulaşabilmelidir.
 5. Mobil ve masaüstü görünüm satış görüşmesinde sorunsuz gösterilecek kalitede ve responsive olmalıdır.
-6. Demo mevcut firma beyanlarını korurken doğrulanmamış yeni bilgi veya kanıtlanmamış iddia uydurmamalıdır.
+6. Demo mevcut firma beyanlarını korurken doğrulannamış yeni bilgi veya kanıtlanmamış iddia uydurmamalıdır.
 7. Frontend yapısı, gelecekte gerçek backend/data entegrasyonuna imkan tanıyacak temiz presentation ve service/data boundary ilkelerini korumalıdır.
 8. `implementation_planning: standard` çıktısı, yeni bir ajanın koda başlayabileceği netlikte execution plan sunmalıdır.
 
@@ -112,7 +112,7 @@ Firmanın mevcut web sitesindeki Disan Hidrolik Makine Trakya Yetkili Servisi ta
 - Backend servisleri ve veritabanı uygulaması.
 - Gerçek kullanıcı hesabı, login veya authentication.
 - E-ticaret / online ödeme.
-- Müşteri tarafından doğrulanmamış yeni firma iddiaları, müşteri referansları veya teknik yetkinlik beyanları.
+- Müşteri tarafından doğrulannamış yeni firma iddiaları, müşteri referansları veya teknik yetkinlik beyanları.
 - Production deployment, domain ve hosting taşıma işlemleri.
 
 ### Future Possibilities
@@ -214,9 +214,9 @@ Firmanın mevcut web sitesindeki Disan Hidrolik Makine Trakya Yetkili Servisi ta
 ## 10. Known Decisions
 
 - İlk teslimat satış görüşmesi amaçlı kurumsal frontend demo olacaktır.
-- Delivery Profile için `Prototype`, Implementation Planning için `standard`, Design Planning için `light` önerilmiştir.
+- Delivery Profile için `Prototype`, Implementation Planning için `standard`, Design Planning için `light` seçilmiş ve onaylanmıştır.
 - Mevcut sitedeki firma bilgileri ve beyanları kaynak olarak korunacak, eski görsel tasarım otorite kabul edilmeyecektir.
-- Bilinmeyen/doğrulanmavış firma bilgileri veya müşteri iddiaları uydurulmayacaktır.
+- Bilinmeyen/doğrulanmamış firma bilgileri veya müşteri iddiaları uydurulmayacaktır.
 - Backend/API uydurulmayacak; temiz service/data boundary ilkesi uygulanacaktır.
 
 ---
@@ -225,8 +225,8 @@ Firmanın mevcut web sitesindeki Disan Hidrolik Makine Trakya Yetkili Servisi ta
 
 | Assumption ID | Alan | Yapılan | Sınıf | Gerekçe | Kaynak | Durum |
 |---|---|---|---|---|---|---|
-| ASM-001 | primary_language | Türkçe (`tr`) | safe | Proje Türk firması ve Trakya bölgesindeki müşteriler için hazırlandığından birincil dil Türkçedir. | proje bağlamı | pending_review |
-| ASM-002 | contact_cta_behavior | tel: ve mailto: bağlantıları | safe | Mobil ve masaüstü cihazlarda doğrudan arama/e-posta başlatma standardı. | endüstri standardı | pending_review |
+| ASM-001 | primary_language | Türkçe (`tr`) | safe | Proje Türk firması ve Trakya bölgesindeki müşteriler için hazırlandığından birincil dil Türkçedir. | proje bağlamı | approved |
+| ASM-002 | contact_cta_behavior | tel: ve mailto: bağlantıları | safe | Mobil ve masaüstü cihazlarda doğrudan arama/e-posta başlatma standardı. | endüstri standardı | approved |
 
 ---
 
@@ -234,7 +234,7 @@ Firmanın mevcut web sitesindeki Disan Hidrolik Makine Trakya Yetkili Servisi ta
 
 | Conflict ID | Tür | Çelişen A | Çelişen B | Karar | Gerekçe | Kullanıcıya | Durum |
 |---|---|---|---|---|---|---|---|
-| CON-001 | current_vs_desired | Mevcut SITE123 tasarımı | Yenilenmiş modern visual concept | Pending hedef vizyon esas alındı | Eski tasarım otorite değildir; firma metinleri ve mevcut sitede yer alan beyanlar korunur. | evet | resolved |
+| CON-001 | current_vs_desired | Mevcut SITE123 tasarımı | Yenilenmiş modern visual concept | Target vizyon esas alındı | Eski tasarım otorite değildir; firma metinleri ve mevcut sitede yer alan beyanlar korunur. | evet | resolved |
 
 ---
 
@@ -248,9 +248,9 @@ Firmanın mevcut web sitesindeki Disan Hidrolik Makine Trakya Yetkili Servisi ta
 
 ## 14. Approval & Verification
 
-- **Status:** `pending`
-- **Approved At:** 
-- **Approved By:** 
+- **Status:** `approved`
+- **Approved At:** `2026-08-11T22:48:30+03:00`
+- **Approved By:** `user`
 
 ### Canonical Approval Checklist
 
@@ -263,5 +263,5 @@ Firmanın mevcut web sitesindeki Disan Hidrolik Makine Trakya Yetkili Servisi ta
 - [x] Secret/credential yok.
 - [x] Absolute machine path yok.
 - [x] `source_count` doğru.
-- [ ] Canonical explicit user approval alındı; IDE/tool/plan auto-approval kullanılmadı.
-- [ ] `approved_by: user` için doğrudan approval kanıtı var.
+- [x] Canonical explicit user approval alındı; IDE/tool/plan auto-approval kullanılmadı.
+- [x] `approved_by: user` için doğrudan approval kanıtı var.
