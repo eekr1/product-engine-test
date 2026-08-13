@@ -6,7 +6,7 @@
 template_id: validation-report-template
 template_name: Validation Report Operational Template
 document_id: not_applicable
-version: 1.2.0
+version: 1.3.0
 status: active
 template_type: operational
 category: operational
@@ -32,11 +32,19 @@ output_filename: VALIDATION_REPORT.md
 
 Yalnız run `Validation` stage'e girdikten ve required artifact checkpoint'leri kapandıktan sonra üretilir/güncellenir.
 
+Canonical validation target sabittir:
+
+```text
+runs/active/{{RUN_ID}}/working-output/
+```
+
+Published `outputs/.../versions/...` veya `latest/` validation target OLAMAZ. Publication validation'dan sonra gerçekleşir.
+
 ## Girdi Kaynakları
 
 - `engine/VALIDATION_RULES.md`
 - `runs/active/<run-id>/working-output/`
-- approved input / INPUT_SNAPSHOT
+- approved input / `INPUT_SNAPSHOT.md` + Approved Scope Registry
 - `SOURCE_REGISTER.md` + Factual Claim Allowlist
 - `PROGRESS.md`
 - `RUN_LOG.md`
@@ -46,14 +54,13 @@ Yalnız run `Validation` stage'e girdikten ve required artifact checkpoint'leri 
 
 - Overall Validation Result
 - Canonical Gate Coverage
+- Evidence Priority / Observable Trace Status
 - Validation Timing / Chronology
 - Blocking Validation Checks Table
 - Violations & Evidence
 - Required Action & Resolution
 
 ## Canonical Gate Coverage Contract
-
-Validator yalnız `engine/VALIDATION_RULES.md` içinde tanımlı canonical gate ID'lerini kullanır.
 
 Expected canonical set:
 
@@ -88,17 +95,50 @@ Missing Gate IDs: <list or None>
 Unexpected/Custom Gate IDs: <list or None>
 ```
 
-Canonical kural:
-
 ```text
 Missing Gate IDs != None
 → validation report incomplete
 → Overall Result MUST BE FAIL
 ```
 
-Validator `CHK-01`, kendi özel checklist'i veya birleştirilmiş/yeniden adlandırılmış alternatif gate kimlikleri üretemez.
+Validator canonical seti `CHK-*` veya başka alternatif kimliklerle değiştiremez.
 
-Unexpected/custom gate ek bilgi olarak raporlanabilir; canonical gate'in yerine geçemez.
+## Evidence Priority Contract
+
+Evidence kaynakları sabit öncelik sırasına sahiptir:
+
+```text
+E1 — Observable IDE/tool execution trace
+E2 — Filesystem / artifact state
+E3 — Approved input, INPUT_SNAPSHOT/SCP, SOURCE_REGISTER/FCL, canonical contracts
+E4 — PROGRESS / RUN_LOG / manifest / agent self-report metadata
+```
+
+Canonical rule:
+
+> Higher-priority evidence always wins when evidence conflicts.
+
+Örnek:
+
+```text
+E1 trace: WAVE_PLAN_TEMPLATE only once before five writes
+E4 PROGRESS: every wave says "Template Read Before Write: Yes"
+→ E1 wins
+→ E4 claim invalidated
+→ VAL-15 FAIL
+```
+
+Validator alt seviye evidence'ı seçerek üst seviye contradiction'ı görmezden gelemez.
+
+Rapor zorunlu olarak:
+
+```text
+Observable Trace Status: AVAILABLE | UNAVAILABLE
+Highest Evidence Level Used: E1 | E2 | E3 | E4
+Evidence Contradictions: <None or explicit list>
+```
+
+alanlarını taşır.
 
 ## Blocking Checks Table Contract
 
@@ -111,25 +151,45 @@ Gate ID
 Canonical Gate Name
 Severity
 Result: PASS | FAIL | WARNING | UNVERIFIED (only where canonical rule allows)
-Evidence inspected
+Evidence inspected + evidence level
 Finding / rationale
 ```
 
 Bir gate başka gate ile merge edilip düşürülemez.
 
-## Point-of-Use Evidence Strength Contract
+## Approved Scope Membership Contract
 
-Actual IDE/tool read event'i yalnız observable execution trace ile doğrulanabilir.
+VAL-04 yalnız prose comparison yapmaz. `INPUT_SNAPSHOT.md` Approved Scope Registry mekanik membership authority'sidir.
+
+Committed WAVE_MAP/WAVE_PLAN/PROJECT_PLAN/NEXT_TASKS item için:
 
 ```text
-trace available + valid sequence   → VAL-15 PASS
-trace available + invalid sequence → VAL-15 FAIL
-trace unavailable                  → VAL-15 UNVERIFIED
+SCP ref exists?
+→ NO  = FAIL
+→ YES = inspect status
+
+SCP status executable?
+→ IN_SCOPE / KNOWN_DECISION = may pass
+→ OPEN_QUESTION / FUTURE / OUT_OF_SCOPE = FAIL
+```
+
+`VERIFIED_CURRENT_TRUTH` factual/reference use içindir; yeni executable feature scope'u tek başına authorize etmez.
+
+## Point-of-Use Evidence Strength Contract
+
+```text
+Observable Trace Status = AVAILABLE
+→ actual sequence E1 trace'ten inspect edilir
+→ valid sequence = VAL-15 PASS
+→ invalid/missing read = VAL-15 FAIL
+
+Observable Trace Status = UNAVAILABLE
+→ VAL-15 UNVERIFIED
 ```
 
 `PROGRESS.md`, `RUN_LOG.md` veya agent self-report tek başına VAL-15 PASS üretemez.
 
-`UNVERIFIED`, execution-trace limitation'ını dürüstçe gösterir; factual/structural validation failure anlamına gelmez. Overall result politikası `engine/VALIDATION_RULES.md` VAL-15 contract'ına göre uygulanır.
+Trace AVAILABLE yazılıp E1 trace evidence gösterilmeden VAL-15 PASS verilemez.
 
 ## Validation Timing Contract
 
@@ -143,27 +203,30 @@ publication_at (if later)
 completion_at (if later)
 ```
 
-Validation report artifact generation'dan önce oluşturulmuş görünüyorsa PASS verilemez.
+Validation target `runs/active/<run-id>/working-output/` olmalıdır.
+Published output path target olarak kullanılmışsa chronology contract ihlalidir → FAIL.
 
 ## Evidence Rules
 
+- Higher-priority contradiction lower-priority self-report'u invalidate eder.
 - `PROGRESS says Yes` tek başına Point-of-Use PASS kanıtı değildir.
-- Observable trace varsa trace inspect edilmeden VAL-15 PASS yazılamaz.
-- Trace yoksa VAL-15 `UNVERIFIED` yazılır; gerçekleşmemiş proof icat edilmez.
-- Source Claim PASS için generated factual claim/subclaim'ler SOURCE_REGISTER FCL allowlist ile karşılaştırılır.
+- Trace AVAILABLE ise trace inspect edilmeden VAL-15 PASS yazılamaz.
+- Trace UNAVAILABLE ise VAL-15 `UNVERIFIED` yazılır.
+- VAL-04 executable item'lar Approved Scope Registry SCP membership ile karşılaştırılır.
+- `OPEN_QUESTION`, `FUTURE`, `OUT_OF_SCOPE` SCP ref taşıyan executable item → FAIL.
+- Source Claim PASS için factual claim/subclaim'ler SOURCE_REGISTER FCL allowlist ile karşılaştırılır.
 - FCL ID bulunmayan factual modifier/subclaim PASS alamaz.
-- Scope Integrity PASS için Future/Open/Out-of-Scope → WAVE_MAP/WAVE_PLAN/PROJECT_PLAN/NEXT_TASKS karşılaştırması yapılır.
 - Decision Provenance PASS için exact Engine-selected stack/palette/tooling kararlarının DECISIONS coverage'ı kontrol edilir.
-- Package-specific deterministic validation guard'ları applicable ise ilgili canonical gate altında evidence olarak uygulanır.
+- Package-specific deterministic validation guard'ları applicable ise ilgili canonical gate altında uygulanır.
 
 ## İçerik Üretim Kuralları
 
-- Per-gate sonuç canonical rule'un izin verdiği vocabulary ile yazılır.
 - Overall yalnız `PASS`, `CONDITIONAL PASS`, `FAIL`.
 - Critical FAIL varken overall PASS olamaz.
 - Missing canonical gate varken overall FAIL zorunludur.
-- Evidence olmayan PASS yazılamaz.
-- Rapor generator self-report'unu tekrar etmez; artifact/source/trace karşılaştırmasının sonucunu yazar.
+- Evidence contradiction saklanamaz.
+- Higher-priority evidence'a aykırı PASS yazılamaz.
+- Validation target published output olamaz.
 - Timestamp'ler mümkün chronology oluşturmalıdır.
 
 ## Placeholder Tanımları
@@ -172,6 +235,7 @@ Validation report artifact generation'dan önce oluşturulmuş görünüyorsa PA
 - `{{OVERALL_VALIDATION_RESULT}}`
 - `{{VALIDATION_DATE}}`
 - `{{CANONICAL_GATE_COVERAGE}}`
+- `{{EVIDENCE_PRIORITY_BLOCK}}`
 - `{{VALIDATION_TIMING_BLOCK}}`
 - `{{VALIDATION_CHECKS_TABLE}}`
 - `{{VIOLATIONS_AND_EVIDENCE_BLOCK}}`
@@ -180,10 +244,11 @@ Validation report artifact generation'dan önce oluşturulmuş görünüyorsa PA
 
 - `VAL-01..VAL-19` birebir kapsanmalı.
 - Missing canonical gate → FAIL.
-- Alternate/custom checklist canonical setin yerine geçemez.
-- Chronology contradiction → FAIL.
-- Observable evidence contradiction → FAIL.
+- Higher-priority evidence contradiction → lower evidence invalidated.
 - Trace unavailable iken VAL-15 PASS → invalid report → FAIL.
+- Trace available + invalid sequence → VAL-15 FAIL.
+- Non-executable SCP item executable task'a dönüşmüşse VAL-04 FAIL.
+- Published output validation target → FAIL.
 
 ---
 
@@ -199,24 +264,28 @@ Validation report artifact generation'dan önce oluşturulmuş görünüyorsa PA
 
 {{CANONICAL_GATE_COVERAGE}}
 
-## 2. Validation Timing / Chronology
+## 2. Evidence Priority / Observable Trace Status
+
+{{EVIDENCE_PRIORITY_BLOCK}}
+
+## 3. Validation Timing / Chronology
 
 {{VALIDATION_TIMING_BLOCK}}
 
-## 3. Blocking Validation Checks
+## 4. Blocking Validation Checks
 
 {{VALIDATION_CHECKS_TABLE}}
 
-## 4. Tespit Edilen İhlaller ve Kanıtlar
+## 5. Tespit Edilen İhlaller ve Kanıtlar
 
 {{VIOLATIONS_AND_EVIDENCE_BLOCK}}
 
-## 5. Düzeltme Aksiyonları ve Çözüm
+## 6. Düzeltme Aksiyonları ve Çözüm
 
 - FAIL/WARNING kontroller için alınan veya alınması gereken repair aksiyonları.
 
 [CONDITIONAL: include only if warnings exist]
-## 6. Uyarılar (Non-critical Warnings)
+## 7. Uyarılar (Non-critical Warnings)
 
 - Kritik olmayan iyileştirme notları.
 
