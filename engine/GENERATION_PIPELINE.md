@@ -2,7 +2,7 @@
 
 ## Amaç
 
-Product Engine'in approved project truth'u, model/tool bağımsız biçimde agent-ready, validated ve versioned dokümantasyon paketine dönüştüren canonical runtime akışıdır.
+Product Engine'in approved project truth'u agent-ready, validated ve versioned dokümantasyon paketine dönüştüren canonical runtime akışıdır.
 
 ## Authority Boundaries
 
@@ -19,142 +19,92 @@ Product Engine'in approved project truth'u, model/tool bağımsız biçimde agen
 
 # Point-of-Use Authority Refresh
 
-Boot sırasında bir authority/template okunmuş olması, daha sonra memory'den uygulanması için yeterli değildir.
+Boot read action-time refresh yerine geçmez.
 
 > Authority must be close to the action it governs.
 
-Bir artifact üretilmeden veya lifecycle transition yapılmadan hemen önce, o işi yöneten canonical authority/template yeniden açılır.
-
-## Observable Refresh Semantics
-
-```text
-self-reported refresh record ≠ proof of refresh
-observable read/open event      = primary evidence when available
-```
-
-### Evidence Boundary
-
-Product Engine markdown/runtime records actual IDE/tool read event'ini kendi başına kanıtlayamaz.
-
-```text
-Generation Contract Compliance
-→ agent refresh eylemini yapmak zorundadır
-→ PROGRESS/RUN_LOG audit metadata tutar
-
-Observable Trace Audit
-→ yalnız IDE/tool execution trace actual read-before-write sırasını kanıtlar
-```
-
-Trace yoksa:
-
-```text
-Point-of-Use observable verdict = UNVERIFIED
-```
-
-Trace varsa E1 observable trace birincil otoritedir.
-
-## Canonical Evidence Priority
-
-Validation/generation evidence önceliği:
-
-```text
-E1 — Observable IDE/tool execution trace
-E2 — Filesystem / produced artifact state
-E3 — Approved input, INPUT_SNAPSHOT/SCP, SOURCE_REGISTER/FCL, canonical contracts
-E4 — PROGRESS / RUN_LOG / manifest / agent self-report
-```
-
-> Higher-priority evidence always wins when evidence conflicts.
-
-Agent veya validator E1 contradiction varken E4 self-report'a dayanarak PASS veremez.
-
-## Artifact Checkpoint Protocol
-
-Her canonical document ve her dynamic instance ayrı checkpoint'tir.
+Her canonical artifact ve her dynamic instance ayrı checkpoint'tir.
 
 ```text
 CHECKPOINT START
-1. Resolve exactly one artifact / dynamic instance
-2. Re-open its canonical template
-3. Re-open its primary authority/dependencies
-4. Re-open INPUT_SNAPSHOT Approved Scope Registry when artifact can introduce scope
-5. Re-open SOURCE_REGISTER FCL registry when artifact can introduce factual claims
-6. Generate only this artifact
-7. Re-open template validation expectations
-8. Compare artifact against template + authority + SCP + FCL
-9. Repair immediately if needed
-10. Record audit metadata in PROGRESS/RUN_LOG
-11. Mark checkpoint locally complete
+1. Resolve exactly one artifact / instance
+2. Re-open canonical template
+3. Re-open primary authorities/dependencies
+4. Re-open SCP registry if scope may be introduced
+5. Re-open FCL registry if factual claims may be introduced
+6. Generate only this artifact / instance
+7. Compare against template + authority + SCP + FCL
+8. Repair immediately
+9. Record audit metadata
+10. Close checkpoint
 CHECKPOINT END
-→ only now resolve the next artifact
 ```
 
-Dynamic instances için batch-read + batch-generate yasaktır.
+Batch-read + batch-generate dynamic instance üretimi yasaktır.
+
+## Canonical Evidence Priority
+
+```text
+E1 — Observable IDE/tool trace
+E2 — Filesystem / artifact state
+E3 — Approved/canonical registries/contracts
+E4 — PROGRESS / RUN_LOG / manifest / self-report
+```
+
+Higher evidence always wins.
 
 ---
 
 # Approved Scope Registry Boundary
 
-Approved input current scope'u run başında `INPUT_SNAPSHOT.md` içinde `SCP-XXX` kayıtlarına normalize edilir.
-
-Allowed statuses:
+Run başında approved scope `INPUT_SNAPSHOT.md` içinde `SCP-XXX` registry'ye normalize edilir.
 
 ```text
-IN_SCOPE
-KNOWN_DECISION
-VERIFIED_CURRENT_TRUTH
-OPEN_QUESTION
-FUTURE
-OUT_OF_SCOPE
+IN_SCOPE / KNOWN_DECISION → executable olabilir
+VERIFIED_CURRENT_TRUTH    → factual/reference only
+OPEN_QUESTION / FUTURE / OUT_OF_SCOPE → executable NO
 ```
 
-Executable semantics:
-
-```text
-IN_SCOPE / KNOWN_DECISION → executable scope authorize edebilir
-VERIFIED_CURRENT_TRUTH    → factual/reference use; yeni feature scope'u tek başına authorize etmez
-OPEN_QUESTION             → executable NO
-FUTURE                    → executable NO
-OUT_OF_SCOPE              → executable NO
-```
-
-Canonical rule:
-
-> Every committed deliverable/task must map to an executable SCP record.
-
-Scope ref bulunamıyorsa task üretilmez. Non-executable SCP item committed scope'a dönüştürülemez.
-
-Approved scope genişletilecekse yeni explicit approval / yeni input version gerekir.
+Her committed deliverable/task executable SCP ref taşır.
 
 ---
 
 # Factual Claim Allowlist Boundary
 
-Run'ın `SOURCE_REGISTER.md` belgesi verified factual truth için Factual Claim Allowlist (`FCL-XXX`) tutar.
+`SOURCE_REGISTER.md` FCL registry factual truth authority'sidir.
 
-> Generated factual business claim must map to an existing FCL claim ID.
-
-Üst-seviye hizmet başlığı yeni modifier/alt kapsamı authorize etmez.
-
-FCL yoksa:
+Canonical invariant:
 
 ```text
-remove factual enrichment
-or use neutral/non-factual wording
-or stop for clarification if execution-critical
+Generated factual claim ⊆ Referenced FCL semantic content
+```
+
+> FCL reference is not a license to enrich.
+
+FCL ID mevcut olsa bile generated claim daha genişse invalid'dir.
+
+Örnek:
+
+```text
+FCL: Yerinde Teknik Destek
+Allowed: Yerinde Teknik Destek kartı
+Invalid without separate FCL: arıza tespiti, sahada müdahale, 7/24
+```
+
+```text
+FCL: Makine Bakım ve Onarım
+Invalid without separate FCL: periyodik bakım, revizyon, hidrolik/mekanik alt kapsam
 ```
 
 ---
 
 # Project Run Write Boundary
 
-Normal project generation run Product Engine authority/history yüzeylerini read-only kullanır.
-
 Protected:
 
 ```text
 PRODUCT_ENGINE_BRAIN.md
-root README engine-version authority
+root README engine authority
 engine/
 packages/
 templates/
@@ -172,136 +122,46 @@ logs/RUN_INDEX.md
 
 ---
 
-# Transition Authority Refresh
-
-```text
-pending → approved        → PROJECT_INTAKE
-resolution → generation   → PACKAGE_RULES / DOCUMENT_CATALOG
-validation entry          → VALIDATION_RULES
-validation → publication  → OUTPUT_STRUCTURE
-active → completed/failed → RUN_PROTOCOL
-```
-
-Transition authority refresh yapılmadan state değiştirilmez.
-
----
-
 # Pipeline
 
 ## 1. Intake / Normalization
 
-Ham brief ve kaynaklar canonical pending input'a normalize edilir.
-
-Output:
-
-```text
-inputs/pending/<slug>/PROJECT_INPUT.md
-```
-
-Critical missing/conflict/decision varsa stop.
+Ham brief canonical pending input'a normalize edilir.
 
 ## 2. Explicit Approval Gate
 
-Approval transition öncesinde `PROJECT_INTAKE.md` yeniden okunur.
-
-```text
-IDE/tool/plan/auto-approval ≠ canonical approval
-```
-
-Approved input olmadan generation run başlayamaz.
+Explicit user approval olmadan approved snapshot/run yoktur.
 
 ## 3. Package + Planning Resolution
 
-Resolution anında:
+`PACKAGE_RULES.md`, selected package/context ve `PLANNING_PROFILE_OVERLAY.md` yeniden okunur.
 
-```text
-PACKAGE_RULES.md
-selected base package
-applicable contextual package(s)
-PLANNING_PROFILE_OVERLAY.md
-```
+## 4. Canonical Document Resolution
 
-yeniden okunur.
+`DOCUMENT_CATALOG.md` canonical document setini çözer.
 
-Package-specific deterministic guards binding contract'tır.
+## 5. Input Snapshot + SCP Registry
 
-## 4. Document + Dynamic Instance Resolution
+Approved input `INPUT_SNAPSHOT.md` içine dondurulur; SCP registry approved truth'tan geniş olamaz.
 
-`DOCUMENT_CATALOG.md` yeniden okunur ve canonical Document ID seti + dynamic instance registry çözülür.
+## 6. Source Register + FCL Registry
 
-## 5. Input Snapshot + Approved Scope Registry
+Verified factual truth `SOURCE_REGISTER.md` FCL registry'ye normalize edilir. FCL source'tan geniş olamaz.
 
-Artifact generation başlamadan önce `INPUT_SNAPSHOT_TEMPLATE.md` ve approved input yeniden okunur.
-
-`INPUT_SNAPSHOT.md` içinde:
-
-```text
-approved intake snapshot
-+
-Approved Scope Registry (SCP)
-```
-
-oluşturulur.
-
-Registry approved input'tan daha geniş olamaz.
-
-Generation bundan sonra committed scope için SCP membership kullanır.
-
-## 6. Source Register + Factual Claim Resolution
-
-`SOURCE_REGISTER_TEMPLATE.md`, approved input ve verified project sources yeniden okunur.
-
-`SOURCE_REGISTER.md` içinde source registry + Factual Claim Allowlist (FCL) oluşturulur.
-
-FCL source'tan daha geniş olamaz.
-
-## 7. Template Resolution
-
-Template resolution yalnız canonical template'i belirler. İçerik artifact checkpoint sırasında yeniden okunur.
-
-Missing/duplicate/conflicting skeleton → generation başlamaz.
-
-## 8. Information Distribution
-
-Approved truth `INFORMATION_MAP.md` owner kurallarıyla dağıtılır.
-
-Bu aşamada:
-
-```text
-scope capability → SCP registry
-factual claim    → FCL registry
-persistent exact decision → DECISIONS
-```
-
-ayrımı korunur.
-
-## 9. Missing / Assumption / Conflict / Decision Handling
-
-`ASSUMPTION_RULES.md` ve `CONFLICT_RESOLUTION.md` uygulanır.
-
-Provenance:
-
-```text
-explicitly present in approved input → User Approved
-chosen by Engine after approval       → Engine Resolved
-unresolved and user-critical          → Pending Review
-```
-
-Execution-critical unresolved karar varken active wave executable gösterilemez.
-
-## 10. Dependency-Ordered Generation
+## 7. Dependency-Ordered Generation
 
 Genel sıra:
 
 ```text
 Approved Input
-→ INPUT_SNAPSHOT + SCP registry
-→ SOURCE_REGISTER + FCL registry
+→ INPUT_SNAPSHOT + SCP
+→ SOURCE_REGISTER + FCL
 → PROJECT-BRAIN
 → PRODUCT-RULES
 → TECH-CTX
-→ DESIGN (UI)
+→ DESIGN
 → WAVE-MAP
+→ resolve expected dynamic instance registry
 → WAVE-PLAN instances
 → PROJECT_PLAN
 → STATUS
@@ -309,146 +169,180 @@ Approved Input
 → AGENT-INST
 → DECISIONS
 → README-DOC
-→ conditional DATA/API/TEST/DEPLOY/OPS
+→ conditional docs
 ```
 
-Her artifact ayrı Artifact Checkpoint Protocol'den geçer.
+### WAVE_MAP Checkpoint
 
-### WAVE-MAP Checkpoint
-
-WAVE_MAP öncesi yeniden oku:
+WAVE_MAP üretildikten sonra **expected dynamic instance registry** hemen dondurulur.
 
 ```text
-WAVE_MAP_TEMPLATE
-selected package/context + granularity guards
-PROJECT_BRAIN
-PRODUCT_RULES
-TECH_CONTEXT
-applicable DESIGN
-INPUT_SNAPSHOT SCP registry
-SOURCE_REGISTER FCL registry
+EXPECTED_DYNAMIC_INSTANCES = set(WAVE_MAP Wave IDs)
 ```
 
-Map'teki her committed deliverable executable SCP kaydıyla traceable olmalıdır.
+Örneğin map `WAVE_00..WAVE_03` tanımlıyorsa registry tam olarak:
+
+```text
+{WAVE_00, WAVE_01, WAVE_02, WAVE_03}
+```
+
+olur.
+
+WAVE_PLAN generation bu registry tamamlanmadan başlamaz.
 
 ### Dynamic WAVE_PLAN Checkpoint
 
-Her `WAVE_<NN>` için yeniden oku:
+Her expected instance için ayrı checkpoint:
 
 ```text
-WAVE_PLAN_TEMPLATE
-WAVE_MAP exact entry
-TECH_CONTEXT
-PRODUCT_RULES
-applicable DESIGN
-INPUT_SNAPSHOT SCP registry
-SOURCE_REGISTER FCL registry
+re-open WAVE_PLAN_TEMPLATE
+re-open exact WAVE_MAP entry
+re-open TECH_CONTEXT / PRODUCT_RULES / DESIGN
+re-open INPUT_SNAPSHOT SCP
+re-open SOURCE_REGISTER FCL
+generate exactly one WAVE_<NN>
+close checkpoint
 ```
 
-Her executable task:
+Her executable task SCP ref taşır.
+Her factual claim existing FCL'ye referans verir VE o FCL'nin semantic boundary'si içinde kalır.
+
+### Dynamic Instance Completion Invariant
+
+WAVE_PLAN generation bittikten sonra validation'a geçmeden önce filesystem set karşılaştırılır:
 
 ```text
-Scope Ref: SCP-XXX
+EXPECTED = expected dynamic instance registry
+ACTUAL   = set(runs/active/<run-id>/working-output/waves/plans/WAVE_*.md)
+
+MISSING    = EXPECTED - ACTUAL
+UNEXPECTED = ACTUAL - EXPECTED
 ```
 
-taşır.
+`EXPECTED != ACTUAL` ise generation incomplete'tir; validation'a PASS beklentisiyle geçilemez. Missing instance repair edilir.
 
-Task için executable SCP ref yoksa task yazılmaz. `OPEN_QUESTION`, `FUTURE`, `OUT_OF_SCOPE` ref executable task'ta kullanılamaz.
+---
 
-Factual business claim varsa FCL mapping'i aranır.
+# Observable Dynamic Read/Write Pairing
 
-## 11. Pre-Validation Consistency + Provenance Check
+Trace mevcutsa her dynamic write benzersiz bir preceding template read ile eşleşmelidir.
 
-Validation'a geçmeden önce birlikte karşılaştırılır:
+Her qualifying template read **single-use token** gibi davranır:
 
 ```text
-TECH_CONTEXT
+read #1 WAVE_PLAN_TEMPLATE → write WAVE_00  consumes #1
+read #2 WAVE_PLAN_TEMPLATE → write WAVE_01  consumes #2
+```
+
+Geçersiz:
+
+```text
+read #1 WAVE_PLAN_TEMPLATE
+write WAVE_00 consumes #1
+write WAVE_01 has no unconsumed preceding read
+```
+
+Mechanical invariant:
+
+```text
+READ_COUNT  = qualifying dynamic template reads
+WRITE_COUNT = dynamic instance writes
+UNPAIRED_WRITES = writes without unique preceding unconsumed read
+
+READ_COUNT < WRITE_COUNT → invalid
+UNPAIRED_WRITES != empty → invalid
+```
+
+Count equality tek başına yeterli değildir; ordering/pairing geçerli olmalıdır.
+
+---
+
+# Pre-Validation Consistency Check
+
+Validation'a geçmeden önce birlikte kontrol edilir:
+
+```text
 README
+TECH_CONTEXT
 CURRENT_STATUS
 NEXT_TASKS
 WAVE_MAP
+expected dynamic instance registry
+actual WAVE_PLAN file set
 all WAVE_PLAN instances
 DECISIONS
-INPUT_SNAPSHOT SCP registry
-SOURCE_REGISTER FCL registry
-applicable package guards
+SCP registry
+FCL registry
+package guards
 ```
 
-Blocking ihlal varsa Validation stage'e geçmeden repair yapılır.
+Blocking ihlal varsa repair yapılır.
 
-## 12. Validation / Repair
+Özel blocking checks:
 
-Validation transition öncesinde `VALIDATION_RULES.md` yeniden açılır.
+```text
+EXPECTED dynamic instances == ACTUAL dynamic instances
+all factual claims ⊆ referenced FCL boundaries
+trace available ise all dynamic writes uniquely paired
+```
 
-Canonical validation target:
+---
+
+# Validation / Repair
+
+Canonical target:
 
 ```text
 runs/active/<run-id>/working-output/
 ```
 
-Published outputs validation target değildir.
+Canonical gates `VAL-01..VAL-19`.
 
-Validation report ancak:
-
-```text
-all required artifacts generated
-all artifact checkpoints closed
-pre-validation consistency check completed
-validation stage started
-```
-
-sonrasında oluşturulabilir.
-
-Canonical gate seti `VAL-01..VAL-19`'dur.
-
-VAL-04:
+VAL-03:
 
 ```text
-committed item → SCP membership/status check
-non-executable SCP → FAIL
-missing SCP ref → FAIL
+Expected Instance IDs
+Actual Instance IDs
+Missing Instance IDs
+Unexpected Instance IDs
 ```
+
+set equality ile doğrulanır.
+
+VAL-13:
+
+```text
+Generated claim
+Referenced FCL
+Semantic subset result
+```
+
+ile doğrulanır.
 
 VAL-15:
 
 ```text
-trace AVAILABLE + valid sequence   → PASS
-trace AVAILABLE + invalid sequence → FAIL
-trace UNAVAILABLE                  → UNVERIFIED
+Trace UNAVAILABLE → UNVERIFIED
+Trace AVAILABLE:
+  pair each dynamic write with unique preceding unconsumed template read
+  any unpaired write → FAIL
+  all paired → PASS
 ```
 
-Evidence conflict durumunda E1 > E2 > E3 > E4 uygulanır.
+Validation publication'dan önce tamamlanır.
 
-VAL-16:
+---
 
-```text
-validation target must be active working-output
-validation < publication < completion
-```
+# Publication
 
-Published output target gösterilmişse FAIL.
+PASS veya policy'nin izin verdiği açık CONDITIONAL PASS sonrası version publish edilir; `latest/` derived görünüm olur.
 
-## 13. Publication
+# Completion
 
-Publication transition öncesinde `OUTPUT_STRUCTURE.md` yeniden açılır.
-
-PASS veya policy'nin izin verdiği açık CONDITIONAL PASS sonrası:
-
-1. output version tahsis edilir.
-2. `versions/<version>/` yayınlanır.
-3. `latest/` aynı sürümün derived görünümü olur.
-4. run records gerçek path'leri kaydeder.
-
-## 14. Completion
-
-Completion transition öncesinde `RUN_PROTOCOL.md` yeniden açılır.
-
-Run terminal gerçekliğe kapatılır, sonra doğru lifecycle konumuna move edilir.
+Run records terminal state'e kapatılır, ardından doğru lifecycle konumuna taşınır.
 
 ---
 
 # Agent-Ready Completion Invariant
 
-> Projeyi hiç görmemiş yetkin yeni bir ajan, output paketini okuyup yeni bir mimari/teknik planlama turu yapmadan aktif `WAVE_<NN>.md` planını uygulamaya başlayabilmelidir.
-
-Bu koşul sağlanmıyorsa output biçimsel olarak eksiksiz olsa bile generation başarılı sayılmaz.
+Projeyi hiç görmemiş yetkin yeni bir agent, final output paketini okuyup yeni mimari/teknik planlama yapmadan active WAVE planını uygulamaya başlayabilmelidir.
