@@ -2,9 +2,9 @@
 
 ## Amaç
 
-Product Engine working output'unun yalnız eksiksiz değil, gerçekten **agent-ready** olup olmadığını doğrular.
+Product Engine working output'unun yalnız eksiksiz değil, gerçekten **agent-ready, source-safe ve evidence-consistent** olup olmadığını doğrular.
 
-Validation generator'ın kendi beyanlarını tekrar etmez; produced artifact'ları, canonical truth'u ve mevcut observable evidence'ı karşılaştırır.
+Validation generator'ın kendi beyanlarını tekrar etmez; produced artifact'ları, approved truth'u ve mevcut observable evidence'ı karşılaştırır.
 
 > Self-report is evidence metadata, not ground truth.
 
@@ -23,12 +23,10 @@ FAIL             → blocking contract ihlali vardır; publication yapılamaz
 ## 1. Approval Integrity
 
 - approved input mevcut mu?
-- canonical planning profile alanları geçerli mi?
+- planning profile alanları geçerli mi?
 - `approved_by: user` gerçek explicit user approval'a dayanıyor mu?
 - auto/tool/plan approval kullanılmış mı?
 - `project_state` mevcut proje gerçekliğiyle uyumlu mu?
-
-`project_state` sanity rule:
 
 ```text
 existing website/product/code/docs/previous implementation context exists
@@ -48,92 +46,117 @@ Resolved set:
 base package + planning overlay + contextual conditions
 ```
 
-ile uyumlu olmalıdır. Standard implementation minimumu veya applicable design minimumu eksikse FAIL.
+ile uyumlu olmalıdır. Required planning minimumu eksikse FAIL.
 
 ## 3. Canonical Document / Dynamic Instance Coverage
 
 - required canonical documents mevcut mu?
 - WAVE_MAP'teki her wave için WAVE_PLAN var mı?
-- standard/full design'da gereken page/feature instances mevcut mu?
-- gereksiz alternate Document ID/skeleton icat edilmiş mi?
+- applicable design dynamic instances mevcut mu?
+- duplicate/alternate skeleton icat edilmiş mi?
 
 Eksik required coverage → FAIL.
 
-## 4. Wave Decomposition + Execution Depth
+## 4. Approved Scope Integrity
+
+Validation approved input scope kategorilerini artifact'larla doğrudan karşılaştırır.
+
+```text
+In Scope / Known Decisions / verified current truth
+→ committed generation scope olabilir
+
+Future Possibilities
+Open Questions / unresolved options
+Out of Scope
+→ explicit later approval olmadan committed scope OLAMAZ
+```
+
+Özellikle WAVE_MAP, WAVE_PLAN, PROJECT_PLAN ve NEXT_TASKS kontrol edilir.
+
+Örnek blocking leakage:
+
+```text
+Approved Future: interactive teklif formu
+Generated WAVE: teklif formu simülasyonu geliştir
+→ FAIL
+```
+
+```text
+Approved Future: canlı harita
+Generated WAVE: map/contact deliverable
+→ FAIL
+```
+
+Future item'ın yalnız future context olarak anılması ihlal değildir; executable deliverable/task olması ihlaldir.
+
+## 5. Wave Decomposition + Execution Depth
 
 Validation önce WAVE_MAP decomposition'ını, sonra her WAVE_PLAN execution contract'ını kontrol eder.
 
 ### WAVE_MAP Decomposition
 
-- wave'ler broad teknik fazlar yerine meaningful, independently verifiable deliverable'lara bölünmüş mü?
-- tek wave içinde birbirinden bağımsız birkaç product surface/feature/flow gizlenmiş mi?
-- distinct bir surface/feature kendi başına tamamlanıp doğrulanabiliyorsa yalnız teknik benzerlik veya aynı sayfada yer alma nedeniyle başka bağımsız teslimlerle birleştirilmiş mi?
-- corporate/landing UI gibi projelerde `Home/Hero`, `Corporate/Trust`, `Services`, `Contact` gibi distinct responsibilities gereksiz biçimde tek `Core Frontend` wave'ine yığılmış mı?
-- gerçekten cross-cutting final integration/responsive/QA işi son feature/contact wave'ine gizlenmiş mi?
-- wave sonunda hangi deliverable'ın complete sayılacağı açık mı?
-- yapay mikro-wave üretilmiş mi?
+- meaningful, independently verifiable deliverable'lara bölünmüş mü?
+- bağımsız surface/feature/flow tek wave altında gizlenmiş mi?
+- same-page olması gerekçe edilerek distinct responsibilities birleştirilmiş mi?
+- whole-project final QA son feature/contact wave'ine gömülmüş mü?
+- completion boundary açık mı?
+- artificial micro-wave var mı?
 
 Kural:
 
 ```text
-multiple independent meaningful deliverables hidden in one wave → FAIL / repair WAVE_MAP
-no meaningful standalone result → FAIL / merge or redefine
-cross-cutting whole-project QA hidden in final feature wave → FAIL / split QA
-coherent complete deliverable → valid candidate
+multiple independent meaningful deliverables hidden → FAIL / repair WAVE_MAP
+no meaningful standalone result                 → FAIL / merge/redefine
+whole-project QA hidden in feature wave          → FAIL / split QA
+coherent complete deliverable                    → valid
 ```
 
-Granularity değerlendirmesi `WAVE_MAP_TEMPLATE.md` içindeki reference example'ın birebir kopyasını istemez; örneğin gösterdiği separation seviyesini kalibre etmek için kullanır.
+Whole-project responsive sweep/regression/cross-browser/final presentation QA birden fazla önceki surface'i yeniden doğruluyorsa ayrı final QA wave'i olmalıdır.
 
 ### WAVE_PLAN Execution Depth
-
-Her wave bir task özeti değil execution contract olmalıdır.
 
 Kontrol:
 
 - goal/dependency/in-out scope açık mı?
-- expected result / target structure anlaşılır mı?
-- implementation checklist anlamlı alt gruplara ayrılmış mı?
-- görevler atomic ve doğrulanabilir mi?
-- normal kapsamlı wave yeterli implementation derinliğine sahip mi (çoğu durumda yaklaşık 10–20 doğrulanabilir görev; kota değildir)?
-- map'teki assigned deliverable applicable scope'uyla wave sonunda complete oluyor mu?
-- checklist, başka wave olması gereken bağımsız deliverable'ları `1.1 / 1.2` benzeri task'lar altında saklıyor mu?
-- state/role/responsive coverage applicable alanları kapsıyor mu?
-- verification + manual QA/debug + exit criteria somut mu?
-- user-facing surface ise applicable structure/content, interaction, responsive, states, accessibility ve data/service integration sorumlulukları ele alınmış mı?
-- agent wave'i okuyunca tekrar mini implementation planı üretmek zorunda mı?
+- expected result anlaşılır mı?
+- checklist meaningful groups + atomic tasks içeriyor mu?
+- selected deliverable wave sonunda complete mi?
+- başka wave olması gereken deliverable task olarak saklanmış mı?
+- applicable responsive/state/accessibility/data boundary sorumlulukları var mı?
+- verification/manual QA/exit criteria somut mu?
+- agent yeni mini-plan üretmek zorunda mı?
 
-Son sorunun cevabı evet ise veya selected deliverable wave sonunda yarım kalıyorsa → FAIL.
+Selected deliverable yarım kalıyorsa veya agent tekrar plan üretmek zorundaysa → FAIL.
 
 ### Pre-Execution State Integrity
 
-Wave planı generation sırasında henüz execute edilmemişse:
+Henüz execute edilmemiş wave:
 
 ```text
 Status = Ready for Execution | Pending Execution | Blocked
-Implementation Checklist checkbox = [ ]
-Acceptance / Exit Criteria checkbox = [ ]
+Implementation Checklist = [ ]
+Acceptance / Exit Criteria = [ ]
 Wave Result = pending / not executed
 ```
 
-Pre-execution wave'de `[x]` completion kriteri bulunamaz. İhlal → FAIL.
+Pre-execution `[x]` veya success result → FAIL.
 
-## 5. Execution-Critical Decision Completeness
-
-Aktif/ilk wave'i uygulama yolunu değiştiren unresolved karar var mı?
+## 6. Execution-Critical Decision Completeness
 
 Execution-critical unresolved karar varken active wave executable gösterilemez.
 
-Exact stack/tooling unresolved ise `npm`, `pnpm`, `yarn`, `vite`, framework-specific command veya eşdeğer stack-specific assumption/command gerçekmiş gibi yazılamaz.
+Exact stack/tooling unresolved ise stack-specific command/fact gerçekmiş gibi yazılamaz.
 
 İhlal → FAIL.
 
-## 6. Cross-Document Execution Consistency
+## 7. Cross-Document Execution Consistency
 
 ```text
 README
 TECH_CONTEXT
 CURRENT_STATUS
 NEXT_TASKS
+WAVE_MAP
 active WAVE_PLAN
 DECISIONS
 ```
@@ -141,11 +164,10 @@ DECISIONS
 aynı execution reality'yi anlatmalıdır.
 
 Stack/tool/build command/architecture boundary çelişkisi → FAIL.
-Küçük terminoloji drift'i → CONDITIONAL PASS.
 
-## 7. Decision Provenance
+## 8. Decision Provenance + Coverage
 
-Allowed project decision statuses:
+Allowed statuses:
 
 ```text
 User Approved
@@ -154,108 +176,154 @@ Pending Review
 Superseded
 ```
 
-- `User Approved` için canonical user approval kaynağı olmalı.
-- `Engine Resolved` approved scope'u değiştirmemeli.
+### Provenance Check
+
+- `User Approved` için **exact kararın kendisi** approved input/user statement içinde bulunmalı.
+- Generic `Onaylıyorum, devam et` mesajı, generation sonrası exact stack/palette/tooling seçimini User Approved yapmaz.
+- Engine'in generation sırasında seçtiği exact implementation/design kararı `Engine Resolved` olmalıdır.
 - Kullanıcı kararı gerektiren kritik konu `Engine Resolved` yapılamaz.
-- execution-critical `Pending Review` varken agent-ready PASS verilemez.
 
-İhlal → FAIL.
+### Coverage Check
 
-## 8. Tech Context / Integration Readiness
+Final output'ta exact ve kalıcı bir seçim varsa DECISIONS coverage'ı aranır:
 
-Frontend/demo için current data source, mock/local data boundary, presentation ↔ service/data boundary ve future adapter noktası açık olmalıdır.
+```text
+TECH_CONTEXT: Vanilla HTML/CSS/JS
+→ DECISIONS exact stack resolution kaydı olmalı
 
-Approved olmayan backend/API/database uydurulmuşsa → FAIL.
+DESIGN_RULES: exact palette / typography concept
+→ Engine chose it ise DECISIONS Engine Resolved kaydı olmalı
+```
 
-## 9. Design Profile + Quality
+Missing decision record, wrong provenance veya false User Approved → FAIL.
+
+## 9. Tech Context / Integration Readiness
+
+Frontend/demo için:
+
+- current data source açık mı?
+- mock/local boundary var mı?
+- presentation ↔ service/data boundary belli mi?
+- future real adapter noktası belli mi?
+- approved olmayan backend/API/database gerçekmiş gibi uydurulmuş mu?
+
+Critical ihlal → FAIL.
+
+## 10. Design Profile + Quality
 
 - `light` → güçlü, project-specific DESIGN_RULES
 - `standard` → applicable design system/shell/page/state coverage
 - `full` → standard + justified feature/admin coverage
 
-`light` düşük kalite/generic template gerekçesi olamaz.
+`light` generic/düşük kalite gerekçesi olamaz.
 
-## 10. Project Plan / Wave / State Alignment
+## 11. Project Plan / Wave / State Alignment
 
 PROJECT_PLAN ↔ WAVE_MAP ↔ CURRENT_STATUS ↔ NEXT_TASKS aynı sıra/scope/active-wave gerçekliğini anlatmalıdır.
 
 Critical mismatch → FAIL.
 
-## 11. Information Ownership / Assumption / Conflict Integrity
+## 12. Information Ownership / Assumption / Conflict Integrity
 
 - canonical owner sınırları korunuyor mu?
 - prohibited/kayıtsız assumption var mı?
-- unresolved stack/tooling varken stack-specific assumption sızmış mı?
 - `confirmed` için gerçek authority var mı?
 - critical conflict çözülmüş mü?
+- assumption approved decision gibi gösterilmiş mi?
 
 Critical ihlal → FAIL.
 
-## 12. Source Claim Integrity
+## 13. Source Claim Integrity
 
 Project output ve execution plans içindeki business/product/service factual claim'ler approved/verified truth ile traceable olmalıdır.
 
-Validation özellikle şu alanları approved input, INPUT_SNAPSHOT, SOURCE_REGISTER ve PRODUCT_RULES ile karşılaştırır:
-
-```text
-hizmet kapsamı
-7/24 / süre / hız iddiaları
-garanti
-sertifika / yetkilendirme
-ekip büyüklüğü / mobil ekip
-aynı gün / hızlı teslim / müdahale süresi
-performans / başarı oranı
-coğrafi kapsama ilişkin yeni iddialar
-müşteri / referans / partner iddiaları
-```
-
-Design treatment veya UI wording yeni factual business claim'e dönüşemez.
-
-Canonical source'da açık destek bulunmayan claim → FAIL veya generation repair.
-
-## 13. Template / Placeholder / Project Leakage
-
-- tek canonical skeleton kullanılmış mı?
-- required sections dolu mu?
-- placeholder/template instruction sızmış mı?
-- başka projeye ait truth/design/stack sızmış mı?
-
-Critical ihlal → FAIL.
-
-## 14. Point-of-Use Trace Integrity
-
-Operational self-report tek başına refresh kanıtı değildir.
-
-Validation iki katmanlı çalışır:
-
-```text
-observable execution/tool trace available
-→ trace is primary authority
-→ PROGRESS/RUN_LOG must agree with trace
-
-trace unavailable
-→ operational evidence may support audit
-→ validator must not claim stronger proof than available evidence
-```
-
-Her canonical artifact ve her dynamic instance için ilgili template/authority read event'i artifact üretiminden önce gerçekleşmiş olmalıdır.
+Validation yalnız genel hizmet başlıklarını değil, task/copy içindeki **factual modifiers ve alt kapsamı** da kontrol eder.
 
 Özellikle:
 
 ```text
-read WAVE_PLAN_TEMPLATE
-→ generate WAVE_00
-read WAVE_PLAN_TEMPLATE again
-→ generate WAVE_01
+7/24 / süre / hız
+orijinal / garantili
+hızlı temin / aynı gün
+mobil ekip / müdahale
+periyodik bakım
+hidrolik revizyon
+performans testi
+sertifika / uzman kadro
+yeni coğrafi kapsam
+yeni teknik süreç veya hizmet alt kapsamı
+müşteri / referans / partner iddiası
 ```
 
-Batch read sonrası birden fazla instance generation point-of-use compliance değildir.
+Approved source yalnız `Yedek Parça Temini` diyorsa `orijinal parça`, `hızlı temin`, `garanti` gibi modifiers otomatik türetilemez.
 
-Trace mevcutken PROGRESS/RUN_LOG `refreshed` diyor fakat actual read event yoksa → FAIL.
+Canonical source desteği yoksa → FAIL / repair.
 
-## 15. Engine Boundary Integrity
+## 14. Template / Placeholder / Project Leakage
 
-Normal project generation run aşağıdaki protected Engine surfaces'i mutate edemez:
+- tek canonical skeleton mı?
+- required sections dolu mu?
+- unresolved placeholder sızmış mı?
+- başka proje truth/design/stack sızmış mı?
+
+Critical ihlal → FAIL.
+
+## 15. Point-of-Use Trace Integrity
+
+Operational self-report tek başına refresh kanıtı değildir.
+
+```text
+observable execution/tool trace available
+→ trace is primary authority
+→ PROGRESS/RUN_LOG must agree with actual sequence
+```
+
+Dynamic instances için **instance başına ayrı read-before-write sequence** gerekir:
+
+```text
+read WAVE_PLAN_TEMPLATE
+→ write WAVE_00
+read WAVE_PLAN_TEMPLATE again
+→ write WAVE_01
+```
+
+Şu sequence FAIL'dir:
+
+```text
+read WAVE_PLAN_TEMPLATE once
+→ write WAVE_00
+→ write WAVE_01
+→ write WAVE_02
+→ PROGRESS says all refreshed
+```
+
+Validation kendi run metadata'sındaki `Yes` alanını proof olarak kullanamaz; observable trace ile karşılaştırmalıdır.
+
+Trace mevcutken read event yoksa veya sıra yanlışsa → FAIL.
+
+Trace unavailable ise validator `observable proof unavailable` diye evidence limitation belirtir; self-report'u stronger proof gibi sunamaz.
+
+## 16. Validation Timeline Integrity
+
+Validation report yalnız required artifact generation ve pre-validation checks tamamlandıktan sonra oluşturulabilir.
+
+Zaman/sıra kontrolü:
+
+```text
+last required artifact generation/checkpoint
+< validation stage start
+<= VALIDATION_REPORT created/updated timestamp
+< publication
+< completion
+```
+
+`VALIDATION_REPORT` timestamp'i artifact generation'dan önceyse veya RUN_LOG validation event'i ile çelişiyorsa → FAIL.
+
+Operational timestamps kendi aralarında mümkün bir chronology oluşturmalıdır.
+
+## 17. Engine Boundary Integrity
+
+Normal project generation run şu protected surfaces'i mutate edemez:
 
 ```text
 PRODUCT_ENGINE_BRAIN.md
@@ -266,7 +334,7 @@ templates/
 logs/ENGINE_CHANGELOG.md
 ```
 
-Operational writable örnekler:
+Operational writable:
 
 ```text
 inputs/
@@ -275,33 +343,31 @@ outputs/
 logs/RUN_INDEX.md
 ```
 
-Project run'ın tek başına başarılı olması `ENGINE_CHANGELOG.md` girdisi değildir.
+Protected mutation → FAIL.
 
-Protected surface mutation project run sırasında görülürse → FAIL.
+## 18. Output + Operational Path Integrity
 
-## 16. Output + Operational Path Integrity
-
-Final output path'leri `OUTPUT_STRUCTURE.md` ile birebir uyumlu olmalıdır.
+Final output path'leri `OUTPUT_STRUCTURE.md` ile uyumlu olmalıdır.
 Operational records gerçek resolved/published path'i kaydetmelidir.
 
 Mismatch → FAIL.
 
-## 17. Traceability + Lifecycle
+## 19. Traceability + Lifecycle
 
 Manifest input/package/profiles/documents/dynamic instances/validation/output refs taşır.
 
-Aynı run ID yalnız bir lifecycle location'da bulunabilir.
+Aynı run ID tek lifecycle location'da bulunur.
 
 Completed run için:
 
 ```text
 RUN_MANIFEST status → Completed
 PROGRESS status → Completed
-RUN_LOG final lifecycle event → Completed
+RUN_LOG final event → Completed
 COMPLETION_REPORT → successful completion
 ```
 
-`runs/completed/` altında aktif state veya active kopya → FAIL.
+`runs/completed/` altında active state veya active duplicate → FAIL.
 
 ---
 
@@ -310,13 +376,13 @@ COMPLETION_REPORT → successful completion
 Projeyi hiç görmemiş yetkin yeni bir ajan yalnız final package ile:
 
 1. read order'ı bulabiliyor mu?
-2. scope ve teknik/design authority'yi anlayabiliyor mu?
+2. scope ve technical/design authority'yi anlayabiliyor mu?
 3. active wave'i belirleyebiliyor mu?
-4. active WAVE_PLAN + NEXT_TASKS ile yeni planlama veya kritik teknik seçim yapmadan implementation'a başlayabiliyor mu?
-5. selected wave deliverable'ının ne zaman gerçekten complete olduğunu anlayabiliyor mu?
-6. done/QA/stop koşullarını anlayabiliyor mu?
+4. active WAVE_PLAN + NEXT_TASKS ile yeni planlama/kritik seçim yapmadan başlayabiliyor mu?
+5. selected deliverable'ın done koşulunu anlayabiliyor mu?
+6. QA/stop koşullarını anlayabiliyor mu?
 
-4 veya 5. madde sağlanmıyorsa → FAIL.
+4 veya 5 sağlanmıyorsa → FAIL.
 
 ---
 
@@ -328,15 +394,16 @@ run_id
 base package + profiles
 canonical document coverage
 dynamic instance coverage
+approved scope integrity
 wave decomposition result
 wave execution depth result
 pre-execution wave state integrity
 execution-critical decision result
 cross-document execution consistency
-approval + project_state integrity
-decision provenance
+decision provenance + coverage
 source claim integrity
 point-of-use trace integrity
+validation timeline integrity
 engine boundary integrity
 integration readiness
 design quality
