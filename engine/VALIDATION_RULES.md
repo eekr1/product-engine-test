@@ -4,7 +4,7 @@
 
 Product Engine working output'unun yalnız eksiksiz değil, gerçekten **agent-ready, source-safe ve evidence-consistent** olup olmadığını doğrular.
 
-Validation generator'ın kendi beyanlarını tekrar etmez; produced artifact'ları, approved truth'u ve mevcut observable evidence'ı karşılaştırır.
+Validation generator'ın kendi beyanlarını tekrar etmez; produced artifact'ları, approved truth'u, package contract'larını, Factual Claim Allowlist'i ve mevcut observable evidence'ı karşılaştırır.
 
 > Self-report is evidence metadata, not ground truth.
 
@@ -12,15 +12,49 @@ Validation generator'ın kendi beyanlarını tekrar etmez; produced artifact'lar
 
 ```text
 PASS             → publication yapılabilir
-CONDITIONAL PASS → yalnız non-blocking bulgu vardır
+CONDITIONAL PASS → yalnız non-blocking bulgu / açık evidence limitation vardır
 FAIL             → blocking contract ihlali vardır; publication yapılamaz
+```
+
+## Canonical Gate Identity Contract
+
+Blocking validation set sabit canonical ID'lere sahiptir.
+
+```text
+VAL-01 Approval Integrity
+VAL-02 Package + Planning Compliance
+VAL-03 Canonical Document / Dynamic Instance Coverage
+VAL-04 Approved Scope Integrity
+VAL-05 Wave Decomposition + Execution Depth
+VAL-06 Execution-Critical Decision Completeness
+VAL-07 Cross-Document Execution Consistency
+VAL-08 Decision Provenance + Coverage
+VAL-09 Tech Context / Integration Readiness
+VAL-10 Design Profile + Quality
+VAL-11 Project Plan / Wave / State Alignment
+VAL-12 Information Ownership / Assumption / Conflict Integrity
+VAL-13 Source Claim Integrity
+VAL-14 Template / Placeholder / Project Leakage
+VAL-15 Point-of-Use Trace Integrity
+VAL-16 Validation Timeline Integrity
+VAL-17 Engine Boundary Integrity
+VAL-18 Output + Operational Path Integrity
+VAL-19 Traceability + Lifecycle
+```
+
+Validator kendi `CHK-*` setini icat edemez, gate'leri birleştirip azaltamaz veya numaralı setten madde düşüremez.
+
+```text
+missing canonical gate in validation report
+→ validation report incomplete
+→ overall FAIL
 ```
 
 ---
 
 # Blocking Validation Set
 
-## 1. Approval Integrity
+## VAL-01 — Approval Integrity
 
 - approved input mevcut mu?
 - planning profile alanları geçerli mi?
@@ -38,7 +72,7 @@ new codebase/rewrite from scratch alone
 
 İhlal → FAIL.
 
-## 2. Package + Planning Compliance
+## VAL-02 — Package + Planning Compliance
 
 Resolved set:
 
@@ -46,9 +80,9 @@ Resolved set:
 base package + planning overlay + contextual conditions
 ```
 
-ile uyumlu olmalıdır. Required planning minimumu eksikse FAIL.
+ile uyumlu olmalıdır. Required planning minimumu veya applicable package-specific blocking guard ihlal edilirse FAIL.
 
-## 3. Canonical Document / Dynamic Instance Coverage
+## VAL-03 — Canonical Document / Dynamic Instance Coverage
 
 - required canonical documents mevcut mu?
 - WAVE_MAP'teki her wave için WAVE_PLAN var mı?
@@ -57,7 +91,7 @@ ile uyumlu olmalıdır. Required planning minimumu eksikse FAIL.
 
 Eksik required coverage → FAIL.
 
-## 4. Approved Scope Integrity
+## VAL-04 — Approved Scope Integrity
 
 Validation approved input scope kategorilerini artifact'larla doğrudan karşılaştırır.
 
@@ -73,27 +107,17 @@ Out of Scope
 
 Özellikle WAVE_MAP, WAVE_PLAN, PROJECT_PLAN ve NEXT_TASKS kontrol edilir.
 
-Örnek blocking leakage:
-
-```text
-Approved Future: interactive teklif formu
-Generated WAVE: teklif formu simülasyonu geliştir
-→ FAIL
-```
-
-```text
-Approved Future: canlı harita
-Generated WAVE: map/contact deliverable
-→ FAIL
-```
-
 Future item'ın yalnız future context olarak anılması ihlal değildir; executable deliverable/task olması ihlaldir.
 
-## 5. Wave Decomposition + Execution Depth
+İhlal → FAIL.
+
+## VAL-05 — Wave Decomposition + Execution Depth
 
 Validation önce WAVE_MAP decomposition'ını, sonra her WAVE_PLAN execution contract'ını kontrol eder.
 
 ### WAVE_MAP Decomposition
+
+Genel kurallar:
 
 - meaningful, independently verifiable deliverable'lara bölünmüş mü?
 - bağımsız surface/feature/flow tek wave altında gizlenmiş mi?
@@ -102,16 +126,31 @@ Validation önce WAVE_MAP decomposition'ını, sonra her WAVE_PLAN execution con
 - completion boundary açık mı?
 - artificial micro-wave var mı?
 
-Kural:
-
 ```text
 multiple independent meaningful deliverables hidden → FAIL / repair WAVE_MAP
-no meaningful standalone result                 → FAIL / merge/redefine
-whole-project QA hidden in feature wave          → FAIL / split QA
-coherent complete deliverable                    → valid
+no meaningful standalone result                  → FAIL / merge/redefine
+whole-project QA hidden in feature wave           → FAIL / split QA
+coherent complete deliverable                     → valid
 ```
 
-Whole-project responsive sweep/regression/cross-browser/final presentation QA birden fazla önceki surface'i yeniden doğruluyorsa ayrı final QA wave'i olmalıdır.
+### Package-Level Deterministic Guards
+
+Applicable package contract heuristic değil blocking authority'dir.
+
+`demo-frontend` landing/corporate context örneği:
+
+```text
+Services + distinct Contact responsibility in one wave
+→ FAIL / split
+
+feature/contact surface + whole-project final responsive/cross-browser/regression/presentation QA
+→ FAIL / split final QA
+
+QA re-validates 2+ previously completed surfaces/features
+→ separate final QA wave REQUIRED
+```
+
+Package istisnası ancak package contract'ın izin verdiği şekilde WAVE_MAP içinde explicit rationale ile kanıtlanabilir.
 
 ### WAVE_PLAN Execution Depth
 
@@ -141,7 +180,7 @@ Wave Result = pending / not executed
 
 Pre-execution `[x]` veya success result → FAIL.
 
-## 6. Execution-Critical Decision Completeness
+## VAL-06 — Execution-Critical Decision Completeness
 
 Execution-critical unresolved karar varken active wave executable gösterilemez.
 
@@ -149,7 +188,7 @@ Exact stack/tooling unresolved ise stack-specific command/fact gerçekmiş gibi 
 
 İhlal → FAIL.
 
-## 7. Cross-Document Execution Consistency
+## VAL-07 — Cross-Document Execution Consistency
 
 ```text
 README
@@ -165,7 +204,7 @@ aynı execution reality'yi anlatmalıdır.
 
 Stack/tool/build command/architecture boundary çelişkisi → FAIL.
 
-## 8. Decision Provenance + Coverage
+## VAL-08 — Decision Provenance + Coverage
 
 Allowed statuses:
 
@@ -176,28 +215,16 @@ Pending Review
 Superseded
 ```
 
-### Provenance Check
-
-- `User Approved` için **exact kararın kendisi** approved input/user statement içinde bulunmalı.
-- Generic `Onaylıyorum, devam et` mesajı, generation sonrası exact stack/palette/tooling seçimini User Approved yapmaz.
+- `User Approved` için exact kararın kendisi approved input/user statement içinde bulunmalı.
+- Generic `Onaylıyorum, devam et` mesajı generation sonrası exact stack/palette/tooling seçimini User Approved yapmaz.
 - Engine'in generation sırasında seçtiği exact implementation/design kararı `Engine Resolved` olmalıdır.
 - Kullanıcı kararı gerektiren kritik konu `Engine Resolved` yapılamaz.
 
-### Coverage Check
-
-Final output'ta exact ve kalıcı bir seçim varsa DECISIONS coverage'ı aranır:
-
-```text
-TECH_CONTEXT: Vanilla HTML/CSS/JS
-→ DECISIONS exact stack resolution kaydı olmalı
-
-DESIGN_RULES: exact palette / typography concept
-→ Engine chose it ise DECISIONS Engine Resolved kaydı olmalı
-```
+Final output'ta exact ve kalıcı seçim varsa DECISIONS coverage'ı aranır.
 
 Missing decision record, wrong provenance veya false User Approved → FAIL.
 
-## 9. Tech Context / Integration Readiness
+## VAL-09 — Tech Context / Integration Readiness
 
 Frontend/demo için:
 
@@ -209,7 +236,7 @@ Frontend/demo için:
 
 Critical ihlal → FAIL.
 
-## 10. Design Profile + Quality
+## VAL-10 — Design Profile + Quality
 
 - `light` → güçlü, project-specific DESIGN_RULES
 - `standard` → applicable design system/shell/page/state coverage
@@ -217,13 +244,13 @@ Critical ihlal → FAIL.
 
 `light` generic/düşük kalite gerekçesi olamaz.
 
-## 11. Project Plan / Wave / State Alignment
+## VAL-11 — Project Plan / Wave / State Alignment
 
 PROJECT_PLAN ↔ WAVE_MAP ↔ CURRENT_STATUS ↔ NEXT_TASKS aynı sıra/scope/active-wave gerçekliğini anlatmalıdır.
 
 Critical mismatch → FAIL.
 
-## 12. Information Ownership / Assumption / Conflict Integrity
+## VAL-12 — Information Ownership / Assumption / Conflict Integrity
 
 - canonical owner sınırları korunuyor mu?
 - prohibited/kayıtsız assumption var mı?
@@ -233,33 +260,49 @@ Critical mismatch → FAIL.
 
 Critical ihlal → FAIL.
 
-## 13. Source Claim Integrity
+## VAL-13 — Source Claim Integrity
 
-Project output ve execution plans içindeki business/product/service factual claim'ler approved/verified truth ile traceable olmalıdır.
+Source validation blacklist değil **allowlist** esaslıdır.
 
-Validation yalnız genel hizmet başlıklarını değil, task/copy içindeki **factual modifiers ve alt kapsamı** da kontrol eder.
+`SOURCE_REGISTER.md` içindeki Factual Claim Allowlist canonical run-level factual claim registry'sidir.
 
-Özellikle:
+Her generated business/product/service factual claim veya factual modifier/subclaim:
 
 ```text
+→ existing FCL-XXX claim ID ile traceable olmalı
+or
+→ approved input içinde exact direct support taşımalı ve FCL registry'ye eklenmiş olmalı
+```
+
+Üst-seviye claim yeni modifier/alt kapsamı authorize etmez.
+
+```text
+FCL: Yedek Parça Temini
+→ "Yedek Parça Temini kartı" valid
+→ "orijinal parça" invalid unless separate FCL support exists
+→ "hızlı temin" invalid unless separate FCL support exists
+```
+
+Aynı mantık şunlara uygulanır:
+
+```text
+servis süreci
+yetkili müdahale
+hidrolik/mekanik bakım detayları
 7/24 / süre / hız
-orijinal / garantili
-hızlı temin / aynı gün
-mobil ekip / müdahale
-periyodik bakım
-hidrolik revizyon
-performans testi
+garanti / orijinal
+mobil ekip
+periyodik bakım / revizyon
 sertifika / uzman kadro
 yeni coğrafi kapsam
-yeni teknik süreç veya hizmet alt kapsamı
 müşteri / referans / partner iddiası
 ```
 
-Approved source yalnız `Yedek Parça Temini` diyorsa `orijinal parça`, `hızlı temin`, `garanti` gibi modifiers otomatik türetilemez.
+FCL mapping yoksa → FAIL / repair.
 
-Canonical source desteği yoksa → FAIL / repair.
+Design treatment/layout/interaction factual business claim değilse FCL gerektirmez.
 
-## 14. Template / Placeholder / Project Leakage
+## VAL-14 — Template / Placeholder / Project Leakage
 
 - tek canonical skeleton mı?
 - required sections dolu mu?
@@ -268,17 +311,24 @@ Canonical source desteği yoksa → FAIL / repair.
 
 Critical ihlal → FAIL.
 
-## 15. Point-of-Use Trace Integrity
+## VAL-15 — Point-of-Use Trace Integrity
 
-Operational self-report tek başına refresh kanıtı değildir.
+Point-of-use davranışı generation contract'ında zorunludur; fakat **actual IDE/tool read event'i yalnız observable execution trace ile doğrulanabilir**.
+
+Canonical verdict semantics:
 
 ```text
-observable execution/tool trace available
-→ trace is primary authority
-→ PROGRESS/RUN_LOG must agree with actual sequence
+observable trace available + sequence valid
+→ PASS
+
+observable trace available + sequence invalid/missing read
+→ FAIL
+
+observable trace unavailable
+→ UNVERIFIED
 ```
 
-Dynamic instances için **instance başına ayrı read-before-write sequence** gerekir:
+Dynamic instances için geçerli trace örneği:
 
 ```text
 read WAVE_PLAN_TEMPLATE
@@ -287,27 +337,30 @@ read WAVE_PLAN_TEMPLATE again
 → write WAVE_01
 ```
 
-Şu sequence FAIL'dir:
+Şu sequence trace mevcutsa FAIL'dir:
 
 ```text
 read WAVE_PLAN_TEMPLATE once
 → write WAVE_00
 → write WAVE_01
 → write WAVE_02
-→ PROGRESS says all refreshed
 ```
 
-Validation kendi run metadata'sındaki `Yes` alanını proof olarak kullanamaz; observable trace ile karşılaştırmalıdır.
+`PROGRESS.md`, `RUN_LOG.md` veya agent self-report actual read event proof değildir.
 
-Trace mevcutken read event yoksa veya sıra yanlışsa → FAIL.
+### UNVERIFIED Semantics
 
-Trace unavailable ise validator `observable proof unavailable` diye evidence limitation belirtir; self-report'u stronger proof gibi sunamaz.
+`UNVERIFIED` validator'ın execution trace'e erişemediğini dürüstçe gösterir.
 
-## 16. Validation Timeline Integrity
+- `UNVERIFIED` = PASS değildir.
+- `UNVERIFIED` = generator contract ihlali kanıtlandı anlamına da gelmez.
+- Validator trace yokken `PASS` iddia edemez.
+- Bütün diğer blocking gate'ler PASS ise VAL-15 UNVERIFIED overall sonucu en fazla `CONDITIONAL PASS` yapabilir.
+- Observable trace gereken bir acceptance/test ortamında trace bekleniyorsa fakat sağlanmamışsa test politikası bunu FAIL'e yükseltebilir.
+
+## VAL-16 — Validation Timeline Integrity
 
 Validation report yalnız required artifact generation ve pre-validation checks tamamlandıktan sonra oluşturulabilir.
-
-Zaman/sıra kontrolü:
 
 ```text
 last required artifact generation/checkpoint
@@ -317,11 +370,9 @@ last required artifact generation/checkpoint
 < completion
 ```
 
-`VALIDATION_REPORT` timestamp'i artifact generation'dan önceyse veya RUN_LOG validation event'i ile çelişiyorsa → FAIL.
+Chronology contradiction → FAIL.
 
-Operational timestamps kendi aralarında mümkün bir chronology oluşturmalıdır.
-
-## 17. Engine Boundary Integrity
+## VAL-17 — Engine Boundary Integrity
 
 Normal project generation run şu protected surfaces'i mutate edemez:
 
@@ -345,14 +396,14 @@ logs/RUN_INDEX.md
 
 Protected mutation → FAIL.
 
-## 18. Output + Operational Path Integrity
+## VAL-18 — Output + Operational Path Integrity
 
 Final output path'leri `OUTPUT_STRUCTURE.md` ile uyumlu olmalıdır.
 Operational records gerçek resolved/published path'i kaydetmelidir.
 
 Mismatch → FAIL.
 
-## 19. Traceability + Lifecycle
+## VAL-19 — Traceability + Lifecycle
 
 Manifest input/package/profiles/documents/dynamic instances/validation/output refs taşır.
 
@@ -382,35 +433,35 @@ Projeyi hiç görmemiş yetkin yeni bir ajan yalnız final package ile:
 5. selected deliverable'ın done koşulunu anlayabiliyor mu?
 6. QA/stop koşullarını anlayabiliyor mu?
 
-4 veya 5 sağlanmıyorsa → FAIL.
+4 veya 5 sağlanmıyorsa ilgili canonical gate FAIL olmalıdır.
 
 ---
 
 # Validation Report Minimumu
 
+Rapor şunları zorunlu taşır:
+
 ```text
-result
+Expected Gate IDs: VAL-01..VAL-19
+Executed Gate IDs
+Missing Gate IDs
+Unexpected/Custom Gate IDs
+overall result
 run_id
 base package + profiles
-canonical document coverage
-dynamic instance coverage
-approved scope integrity
-wave decomposition result
-wave execution depth result
-pre-execution wave state integrity
-execution-critical decision result
-cross-document execution consistency
-decision provenance + coverage
-source claim integrity
-point-of-use trace integrity
-validation timeline integrity
-engine boundary integrity
-integration readiness
-design quality
-operational path integrity
-agent-ready acceptance
-lifecycle location + operational state integrity
-failed checks / warnings / repair actions
+validation chronology
+VAL-01..VAL-19 ayrı sonuç satırları
+evidence inspected
+failed checks / warnings / UNVERIFIED limitations / repair actions
 ```
 
-Publication yalnız PASS veya gerçekten non-blocking ve açıkça kabul edilmiş CONDITIONAL PASS sonrası yapılabilir.
+Canonical kurallar:
+
+```text
+missing VAL ID → overall FAIL
+custom CHK set replacing VAL IDs → overall FAIL
+critical FAIL → overall FAIL
+VAL-15 UNVERIFIED + all other gates PASS → at most CONDITIONAL PASS
+```
+
+Publication yalnız PASS veya gerçekten non-blocking/evidence-limited ve açıkça kabul edilmiş CONDITIONAL PASS sonrası yapılabilir.
