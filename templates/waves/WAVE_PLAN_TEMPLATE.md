@@ -6,7 +6,7 @@
 template_id: wave-plan-template
 template_name: Canonical Wave Plan Template
 document_id: WAVE-PLAN
-version: 2.5.0
+version: 2.6.0
 status: active
 template_type: dynamic-document
 category: waves
@@ -24,6 +24,7 @@ required_inputs:
   - wave_map
   - tech_context
   - input_snapshot_scope_registry
+  - source_register_fcl
 conditional_inputs:
   - product_rules
   - design_documents
@@ -38,7 +39,7 @@ output_filename_pattern: waves/plans/WAVE_<NN>.md
 
 Tek bir implementation wave'ini başka bir mimari/teknik planlama turu gerektirmeden uygulanabilir hâle getiren canonical execution contract'ıdır.
 
-> **A wave is not a task summary. It is an execution contract.**
+> A wave is not a task summary. It is an execution contract.
 
 Her wave için aynı template kullanılır. Yeni wave yeni Document ID değildir.
 
@@ -46,124 +47,103 @@ Her wave için aynı template kullanılır. Yeni wave yeni Document ID değildir
 
 Bir wave:
 
-- WAVE_MAP tarafından atanmış tek coherent deliverable'ı tamamlamalı,
-- bağımsız doğrulanabilmeli,
-- dependency zinciri açık olmalı,
-- makul bir çalışma oturumunda ilerletilebilir olmalı,
-- gereksiz mikro-wave veya dev mega-wave olmamalıdır.
+- WAVE_MAP tarafından atanmış tek coherent deliverable'ı tamamlar,
+- bağımsız doğrulanabilir,
+- dependency zinciri açıktır,
+- gereksiz mikro-wave veya mega-wave değildir.
 
-WAVE_PLAN kötü decomposition'ı task numaralarıyla gizleyemez. Map'te tek wave altında birbirinden bağımsız birkaç product surface/feature bulunuyorsa plan decomposition problemi olarak işaretlemeli ve map repair'ına dönmelidir.
-
-Implementation checklist çoğu normal wave'de yaklaşık **10–20 doğrulanabilir görev** derinliğine ulaşabilir. Bu kota değildir; önemli olan agent'ın tekrar plan çıkarmak zorunda kalmamasıdır.
-
-## Complete Deliverable Kuralı
-
-WAVE_MAP bir wave'e `Home`, `Auth`, `Search`, `Checkout`, `API Foundation` veya başka coherent delivery unit atadıysa, wave sonunda bu unit applicable kapsamıyla tamamlanmış olmalıdır.
-
-User-facing surface için applicable olduğunda:
-
-```text
-structure/content
-visual hierarchy
-interaction states
-responsive behavior
-loading/empty/error states
-accessibility/keyboard behavior
-service/data boundary integration
-verification/manual QA
-```
-
-birlikte ele alınır.
-
-Bir surface'in kendi completion sorumluluğu belirsiz `polish later` wave'ine atılamaz. Ancak whole-project regression/final responsive/cross-browser QA farklı bir cross-cutting responsibility ise ayrı final QA wave'ine aittir.
+WAVE_PLAN kötü decomposition'ı task numaralarıyla gizleyemez. Whole-project regression/final responsive/cross-browser QA ayrı cross-cutting responsibility ise ayrı final QA wave'ine aittir.
 
 ---
 
 # Approved Scope Boundary
 
-WAVE_PLAN yalnız approved **current scope** üretir.
-
-Binding scope authority run'ın `INPUT_SNAPSHOT.md` içindeki Approved Scope Registry (`SCP-XXX`) kayıtlarıdır.
+Binding scope authority `INPUT_SNAPSHOT.md` içindeki Approved Scope Registry (`SCP-XXX`) kayıtlarıdır.
 
 ```text
-IN_SCOPE / KNOWN_DECISION
-→ executable deliverable/task authorize edebilir
-
-VERIFIED_CURRENT_TRUTH
-→ factual/reference use sağlar; tek başına yeni feature scope authorize etmez
-
-OPEN_QUESTION / FUTURE / OUT_OF_SCOPE
-→ executable task authorize EDEMEZ
+IN_SCOPE / KNOWN_DECISION → executable task authorize edebilir
+VERIFIED_CURRENT_TRUTH    → factual/reference use; yeni feature scope authorize etmez
+OPEN_QUESTION / FUTURE / OUT_OF_SCOPE → executable task authorize EDEMEZ
 ```
 
 Canonical kural:
 
 > Every committed implementation task must carry one or more executable Scope Ref (`SCP-XXX`) values.
 
-Örnek:
-
 ```text
-TASK-031: Telefon CTA ekle
+TASK: Telefon CTA ekle
 Scope Ref: SCP-003 (IN_SCOPE) → VALID
 
-TASK-032: Teklif talep formu ekle
+TASK: Teklif formu ekle
 Scope Ref: SCP-101 (OPEN_QUESTION) → INVALID
 ```
 
 Scope ref bulunamıyorsa task yazılmaz; WAVE_MAP/approved input'a dönülür veya clarification gerekir.
 
-Future/Open/Out-of-Scope öğeler yalnız context olarak anılabilir. Committed implementation task olması için explicit approval + gerekirse yeni input version gerekir.
-
-WAVE_MAP yanlışlıkla non-executable scope item'ı wave'e atamışsa WAVE_PLAN bunu takip etmez; generation map repair'ına döner.
-
 ---
 
 # Content Truth Boundary
 
-WAVE_PLAN implementation detayını zenginleştirebilir; fakat approved/verified project truth'u yeni business gerçekleriyle zenginleştiremez.
+Execution planning approved fact'i implementation task'a dönüştürebilir; yeni business gerçeği üretemez.
 
-> Execution planning may transform approved facts into implementation tasks, but may not enrich them into new business claims.
+Factual truth authority `SOURCE_REGISTER.md` içindeki Factual Claim Allowlist (`FCL-XXX`) kayıtlarıdır.
 
-Business/product/service factual claim yalnız aşağıdaki kaynaklardan trace edilebiliyorsa kullanılabilir:
+Canonical kural:
+
+> Referencing an FCL ID does not authorize enrichment beyond that FCL's semantic boundary.
+
+Her generated factual claim için iki test zorunludur:
 
 ```text
-approved input / INPUT_SNAPSHOT
-verified project source / SOURCE_REGISTER FCL registry
-canonical PRODUCT_RULES or equivalent project truth authority
+1. Referenced FCL exists?
+2. Generated factual claim ⊆ Referenced FCL semantic content?
+```
+
+İkinci test false ise FCL ID mevcut olsa bile claim INVALID'dir.
+
+Allowed:
+
+```text
+FCL: "Yerinde Teknik Destek"
+→ "Yerinde Teknik Destek hizmet kartını oluştur"
+```
+
+Not allowed without separate exact source support + separate FCL:
+
+```text
+arıza tespiti
+sahada müdahale
+mobil servis ekibi
+7/24 destek
 ```
 
 Allowed:
 
 ```text
-Approved truth: "Yerinde Teknik Destek"
-Wave task: "Yerinde Teknik Destek hizmet kartını oluştur"
+FCL: "Makine Bakım ve Onarım"
+→ "Makine Bakım ve Onarım bölümünü oluştur"
 ```
 
-Not allowed, kaynakta açıkça doğrulanmadıkça:
+Not allowed without separate FCL:
 
 ```text
-"7/24 teknik destek"
-"hızlı teslimat"
-"orijinal/garantili yedek parça"
-"mobil servis ekibi"
-"aynı gün müdahale"
-"hidrolik revizyon"
-"periyodik bakım"
-"sertifikalı uzman kadro"
-performans/süre/garanti/coğrafi kapsam iddiaları
+periyodik bakım
+revizyon
+hidrolik/mekanik alt kapsam
+sertifikalı uzmanlık
 ```
 
-Design treatment, layout, interaction, iconography ve görsel dil `Engine Resolved` olabilir. Bunlar firma/hizmet hakkında yeni factual claim'e dönüşemez.
+Aynı şekilde `orijinal`, `garantili`, `hızlı`, süre/performance, yeni coğrafi kapsam veya süreç iddiaları üst-seviye service claim'den türetilemez.
 
-Factual provenance bulunamıyorsa:
+Factual provenance yetersizse:
 
 ```text
 remove factual enrichment
-or
-use neutral wording tied to the approved service name
-or
-stop for clarification if execution-critical
+or use neutral wording tied exactly to approved claim
+or stop for clarification if execution-critical
 ```
+
+Design treatment, layout, interaction ve visual direction factual claim değildir.
 
 ---
 
@@ -172,13 +152,13 @@ stop for clarification if execution-critical
 Generation aşamasında wave henüz uygulanmamıştır:
 
 ```text
-Ready for Execution / Pending Execution / Blocked
-→ Implementation Checklist: [ ]
-→ Acceptance / Exit Criteria: [ ]
-→ Wave Result: pending / not executed
+Status = Ready for Execution | Pending Execution | Blocked
+Implementation Checklist = [ ]
+Acceptance / Exit Criteria = [ ]
+Wave Result = pending / not executed
 ```
 
-`[x]` yalnız wave gerçekten execute edilmiş ve ilgili madde doğrulanmışsa kullanılabilir.
+Pre-execution `[x]` veya başarı sonucu yazılamaz.
 
 ## Zorunlu Bölümler
 
@@ -200,38 +180,29 @@ Ready for Execution / Pending Execution / Blocked
 
 ## İçerik Üretim Kuralları
 
-- WAVE_MAP scope'unu aşamaz veya map'te başka wave'e ait deliverable'ı içine çekemez.
-- Approved Scope Boundary ihlal edilemez.
+- WAVE_MAP scope'unu aşamaz.
 - Her executable task en az bir executable `SCP-XXX` Scope Ref taşır.
-- `OPEN_QUESTION`, `FUTURE`, `OUT_OF_SCOPE` Scope Ref executable task'ta kullanılamaz.
-- Scope Ref bulunamayan task committed task olarak yazılamaz.
-- Checklist coherent implementation groups altında atomic ve doğrulanabilir görevlere ayrılır.
-- Her görev gerçek bir çıktı üretmeli ve done koşulu anlaşılmalıdır.
-- Her wave sonunda beklenen dosya/klasör/bileşen/state sonucu açıkça anlaşılmalıdır.
-- Teknik boundary, design authority ve data/service sınırları task seviyesinde korunur.
-- Business/service factual claim'ler Content Truth Boundary'yi ihlal edemez.
-- TECH_CONTEXT boundary'lerini değiştirecek iş varsa explicit decision/clarification gerekip gerekmediği belirtilir.
-- Design scope varsa ilgili canonical design docs listelenir.
-- Dependency chain açık yazılır.
+- Non-executable SCP task authorize edemez.
+- Her factual business/service claim referenced FCL'nin exact semantic boundary'si içinde kalır.
+- FCL ID mevcut olması tek başına yeterli provenance değildir.
+- Checklist atomic, doğrulanabilir ve agent-ready olmalıdır.
+- Teknik/data/service/design boundary'leri korunur.
+- Başka wave deliverable'ı task içine saklanmaz.
 - Test/QA komutları yalnız gerçek execution stack kesinleşmişse yazılır.
-- Aktif wave'i uygulamak için gerekli stack/tool/architecture kararı unresolved ise wave `Ready for Execution` olamaz.
-- Kullanıcı onayı gereken checkpoint varsa açık stop rule belirtilir.
-- Wave tamamlanmadan sonuç bölümü başarıyla doldurulmuş gibi gösterilmez.
-- Acceptance criteria somut completion sonuçları içermelidir.
+- Wave başlamadan success state yazılmaz.
 
 ## Task Derinlik Standardı
 
-Her anlamlı task veya task grubu şu sorulara cevap vermelidir:
+Her anlamlı task şu sorulara cevap verir:
 
 ```text
 Ne yapılacak?
 Hangi Scope Ref bunu authorize ediyor?
-Hangi boundary/kurallar korunacak?
-Beklenen somut sonuç nedir?
+Factual claim varsa hangi FCL authorize ediyor?
+Generated factual wording FCL semantic boundary içinde mi?
+Beklenen sonuç nedir?
 Done olduğu nasıl doğrulanacak?
 ```
-
-Uzun tutorial yazılmaz; fakat agent'ın yeniden implementation planı üretmesine ihtiyaç bırakılmaz.
 
 ## Placeholder Tanımları
 
@@ -257,17 +228,13 @@ Uzun tutorial yazılmaz; fakat agent'ın yeniden implementation planı üretmesi
 
 ## Validation Beklentileri
 
-- Wave map'teki scope ve dependency ile birebir uyumlu olmalı.
-- Assigned deliverable wave sonunda complete olmalı.
-- Active wave başka planlama turu olmadan uygulanabilir olmalı.
-- Expected Result, checklist ve acceptance criteria aynı teslimi tarif etmeli.
-- Başka wave olması gereken bağımsız deliverable'lar task numaraları altında saklanmamalı.
-- Her committed task executable SCP kaydıyla traceable olmalı.
-- Future/Open/Out-of-Scope item committed task olmamalı.
-- Business/service factual claim'lerin approved/verified provenance'ı olmalı.
-- NEXT_TASKS aktif wave'in ilk uygulanabilir görevleriyle uyumlu olmalı.
-- Pre-execution planlarda checkbox'lar `[ ]` olmalı ve Wave Result başarı iddia etmemeli.
-- Kanıt olmadan tamamlanmış state yazılmamalı.
+- WAVE_MAP scope/dependency ile uyumlu olmalı.
+- Her committed task executable SCP ile traceable olmalı.
+- Future/Open/Out-of-Scope task olmamalı.
+- Her factual claim existing FCL'ye referans vermeli VE FCL semantic boundary içinde kalmalı.
+- FCL'den geniş subclaim/modifier → FAIL.
+- NEXT_TASKS aktif wave ile uyumlu olmalı.
+- Pre-execution checkbox'lar `[ ]` olmalı.
 
 ---
 
@@ -310,7 +277,7 @@ Uzun tutorial yazılmaz; fakat agent'ın yeniden implementation planı üretmesi
 
 ## 6. Implementation Checklist
 
-> Her task satırı/grubu `Scope Ref: SCP-XXX` taşır.
+> Her task `Scope Ref: SCP-XXX` taşır. Factual claim varsa yalnız referenced FCL semantic boundary içinde kalır.
 
 {{IMPLEMENTATION_CHECKLIST}}
 
@@ -337,8 +304,6 @@ Uzun tutorial yazılmaz; fakat agent'ın yeniden implementation planı üretmesi
 ---
 
 ## Wave Result
-
-> Bu bölüm wave tamamlandıktan sonra gerçek sonuç, değişen önemli alanlar, validation sonucu ve varsa kullanıcı approval bilgisiyle doldurulur. Wave başlamadan başarı sonucu uydurulmaz.
 
 {{WAVE_RESULT_PLACEHOLDER}}
 
