@@ -6,7 +6,7 @@
 template_id: wave-plan-template
 template_name: Canonical Wave Plan Template
 document_id: WAVE-PLAN
-version: 2.3.0
+version: 2.4.0
 status: active
 template_type: dynamic-document
 category: waves
@@ -51,15 +51,15 @@ Bir wave:
 - makul bir çalışma oturumunda ilerletilebilir olmalı,
 - gereksiz mikro-wave veya dev mega-wave olmamalıdır.
 
-WAVE_PLAN, kötü decomposition'ı task numaralarıyla gizleyemez. Map'te tek wave altında birbirinden bağımsız birkaç product surface/feature bulunuyorsa plan bunları `1.1 / 1.2 / 1.3` task'lara çevirip geçmek yerine decomposition problemi olarak işaretlemelidir.
+WAVE_PLAN kötü decomposition'ı task numaralarıyla gizleyemez. Map'te tek wave altında birbirinden bağımsız birkaç product surface/feature bulunuyorsa plan decomposition problemi olarak işaretlemeli ve map repair'ına dönmelidir.
 
-Implementation checklist çoğu normal wave'de yaklaşık **10–20 doğrulanabilir görev** derinliğine ulaşabilir. Bu kota değildir; önemli olan agent'ın tekrar plan çıkarmak zorunda kalmaması ve seçilmiş deliverable'ın wave sonunda gerçekten complete olmasıdır.
+Implementation checklist çoğu normal wave'de yaklaşık **10–20 doğrulanabilir görev** derinliğine ulaşabilir. Bu kota değildir; önemli olan agent'ın tekrar plan çıkarmak zorunda kalmamasıdır.
 
 ## Complete Deliverable Kuralı
 
-WAVE_MAP örneğin bir wave'e `Home`, `Auth`, `Search`, `Checkout`, `API Foundation` veya başka coherent bir delivery unit atadıysa, o wave sonunda bu unit applicable kapsamıyla tamamlanmış olmalıdır.
+WAVE_MAP bir wave'e `Home`, `Auth`, `Search`, `Checkout`, `API Foundation` veya başka coherent delivery unit atadıysa, wave sonunda bu unit applicable kapsamıyla tamamlanmış olmalıdır.
 
-User-facing surface için applicable olduğunda birlikte ele alınır:
+User-facing surface için applicable olduğunda:
 
 ```text
 structure/content
@@ -72,13 +72,59 @@ service/data boundary integration
 verification/manual QA
 ```
 
-Bunlardan applicable olanlar başka bir belirsiz "polish later" wave'ine itilerek surface yarım bırakılamaz. Cross-project final QA veya gerçekten cross-cutting polish ayrı wave olabilir; fakat bir surface'in temel completion sorumluluğunu devralamaz.
+birlikte ele alınır.
 
-## Content Truth Boundary
+Bir surface'in kendi completion sorumluluğu belirsiz `polish later` wave'ine atılamaz. Ancak whole-project regression/final responsive/cross-browser QA farklı bir cross-cutting responsibility ise ayrı final QA wave'ine aittir.
 
-WAVE_PLAN implementation detayını zenginleştirebilir; fakat approved/verified project truth'u yeni business gerçekleriyle zenginleştiremez.
+---
+
+# Approved Scope Boundary
+
+WAVE_PLAN yalnız approved **current scope** üretir.
+
+Approved input kategorileri:
+
+```text
+In Scope / Known Decisions / verified current truth
+→ wave deliverable/task olabilir
+
+Future Possibilities
+→ current wave task OLAMAZ
+
+Open Questions / unresolved optional ideas
+→ current wave task OLAMAZ
+
+Out of Scope
+→ current wave task OLAMAZ
+```
 
 Canonical kural:
+
+> Future possibility is not approved scope.
+
+Örnek:
+
+```text
+Future Possibilities:
+- WhatsApp hızlı destek
+- interactive teklif formu
+- canlı harita
+
+Current WAVE_PLAN:
+- WhatsApp butonu ekle       → INVALID
+- Teklif formu simülasyonu   → INVALID
+- Canlı harita entegre et    → INVALID
+```
+
+Bu öğeler yalnız future/unresolved context olarak anılabilir. Committed implementation task olması için explicit approval + gerekirse yeni input version gerekir.
+
+WAVE_MAP yanlışlıkla future/out-of-scope işi wave'e atamışsa WAVE_PLAN bunu takip etmez; generation map repair'ına döner.
+
+---
+
+# Content Truth Boundary
+
+WAVE_PLAN implementation detayını zenginleştirebilir; fakat approved/verified project truth'u yeni business gerçekleriyle zenginleştiremez.
 
 > Execution planning may transform approved facts into implementation tasks, but may not enrich them into new business claims.
 
@@ -90,40 +136,44 @@ verified project source / SOURCE_REGISTER
 canonical PRODUCT_RULES or equivalent project truth authority
 ```
 
-Allowed örnek:
+Allowed:
 
 ```text
 Approved truth: "Yerinde Teknik Destek"
 Wave task: "Yerinde Teknik Destek hizmet kartını oluştur"
 ```
 
-Not allowed örnekler, kaynakta açıkça doğrulanmadıkça:
+Not allowed, kaynakta açıkça doğrulanmadıkça:
 
 ```text
 "7/24 teknik destek"
 "hızlı teslimat"
-"garantili yedek parça"
+"orijinal/garantili yedek parça"
 "mobil servis ekibi"
 "aynı gün müdahale"
+"hidrolik revizyon"
+"periyodik bakım"
 "sertifikalı uzman kadro"
 performans/süre/garanti/coğrafi kapsam iddiaları
 ```
 
 Design treatment, layout, interaction, iconography ve görsel dil `Engine Resolved` olabilir. Bunlar firma/hizmet hakkında yeni factual claim'e dönüşemez.
 
-Bir task veya UI copy önerisi için factual provenance bulunamıyorsa:
+Factual provenance bulunamıyorsa:
 
 ```text
 remove factual enrichment
 or
-mark as unresolved/placeholder-neutral design treatment
+use neutral wording tied to the approved service name
 or
 stop for clarification if execution-critical
 ```
 
-## Pre-Execution State Semantics
+---
 
-Generation aşamasında wave henüz uygulanmamıştır. Bu nedenle:
+# Pre-Execution State Semantics
+
+Generation aşamasında wave henüz uygulanmamıştır:
 
 ```text
 Ready for Execution / Pending Execution / Blocked
@@ -132,7 +182,7 @@ Ready for Execution / Pending Execution / Blocked
 → Wave Result: pending / not executed
 ```
 
-`[x]` yalnız wave gerçekten execute edilmiş ve ilgili madde doğrulanmışsa kullanılabilir. Plan generation sırasında gelecekte yapılacak işi tamamlanmış gibi işaretlemek yasaktır.
+`[x]` yalnız wave gerçekten execute edilmiş ve ilgili madde doğrulanmışsa kullanılabilir.
 
 ## Zorunlu Bölümler
 
@@ -154,19 +204,21 @@ Ready for Execution / Pending Execution / Blocked
 ## İçerik Üretim Kuralları
 
 - WAVE_MAP scope'unu aşamaz veya map'te başka wave'e ait deliverable'ı içine çekemez.
-- Checklist kısa görev özeti olamaz; coherent implementation groups altında atomic ve doğrulanabilir görevlere ayrılır.
+- Approved Scope Boundary ihlal edilemez.
+- Future/Open/Out-of-Scope öğesi committed task'a dönüştürülemez.
+- Checklist coherent implementation groups altında atomic ve doğrulanabilir görevlere ayrılır.
 - Her görev gerçek bir çıktı üretmeli ve done koşulu anlaşılmalıdır.
 - Her wave sonunda beklenen dosya/klasör/bileşen/state sonucu açıkça anlaşılmalıdır.
 - Teknik boundary, design authority ve data/service sınırları task seviyesinde korunur.
 - Business/service factual claim'ler Content Truth Boundary'yi ihlal edemez.
-- TECH_CONTEXT boundary'lerini değiştirecek iş varsa bunun explicit decision/clarification gerektirip gerektirmediği belirtilir.
+- TECH_CONTEXT boundary'lerini değiştirecek iş varsa explicit decision/clarification gerekip gerekmediği belirtilir.
 - Design scope varsa ilgili canonical design docs listelenir.
-- Her wave'in dependency chain'i açıkça yazılır; okuyucuya tahmin ettirilmez.
-- Test/QA komutları yalnız gerçek execution stack kesinleşmişse yazılır; bilinmeyen komut uydurulmaz.
-- Aktif wave'i uygulamak için gerekli stack/tool/architecture kararı unresolved ise wave `Ready for Execution` olamaz; stop/clarification gerekir.
+- Dependency chain açık yazılır.
+- Test/QA komutları yalnız gerçek execution stack kesinleşmişse yazılır.
+- Aktif wave'i uygulamak için gerekli stack/tool/architecture kararı unresolved ise wave `Ready for Execution` olamaz.
 - Kullanıcı onayı gereken checkpoint varsa açık stop rule belirtilir.
 - Wave tamamlanmadan sonuç bölümü başarıyla doldurulmuş gibi gösterilmez.
-- Acceptance criteria yalnız genel kalite sıfatları değil, wave deliverable'ının tamamlandığını ölçen somut sonuçlar içermelidir.
+- Acceptance criteria somut completion sonuçları içermelidir.
 
 ## Task Derinlik Standardı
 
@@ -205,15 +257,14 @@ Uzun tutorial yazılmaz; fakat agent'ın yeniden implementation planı üretmesi
 ## Validation Beklentileri
 
 - Wave map'teki scope ve dependency ile birebir uyumlu olmalı.
-- Map'teki assigned deliverable wave sonunda complete olmalı; temel işleri belirsiz sonraki wave'e bırakılmamalı.
-- Active wave başka bir planlama turu olmadan uygulanabilir olmalı.
-- Expected Result ile checklist ve acceptance criteria aynı teslimi tarif etmeli.
-- Checklist, başka wave olması gereken bağımsız deliverable'ları task numaraları altında saklamamalı.
+- Assigned deliverable wave sonunda complete olmalı.
+- Active wave başka planlama turu olmadan uygulanabilir olmalı.
+- Expected Result, checklist ve acceptance criteria aynı teslimi tarif etmeli.
+- Başka wave olması gereken bağımsız deliverable'lar task numaraları altında saklanmamalı.
+- Future/Open/Out-of-Scope item committed task olmamalı.
 - Business/service factual claim'lerin approved/verified provenance'ı olmalı.
-- Acceptance criteria task listesinin gerçek sonucunu ölçmeli.
 - NEXT_TASKS aktif wave'in ilk uygulanabilir görevleriyle uyumlu olmalı.
-- Kapsam dışı maddeler açık olmalı.
-- Pre-execution planlarda completion checkbox'ları `[ ]` olmalı ve Wave Result başarı iddia etmemeli.
+- Pre-execution planlarda checkbox'lar `[ ]` olmalı ve Wave Result başarı iddia etmemeli.
 - Kanıt olmadan tamamlanmış state yazılmamalı.
 
 ---
