@@ -6,7 +6,7 @@
 template_id: wave-plan-template
 template_name: Canonical Wave Plan Template
 document_id: WAVE-PLAN
-version: 2.4.0
+version: 2.5.0
 status: active
 template_type: dynamic-document
 category: waves
@@ -23,6 +23,7 @@ supported_implementation_planning:
 required_inputs:
   - wave_map
   - tech_context
+  - input_snapshot_scope_registry
 conditional_inputs:
   - product_rules
   - design_documents
@@ -82,43 +83,38 @@ Bir surface'in kendi completion sorumluluğu belirsiz `polish later` wave'ine at
 
 WAVE_PLAN yalnız approved **current scope** üretir.
 
-Approved input kategorileri:
+Binding scope authority run'ın `INPUT_SNAPSHOT.md` içindeki Approved Scope Registry (`SCP-XXX`) kayıtlarıdır.
 
 ```text
-In Scope / Known Decisions / verified current truth
-→ wave deliverable/task olabilir
+IN_SCOPE / KNOWN_DECISION
+→ executable deliverable/task authorize edebilir
 
-Future Possibilities
-→ current wave task OLAMAZ
+VERIFIED_CURRENT_TRUTH
+→ factual/reference use sağlar; tek başına yeni feature scope authorize etmez
 
-Open Questions / unresolved optional ideas
-→ current wave task OLAMAZ
-
-Out of Scope
-→ current wave task OLAMAZ
+OPEN_QUESTION / FUTURE / OUT_OF_SCOPE
+→ executable task authorize EDEMEZ
 ```
 
 Canonical kural:
 
-> Future possibility is not approved scope.
+> Every committed implementation task must carry one or more executable Scope Ref (`SCP-XXX`) values.
 
 Örnek:
 
 ```text
-Future Possibilities:
-- WhatsApp hızlı destek
-- interactive teklif formu
-- canlı harita
+TASK-031: Telefon CTA ekle
+Scope Ref: SCP-003 (IN_SCOPE) → VALID
 
-Current WAVE_PLAN:
-- WhatsApp butonu ekle       → INVALID
-- Teklif formu simülasyonu   → INVALID
-- Canlı harita entegre et    → INVALID
+TASK-032: Teklif talep formu ekle
+Scope Ref: SCP-101 (OPEN_QUESTION) → INVALID
 ```
 
-Bu öğeler yalnız future/unresolved context olarak anılabilir. Committed implementation task olması için explicit approval + gerekirse yeni input version gerekir.
+Scope ref bulunamıyorsa task yazılmaz; WAVE_MAP/approved input'a dönülür veya clarification gerekir.
 
-WAVE_MAP yanlışlıkla future/out-of-scope işi wave'e atamışsa WAVE_PLAN bunu takip etmez; generation map repair'ına döner.
+Future/Open/Out-of-Scope öğeler yalnız context olarak anılabilir. Committed implementation task olması için explicit approval + gerekirse yeni input version gerekir.
+
+WAVE_MAP yanlışlıkla non-executable scope item'ı wave'e atamışsa WAVE_PLAN bunu takip etmez; generation map repair'ına döner.
 
 ---
 
@@ -132,7 +128,7 @@ Business/product/service factual claim yalnız aşağıdaki kaynaklardan trace e
 
 ```text
 approved input / INPUT_SNAPSHOT
-verified project source / SOURCE_REGISTER
+verified project source / SOURCE_REGISTER FCL registry
 canonical PRODUCT_RULES or equivalent project truth authority
 ```
 
@@ -191,9 +187,10 @@ Ready for Execution / Pending Execution / Blocked
 - Why This Wave / Dependency Rationale
 - Canonical Sources to Read
 - Dependencies
+- Scope + Scope References
 - In Scope / Out of Scope
 - Expected Result / Target Structure
-- Implementation Checklist
+- Implementation Checklist with Scope Ref(s)
 - State / Role / Responsive Coverage
 - Automated Verification
 - Manual QA / Debug Verification
@@ -205,7 +202,9 @@ Ready for Execution / Pending Execution / Blocked
 
 - WAVE_MAP scope'unu aşamaz veya map'te başka wave'e ait deliverable'ı içine çekemez.
 - Approved Scope Boundary ihlal edilemez.
-- Future/Open/Out-of-Scope öğesi committed task'a dönüştürülemez.
+- Her executable task en az bir executable `SCP-XXX` Scope Ref taşır.
+- `OPEN_QUESTION`, `FUTURE`, `OUT_OF_SCOPE` Scope Ref executable task'ta kullanılamaz.
+- Scope Ref bulunamayan task committed task olarak yazılamaz.
 - Checklist coherent implementation groups altında atomic ve doğrulanabilir görevlere ayrılır.
 - Her görev gerçek bir çıktı üretmeli ve done koşulu anlaşılmalıdır.
 - Her wave sonunda beklenen dosya/klasör/bileşen/state sonucu açıkça anlaşılmalıdır.
@@ -222,10 +221,11 @@ Ready for Execution / Pending Execution / Blocked
 
 ## Task Derinlik Standardı
 
-Her anlamlı task veya task grubu şu dört soruya cevap vermelidir:
+Her anlamlı task veya task grubu şu sorulara cevap vermelidir:
 
 ```text
 Ne yapılacak?
+Hangi Scope Ref bunu authorize ediyor?
 Hangi boundary/kurallar korunacak?
 Beklenen somut sonuç nedir?
 Done olduğu nasıl doğrulanacak?
@@ -243,6 +243,7 @@ Uzun tutorial yazılmaz; fakat agent'ın yeniden implementation planı üretmesi
 - `{{WHY_THIS_WAVE}}`
 - `{{CANONICAL_SOURCES}}`
 - `{{DEPENDENCIES}}`
+- `{{SCOPE_REFERENCES}}`
 - `{{IN_SCOPE}}`
 - `{{OUT_OF_SCOPE}}`
 - `{{EXPECTED_RESULT}}`
@@ -261,6 +262,7 @@ Uzun tutorial yazılmaz; fakat agent'ın yeniden implementation planı üretmesi
 - Active wave başka planlama turu olmadan uygulanabilir olmalı.
 - Expected Result, checklist ve acceptance criteria aynı teslimi tarif etmeli.
 - Başka wave olması gereken bağımsız deliverable'lar task numaraları altında saklanmamalı.
+- Her committed task executable SCP kaydıyla traceable olmalı.
 - Future/Open/Out-of-Scope item committed task olmamalı.
 - Business/service factual claim'lerin approved/verified provenance'ı olmalı.
 - NEXT_TASKS aktif wave'in ilk uygulanabilir görevleriyle uyumlu olmalı.
@@ -290,6 +292,10 @@ Uzun tutorial yazılmaz; fakat agent'ın yeniden implementation planı üretmesi
 
 ## 4. Scope
 
+### Scope References
+
+{{SCOPE_REFERENCES}}
+
 ### In Scope
 
 {{IN_SCOPE}}
@@ -303,6 +309,8 @@ Uzun tutorial yazılmaz; fakat agent'ın yeniden implementation planı üretmesi
 {{EXPECTED_RESULT}}
 
 ## 6. Implementation Checklist
+
+> Her task satırı/grubu `Scope Ref: SCP-XXX` taşır.
 
 {{IMPLEMENTATION_CHECKLIST}}
 
