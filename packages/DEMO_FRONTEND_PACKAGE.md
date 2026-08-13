@@ -6,7 +6,7 @@
 package_id: demo-frontend
 package_name: Frontend Demo Package
 package_type: base
-version: 2.0.0
+version: 2.1.0
 status: active
 default_delivery_profile: Prototype
 compatible_project_types:
@@ -113,6 +113,55 @@ Sektör klişesi tek tasarım gerekçesi olamaz.
 
 ---
 
+## Deterministic Wave Granularity Guard
+
+`demo-frontend` özellikle `landing-page`, corporate presentation veya satış demosu bağlamında wave decomposition'ı yorum serbestisine bırakamaz.
+
+Aşağıdaki responsibility class'lar distinct deliverable adaylarıdır:
+
+```text
+Foundation / Bootstrapping
+Primary Entry / Hero
+Corporate / Trust
+Services / Product Presentation
+Contact / Conversion
+Final Cross-Cutting Integration / Responsive / Regression / Presentation QA
+```
+
+Bu liste sabit wave isimleri değildir; ancak şu merge'ler deterministic olarak geçersizdir:
+
+```text
+Services + Contact in one wave
+→ SPLIT unless contact is truly trivial/non-distinct and has no own data/CTA/responsive responsibility
+
+Any feature/surface + whole-project final QA
+→ SPLIT
+
+Contact + whole-project final QA
+→ SPLIT
+```
+
+Cross-cutting QA tanımı:
+
+```text
+QA scope re-validates 2 or more previously completed surfaces/features
+or performs whole-project responsive/cross-browser/regression/presentation verification
+→ separate final QA wave is REQUIRED
+```
+
+Corporate/landing demo için minimum decomposition sanity:
+
+- Foundation user-facing surfaces'ten ayrıdır.
+- Services distinct ise Contact altında saklanamaz.
+- Contact telefon/e-posta/adres/CTA gibi kendi interaction/data/responsive sorumluluğunu taşıyorsa distinct deliverable'dır.
+- Whole-project final QA bir feature wave'inin acceptance maddesi olarak gizlenemez.
+
+Valid merge yalnız gerçekten tek coherent completion boundary varsa ve merge edilen responsibility bağımsız olarak tamamlanabilir bir deliverable değilse yapılabilir. Bu istisna explicit rationale ile WAVE_MAP içinde açıklanmalıdır.
+
+Validator bu guard'ı heuristic tavsiye olarak değil package-level blocking contract olarak uygular.
+
+---
+
 ## Validation
 
 Bu package için ek doğrulamalar:
@@ -122,7 +171,11 @@ Bu package için ek doğrulamalar:
 - invented backend yok,
 - design profile minimumu korunmuş,
 - planning overlay implementation minimumu korunmuş,
-- sunum akışı gerçek scope ile tutarlı.
+- sunum akışı gerçek scope ile tutarlı,
+- distinct Services ve Contact sorumlulukları uygunsuz biçimde merge edilmemiş,
+- whole-project final QA herhangi bir feature/contact wave'ine gömülmemiş.
+
+Package granularity guard ihlali → validation FAIL / WAVE_MAP repair.
 
 ---
 
