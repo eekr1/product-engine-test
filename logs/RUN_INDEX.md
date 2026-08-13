@@ -26,7 +26,7 @@ Blocked      : Kritik çelişki/eksiklik nedeniyle durduruldu (active dizininde 
 Paused       : Kullanıcı kararı/netleştirme nedeniyle duraklatıldı.
 Resumed      : Duraklatılan çalışmaya tekrar devam edildi.
 Failed       : Kurtarılamayan hata veya validation başarısızlığı ile kapanan run.
-Cancelled    : Kullanıcı/operatör tarafından bilinçli olarak iptal edilen run.
+Cancelled    : Kullanıcı/operatör tarafından bilinchli olarak iptal edilen run.
 Invalidated  : Tamamlanmış run sonradan geriye dönük geçersiz kılındı.
 ```
 
@@ -39,6 +39,8 @@ CONDITIONAL PASS : Küçük ve onaylı şartlarla kabul edildi.
 FAIL             : Doğrulama kurallarından geçemedi.
 N/A              : Doğrulama henüz gerçekleşmedi veya uygulanabilir sonuç yok (Not Applicable).
 ```
+
+*Not: Validation kolonunda `Pending`, `Success`, `Error`, `Passed` gibi onaylanmamış terimlerin kullanımı KESİNLİKLE YASAK'tır. `N/A` terimi validation henüz sonuçlanmadığında kullanılan nötr indeks değeridir.*
 
 ### Paket Kimlikleri (Canonical Package IDs)
 `Package` kolonunda display name yerine strictly `engine/PACKAGE_RULES.md` kanonik paket kimlikleri kullanılır:
@@ -68,26 +70,54 @@ Production Ready
 1. **Run Başlatıldığında:** Çalıştırma `Initialized` durumuna geçtiğinde indekse yeni bir özet satırı eklenir. `Validation` değeri `N/A` olarak başlar.
 2. **Durum Değişikliklerinde:** Çalıştırma `Running`, `Validation`, `Blocked`, `Paused` gibi aşamalara geçtikçe `Status` alanı güncellenir.
 3. **Kapanış Aşamasında:** Run terminal duruma (`Completed`, `Failed`, `Cancelled`) ulaştığında `Status`, `Validation`, `Output Ref` ve `Note` alanları nihai haliyle dondurulur.
+4. **Başarısız ve İptal Edilen Run'lar:** `RUN_INDEX.md` yalnızca başarılı çalışmaları listelemez. `Failed`, `Cancelled` ve `Invalidated` durumundaki tüm çalıştırmalar tarihsel izlenebilirlik için görünür kalır.
+5. **Geçersiz Kılma (Invalidation):** Bir çalışmanın kaynak girdisi veya kapsamı değiştiğinde indeksteki satırı silinmez; `Status` değeri `Invalidated` olarak güncellenir.
 
 ---
 
 ## 4. Run Index Tablo Yapısı (Table Schema)
 
+İndeks tablosunda aşağıdaki kanonik kolon yapısı uygulanır:
+
+```markdown
 | Run ID | Project Slug | Package | Profile | Status | Validation | Date | Output Ref | Note |
 |---|---|---|---|---|---|---|---|---|
+```
+
+### Kolon Tanımları
+- **Run ID:** Kanonik çalıştırma kimliği (`RUN-YYYYMMDD-XXX`).
+- **Project Slug:** Proje tanımlayıcısı (`inputs/approved/<project-slug>/`).
+- **Package:** Kanonik paket kimliği (`corporate-website`, `demo-frontend`, `saas` vb.).
+- **Profile:** Teslimat profili (`Foundation` | `Prototype` | `Implementation Ready` | `Production Ready`).
+- **Status:** Kanonik yaşam döngüsü durumu.
+- **Validation:** Doğrulama sonucu (`PASS` | `CONDITIONAL PASS` | `FAIL` | `N/A`).
+- **Date:** Çalıştırmanın son işlem tarihi (`YYYY-MM-DD`).
+- **Output Ref:** Yayınlanan çıktının bağıl yolu (Örn: `outputs/demos/example-project/versions/v0.1` | `N/A`).
+- **Note:** Birkaç kelimelik özet sonuç veya kapatma notu.
 
 ---
 
-## 5. Güncel İndeks Durumu
+## 5. Şablon ve Format Gösterimi (Format Demonstration)
+
+Gelecekte gerçekleştirilecek çalıştırmalar için referans tablo formatı şu şekilde olacaktır:
+
+```markdown
+| Run ID | Project Slug | Package | Profile | Status | Validation | Date | Output Ref | Note |
+|---|---|---|---|---|---|---|---|---|
+| RUN-20260101-001 | example-project | demo-frontend | Prototype | Completed | PASS | 2026-01-01 | outputs/demos/example-project/versions/v0.1 | Örnek başarılı üretim formatı |
+```
+
+---
+
+## 6. Güncel İndeks Durumu
 
 ```text
-Total Indexed Runs : 1
+Total Indexed Runs : 0
 Active Runs        : 0
-Completed Runs     : 1
+Completed Runs     : 0
 Failed Runs        : 0
 Invalidated Runs   : 0
 ```
 
 | Run ID | Project Slug | Package | Profile | Status | Validation | Date | Output Ref | Note |
 |---|---|---|---|---|---|---|---|---|
-| `RUN-20260813-001` | `trakya-teknik-makine` | `demo-frontend` | `Prototype` | `Completed` | `PASS` | 2026-08-13 | `outputs/demos/trakya-teknik-makine/versions/v0.2.0` | Trakya Teknik Makine kurumsal frontend demo dokümantasyon paketi başarıyla donduruldu |
