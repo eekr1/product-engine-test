@@ -6,7 +6,7 @@
 template_id: source-register-template
 template_name: Source Register Operational Template
 document_id: not_applicable
-version: 1.1.0
+version: 1.2.0
 status: active
 template_type: operational
 category: operational
@@ -26,7 +26,7 @@ output_filename: SOURCE_REGISTER.md
 
 ## Amaç
 
-Run sırasında okunan veya başvurulan tüm kaynakların (inputs, templates, packages, refs, existing project docs) listesini, sürümlerini ve otorite seviyelerini kayıt altına almak; ayrıca generation sırasında kullanılabilecek doğrulanmış factual business/product/service claim'leri explicit allowlist olarak tanımlamak.
+Run sırasında okunan veya başvurulan tüm kaynakların listesini, sürümlerini ve otorite seviyelerini kayıt altına almak; generation sırasında kullanılabilecek doğrulanmış factual business/product/service claim'leri explicit allowlist olarak tanımlamak.
 
 ## Kullanım Koşulları
 
@@ -40,18 +40,14 @@ Run süresince aktif tutulur.
 
 ## Zorunlu Bölümler
 
-- Girdi ve Sözleşme Kaynakları (Input & Contract Sources)
-- Template Sürüm Kayıtları (Template Versions Register)
-- Referans Belgeleri Kullanım Kaydı (Ref Usage Register)
+- Girdi ve Sözleşme Kaynakları
+- Template Sürüm Kayıtları
+- Referans Belgeleri Kullanım Kaydı
 - Factual Claim Allowlist
-
-## Koşullu Bölümler
-
-- `[CONDITIONAL: include only if user provided external docs]` Dış Kaynak Belgeleri
 
 ## Factual Claim Allowlist Contract
 
-Business/product/service factual truth generation sırasında serbest metin olarak genişletilemez. Run başında verified source truth, ayrı claim kayıtlarına normalize edilir.
+Business/product/service factual truth generation sırasında serbest metin olarak genişletilemez. Run başında verified source truth ayrı claim kayıtlarına normalize edilir.
 
 Her factual claim için minimum:
 
@@ -64,37 +60,56 @@ Status: Verified | Approved
 Allowed Use: factual copy / planning / implementation reference
 ```
 
+Canonical kural:
+
+> FCL reference is not a license to enrich.
+
+Bir generated factual claim yalnız referans verdiği FCL claim'in **exact semantic boundary**'si içinde kalıyorsa authorize edilmiş sayılır.
+
+```text
+Generated factual claim ⊆ Referenced FCL semantic content
+```
+
+FCL ID'nin yalnız mevcut olması yeterli değildir.
+
 Örnek:
 
 ```text
-FCL-001
-Claim: Trakya Teknik Makine, Disan Hidrolik Makine Trakya Bölge Yetkili Servisidir.
-Source ID: SRC-02
-Status: Verified
+FCL-002 Claim: Yerinde Teknik Destek
 
-FCL-002
-Claim: Yedek Parça Temini
-Source ID: SRC-02
-Status: Verified
+Allowed:
+- "Yerinde Teknik Destek" hizmet kartını oluştur
+- "Yerinde Teknik Destek" başlığını göster
+
+NOT automatically allowed:
+- arıza tespiti
+- sahada müdahale
+- mobil servis ekibi
+- 7/24 destek
 ```
 
-Canonical kural:
-
-> A generated factual business claim must map to an existing FCL claim ID or it is not approved factual truth.
-
-Bir üst-seviye claim yeni modifier veya alt kapsamı otomatik authorize etmez.
+Başka örnek:
 
 ```text
-FCL: Yedek Parça Temini
-→ "Yedek Parça Temini kartı" allowed
-→ "orijinal yedek parça", "hızlı temin", "garanti" NOT automatically allowed
+FCL Claim: Makine Bakım ve Onarım
+
+Allowed:
+- Makine Bakım ve Onarım hizmet bölümü
+
+NOT automatically allowed:
+- periyodik bakım
+- revizyon
+- hidrolik/mekanik alt kapsam
 ```
 
-FCL kaydı yoksa generation:
+Üst-seviye hizmet adı yeni modifier, süreç, performans, alt hizmet, coğrafi kapsam veya teknik yetkinliği authorize etmez.
+
+FCL kaydı yoksa veya generated claim FCL sınırından genişse generation:
 
 ```text
 remove factual enrichment
-or use neutral/non-factual wording
+or use neutral wording tied exactly to verified claim
+or create a separate FCL only if exact source support exists
 or stop for clarification if execution-critical
 ```
 
@@ -102,18 +117,19 @@ Design treatment, layout, color, interaction veya presentation wording factual b
 
 ## İçerik Üretim Kuralları
 
-- Her kaynak için: Source ID, Tür (Input/Package/Template/Ref), Path/Referans, Sürüm, Otorite Seviyesi (Binding/Reference) ve Kullanım Amacı tutulmalıdır.
+- Her kaynak için Source ID, tür, path/referans, sürüm, otorite seviyesi ve kullanım amacı tutulur.
 - Ham ref belgeleri run klasörüne kopyalanmaz; referans gösterilir.
-- Verified business/product/service facts Factual Claim Allowlist'e normalize edilmelidir.
+- Verified business/product/service facts FCL'e normalize edilir.
 - FCL kaydı source'tan daha geniş veya daha iddialı olamaz.
-- Aynı factual claim duplicate FCL kayıtlarıyla çoğaltılmaz; tek canonical claim kaydı kullanılır.
+- Generated claim yalnız referenced FCL semantic boundary içinde kullanılabilir.
+- Aynı factual claim duplicate FCL kayıtlarıyla çoğaltılmaz.
 
 ## Placeholder Tanımları
 
-- `{{RUN_ID}}`: Run kimliği.
-- `{{TEMPLATE_VERSIONS_TABLE}}`: Kullanılan aktif template'lerin versiyon tablosu.
-- `{{REF_USAGE_TABLE}}`: Başvurulan ref belgeleri ve kullanım amacı.
-- `{{FACTUAL_CLAIM_ALLOWLIST}}`: FCL claim kayıtları.
+- `{{RUN_ID}}`
+- `{{TEMPLATE_VERSIONS_TABLE}}`
+- `{{REF_USAGE_TABLE}}`
+- `{{FACTUAL_CLAIM_ALLOWLIST}}`
 
 ## Kapsam Dışı
 
@@ -125,15 +141,11 @@ Design treatment, layout, color, interaction veya presentation wording factual b
 - Primary Owner: Run kaynak, sürüm ve factual claim provenance tescili.
 - Referenced By: `RUN_MANIFEST_TEMPLATE.md`, `engine/GENERATION_PIPELINE.md`, `engine/VALIDATION_RULES.md`, WAVE planning/output generation.
 
-## Delivery Profile Davranışı
-
-- Hangi template sürümüyle ne üretildiğinin tam izlenebilirliğini sağlar.
-- Factual Claim Allowlist tüm delivery profile'larda source-truth boundary'yi destekler.
-
 ## Validation Beklentileri
 
 - Tüm aktif template sürümleri kaydedilmelidir.
-- Generated factual business/product/service claims mevcut FCL kayıtlarıyla traceable olmalıdır.
+- Generated factual claims mevcut FCL kayıtlarıyla traceable olmalıdır.
+- FCL ID mevcut olsa bile generated claim referenced FCL semantic boundary'yi aşarsa validation FAIL olmalıdır.
 - Unsupported factual modifier/subclaim bulunursa source claim validation FAIL olmalıdır.
 
 ---
@@ -144,7 +156,7 @@ Design treatment, layout, color, interaction veya presentation wording factual b
 
 ## 1. Girdi ve Sözleşme Kaynakları
 
-- **Engine Specs**: `engine/` v1.0.0 (Binding)
+- **Engine Specs**: `engine/` (Binding)
 - **Input Snapshot**: `INPUT_SNAPSHOT.md` (Binding)
 
 ## 2. Template Sürüm Kayıtları
