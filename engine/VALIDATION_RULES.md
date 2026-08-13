@@ -2,9 +2,9 @@
 
 ## Amaç
 
-Product Engine working output'unun yalnız eksiksiz değil, gerçekten **agent-ready, source-safe ve evidence-consistent** olup olmadığını doğrular.
+Product Engine working output'unun yalnız eksiksiz değil, gerçekten **agent-ready, source-safe, scope-safe ve evidence-consistent** olup olmadığını doğrular.
 
-Validation generator'ın kendi beyanlarını tekrar etmez; produced artifact'ları, approved truth'u, package contract'larını, Factual Claim Allowlist'i ve mevcut observable evidence'ı karşılaştırır.
+Validation generator'ın kendi beyanlarını tekrar etmez; produced artifact'ları, approved scope registry'yi, factual claim allowlist'i, package contract'larını ve mevcut observable evidence'ı karşılaştırır.
 
 > Self-report is evidence metadata, not ground truth.
 
@@ -16,9 +16,34 @@ CONDITIONAL PASS → yalnız non-blocking bulgu / açık evidence limitation var
 FAIL             → blocking contract ihlali vardır; publication yapılamaz
 ```
 
-## Canonical Gate Identity Contract
+## Canonical Evidence Priority Ladder
 
-Blocking validation set sabit canonical ID'lere sahiptir.
+Evidence kaynakları sabit öncelik taşır:
+
+```text
+E1 — Observable IDE/tool execution trace
+E2 — Filesystem / produced artifact state
+E3 — Approved input, INPUT_SNAPSHOT/SCP, SOURCE_REGISTER/FCL, canonical contracts
+E4 — PROGRESS / RUN_LOG / manifest / agent self-report metadata
+```
+
+Canonical rule:
+
+> Higher-priority evidence always wins when evidence conflicts.
+
+Örnek:
+
+```text
+E1: WAVE_PLAN_TEMPLATE only once before WAVE_00..04 writes
+E4: PROGRESS says every wave refreshed template
+→ E1 wins
+→ E4 claim invalidated
+→ VAL-15 FAIL
+```
+
+Validator alt seviye evidence'ı seçerek üst seviye contradiction'ı görmezden gelemez.
+
+## Canonical Gate Identity Contract
 
 ```text
 VAL-01 Approval Integrity
@@ -42,7 +67,7 @@ VAL-18 Output + Operational Path Integrity
 VAL-19 Traceability + Lifecycle
 ```
 
-Validator kendi `CHK-*` setini icat edemez, gate'leri birleştirip azaltamaz veya numaralı setten madde düşüremez.
+Validator kendi `CHK-*` setini icat edemez.
 
 ```text
 missing canonical gate in validation report
@@ -60,15 +85,7 @@ missing canonical gate in validation report
 - planning profile alanları geçerli mi?
 - `approved_by: user` gerçek explicit user approval'a dayanıyor mu?
 - auto/tool/plan approval kullanılmış mı?
-- `project_state` mevcut proje gerçekliğiyle uyumlu mu?
-
-```text
-existing website/product/code/docs/previous implementation context exists
-→ project_state = existing
-
-new codebase/rewrite from scratch alone
-→ project_state = new anlamına gelmez
-```
+- `project_state` gerçeklikle uyumlu mu?
 
 İhlal → FAIL.
 
@@ -80,7 +97,7 @@ Resolved set:
 base package + planning overlay + contextual conditions
 ```
 
-ile uyumlu olmalıdır. Required planning minimumu veya applicable package-specific blocking guard ihlal edilirse FAIL.
+ile uyumlu olmalıdır. Package-specific blocking guard ihlal edilirse FAIL.
 
 ## VAL-03 — Canonical Document / Dynamic Instance Coverage
 
@@ -93,51 +110,85 @@ Eksik required coverage → FAIL.
 
 ## VAL-04 — Approved Scope Integrity
 
-Validation approved input scope kategorilerini artifact'larla doğrudan karşılaştırır.
+Validation prose yorumuna değil, run'ın `INPUT_SNAPSHOT.md` belgesindeki **Approved Scope Registry (`SCP-XXX`)** üyeliğine dayanır.
+
+Allowed SCP statuses:
 
 ```text
-In Scope / Known Decisions / verified current truth
-→ committed generation scope olabilir
-
-Future Possibilities
-Open Questions / unresolved options
-Out of Scope
-→ explicit later approval olmadan committed scope OLAMAZ
+IN_SCOPE
+KNOWN_DECISION
+VERIFIED_CURRENT_TRUTH
+OPEN_QUESTION
+FUTURE
+OUT_OF_SCOPE
 ```
 
-Özellikle WAVE_MAP, WAVE_PLAN, PROJECT_PLAN ve NEXT_TASKS kontrol edilir.
+Executable semantics:
 
-Future item'ın yalnız future context olarak anılması ihlal değildir; executable deliverable/task olması ihlaldir.
+```text
+IN_SCOPE / KNOWN_DECISION → executable deliverable/task authorize edebilir
+VERIFIED_CURRENT_TRUTH    → factual/reference use; yeni feature scope'u tek başına authorize etmez
+OPEN_QUESTION             → executable NO
+FUTURE                    → executable NO
+OUT_OF_SCOPE              → executable NO
+```
 
-İhlal → FAIL.
+Özellikle şu artifact'lar kontrol edilir:
+
+```text
+WAVE_MAP
+all WAVE_PLAN instances
+PROJECT_PLAN
+NEXT_TASKS
+```
+
+Her committed deliverable/task için mekanik membership check:
+
+```text
+Scope Ref var mı?
+→ NO = FAIL
+
+Scope Ref SCP registry'de var mı?
+→ NO = FAIL
+
+SCP status executable mı?
+→ NO = FAIL
+```
+
+Örnek:
+
+```text
+TASK: Telefon CTA ekle
+Scope Ref: SCP-003 / IN_SCOPE
+→ valid
+
+TASK: Teklif formu simülasyonu ekle
+Scope Ref: SCP-101 / OPEN_QUESTION
+→ FAIL
+```
+
+Future/Open/Out-of-Scope item yalnız context olarak anılabilir; executable task olamaz.
 
 ## VAL-05 — Wave Decomposition + Execution Depth
 
-Validation önce WAVE_MAP decomposition'ını, sonra her WAVE_PLAN execution contract'ını kontrol eder.
-
 ### WAVE_MAP Decomposition
-
-Genel kurallar:
 
 - meaningful, independently verifiable deliverable'lara bölünmüş mü?
 - bağımsız surface/feature/flow tek wave altında gizlenmiş mi?
-- same-page olması gerekçe edilerek distinct responsibilities birleştirilmiş mi?
 - whole-project final QA son feature/contact wave'ine gömülmüş mü?
-- completion boundary açık mı?
 - artificial micro-wave var mı?
 
 ```text
 multiple independent meaningful deliverables hidden → FAIL / repair WAVE_MAP
-no meaningful standalone result                  → FAIL / merge/redefine
 whole-project QA hidden in feature wave           → FAIL / split QA
-coherent complete deliverable                     → valid
+coherent complete deliverable                    → valid
 ```
 
 ### Package-Level Deterministic Guards
 
-Applicable package contract heuristic değil blocking authority'dir.
+Applicable package contract blocking authority'dir.
 
-`demo-frontend` landing/corporate context örneği:
+`demo-frontend` landing/corporate context:
 
 ```text
 Services + distinct Contact responsibility in one wave
@@ -150,26 +201,18 @@ QA re-validates 2+ previously completed surfaces/features
 → separate final QA wave REQUIRED
 ```
 
-Package istisnası ancak package contract'ın izin verdiği şekilde WAVE_MAP içinde explicit rationale ile kanıtlanabilir.
-
 ### WAVE_PLAN Execution Depth
 
-Kontrol:
-
 - goal/dependency/in-out scope açık mı?
-- expected result anlaşılır mı?
-- checklist meaningful groups + atomic tasks içeriyor mu?
+- checklist atomic ve uygulanabilir mi?
+- Scope Ref'ler executable mı?
 - selected deliverable wave sonunda complete mi?
-- başka wave olması gereken deliverable task olarak saklanmış mı?
-- applicable responsive/state/accessibility/data boundary sorumlulukları var mı?
-- verification/manual QA/exit criteria somut mu?
-- agent yeni mini-plan üretmek zorunda mı?
+- başka wave deliverable'ı task içine saklanmış mı?
+- verification/QA/exit criteria somut mu?
 
-Selected deliverable yarım kalıyorsa veya agent tekrar plan üretmek zorundaysa → FAIL.
+Selected deliverable yarım kalıyorsa veya agent yeniden plan üretmek zorundaysa → FAIL.
 
 ### Pre-Execution State Integrity
-
-Henüz execute edilmemiş wave:
 
 ```text
 Status = Ready for Execution | Pending Execution | Blocked
@@ -183,7 +226,6 @@ Pre-execution `[x]` veya success result → FAIL.
 ## VAL-06 — Execution-Critical Decision Completeness
 
 Execution-critical unresolved karar varken active wave executable gösterilemez.
-
 Exact stack/tooling unresolved ise stack-specific command/fact gerçekmiş gibi yazılamaz.
 
 İhlal → FAIL.
@@ -202,8 +244,6 @@ DECISIONS
 
 aynı execution reality'yi anlatmalıdır.
 
-Stack/tool/build command/architecture boundary çelişkisi → FAIL.
-
 ## VAL-08 — Decision Provenance + Coverage
 
 Allowed statuses:
@@ -215,14 +255,12 @@ Pending Review
 Superseded
 ```
 
-- `User Approved` için exact kararın kendisi approved input/user statement içinde bulunmalı.
-- Generic `Onaylıyorum, devam et` mesajı generation sonrası exact stack/palette/tooling seçimini User Approved yapmaz.
-- Engine'in generation sırasında seçtiği exact implementation/design kararı `Engine Resolved` olmalıdır.
-- Kullanıcı kararı gerektiren kritik konu `Engine Resolved` yapılamaz.
+- `User Approved` için exact karar approved input/user statement içinde bulunmalı.
+- Generic approval generation sonrası exact stack/palette/tooling seçimini User Approved yapmaz.
+- Engine-selected exact implementation/design kararı `Engine Resolved` olmalıdır.
+- Final exact seçimlerin DECISIONS coverage'ı bulunmalıdır.
 
-Final output'ta exact ve kalıcı seçim varsa DECISIONS coverage'ı aranır.
-
-Missing decision record, wrong provenance veya false User Approved → FAIL.
+Missing/wrong provenance → FAIL.
 
 ## VAL-09 — Tech Context / Integration Readiness
 
@@ -232,13 +270,13 @@ Frontend/demo için:
 - mock/local boundary var mı?
 - presentation ↔ service/data boundary belli mi?
 - future real adapter noktası belli mi?
-- approved olmayan backend/API/database gerçekmiş gibi uydurulmuş mu?
+- approved olmayan backend/API/database uydurulmuş mu?
 
 Critical ihlal → FAIL.
 
 ## VAL-10 — Design Profile + Quality
 
-- `light` → güçlü, project-specific DESIGN_RULES
+- `light` → güçlü project-specific DESIGN_RULES
 - `standard` → applicable design system/shell/page/state coverage
 - `full` → standard + justified feature/admin coverage
 
@@ -264,43 +302,25 @@ Critical ihlal → FAIL.
 
 Source validation blacklist değil **allowlist** esaslıdır.
 
-`SOURCE_REGISTER.md` içindeki Factual Claim Allowlist canonical run-level factual claim registry'sidir.
+`SOURCE_REGISTER.md` içindeki Factual Claim Allowlist (`FCL-XXX`) canonical factual registry'dir.
 
-Her generated business/product/service factual claim veya factual modifier/subclaim:
+Her generated business/product/service factual claim veya modifier:
 
 ```text
 → existing FCL-XXX claim ID ile traceable olmalı
 or
-→ approved input içinde exact direct support taşımalı ve FCL registry'ye eklenmiş olmalı
+→ approved exact support ile FCL registry'ye eklenmiş olmalı
 ```
 
-Üst-seviye claim yeni modifier/alt kapsamı authorize etmez.
+Üst-seviye claim yeni modifier/alt kapsam authorize etmez.
 
 ```text
 FCL: Yedek Parça Temini
-→ "Yedek Parça Temini kartı" valid
-→ "orijinal parça" invalid unless separate FCL support exists
-→ "hızlı temin" invalid unless separate FCL support exists
-```
-
-Aynı mantık şunlara uygulanır:
-
-```text
-servis süreci
-yetkili müdahale
-hidrolik/mekanik bakım detayları
-7/24 / süre / hız
-garanti / orijinal
-mobil ekip
-periyodik bakım / revizyon
-sertifika / uzman kadro
-yeni coğrafi kapsam
-müşteri / referans / partner iddiası
+→ hizmet kartı valid
+→ orijinal / hızlı temin / garanti invalid unless separate FCL exists
 ```
 
 FCL mapping yoksa → FAIL / repair.
-
-Design treatment/layout/interaction factual business claim değilse FCL gerektirmez.
 
 ## VAL-14 — Template / Placeholder / Project Leakage
 
@@ -313,22 +333,22 @@ Critical ihlal → FAIL.
 
 ## VAL-15 — Point-of-Use Trace Integrity
 
-Point-of-use davranışı generation contract'ında zorunludur; fakat **actual IDE/tool read event'i yalnız observable execution trace ile doğrulanabilir**.
+Actual IDE/tool read event'i yalnız E1 observable execution trace ile doğrulanabilir.
 
-Canonical verdict semantics:
+### Truth Table
 
 ```text
-observable trace available + sequence valid
-→ PASS
-
-observable trace available + sequence invalid/missing read
-→ FAIL
-
-observable trace unavailable
-→ UNVERIFIED
+Observable trace AVAILABLE?
+│
+├─ NO  → VAL-15 = UNVERIFIED
+│
+└─ YES
+   │
+   ├─ required read-before-write sequence present? YES → PASS
+   └─ required read-before-write sequence present? NO  → FAIL
 ```
 
-Dynamic instances için geçerli trace örneği:
+Dynamic instance geçerli sequence:
 
 ```text
 read WAVE_PLAN_TEMPLATE
@@ -337,7 +357,7 @@ read WAVE_PLAN_TEMPLATE again
 → write WAVE_01
 ```
 
-Şu sequence trace mevcutsa FAIL'dir:
+Geçersiz sequence:
 
 ```text
 read WAVE_PLAN_TEMPLATE once
@@ -346,21 +366,33 @@ read WAVE_PLAN_TEMPLATE once
 → write WAVE_02
 ```
 
-`PROGRESS.md`, `RUN_LOG.md` veya agent self-report actual read event proof değildir.
+Evidence priority:
+
+```text
+E1 trace contradicts E4 PROGRESS/RUN_LOG
+→ E1 wins
+→ self-report invalidated
+```
+
+`PROGRESS.md`, `RUN_LOG.md` veya agent self-report actual read proof değildir.
 
 ### UNVERIFIED Semantics
 
-`UNVERIFIED` validator'ın execution trace'e erişemediğini dürüstçe gösterir.
-
 - `UNVERIFIED` = PASS değildir.
-- `UNVERIFIED` = generator contract ihlali kanıtlandı anlamına da gelmez.
-- Validator trace yokken `PASS` iddia edemez.
-- Bütün diğer blocking gate'ler PASS ise VAL-15 UNVERIFIED overall sonucu en fazla `CONDITIONAL PASS` yapabilir.
-- Observable trace gereken bir acceptance/test ortamında trace bekleniyorsa fakat sağlanmamışsa test politikası bunu FAIL'e yükseltebilir.
+- Trace yokken validator PASS iddia edemez.
+- Diğer tüm blocking gate'ler PASS ise VAL-15 UNVERIFIED overall sonucu en fazla `CONDITIONAL PASS` yapabilir.
 
 ## VAL-16 — Validation Timeline Integrity
 
-Validation report yalnız required artifact generation ve pre-validation checks tamamlandıktan sonra oluşturulabilir.
+Validation **yalnız** active run working-output üzerinde publication öncesi yapılır.
+
+Canonical target:
+
+```text
+runs/active/<run-id>/working-output/
+```
+
+Chronology:
 
 ```text
 last required artifact generation/checkpoint
@@ -370,11 +402,12 @@ last required artifact generation/checkpoint
 < completion
 ```
 
+Published path (`outputs/.../versions/...` veya `latest/`) validation target olarak kullanılmışsa → FAIL.
 Chronology contradiction → FAIL.
 
 ## VAL-17 — Engine Boundary Integrity
 
-Normal project generation run şu protected surfaces'i mutate edemez:
+Normal project run protected surfaces'i mutate edemez:
 
 ```text
 PRODUCT_ENGINE_BRAIN.md
@@ -400,13 +433,13 @@ Protected mutation → FAIL.
 
 Final output path'leri `OUTPUT_STRUCTURE.md` ile uyumlu olmalıdır.
 Operational records gerçek resolved/published path'i kaydetmelidir.
+Validation target ile published output path birbirine karıştırılamaz.
 
 Mismatch → FAIL.
 
 ## VAL-19 — Traceability + Lifecycle
 
 Manifest input/package/profiles/documents/dynamic instances/validation/output refs taşır.
-
 Aynı run ID tek lifecycle location'da bulunur.
 
 Completed run için:
@@ -439,27 +472,31 @@ Projeyi hiç görmemiş yetkin yeni bir ajan yalnız final package ile:
 
 # Validation Report Minimumu
 
-Rapor şunları zorunlu taşır:
-
 ```text
 Expected Gate IDs: VAL-01..VAL-19
 Executed Gate IDs
 Missing Gate IDs
 Unexpected/Custom Gate IDs
+Observable Trace Status: AVAILABLE | UNAVAILABLE
+Highest Evidence Level Used
+Evidence Contradictions
+Validation Target = runs/active/<run-id>/working-output/
 overall result
-run_id
-base package + profiles
 validation chronology
 VAL-01..VAL-19 ayrı sonuç satırları
-evidence inspected
+per-gate evidence level
 failed checks / warnings / UNVERIFIED limitations / repair actions
 ```
 
-Canonical kurallar:
+Canonical result rules:
 
 ```text
 missing VAL ID → overall FAIL
-custom CHK set replacing VAL IDs → overall FAIL
+higher-priority contradiction ignored → overall FAIL
+non-executable SCP used by executable task → VAL-04 FAIL
+trace available + invalid sequence → VAL-15 FAIL
+trace unavailable → VAL-15 UNVERIFIED
+published output used as validation target → VAL-16 FAIL
 critical FAIL → overall FAIL
 VAL-15 UNVERIFIED + all other gates PASS → at most CONDITIONAL PASS
 ```
