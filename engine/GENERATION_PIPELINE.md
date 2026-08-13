@@ -36,9 +36,32 @@ self-reported refresh record ≠ proof of refresh
 observable read/open event      = primary evidence when available
 ```
 
-Çalışma ortamı tool/IDE execution trace sağlıyorsa bu trace refresh kanıtının birincil otoritesidir. `PROGRESS.md` / `RUN_LOG.md` kayıtları trace ile çelişemez ve trace'de görülmeyen bir read event'i olmuş gibi gösteremez.
+### Evidence Boundary
 
-Trace mevcut değilse operational evidence audit desteği sağlar; ancak kendi başına point-of-use compliance'ı ispatladığı varsayılmaz.
+Product Engine markdown/runtime records actual IDE/tool read event'ini kendi başına kanıtlayamaz.
+
+Bu nedenle iki farklı katman ayrılır:
+
+```text
+Generation Contract Compliance
+→ agent refresh eylemini yapmak zorundadır
+→ PROGRESS/RUN_LOG yapılan işi audit metadata olarak kaydeder
+
+Observable Trace Audit
+→ yalnız IDE/tool execution trace varsa actual read-before-write sırasını kanıtlayabilir
+```
+
+Operational self-report actual read event proof değildir.
+
+Trace mevcut değilse:
+
+```text
+Point-of-Use observable verdict = UNVERIFIED
+```
+
+Agent veya validator trace yokken `PASS` uyduramaz. `UNVERIFIED`, refresh contract'ının kaldırıldığı anlamına gelmez; yalnız observable proof sınırını dürüstçe belirtir.
+
+Trace mevcutsa trace birincil otoritedir ve operational records trace ile çelişemez.
 
 ## Artifact Checkpoint Protocol
 
@@ -54,7 +77,7 @@ CHECKPOINT START
 6. Re-open template validation expectations
 7. Compare artifact against template + authority + approved scope/truth
 8. Repair immediately if needed
-9. Record artifact-specific evidence in PROGRESS/RUN_LOG
+9. Record artifact-specific audit metadata in PROGRESS/RUN_LOG
 10. Mark this checkpoint locally complete
 CHECKPOINT END
 → only now resolve the next artifact
@@ -62,47 +85,39 @@ CHECKPOINT END
 
 ### Sequencing Invariant
 
-Aşağıdaki sıra geçersizdir:
+Geçersiz:
 
 ```text
 read WAVE_PLAN_TEMPLATE once
 → generate WAVE_00
 → generate WAVE_01
 → generate WAVE_02
-→ later write "refreshed" evidence
 ```
 
-Geçerli sıra:
+Geçerli:
 
 ```text
 read WAVE_PLAN_TEMPLATE
-→ read WAVE_00 scope/truth
-→ generate WAVE_00
-→ local compare/repair
-→ record WAVE_00 evidence
+→ generate/check WAVE_00
 
 read WAVE_PLAN_TEMPLATE AGAIN
-→ read WAVE_01 scope/truth
-→ generate WAVE_01
-→ local compare/repair
-→ record WAVE_01 evidence
+→ generate/check WAVE_01
 ```
 
 Aynı template'ten birden fazla dynamic instance çıkıyorsa her instance yeni checkpoint'tir. Batch-read + batch-generate yasaktır.
 
-Minimum evidence:
+Operational metadata minimumu:
 
 ```text
 artifact / dynamic instance
-read event occurred before generation
-canonical template refreshed
-primary authorities refreshed
-approved scope/truth checked where applicable
+claimed template refresh
+primary authorities consulted
+approved scope/truth check performed where applicable
 local contract check result
 repair performed: yes/no
 ```
 
-Operational record, gerçekleşmemiş bir read/refresh event'i sonradan olmuş gibi iddia edemez.
+Bu metadata actual IDE read proof olarak etiketlenemez.
 
 ---
 
@@ -111,46 +126,66 @@ Operational record, gerçekleşmemiş bir read/refresh event'i sonradan olmuş g
 Approved input içindeki kapsam kategorileri farklı authority taşır:
 
 ```text
-In Scope              → generation may implement/plan
-Known Decisions       → generation may implement/plan
-Verified Current Truth→ generation may reuse as factual truth
-Future Possibilities  → NOT current scope
-Open Questions        → NOT approved scope until resolved
-Out of Scope          → prohibited for current generation
+In Scope               → generation may implement/plan
+Known Decisions        → generation may implement/plan
+Verified Current Truth → generation may reuse as factual truth
+Future Possibilities   → NOT current scope
+Open Questions         → NOT approved scope until resolved
+Out of Scope           → prohibited for current generation
+```
+
+> Future possibility is not approved scope.
+
+`Future Possibilities`, `Open Questions` veya başka non-approved alanlardaki feature/flow yalnız future/unresolved context olarak anılabilir; WAVE_MAP, WAVE_PLAN, PROJECT_PLAN veya active NEXT_TASKS içine committed deliverable olarak taşınamaz.
+
+Approved scope genişletilecekse yeni explicit user approval / yeni input version gerekir.
+
+---
+
+# Factual Claim Allowlist Boundary
+
+Business/product/service factual truth serbest metin enrichment ile genişletilemez.
+
+Run'ın `SOURCE_REGISTER.md` belgesi verified factual truth için Factual Claim Allowlist tutar:
+
+```text
+FCL-XXX
+Claim
+Source ID
+Source Location / Evidence
+Status: Verified | Approved
+Allowed Use
 ```
 
 Canonical kural:
 
-> Future possibility is not approved scope.
-
-`Future Possibilities`, `Open Questions` veya başka non-approved alanlardaki feature/flow yalnız "future/unresolved" olarak anılabilir; WAVE_MAP, WAVE_PLAN, PROJECT_PLAN veya active NEXT_TASKS içine committed deliverable olarak taşınamaz.
+> Generated factual business claim must map to an existing FCL claim ID.
 
 Örnek:
 
 ```text
-Future: WhatsApp / teklif formu / canlı harita
-→ current wave task olarak üretilemez
+FCL: Yedek Parça Temini
+Allowed: Yedek Parça Temini hizmet kartını oluştur
+Invalid without separate FCL: orijinal parça / hızlı temin / garanti
 ```
 
-Approved scope genişletilecekse yeni explicit user approval / yeni input version gerekir.
+Bir üst-seviye hizmet başlığı alt teknik kapsamı, süreç detayını, hız/garanti modifier'ını veya yeni coğrafi/operational iddiayı otomatik authorize etmez.
 
-## Factual Claim Boundary
-
-Generation approved/verified business truth'u yeni factual claim'lerle zenginleştiremez.
+FCL yoksa:
 
 ```text
-Approved: "Yedek Parça Temini"
-Allowed:  "Yedek Parça Temini hizmet kartını oluştur"
-Invalid:  "orijinal parça + hızlı teslimat garantisi"
+remove factual enrichment
+or use neutral/non-factual wording
+or stop for clarification if execution-critical
 ```
 
-Design treatment, layout, interaction ve visual direction Engine tarafından çözülebilir; bunlar business/service truth'e dönüşemez.
+Design treatment, layout, interaction ve visual direction factual business claim'e dönüşmediği sürece FCL gerektirmez.
 
 ---
 
 # Project Run Write Boundary
 
-Normal project generation run Product Engine'in authority/history yüzeylerini **read-only** kullanır.
+Normal project generation run Product Engine'in authority/history yüzeylerini read-only kullanır.
 
 Protected surfaces:
 
@@ -236,11 +271,7 @@ PLANNING_PROFILE_OVERLAY.md
 
 yeniden okunur.
 
-Resolved set:
-
-```text
-base package + planning overlay + contextual conditions
-```
+Package-specific deterministic guards resolution sonucu binding validation/decomposition contract'ının parçasıdır.
 
 ## 4. Document + Dynamic Instance Resolution
 
@@ -248,37 +279,41 @@ base package + planning overlay + contextual conditions
 
 Yeni instance yeni Document ID değildir.
 
-## 5. Template Resolution
+## 5. Source Register + Factual Claim Resolution
+
+Artifact generation başlamadan önce `SOURCE_REGISTER_TEMPLATE.md`, approved input ve verified project sources yeniden okunur.
+
+`SOURCE_REGISTER.md` içinde:
+
+```text
+source registry
++
+Factual Claim Allowlist (FCL)
+```
+
+oluşturulur.
+
+FCL registry source'tan daha geniş olamaz. Generated factual claim'ler bundan sonra FCL ID ile trace edilir.
+
+## 6. Template Resolution
 
 Template resolution yalnız hangi canonical template'in kullanılacağını belirler. Template içeriği artifact checkpoint sırasında yeniden okunur.
 
 Missing/duplicate/conflicting skeleton → generation başlamaz.
 
-## 6. Information Distribution
+## 7. Information Distribution
 
 Approved truth `INFORMATION_MAP.md` owner kurallarıyla dağıtılır.
 
-Scope Truth Boundary bu aşamada uygulanır; future/open/out-of-scope öğeler committed scope'a dönüşemez.
+Scope Truth Boundary ve FCL Boundary bu aşamada uygulanır.
 
-## 7. Missing / Assumption / Conflict / Decision Handling
+## 8. Missing / Assumption / Conflict / Decision Handling
 
 `ASSUMPTION_RULES.md` ve `CONFLICT_RESOLUTION.md` uygulanır.
 
 ### Decision Resolution Contract
 
 Generation sırasında kesinleşen ve output execution reality'sini değiştiren her kalıcı karar `DECISIONS.md` içinde kayıtlı olmalıdır.
-
-Örnekler:
-
-```text
-exact frontend stack/runtime
-build/tooling approach
-service/data boundary implementation choice
-visual concept / exact palette choice
-wave-level architecture boundary
-```
-
-Provenance:
 
 ```text
 explicitly present in approved input → User Approved
@@ -289,8 +324,6 @@ unresolved and user-critical          → Pending Review
 Generic user approval, Engine'in sonradan seçtiği exact stack/palette/implementation detayını `User Approved` yapmaz.
 
 ### Execution-Critical Decision Gate
-
-Bir karar aktif/ilk wave'in uygulanma biçimini değiştiriyorsa execution-critical'dır.
 
 Execution-critical unresolved karar:
 
@@ -303,12 +336,13 @@ Execution-critical unresolved karar:
 
 Engine approved scope'u değiştirmeyen düşük-risk implementation detayını `Engine Resolved` olarak çözebilir.
 
-## 8. Dependency-Ordered Generation
+## 9. Dependency-Ordered Generation
 
 Genel sıra:
 
 ```text
 Approved Input
+→ SOURCE_REGISTER + FCL registry
 → PROJECT-BRAIN
 → PRODUCT-RULES
 → TECH-CTX
@@ -324,7 +358,7 @@ Approved Input
 → conditional DATA/API/TEST/DEPLOY/OPS
 ```
 
-Her satır Artifact Checkpoint Protocol'den ayrı ayrı geçer.
+Her artifact Artifact Checkpoint Protocol'den ayrı ayrı geçer.
 
 ### WAVE-MAP Checkpoint
 
@@ -332,17 +366,24 @@ Her satır Artifact Checkpoint Protocol'den ayrı ayrı geçer.
 
 ```text
 WAVE_MAP_TEMPLATE
-selected package/context
+selected package/context + package granularity guards
 PROJECT_BRAIN
 PRODUCT_RULES
 TECH_CONTEXT
 applicable DESIGN
 approved input scope boundaries
+SOURCE_REGISTER FCL registry
 ```
 
-Map broad teknik fazlara değil coherent, independently verifiable deliverable'lara göre bölünür.
+Package-specific deterministic split guard heuristic değildir.
 
-Cross-cutting whole-project `Final Integration / Responsive / QA` işi, gerçek bir feature/contact deliverable ile birleştirilmez; ayrı wave candidate olarak değerlendirilir.
+Örneğin applicable `demo-frontend` corporate/landing context'te:
+
+```text
+Services + distinct Contact → split
+surface + whole-project final QA → split
+QA re-validates 2+ previous surfaces → separate final QA wave
+```
 
 ### Dynamic WAVE_PLAN Checkpoint
 
@@ -354,17 +395,17 @@ WAVE_MAP'teki exact WAVE_<NN> entry
 TECH_CONTEXT
 PRODUCT_RULES
 applicable DESIGN authority
-approved input In Scope / Future / Out of Scope boundaries
+approved input scope boundaries
+SOURCE_REGISTER FCL registry
 ```
 
-okunur.
-
 Bir wave:
+
 - başka wave deliverable'ını task içine saklayamaz,
 - future scope'u active task yapamaz,
-- doğrulanmamış business claim üretemez.
+- FCL mapping'i olmayan factual business claim üretemez.
 
-İhlal görülürse WAVE_PLAN yazılıp geçilmez; ilgili WAVE_MAP/artifact repair edilir.
+İhlal görülürse ilgili WAVE_MAP/artifact repair edilir.
 
 ### Standard Implementation Minimum
 
@@ -390,7 +431,7 @@ standard → DESIGN + DESIGN-SYSTEM + applicable GLOBAL-SHELL/PAGE-DESIGN/SYSTEM
 full     → standard + justified FEATURE-DESIGN/ADMIN-DESIGN
 ```
 
-## 9. Pre-Validation Consistency + Provenance Check
+## 10. Pre-Validation Consistency + Provenance Check
 
 Validation'a geçmeden önce:
 
@@ -403,25 +444,17 @@ WAVE_MAP
 all WAVE_PLAN instances
 DECISIONS
 approved input scope/truth
+SOURCE_REGISTER FCL registry
+applicable package guards
 ```
 
 birlikte karşılaştırılır.
 
-Kontrol edilir:
-
-```text
-execution reality consistent?
-all resolved persistent decisions recorded?
-Engine-selected decisions marked Engine Resolved?
-future/out-of-scope leaked into committed scope?
-unverified business claims present?
-```
-
 Blocking ihlal varsa Validation stage'e geçmeden repair yapılır.
 
-## 10. Validation / Repair
+## 11. Validation / Repair
 
-Validation transition öncesinde `VALIDATION_RULES.md` **bu anda** yeniden açılır.
+Validation transition öncesinde `VALIDATION_RULES.md` bu anda yeniden açılır.
 
 Validation report ancak:
 
@@ -434,30 +467,42 @@ validation stage started
 
 sonrasında oluşturulabilir.
 
+Validation canonical gate seti `VAL-01..VAL-19`'dur. Validator alternate `CHK-*` seti icat edemez.
+
+Point-of-Use verdict:
+
+```text
+observable trace valid   → VAL-15 PASS
+observable trace invalid → VAL-15 FAIL
+trace unavailable        → VAL-15 UNVERIFIED
+```
+
+Trace unavailable iken VAL-15 PASS yazılamaz.
+
 Validation report timestamp generation/checkpoint completion timestamp'larından önce olamaz.
 
 ```text
 PASS             → publication
-CONDITIONAL PASS → yalnız non-blocking bulgu + açık kabul
+CONDITIONAL PASS → yalnız non-blocking/evidence-limited bulgu + açık kabul
 FAIL             → repair; devam ederse Failed
 ```
 
-## 11. Publication
+## 12. Publication
 
 Publication transition öncesinde `OUTPUT_STRUCTURE.md` yeniden açılır.
 
-PASS sonrası:
+PASS veya policy'nin izin verdiği açık CONDITIONAL PASS sonrası:
 
 1. output version tahsis edilir.
 2. `versions/<version>/` yayınlanır.
 3. `latest/` aynı sürümün derived görünümü olur.
 4. Run records gerçek path'leri kaydeder.
 
-## 12. Completion
+## 13. Completion
 
 Completion transition öncesinde `RUN_PROTOCOL.md` yeniden açılır.
 
-Run records Completed gerçekliğine kapatılır, sonra `runs/completed/<run-id>/` konumuna move edilir.
+Run records terminal gerçekliğe kapatılır, sonra doğru lifecycle konumuna move edilir.
 
 ---
 
