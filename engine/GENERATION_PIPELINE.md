@@ -38,51 +38,121 @@ observable read/open event      = primary evidence when available
 
 Çalışma ortamı tool/IDE execution trace sağlıyorsa bu trace refresh kanıtının birincil otoritesidir. `PROGRESS.md` / `RUN_LOG.md` kayıtları trace ile çelişemez ve trace'de görülmeyen bir read event'i olmuş gibi gösteremez.
 
-Trace mevcut değilse operational evidence audit desteği sağlar; ancak kendi başına point-of-use compliance'ı ispatladığı varsayılmaz. Böyle ortamlarda agent refresh'i eylem olarak yine gerçekleştirmek zorundadır ve validation mevcut kanıt sınırını açıkça belirtmelidir.
+Trace mevcut değilse operational evidence audit desteği sağlar; ancak kendi başına point-of-use compliance'ı ispatladığı varsayılmaz.
 
-## Artifact Production Loop
+## Artifact Checkpoint Protocol
 
-Her canonical document ve her dynamic instance **ayrı ayrı** şu döngüden geçer:
+Her canonical document ve her dynamic instance **ayrı checkpoint** olarak işlenir. Bir checkpoint kapanmadan sonraki artifact'a geçilemez.
 
 ```text
-1. Resolve next artifact
-2. Re-read its canonical template
-3. Re-read only its primary authority/dependencies
-4. Generate the artifact
-5. Re-read template validation expectations
-6. Compare generated artifact against the template/authority
-7. Repair if needed
-8. Record refresh + local-check evidence in run progress/log
-9. Mark artifact locally complete
-10. Only then move to the next artifact
+CHECKPOINT START
+1. Resolve exactly one artifact / dynamic instance
+2. Re-open its canonical template
+3. Re-open its primary authority/dependencies
+4. Re-open approved scope/truth owner when artifact can introduce product/business scope or claims
+5. Generate only this artifact
+6. Re-open template validation expectations
+7. Compare artifact against template + authority + approved scope/truth
+8. Repair immediately if needed
+9. Record artifact-specific evidence in PROGRESS/RUN_LOG
+10. Mark this checkpoint locally complete
+CHECKPOINT END
+→ only now resolve the next artifact
 ```
 
-Önemli:
+### Sequencing Invariant
 
-- Template'ler batch-read edilip sonraki birden fazla artifact memory'den üretilemez.
-- Aynı template'ten birden fazla dynamic instance çıkıyorsa her instance öncesinde template yeniden açılır.
-- Örnek: `WAVE_00` öncesinde `WAVE_PLAN_TEMPLATE.md` açıldıysa, `WAVE_01` öncesinde de yeniden açılır.
-- Local self-check final validation'ın yerine geçmez; yalnız artifact'ın kendi contract'ına uygun çıkmasını sağlar.
-- Refresh/local-check yalnız zihinsel veya varsayılan bir eylem sayılamaz; run'ın mevcut `PROGRESS.md` veya `RUN_LOG.md` kaydında artifact bazında görünür kayıt bırakmalıdır.
-- Operational record, gerçekleşmemiş bir read/refresh event'i sonradan olmuş gibi iddia edemez.
+Aşağıdaki sıra geçersizdir:
+
+```text
+read WAVE_PLAN_TEMPLATE once
+→ generate WAVE_00
+→ generate WAVE_01
+→ generate WAVE_02
+→ later write "refreshed" evidence
+```
+
+Geçerli sıra:
+
+```text
+read WAVE_PLAN_TEMPLATE
+→ read WAVE_00 scope/truth
+→ generate WAVE_00
+→ local compare/repair
+→ record WAVE_00 evidence
+
+read WAVE_PLAN_TEMPLATE AGAIN
+→ read WAVE_01 scope/truth
+→ generate WAVE_01
+→ local compare/repair
+→ record WAVE_01 evidence
+```
+
+Aynı template'ten birden fazla dynamic instance çıkıyorsa her instance yeni checkpoint'tir. Batch-read + batch-generate yasaktır.
 
 Minimum evidence:
 
 ```text
 artifact / dynamic instance
+read event occurred before generation
 canonical template refreshed
 primary authorities refreshed
+approved scope/truth checked where applicable
 local contract check result
 repair performed: yes/no
 ```
 
-Dynamic instance evidence instance-specific olmalıdır. `WAVE_PLAN_TEMPLATE refreshed` şeklinde tek genel kayıt bütün wave'leri kapsamaz.
+Operational record, gerçekleşmemiş bir read/refresh event'i sonradan olmuş gibi iddia edemez.
 
-## Project Run Write Boundary
+---
 
-Normal bir project generation run'ı Product Engine'in kendi authority/history yüzeylerini **read-only** kullanır.
+# Scope Truth Boundary
 
-Project run tarafından mutate edilemeyecek protected surfaces:
+Approved input içindeki kapsam kategorileri farklı authority taşır:
+
+```text
+In Scope              → generation may implement/plan
+Known Decisions       → generation may implement/plan
+Verified Current Truth→ generation may reuse as factual truth
+Future Possibilities  → NOT current scope
+Open Questions        → NOT approved scope until resolved
+Out of Scope          → prohibited for current generation
+```
+
+Canonical kural:
+
+> Future possibility is not approved scope.
+
+`Future Possibilities`, `Open Questions` veya başka non-approved alanlardaki feature/flow yalnız "future/unresolved" olarak anılabilir; WAVE_MAP, WAVE_PLAN, PROJECT_PLAN veya active NEXT_TASKS içine committed deliverable olarak taşınamaz.
+
+Örnek:
+
+```text
+Future: WhatsApp / teklif formu / canlı harita
+→ current wave task olarak üretilemez
+```
+
+Approved scope genişletilecekse yeni explicit user approval / yeni input version gerekir.
+
+## Factual Claim Boundary
+
+Generation approved/verified business truth'u yeni factual claim'lerle zenginleştiremez.
+
+```text
+Approved: "Yedek Parça Temini"
+Allowed:  "Yedek Parça Temini hizmet kartını oluştur"
+Invalid:  "orijinal parça + hızlı teslimat garantisi"
+```
+
+Design treatment, layout, interaction ve visual direction Engine tarafından çözülebilir; bunlar business/service truth'e dönüşemez.
+
+---
+
+# Project Run Write Boundary
+
+Normal project generation run Product Engine'in authority/history yüzeylerini **read-only** kullanır.
+
+Protected surfaces:
 
 ```text
 PRODUCT_ENGINE_BRAIN.md
@@ -93,9 +163,7 @@ templates/
 logs/ENGINE_CHANGELOG.md
 ```
 
-Bu yüzeyler yalnız explicit Engine maintenance/hardening/version-change işi kapsamında değiştirilebilir.
-
-Project run sırasında writable operational surfaces örnekleri:
+Writable operational surfaces:
 
 ```text
 inputs/
@@ -104,21 +172,23 @@ outputs/
 logs/RUN_INDEX.md
 ```
 
-Bir project generation run'ının başarılı olması Engine contract/history değişikliği anlamına gelmez. Tek-run sonucu `ENGINE_CHANGELOG.md` kaydı üretmez.
+Tek-run başarısı `ENGINE_CHANGELOG.md` girdisi değildir.
 
-## Transition Authority Refresh
+---
 
-Lifecycle kapılarında transition yapılmadan hemen önce ilgili authority yeniden açılır:
+# Transition Authority Refresh
+
+Lifecycle transition yapılmadan hemen önce ilgili authority yeniden açılır:
 
 ```text
-pending → approved      → PROJECT_INTAKE approval rules
-resolution → generation → PACKAGE_RULES / DOCUMENT_CATALOG / selected templates
-generation → validation → VALIDATION_RULES
-validation → publication → OUTPUT_STRUCTURE
-active → completed/failed → RUN_PROTOCOL completion/failure rules
+pending → approved        → PROJECT_INTAKE
+resolution → generation   → PACKAGE_RULES / DOCUMENT_CATALOG
+validation entry          → VALIDATION_RULES
+validation → publication  → OUTPUT_STRUCTURE
+active → completed/failed → RUN_PROTOCOL
 ```
 
-Transition authority refresh yapılmadan lifecycle state değiştirilmez.
+Transition authority refresh yapılmadan state değiştirilmez.
 
 ---
 
@@ -135,16 +205,17 @@ PROJECT_INTAKE.md
 PROJECT_INPUT_TEMPLATE.md
 ```
 
+Output:
+
 ```text
-outputs: inputs/pending/<slug>/PROJECT_INPUT.md
-stop: critical missing/conflict/decision varsa
+inputs/pending/<slug>/PROJECT_INPUT.md
 ```
+
+Critical missing/conflict/decision varsa stop.
 
 ## 2. Explicit Approval Gate
 
-Approval transition öncesinde `PROJECT_INTAKE.md` approval rules yeniden okunur.
-
-Yalnız doğrudan kullanıcı onayı pending input'u approved yapabilir.
+Approval transition öncesinde `PROJECT_INTAKE.md` yeniden okunur.
 
 ```text
 IDE/tool/plan/auto-approval ≠ canonical approval
@@ -154,68 +225,83 @@ Approved input olmadan generation run başlayamaz.
 
 ## 3. Package + Planning Resolution
 
-Resolution anında `PACKAGE_RULES.md`, selected base package ve `PLANNING_PROFILE_OVERLAY.md` yeniden okunur.
-
-Approved truth'tan:
+Resolution anında:
 
 ```text
-base package
-+ PLANNING_PROFILE_OVERLAY
-+ contextual conditions
+PACKAGE_RULES.md
+selected base package
+applicable contextual package(s)
+PLANNING_PROFILE_OVERLAY.md
 ```
 
-çözülür. Planning minimumu package tarafından düşürülemez.
+yeniden okunur.
+
+Resolved set:
+
+```text
+base package + planning overlay + contextual conditions
+```
 
 ## 4. Document + Dynamic Instance Resolution
 
-`DOCUMENT_CATALOG.md` point-of-use yeniden okunarak canonical Document ID seti ve dynamic instance registry çıkarılır.
-
-- her implementation wave → `waves/plans/WAVE_<NN>.md`
-- design standard/full → gerçek distinct page/screen başına PAGE-DESIGN
-- design full → yalnız gerçek complex feature/admin scope için FEATURE/ADMIN
+`DOCUMENT_CATALOG.md` yeniden okunur ve canonical Document ID seti + dynamic instance registry çözülür.
 
 Yeni instance yeni Document ID değildir.
 
 ## 5. Template Resolution
 
-Her document/instance tek canonical template'ini kullanır. Missing/duplicate/conflicting skeleton → generation başlamaz.
+Template resolution yalnız hangi canonical template'in kullanılacağını belirler. Template içeriği artifact checkpoint sırasında yeniden okunur.
 
-Bu aşamada template'leri topluca okuyup generation boyunca memory'den kullanmak yasaktır. Template resolution yalnız hangi template'in kullanılacağını belirler; gerçek template içeriği Artifact Production Loop içinde artifact üretiminden hemen önce yeniden okunur.
+Missing/duplicate/conflicting skeleton → generation başlamaz.
 
 ## 6. Information Distribution
 
-Approved truth, `INFORMATION_MAP.md` owner kurallarıyla dağıtılır. Aynı bilgi birden fazla independent authority'ye dönüşmez.
+Approved truth `INFORMATION_MAP.md` owner kurallarıyla dağıtılır.
 
-## 7. Missing / Assumption / Conflict Handling
+Scope Truth Boundary bu aşamada uygulanır; future/open/out-of-scope öğeler committed scope'a dönüşemez.
+
+## 7. Missing / Assumption / Conflict / Decision Handling
 
 `ASSUMPTION_RULES.md` ve `CONFLICT_RESOLUTION.md` uygulanır.
 
-### Execution-Critical Decision Gate
+### Decision Resolution Contract
 
-Bir karar **aktif/ilk wave'in uygulanma biçimini değiştiriyorsa** execution-critical'dır.
+Generation sırasında kesinleşen ve output execution reality'sini değiştiren her kalıcı karar `DECISIONS.md` içinde kayıtlı olmalıdır.
 
 Örnekler:
 
-- frontend runtime/stack seçimi,
-- package manager / build command,
-- gerçek framework seçimi,
-- auth yaklaşımı,
-- gerçek API/backend target'ı,
-- implementation'ı iki farklı yola bölen architecture choice.
-
-Kural:
-
 ```text
-execution-critical unresolved decision
-→ ilgili WAVE_<NN> Ready for Execution OLAMAZ
-→ README gerçekmiş gibi command yazamaz
-→ NEXT_TASKS executable gösterilemez
-→ clarification / decision resolution gerekir
+exact frontend stack/runtime
+build/tooling approach
+service/data boundary implementation choice
+visual concept / exact palette choice
+wave-level architecture boundary
 ```
 
-Exact stack/tooling unresolved iken assumption, README, wave veya task kayıtlarında `npm`, `pnpm`, `yarn`, `vite`, framework-specific command veya benzeri stack-specific execution gerçeği yazılamaz. Stack çözülene kadar yalnız stack-neutral `local development/preview environment` gibi ifadeler kullanılabilir.
+Provenance:
 
-Engine approved scope'u değiştirmeyen düşük-risk implementation detayını `Engine Resolved` olarak çözebilir. Kullanıcının seçmesi gereken kritik karar sessizce çözülemez.
+```text
+explicitly present in approved input → User Approved
+chosen by Engine after approval       → Engine Resolved
+unresolved and user-critical          → Pending Review
+```
+
+Generic user approval, Engine'in sonradan seçtiği exact stack/palette/implementation detayını `User Approved` yapmaz.
+
+### Execution-Critical Decision Gate
+
+Bir karar aktif/ilk wave'in uygulanma biçimini değiştiriyorsa execution-critical'dır.
+
+Execution-critical unresolved karar:
+
+```text
+→ active wave Ready for Execution olamaz
+→ README kesin command yazamaz
+→ NEXT_TASKS executable gösterilemez
+→ clarification / resolution gerekir
+```
+
+Engine approved scope'u değiştirmeyen düşük-risk implementation detayını `Engine Resolved` olarak çözebilir.
 
 ## 8. Dependency-Ordered Generation
 
@@ -238,42 +324,47 @@ Approved Input
 → conditional DATA/API/TEST/DEPLOY/OPS
 ```
 
-Bu sıra Artifact Production Loop'u bypass etmez. Her satırda sıradaki artifact için template + primary authority/dependencies fresh-read edilir, artifact üretilir, local compare/repair tamamlanır ve evidence kaydedilir; sonra sonraki artifact'a geçilir.
+Her satır Artifact Checkpoint Protocol'den ayrı ayrı geçer.
 
-### WAVE-MAP Decomposition Refresh
+### WAVE-MAP Checkpoint
 
-`WAVE_MAP` üretilmeden hemen önce:
+`WAVE_MAP` öncesi yeniden oku:
 
 ```text
 WAVE_MAP_TEMPLATE
-selected package / applicable contextual package
+selected package/context
 PROJECT_BRAIN
 PRODUCT_RULES
 TECH_CONTEXT
-applicable DESIGN authority
+applicable DESIGN
+approved input scope boundaries
 ```
 
-yeniden okunur. Map broad teknik fazlara göre değil, coherent ve independently verifiable deliverable'lara göre decomposition yapmalıdır.
+Map broad teknik fazlara değil coherent, independently verifiable deliverable'lara göre bölünür.
 
-### Dynamic Instance Example
+Cross-cutting whole-project `Final Integration / Responsive / QA` işi, gerçek bir feature/contact deliverable ile birleştirilmez; ayrı wave candidate olarak değerlendirilir.
+
+### Dynamic WAVE_PLAN Checkpoint
+
+Her `WAVE_<NN>` için yeniden:
 
 ```text
-Resolve WAVE_00
-→ re-read WAVE_PLAN_TEMPLATE + WAVE_MAP'teki WAVE_00 entry + TECH_CONTEXT + applicable design authority
-→ generate WAVE_00
-→ re-read template validation expectations
-→ compare/repair
-→ record WAVE_00-specific refresh/local-check evidence
-
-Resolve WAVE_01
-→ WAVE_PLAN_TEMPLATE'ı YENİDEN re-read et
-→ WAVE_MAP'teki WAVE_01 entry + relevant authorities yeniden oku
-→ generate WAVE_01
-→ compare/repair
-→ record WAVE_01-specific refresh/local-check evidence
+WAVE_PLAN_TEMPLATE
+WAVE_MAP'teki exact WAVE_<NN> entry
+TECH_CONTEXT
+PRODUCT_RULES
+applicable DESIGN authority
+approved input In Scope / Future / Out of Scope boundaries
 ```
 
-Bir WAVE_PLAN, WAVE_MAP'teki decomposition hatasını bağımsız deliverable'ları alt-task olarak ezerek gizleyemez. Böyle bir durum local check sırasında WAVE_MAP repair'ına döner.
+okunur.
+
+Bir wave:
+- başka wave deliverable'ını task içine saklayamaz,
+- future scope'u active task yapamaz,
+- doğrulanmamış business claim üretemez.
+
+İhlal görülürse WAVE_PLAN yazılıp geçilmez; ilgili WAVE_MAP/artifact repair edilir.
 
 ### Standard Implementation Minimum
 
@@ -299,39 +390,57 @@ standard → DESIGN + DESIGN-SYSTEM + applicable GLOBAL-SHELL/PAGE-DESIGN/SYSTEM
 full     → standard + justified FEATURE-DESIGN/ADMIN-DESIGN
 ```
 
-## 9. Pre-Validation Execution Consistency Check
+## 9. Pre-Validation Consistency + Provenance Check
 
-Validation'a gitmeden önce şu belgeler aynı executable reality'yi anlatmalıdır:
+Validation'a geçmeden önce:
 
 ```text
 TECH_CONTEXT
 README
 CURRENT_STATUS
 NEXT_TASKS
-active WAVE_PLAN
+WAVE_MAP
+all WAVE_PLAN instances
 DECISIONS
+approved input scope/truth
 ```
 
-Örnek invalid state:
+birlikte karşılaştırılır.
+
+Kontrol edilir:
 
 ```text
-TECH_CONTEXT: stack unresolved
-README: npm run dev
-WAVE_00: Vite veya Vanilla
-→ inconsistent → repair/clarification
+execution reality consistent?
+all resolved persistent decisions recorded?
+Engine-selected decisions marked Engine Resolved?
+future/out-of-scope leaked into committed scope?
+unverified business claims present?
 ```
+
+Blocking ihlal varsa Validation stage'e geçmeden repair yapılır.
 
 ## 10. Validation / Repair
 
-Validation transition öncesinde `VALIDATION_RULES.md` yeniden açılır ve mevcut working output'a karşı uygulanır.
+Validation transition öncesinde `VALIDATION_RULES.md` **bu anda** yeniden açılır.
+
+Validation report ancak:
+
+```text
+all required artifacts generated
+all artifact checkpoints closed
+pre-validation consistency check completed
+validation stage started
+```
+
+sonrasında oluşturulabilir.
+
+Validation report timestamp generation/checkpoint completion timestamp'larından önce olamaz.
 
 ```text
 PASS             → publication
 CONDITIONAL PASS → yalnız non-blocking bulgu + açık kabul
-FAIL             → repair; devam ederse run Failed
+FAIL             → repair; devam ederse Failed
 ```
-
-Execution-critical unresolved decision CONDITIONAL PASS olamaz; blocking FAIL'dir.
 
 ## 11. Publication
 
@@ -340,15 +449,15 @@ Publication transition öncesinde `OUTPUT_STRUCTURE.md` yeniden açılır.
 PASS sonrası:
 
 1. output version tahsis edilir.
-2. `OUTPUT_STRUCTURE.md` path mapping ile `versions/<version>/` yayınlanır.
-3. `latest/` aynı sürümün türetilmiş görünümü olur.
-4. Run records gerçek published path'leri kaydeder.
+2. `versions/<version>/` yayınlanır.
+3. `latest/` aynı sürümün derived görünümü olur.
+4. Run records gerçek path'leri kaydeder.
 
 ## 12. Completion
 
-Completion transition öncesinde `RUN_PROTOCOL.md` successful completion kuralları yeniden açılır.
+Completion transition öncesinde `RUN_PROTOCOL.md` yeniden açılır.
 
-Run Completed olarak dondurulur ve `runs/completed/<run-id>/` konumuna **move** edilir. Aynı ID active altında kalamaz.
+Run records Completed gerçekliğine kapatılır, sonra `runs/completed/<run-id>/` konumuna move edilir.
 
 ---
 
@@ -356,4 +465,4 @@ Run Completed olarak dondurulur ve `runs/completed/<run-id>/` konumuna **move** 
 
 > Projeyi hiç görmemiş yetkin yeni bir ajan, output paketini okuyup yeni bir mimari/teknik planlama turu yapmadan aktif `WAVE_<NN>.md` planını uygulamaya başlayabilmelidir.
 
-Bu koşul sağlanmıyorsa output biçimsel olarak eksiksiz olsa bile Product Engine generation'ı başarılı sayılmaz.
+Bu koşul sağlanmıyorsa output biçimsel olarak eksiksiz olsa bile generation başarılı sayılmaz.
