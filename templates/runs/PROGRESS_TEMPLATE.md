@@ -6,7 +6,7 @@
 template_id: progress-template
 template_name: Progress Operational Template
 document_id: not_applicable
-version: 1.0.0
+version: 1.1.0
 status: active
 template_type: operational
 category: operational
@@ -27,53 +27,73 @@ output_filename: PROGRESS.md
 
 ## Amaç
 
-Run'ın aşama (stage) ve doküman (document) bazlı tamamlama ilerlemesini görünür ve takip edilebilir kılmak.
+Run'ın stage ve artifact bazlı ilerlemesini; özellikle Artifact Checkpoint Protocol'ün gerçek sırasını görünür ve denetlenebilir kılmak.
 
 ## Kullanım Koşulları
 
-Run ilerledikçe güncellenir.
+Run ilerledikçe **artifact checkpoint kapanışında** güncellenir. Generation sonunda geriye dönük toplu evidence doldurma amacıyla kullanılmaz.
 
 ## Girdi Kaynakları
 
 - `PACKAGE_SELECTION.md`
-- Üretilen doküman durumları
+- gerçek üretilen artifact/instance durumları
+- Artifact Checkpoint Protocol execution evidence
 
 ## Zorunlu Bölümler
 
-- Genel İlerleme Yüzdesi ve Durum (Overall Progress)
-- Doküman Üretim İlerleme Tablosu (Document Completion Status)
-- Aşama Bazlı İlerleme Tablosu (Stage Completion Status)
+- Genel İlerleme Yüzdesi ve Durum
+- Doküman / Dynamic Instance Checkpoint Tablosu
+- Aşama Bazlı İlerleme
 
-## Koşullu Bölümler
+## Artifact Checkpoint Table Minimum
 
-- `[CONDITIONAL: include only if execution is blocked]` İlerlemeyi Engellemiş Olan Dokümanlar
+Her canonical artifact ve her dynamic instance için ayrı satır:
+
+```text
+Artifact / Instance
+Target File
+Status
+Checkpoint Started At
+Template Read Before Write
+Primary Authority / Scope Truth Refreshed
+Local Contract Check
+Repair Performed yes/no
+Checkpoint Closed At
+```
+
+Dynamic WAVE instances ayrı satırlardır. Tek `WAVE_PLAN_TEMPLATE refreshed` satırı birden fazla wave'i kapsamaz.
 
 ## İçerik Üretim Kuralları
 
-- Her doküman için: Document ID, Target File, Status (Pending / In-Progress / Produced / Validated), Updated At alanları güncellenmelidir.
+- Status vocabulary: Pending | In-Progress | Produced | Validated.
+- Bir artifact `Produced` olmadan checkpoint closed olamaz.
+- Template Read Before Write yalnız gerçek read-before-write event varsa `Yes` olabilir.
+- Observable trace mevcutken trace'de olmayan read event `Yes` yazılamaz.
+- Checkpoint timestamps chronology oluşturmalıdır: start/read/generate/check/close sırası bozulamaz.
+- Sonraki artifact checkpoint'i, önceki checkpoint kapanmadan başlamamalıdır.
+- PROGRESS self-report ground truth değildir; trace ile çelişirse trace kazanır.
 
 ## Placeholder Tanımları
 
-- `{{RUN_ID}}`: Run kimliği.
-- `{{OVERALL_PERCENTAGE}}`: Genel tamamlama yüzdesi.
-- `{{DOCUMENT_PROGRESS_TABLE}}`: Doküman üretim durumu tablosu.
+- `{{RUN_ID}}`
+- `{{OVERALL_PERCENTAGE}}`
+- `{{DOCUMENT_PROGRESS_TABLE}}`
 
 ## Kapsam Dışı
 
-- Doküman içerikleri
+- Artifact içeriklerinin kendisi.
 
 ## Diğer Dokümanlarla İlişki
 
-- Primary Owner: Run ilerleme takip tescili.
-- Referenced By: `RUN_MANIFEST_TEMPLATE.md`.
-
-## Delivery Profile Davranışı
-
-- Hangi belgelerin hazır olduğunu şeffaf şekilde gösterir.
+- Primary Owner: Run progress/checkpoint kayıtları.
+- Referenced By: `RUN_MANIFEST_TEMPLATE.md`, `VALIDATION_REPORT_TEMPLATE.md`.
 
 ## Validation Beklentileri
 
-- Tablodaki durumlar fiziki dosya mevcudiyeti ile uyumlu olmalıdır.
+- Durumlar fiziki artifact mevcudiyetiyle uyumlu olmalı.
+- Dynamic instance evidence instance-specific olmalı.
+- Timestamps mümkün chronology oluşturmalı.
+- Observable trace ile evidence çelişmemeli.
 
 ---
 
@@ -84,7 +104,7 @@ Run ilerledikçe güncellenir.
 - **Genel İlerleme**: {{OVERALL_PERCENTAGE}}%
 - **Mevcut Aşama**: {{CURRENT_STAGE}}
 
-## 1. Doküman Üretim Durumu Tablosu
+## 1. Artifact Checkpoint / Üretim Durumu
 
 {{DOCUMENT_PROGRESS_TABLE}}
 
@@ -96,8 +116,8 @@ Run ilerledikçe güncellenir.
 - [ ] Completed
 
 [CONDITIONAL: include only if execution is blocked]
-## 3. İlerlemeyi Engellemiş Olan Dokümanlar
+## 3. İlerlemeyi Engellemiş Olan Artifact'ler
 
-- Tamamlanamayan ve sonraki aşamayı bloklayan belgelerin listesi.
+- Tamamlanamayan ve sonraki aşamayı bloklayan artifact/instance listesi.
 
 # OUTPUT DOCUMENT END
