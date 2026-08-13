@@ -112,12 +112,14 @@ Gelecekte gerçekleştirilecek çalıştırmalar için referans tablo formatı �
 ## 6. Güncel İndeks Durumu
 
 ```text
-Total Indexed Runs : 0
+Total Indexed Runs : 1
 Active Runs        : 0
-Completed Runs     : 0
+Completed Runs     : 1
 Failed Runs        : 0
 Invalidated Runs   : 0
 ```
 
 | Run ID | Project Slug | Package | Profile | Status | Validation | Date | Output Ref | Note |
 |---|---|---|---|---|---|---|---|---|
+| RUN-20260813-001 | trakya-teknik-makine | demo-frontend | Prototype | Completed | PASS | 2026-08-13 | outputs/demos/trakya-teknik-makine/versions/v0.1 | Trakya Teknik Makine kurumsal frontend demo paketi üretildi |
+
