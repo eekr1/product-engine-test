@@ -6,7 +6,7 @@
 template_id: wave-map-template
 template_name: Canonical Wave Map Template
 document_id: WAVE-MAP
-version: 2.6.0
+version: 2.7.0
 status: active
 template_type: document
 category: waves
@@ -49,6 +49,31 @@ Bu proje hangi ana uygulama dalgalarına ayrılır ve her dalganın kesin execut
 ```
 
 WAVE_PLAN yalnız burada dondurulan exact parent wave entry'yi implementation seviyesinde detaylandırır; yeni product capability veya yeni scope icat edemez.
+
+## Non-Authoritative Decomposition Reference
+
+Wave decomposition kalite/derinlik kalibrasyonu için `ref/waves/README.md` ve `ref/waves/Design_Wave_Plan.md` kullanılabilir.
+
+Reference layer yalnız şunları öğretir:
+
+```text
+meaningful wave separation
+sequencing
+dependency reasoning
+foundation / feature / runtime / cross-cutting boundary clarity
+handoff quality
+```
+
+Reference artifact current project authority değildir.
+
+MUST NOT:
+
+- Vibehall wave count veya isimlerini kopyalamak,
+- reference capability'lerini current scope'a eklemek,
+- reference filenames/stack/architecture'i varsaymak,
+- reference completion state veya test sonuçlarını taşımak.
+
+Current WAVE_MAP yalnız approved executable project scope ve current canonical authorities tarafından belirlenir.
 
 ## Scope Resolution Model
 
@@ -153,6 +178,7 @@ Adres, harita, form, WhatsApp, footer, search, filter, CMS, backend gibi ayrı k
 - Bütün approved executable scope uygun wave'lere map edilmeli; hiçbir wave approved scope dışı capability icat etmemelidir.
 - WAVE_MAP freeze edildikten sonra downstream WAVE_PLAN yalnız parent entry'yi detaylandırabilir.
 - In Scope, Deliverables ve Exit Boundary içinde geçen her executable capability Committed Capabilities listesinde görünür olmalıdır. Gizli capability yasaktır.
+- Decomposition yalnız wave başlıkları üretmekle bitmez; her wave'in **neden ayrı olduğu**, hangi exact upstream deliverable'a dayandığı ve sonraki wave'e hangi tamamlanmış boundary'yi bıraktığı anlaşılır olmalıdır.
 
 ## Decomposition Heuristic
 
@@ -164,6 +190,9 @@ Adres, harita, form, WhatsApp, footer, search, filter, CMS, backend gibi ayrı k
 5. Whole-project QA feature wave'ine gizlenmiş mi?
 6. Her committed capability exact approved executable support taşıyor mu?
 7. In Scope / Deliverables / Exit Boundary aynı capability setini mi anlatıyor?
+8. Bu wave neden tam bu sırada geliyor?
+9. Hangi dependency tamamlanmadan bu wave güvenli biçimde başlayamaz?
+10. Wave kapanınca sonraki agent'a hangi somut boundary teslim edilmiş olacak?
 ```
 
 Kural:
