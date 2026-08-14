@@ -6,7 +6,7 @@
 template_id: source-register-template
 template_name: Source Register Operational Template
 document_id: not_applicable
-version: 1.2.0
+version: 1.3.0
 status: active
 template_type: operational
 category: operational
@@ -26,127 +26,58 @@ output_filename: SOURCE_REGISTER.md
 
 ## Amaç
 
-Run sırasında okunan veya başvurulan tüm kaynakların listesini, sürümlerini ve otorite seviyelerini kayıt altına almak; generation sırasında kullanılabilecek doğrulanmış factual business/product/service claim'leri explicit allowlist olarak tanımlamak.
+Run sırasında kullanılan kaynakları, sürümlerini, otorite seviyelerini ve **exact factual support boundary**'lerini kayıt altına almak; generation sırasında kullanılabilecek doğrulanmış business/product/service claim'leri explicit FCL allowlist olarak tanımlamak.
 
-## Kullanım Koşulları
+## Source Support Contract
 
-Run süresince aktif tutulur.
+Her factual source kaydı minimum şu alanları taşır:
 
-## Girdi Kaynakları
+```text
+Source ID: SRC-XXX
+Source: exact path / URL / approved input section
+Usage State: registered | consumed
+Claim Scope: kaynağın açıkça desteklediği exact factual semantic boundary
+Evidence Location: section / line / page / URL context
+```
 
-- Kullanılan girdi, paket, template ve referans dosyaları
-- Approved input / INPUT_SNAPSHOT
-- Verified project sources
+Canonical kurallar:
 
-## Zorunlu Bölümler
+```text
+registered ≠ consumed
+source presence ≠ blanket factual authority
+FCL claim ⊆ exact verified source support
+```
 
-- Girdi ve Sözleşme Kaynakları
-- Template Sürüm Kayıtları
-- Referans Belgeleri Kullanım Kaydı
-- Factual Claim Allowlist
+`consumed` yalnız gerçek run trace üzerinde source'un read/consume edildiği doğrulanabiliyorsa kullanılabilir. SOURCE_REGISTER, RUN_LOG, PROGRESS veya validator self-report'u kendi başına consumption proof değildir.
 
 ## Factual Claim Allowlist Contract
 
-Business/product/service factual truth generation sırasında serbest metin olarak genişletilemez. Run başında verified source truth ayrı claim kayıtlarına normalize edilir.
-
-Her factual claim için minimum:
+İki aşamalı canonical invariant:
 
 ```text
-Claim ID: FCL-XXX
-Claim: exact supported fact
-Source ID: SRC-XXX
-Source Location / Evidence: path, section, URL veya verified source reference
-Status: Verified | Approved
-Allowed Use: factual copy / planning / implementation reference
+FCL semantic content ⊆ exact supporting source evidence
+Generated factual claim ⊆ referenced FCL semantic content
 ```
-
-Canonical kural:
 
 > FCL reference is not a license to enrich.
-
-Bir generated factual claim yalnız referans verdiği FCL claim'in **exact semantic boundary**'si içinde kalıyorsa authorize edilmiş sayılır.
-
-```text
-Generated factual claim ⊆ Referenced FCL semantic content
-```
-
-FCL ID'nin yalnız mevcut olması yeterli değildir.
 
 Örnek:
 
 ```text
-FCL-002 Claim: Yerinde Teknik Destek
-
-Allowed:
-- "Yerinde Teknik Destek" hizmet kartını oluştur
-- "Yerinde Teknik Destek" başlığını göster
-
-NOT automatically allowed:
-- arıza tespiti
-- sahada müdahale
-- mobil servis ekibi
-- 7/24 destek
+Source evidence: "Yerinde Teknik Destek"
+FCL: "Yerinde Teknik Destek" → valid
+FCL: "Arıza tespiti ve sahada müdahale" → INVALID
+Generated: "7/24 yerinde teknik destek" → INVALID without separate exact support
 ```
 
-Başka örnek:
-
-```text
-FCL Claim: Makine Bakım ve Onarım
-
-Allowed:
-- Makine Bakım ve Onarım hizmet bölümü
-
-NOT automatically allowed:
-- periyodik bakım
-- revizyon
-- hidrolik/mekanik alt kapsam
-```
-
-Üst-seviye hizmet adı yeni modifier, süreç, performans, alt hizmet, coğrafi kapsam veya teknik yetkinliği authorize etmez.
-
-FCL kaydı yoksa veya generated claim FCL sınırından genişse generation:
-
-```text
-remove factual enrichment
-or use neutral wording tied exactly to verified claim
-or create a separate FCL only if exact source support exists
-or stop for clarification if execution-critical
-```
-
-Design treatment, layout, color, interaction veya presentation wording factual business claim olmadığı sürece FCL gerektirmez.
-
-## İçerik Üretim Kuralları
-
-- Her kaynak için Source ID, tür, path/referans, sürüm, otorite seviyesi ve kullanım amacı tutulur.
-- Ham ref belgeleri run klasörüne kopyalanmaz; referans gösterilir.
-- Verified business/product/service facts FCL'e normalize edilir.
-- FCL kaydı source'tan daha geniş veya daha iddialı olamaz.
-- Generated claim yalnız referenced FCL semantic boundary içinde kullanılabilir.
-- Aynı factual claim duplicate FCL kayıtlarıyla çoğaltılmaz.
-
-## Placeholder Tanımları
-
-- `{{RUN_ID}}`
-- `{{TEMPLATE_VERSIONS_TABLE}}`
-- `{{REF_USAGE_TABLE}}`
-- `{{FACTUAL_CLAIM_ALLOWLIST}}`
-
-## Kapsam Dışı
-
-- Referans belgelerin tam metin kopyaları
-- Kaynakta bulunmayan factual claim üretimi
-
-## Diğer Dokümanlarla İlişki
-
-- Primary Owner: Run kaynak, sürüm ve factual claim provenance tescili.
-- Referenced By: `RUN_MANIFEST_TEMPLATE.md`, `engine/GENERATION_PIPELINE.md`, `engine/VALIDATION_RULES.md`, WAVE planning/output generation.
+FCL source'tan genişse registry generation sırasında repair edilir; downstream output'a taşınmaz.
 
 ## Validation Beklentileri
 
-- Tüm aktif template sürümleri kaydedilmelidir.
-- Generated factual claims mevcut FCL kayıtlarıyla traceable olmalıdır.
-- FCL ID mevcut olsa bile generated claim referenced FCL semantic boundary'yi aşarsa validation FAIL olmalıdır.
-- Unsupported factual modifier/subclaim bulunursa source claim validation FAIL olmalıdır.
+- `FCL ⊆ exact source evidence` zorunludur.
+- `generated claim ⊆ FCL` zorunludur.
+- Unsupported modifier/subclaim → VAL-13 FAIL.
+- External source/trace consumption yalnız bağımsız observable evidence ile doğrulanabilir.
 
 ---
 
@@ -167,13 +98,10 @@ Design treatment, layout, color, interaction veya presentation wording factual b
 
 {{REF_USAGE_TABLE}}
 
+> Her source/ref kaydı `usage_state`, `claim_scope` ve exact evidence location taşır. `registered` ≠ `consumed`.
+
 ## 4. Factual Claim Allowlist
 
 {{FACTUAL_CLAIM_ALLOWLIST}}
-
-[CONDITIONAL: include only if user provided external docs]
-## 5. Dış Kaynak Belgeleri
-
-- Kullanıcı tarafından sağlanan harici dokümanlar, linkler ve belgeler.
 
 # OUTPUT DOCUMENT END
