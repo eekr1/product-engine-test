@@ -18,18 +18,34 @@ ref/waves/                  -> non-authoritative quality + depth examples
 
 ### `Design_Wave_Plan.md`
 
-Vibehall'ın gerçek full wave planıdır.
+Vibehall'ın gerçek full wave planıdır ve master reference olarak tutulur. Büyük olduğu için runtime agent'ın bunu bütünüyle okuması zorunlu değildir.
 
-Şunlar için referanstır:
+Şunlar için arşiv/master referanstır:
 
 - büyük planın wave'lere nasıl ayrıldığı,
 - sequencing ve dependency düşüncesi,
 - foundation / feature / runtime / cross-cutting kapanışların nasıl ayrıştığı,
-- her wave'in neden o sırada geldiğinin açıklanması,
-- scope dışı alanların bilinçli biçimde korunması,
-- implementation ve QA derinliğinin bütün plan boyunca tutarlı kalması.
+- implementation ve QA derinliğinin bütün plan boyunca nasıl korunduğu.
 
-Bu dosyadaki `Wave 00–29`, Vibehall isimleri, dosya yolları, component'ler, stack, test sayıları, tarihler veya completion state'leri başka projeye taşınamaz.
+Bu dosyadaki Vibehall scope'u, wave count/name, filenames, technologies, dates veya completion state başka projeye taşınamaz.
+
+### `WAVE_MAP_REFERENCE.md`
+
+Full `Design_Wave_Plan.md` içindeki decomposition yaklaşımının **compact point-of-use reference** sürümüdür.
+
+WAVE_MAP generation checkpoint'inde okunması gereken map-quality referansı budur.
+
+Özellikle şunları kalibre eder:
+
+- meaningful delivery boundary,
+- sequencing rationale,
+- dependency/handoff reasoning,
+- shared foundation before consuming feature,
+- runtime/state foundation before specialized surfaces,
+- feature delivery ile cross-cutting closure ayrımı,
+- consolidation / regression / readiness / final-QA ayrımı.
+
+Bu dosyadaki Vibehall wave listesi current project için hedef sayı veya scope değildir.
 
 ### `WAVE_07_HOME_REFERENCE.md`
 
@@ -97,13 +113,40 @@ Acceptance / Exit Criteria = [ ]
 Wave Result = pending / not executed
 ```
 
-## Usage
+## Point-of-Use Usage
 
-Wave planning phase'ine girildiğinde agent bu README'yi quality-reference boundary olarak okur.
+### WAVE_MAP checkpoint
 
-- WAVE_MAP hazırlanırken `Design_Wave_Plan.md` yalnız decomposition / sequencing / dependency kalite referansı olarak kullanılabilir.
-- WAVE_PLAN hazırlanırken iki izole reference wave, **detay seviyesini kalibre etmek** için okunur.
-- Her gerçek WAVE_PLAN write öncesindeki fresh `WAVE_PLAN_TEMPLATE.md` read zorunluluğu aynen devam eder.
-- Reference read, canonical template read-token yerine geçmez ve VAL-15 pairing evidence sayılmaz.
+Required order:
+
+```text
+ref/waves/README.md
+→ ref/waves/WAVE_MAP_REFERENCE.md
+→ fresh WAVE_MAP_TEMPLATE.md
+→ current approved scope + authorities
+→ generate only WAVE_MAP
+```
+
+Full `Design_Wave_Plan.md` master reference olarak dursa da runtime map calibration için compact `WAVE_MAP_REFERENCE.md` tercih edilir.
+
+### Every WAVE_PLAN checkpoint
+
+**Her dynamic plan ayrı checkpoint'tir.** Phase başında bir kez ref okuyup bütün planları batch yazmak geçersizdir.
+
+Required order for each exact `WAVE_NN`:
+
+```text
+fresh WAVE_PLAN_TEMPLATE.md
+→ exact parent WAVE_MAP entry
+→ relevant isolated depth reference(s)
+→ current project authorities
+→ generate ONLY WAVE_NN
+→ validate/repair
+→ close checkpoint
+```
+
+UI/page/feature ağırlıklı wave için `WAVE_07_HOME_REFERENCE.md`, runtime/state-heavy wave için `WAVE_12_RUNTIME_REFERENCE.md`, hybrid wave için applicable olan iki ref birlikte kullanılabilir.
+
+Reference read canonical template read-token yerine geçmez ve VAL-15 pairing evidence sayılmaz.
 
 Current project scope, capabilities, architecture ve filenames yalnız current project authorities tarafından belirlenir.
