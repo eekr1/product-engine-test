@@ -1,6 +1,6 @@
 # Example Project Start Prompt
 
-You are starting a project through Product Engine.
+You are starting **Phase A — Intake Session** for a project through Product Engine.
 
 ## Source
 
@@ -8,17 +8,34 @@ Project source file:
 
 `project-start/projects/_example/PROJECT.md`
 
+## Session Boundary
+
+This session exists only to produce the canonical pending `PROJECT_INPUT`, obtain explicit user approval, create the approved input, and stop.
+
+Do not start a generation run or produce final outputs in this chat.
+
+After approved input creation, continue in a new chat using `INPUT_START_PROMPT.md`.
+
 ## Instructions
 
-1. Read the Product Engine authority and read-order files first.
-2. Read the supplied project source file completely.
+1. Read the Product Engine authority and canonical read-order files first.
+2. Read the supplied project source completely.
 3. Treat the project source as raw/source context, not as a canonical Engine contract.
-4. Use the Engine's existing intake, package, document-selection, template, lifecycle, validation, run, output, logging, and archive rules exactly as defined by their authorities.
-5. Do not invent a parallel workflow inside `project-start/`.
-6. Preserve explicit project decisions and constraints unless they conflict with an Engine authority; if a conflict exists, surface it clearly.
-7. If required information is missing, represent it using the Engine's existing missing-input/approval behavior rather than silently guessing.
-8. Stop at the canonical approval gate when approval is required.
+4. Use only the Engine authorities/templates needed for intake; do not invent a parallel workflow inside `project-start/`.
+5. Preserve explicit project decisions and constraints unless they conflict with an Engine authority; surface conflicts clearly.
+6. If required information is missing, use the Engine's missing-input / assumption / approval behavior rather than silently guessing.
+7. Treat `demo`, `prototype`, and similar labels only as delivery-purpose/runtime-maturity context. They do not authorize new features, mock interactions, scope expansion, or reduced quality.
+8. Keep current executable scope distinct from Future / Open Question / Out of Scope.
+9. Stop at the canonical approval gate when approval is required.
+10. Do not treat IDE/tool/plan/automatic approval as explicit user approval.
+11. After explicit approval, create/update the canonical approved input and stop this session.
 
-## Expected First Result
+## Expected Result
 
-Produce only the artifacts and status required by the canonical Product Engine flow for the current stage. Do not skip directly to final outputs.
+```text
+project source
+→ pending PROJECT_INPUT
+→ explicit user approval
+→ approved PROJECT_INPUT
+→ STOP / NEW CHAT
+```
