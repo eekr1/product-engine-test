@@ -11,14 +11,17 @@ CHECKPOINT START
 1. Resolve exactly one artifact/instance
 2. Re-open canonical template
 3. Re-open primary authorities/dependencies
-4. Re-open WAVE_MAP parent entry if generating a WAVE_PLAN
-5. Re-open SOURCE_REGISTER/FCL if factual claims may be introduced
-6. Generate only this artifact/instance
-7. Run exact boundary diff
-8. Repair immediately
-9. Record audit metadata
-10. Close checkpoint
+4. Re-open exact WAVE_MAP parent entry if generating a WAVE_PLAN
+5. Re-open relevant wave quality reference if wave artifact
+6. Re-open SOURCE_REGISTER/FCL if factual claims may be introduced
+7. Generate only this artifact/instance
+8. Run exact boundary diff
+9. Repair immediately
+10. Record audit metadata
+11. CLOSE checkpoint before resolving next artifact/instance
 ```
+
+`CLOSE checkpoint` semantic olarak önemlidir: aynı template/reference context'i bir sonraki dynamic instance için reusable token değildir.
 
 ## Evidence Priority
 ```text
@@ -92,15 +95,51 @@ engine/ + templates/ + approved current project authorities = WHAT IS ALLOWED / 
 ref/waves/ = HOW DEEP / CLEAR / IMPLEMENTATION-READY GOOD PLANNING CAN LOOK
 ```
 
-Wave planning phase'ine girildiğinde:
+### WAVE_MAP point-of-use routing
+
+WAVE_MAP checkpoint required order:
 
 ```text
-1. Read ref/waves/README.md boundary.
-2. For WAVE_MAP quality calibration, consult Design_Wave_Plan.md decomposition/index/sequencing patterns.
-3. Before generating WAVE_PLAN instances, read both isolated depth references once:
-   - WAVE_07_HOME_REFERENCE.md
-   - WAVE_12_RUNTIME_REFERENCE.md
-4. For every actual WAVE_PLAN write, still perform the normal fresh WAVE_PLAN_TEMPLATE read + exact parent map refresh.
+ref/waves/README.md
+→ ref/waves/WAVE_MAP_REFERENCE.md
+→ fresh WAVE_MAP_TEMPLATE.md
+→ current approved executable scope + current authorities
+→ generate ONLY WAVE_MAP
+→ validate decomposition + capability boundaries
+→ CLOSE
+```
+
+`Design_Wave_Plan.md` full/master reference'tır. Runtime agent'ın 400KB+ full dosyayı bütünüyle consume etmesi zorunlu değildir; compact `WAVE_MAP_REFERENCE.md` decomposition calibration için canonical ref route'tur.
+
+### WAVE_PLAN point-of-use routing
+
+Phase-level calibration kaldırılmıştır. **İki isolated ref'i bir kez okuyup bütün WAVE_PLAN instance'larını batch üretmek geçersizdir.**
+
+Her exact `WAVE_NN` ayrı checkpoint'tir:
+
+```text
+fresh WAVE_PLAN_TEMPLATE.md
+→ exact WAVE_NN parent entry
+→ relevant isolated reference(s)
+→ current project authorities / FCL as applicable
+→ generate ONLY WAVE_NN
+→ atomize + NEW_PLAN_CAPABILITIES diff
+→ depth check
+→ repair
+→ CLOSE
+```
+
+Relevant reference route:
+
+```text
+UI / page / feature wave
+→ WAVE_07_HOME_REFERENCE.md
+
+runtime / lifecycle / state-heavy wave
+→ WAVE_12_RUNTIME_REFERENCE.md
+
+hybrid wave
+→ applicable parts of both
 ```
 
 Reference layer MUST NOT authorize project scope or architecture.
@@ -118,9 +157,9 @@ Reference read is not a canonical template read token and is not VAL-15 pairing 
 
 Depth expectation:
 
-A generated WAVE_PLAN is not implementation-ready if a fresh capable agent must perform another planning pass to decide applicable responsibility location, dependency/data/state behavior, preserved boundaries, edge-state handling or verification strategy.
+A generated WAVE_PLAN is not implementation-ready if a fresh capable agent must perform another planning pass to decide applicable responsibility location, dependency/data/state behavior, preserved boundaries, edge-state handling, verification strategy or exact wave handoff.
 
-This rule does not require unnecessary complexity. Only details applicable to the exact parent wave and current project architecture are generated.
+Bu rule unnecessary complexity gerektirmez; yalnız exact parent wave ve current architecture için applicable detaylar yazılır.
 
 ## Factual Claim Allowlist Boundary
 
@@ -160,10 +199,10 @@ Approved Input
 → PRODUCT-RULES
 → TECH-CTX
 → DESIGN
-→ WAVE-MAP
+→ WAVE-MAP checkpoint
 → freeze WAVE-MAP execution boundaries
 → expected dynamic instance registry
-→ WAVE-PLAN instances
+→ WAVE-PLAN instance checkpoints (one by one)
 → PROJECT_PLAN
 → STATUS
 → TASKS
@@ -178,11 +217,14 @@ Her wave entry:
 
 ```text
 Goal
+Why Separate / Sequencing Rationale
 Committed Capabilities
 In Scope
 Out of Scope
 Primary Deliverables
 Dependencies
+Upstream Boundary Consumed
+Downstream Handoff
 Exit Boundary
 ```
 
@@ -191,52 +233,61 @@ taşır.
 Map generation algorithm:
 
 ```text
-1. Read wave reference boundary and calibrate decomposition quality without importing reference scope.
-2. Extract every candidate committed capability atom.
-3. Resolve exact executable approved support for each atom.
-4. Record support ID + support meaning.
-5. Build UNSUPPORTED_MAP_CAPABILITIES.
-6. If UNSUPPORTED_MAP_CAPABILITIES != empty: repair/remove; do not freeze.
-7. Confirm In Scope / Deliverables / Exit Boundary introduce no hidden atom.
-8. Confirm sequencing/dependencies explain why each wave is separate and what it hands off.
-9. Freeze map only when unsupported set is empty.
+1. Read ref/waves/README.md.
+2. Read compact ref/waves/WAVE_MAP_REFERENCE.md at point-of-use.
+3. Fresh-read WAVE_MAP_TEMPLATE.md.
+4. Re-open current approved executable scope and current authorities.
+5. Identify meaningful standalone delivery boundaries; do not target a reference wave count.
+6. For every wave explain WHY SEPARATE, UPSTREAM boundary and HANDOFF boundary.
+7. Extract every candidate committed capability atom.
+8. Resolve exact executable approved support for each atom.
+9. Build UNSUPPORTED_MAP_CAPABILITIES.
+10. If non-empty: repair/remove; do not freeze.
+11. Confirm In Scope / Deliverables / Exit Boundary introduce no hidden atom.
+12. Confirm shared foundations precede consumers and horizontal closure is not hidden inside feature waves when independently meaningful.
+13. Freeze map only when scope and decomposition depth are both sufficient.
+14. CLOSE map checkpoint.
 ```
 
 `VERIFIED_CURRENT_TRUTH` factual context olabilir ama capability authorize etmez.
 
-### Dynamic WAVEPLAN Phase Calibration
+### Dynamic WAVE_PLAN Checkpoint Loop
 
-WAVE_PLAN instance loop'una girmeden önce iki isolated reference wave bir kez okunur.
+No phase-level reusable calibration exists.
 
-Amaç:
+For each expected WAVE ID in order:
 
 ```text
-calibrate task depth
-calibrate state/role/edge coverage
-calibrate dependency and handoff clarity
-calibrate automated/manual/debug verification depth
+START WAVE_NN CHECKPOINT
+1. Fresh-read WAVE_PLAN_TEMPLATE.md.
+2. Re-open exact parent WAVE_NN map entry.
+3. Select and re-open relevant isolated depth reference(s) for THIS wave.
+4. Re-open current tech/design/product/source authorities as applicable.
+5. Resolve parent Committed Capabilities.
+6. Generate candidate implementation details at implementation-ready depth.
+7. Every task must make applicable location/responsibility, dependencies/contracts, behavior, states/edges, preserve/must-not, verification and concrete done result explicit.
+8. Atomize all candidate executable plan capabilities from every executable section.
+9. Map every atom to exact parent capability relation: detail-of | implementation-of | verification-of.
+10. Build NEW_PLAN_CAPABILITIES.
+11. If non-empty: remove or repair upstream map only if genuinely approved.
+12. Run implementation-readiness question: would a fresh capable agent still need a planning pass? If yes, deepen applicable task contracts.
+13. Write ONLY WAVE_NN.
+14. Validate/repair WAVE_NN.
+15. CLOSE checkpoint.
+END
 ```
 
-Bu phase calibration current project scope veya filenames üretmez ve per-instance canonical refresh yerine geçmez.
+Only after CLOSE may the next WAVE ID be resolved, and the next checkpoint **must begin with a new fresh WAVE_PLAN_TEMPLATE read**.
 
-### Dynamic WAVE_PLAN Checkpoint
-
-Her expected instance için ayrı template refresh + generation checkpoint uygulanır.
-
-Plan generation algorithm:
+Invalid pattern:
 
 ```text
-1. Re-open fresh WAVE_PLAN_TEMPLATE.
-2. Re-open exact parent WAVE_MAP entry.
-3. Resolve parent Committed Capabilities.
-4. Generate candidate implementation details at implementation-ready depth.
-5. For each applicable task, make responsibility location, dependency/data/state behavior, preserved boundary and verification explicit enough to avoid a second planning pass.
-6. Atomize all candidate executable plan capabilities from every executable section.
-7. Map every plan atom to exact parent capability with relation:
-   detail-of | implementation-of | verification-of
-8. Build NEW_PLAN_CAPABILITIES for anything without exact parent support.
-9. If NEW_PLAN_CAPABILITIES != empty: remove or repair upstream map if approved.
-10. Write plan only after unsupported set is empty.
+read template once
+read refs once
+write WAVE_00
+write WAVE_01
+write WAVE_02
+...
 ```
 
 Parent Goal'ın broad wording'i tek başına support sayılmaz.
@@ -266,6 +317,17 @@ missing token -> invalid
 Summary/self-report pair list gerçek event üretmez.
 Reference reads `WAVE_PLAN_TEMPLATE_READ_TOKENS` oluşturmaz.
 
+Trace AVAILABLE ise ayrıca sequence şu checkpoint pattern'ini göstermelidir:
+
+```text
+fresh template read
+→ exact parent/ref reads
+→ one WAVE write
+→ next fresh template read
+```
+
+Bir fresh template read sonrasında birden fazla WAVE write görülürse sonraki writes unpaired sayılır.
+
 Trace UNAVAILABLE ise pairing UNVERIFIED kalır.
 
 ## Source Registry Consistency
@@ -285,6 +347,8 @@ Bir source'un başka source tarafından özetlenmesi o source'un `consumed` oldu
 - expected vs actual dynamic instances
 - UNSUPPORTED_MAP_CAPABILITIES == empty
 - NEW_PLAN_CAPABILITIES == empty for every plan
+- WAVE_MAP decomposition depth: WHY SEPARATE + UPSTREAM + HANDOFF clear per wave
+- WAVE_PLAN implementation-readiness: fresh agent needs no second planning pass for applicable details
 - FCL→exact source checks
 - generated→FCL checks
 - validation source set/state mirrors SOURCE_REGISTER
@@ -302,6 +366,12 @@ VAL-04:
 ```text
 A. unsupported map capability atoms == empty
 B. new plan capability atoms == empty
+```
+
+VAL-05:
+```text
+map has meaningful delivery boundaries + explicit why/upstream/handoff
+AND every wave plan is implementation-ready without second planning pass
 ```
 
 VAL-13:
