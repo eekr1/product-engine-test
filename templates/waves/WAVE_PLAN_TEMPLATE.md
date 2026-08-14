@@ -6,7 +6,7 @@
 template_id: wave-plan-template
 template_name: Canonical Wave Plan Template
 document_id: WAVE-PLAN
-version: 3.2.0
+version: 3.3.0
 status: active
 template_type: dynamic-document
 category: waves
@@ -37,19 +37,38 @@ output_filename_pattern: waves/plans/WAVE_<NN>.md
 ## Amaç
 Tek bir WAVE_MAP entry'sini başka bir planlama turu gerektirmeden uygulanabilir execution contract haline getirir.
 
-## Non-Authoritative Quality / Depth Reference
+## Required Point-of-Use Quality Calibration
 
-Wave plan derinliğini kalibre etmek için:
+**Her gerçek WAVE_PLAN ayrı generation checkpoint'tir.** Bir kez reference/template okuyup birden fazla planı batch yazmak geçersizdir.
+
+Her exact `WAVE_NN` için required order:
 
 ```text
-ref/waves/README.md
-ref/waves/WAVE_07_HOME_REFERENCE.md
-ref/waves/WAVE_12_RUNTIME_REFERENCE.md
+fresh templates/waves/WAVE_PLAN_TEMPLATE.md
+→ exact WAVE_NN parent entry in current WAVE_MAP
+→ relevant isolated depth reference(s)
+→ current project authorities / source-FCL as applicable
+→ generate ONLY WAVE_NN
+→ atomize + validate + repair
+→ close checkpoint
 ```
 
-quality reference olarak kullanılabilir.
+Relevant isolated depth references:
 
-Bu reference wave'ler yalnız **planning depth** öğretir. Current project authority değildir.
+```text
+UI / page / feature delivery
+→ ref/waves/WAVE_07_HOME_REFERENCE.md
+
+runtime / lifecycle / state-heavy delivery
+→ ref/waves/WAVE_12_RUNTIME_REFERENCE.md
+
+hybrid wave
+→ applicable parts of both references
+```
+
+Reference seçimi wave'in gerçek karakterine göre yapılır. Aynı ref önceki wave'de okunmuş olsa bile current wave point-of-use calibration gerektiğinde yeniden açılır.
+
+Reference read canonical fresh `WAVE_PLAN_TEMPLATE.md` read-token yerine geçmez.
 
 Reference'ten alınabilecek şeyler:
 
@@ -70,8 +89,6 @@ MUST NOT:
 - Vibehall wave count/name sırasını current projeye taşımak,
 - reference'teki `[x]`, QA-closed, test result, tarih veya completion claim'ini kopyalamak,
 - parent WAVE_MAP'te olmayan reference capability'yi current plan'a eklemek.
-
-Reference read canonical point-of-use `WAVE_PLAN_TEMPLATE.md` refresh yerine geçmez.
 
 ## Parent Wave Boundary
 
@@ -178,22 +195,82 @@ Her proje her kategoriye sahip olmak zorunda değildir; yalnız **applicable** d
 
 ## Task Derinlik Standardı
 
-Her task için:
+Her task yalnız tek satırlık imperative olamaz. Applicable olduğu ölçüde task şu mini-contract'ı taşımalıdır:
 
 ```text
-Ne yapılacak?
-Nerede / hangi responsibility alanında yapılacak?
-Hangi exact parent capability atomunun implementation/detail/verification parçası?
-Hangi dependency/contract/data/state ile ilişkili?
-Applicable normal + edge davranış nedir?
-Neyi özellikle yapmamalı / korumalı?
-Yeni capability yaratıyor mu?
-Factual claim varsa hangi source-backed FCL içinde?
-Beklenen somut sonuç nedir?
-Done nasıl doğrulanacak?
+Task / Result
+Location / Responsibility
+Parent Capability Relation
+Inputs / Dependencies / Contracts
+Implementation Behavior
+Applicable States / Responsive / Edge Cases
+Preserve / Must Not
+FCL / Source Boundary if factual
+Verification
+Concrete Done Result
 ```
 
-Task granülerliği aynı coherent responsibility altında gruplanabilir; satır sayısını yapay biçimde artırmak amaç değildir.
+Task aynı coherent responsibility altında birkaç alt-adımı birleştirebilir; amaç yapay satır sayısı değil, execution ambiguity'yi kaldırmaktır.
+
+### Insufficient task example
+
+```text
+- Hero component oluştur ve responsive yap.
+```
+
+### Implementation-ready direction example
+
+```text
+- Hero presentation responsibility:
+  - location: current project architecture'deki exact hero/presentation area
+  - consumes: approved company identity + exact contact CTA data through current service/data boundary
+  - owns: hero hierarchy, primary copy presentation, CTA layout/states
+  - does not own: service cards, form/map/WhatsApp, global footer
+  - responsive: current design rules altında mobile stacking + CTA touch target behavior
+  - verification: render/link protocol/responsive manual checks
+  - done: fresh agent'ın layout/data/CTA responsibility kararı vermeden implement edebileceği net result
+```
+
+Bu örnek current project filename/stack icat etme izni değildir; actual location ve contract current authorities'den resolve edilir.
+
+## Per-Instance Stop Rule
+
+Bir `WAVE_NN` planı yazıldıktan sonra aynı checkpoint içinde `WAVE_NN+1` yazılamaz.
+
+```text
+WRITE WAVE_NN
+→ boundary diff
+→ repair
+→ checkpoint CLOSE
+→ NEXT checkpoint starts with NEW fresh WAVE_PLAN_TEMPLATE read
+```
+
+Aşağıdaki event pattern invalid'dir:
+
+```text
+read WAVE_PLAN_TEMPLATE once
+read refs once
+write WAVE_00
+write WAVE_01
+write WAVE_02
+...
+```
+
+Doğru pattern:
+
+```text
+read fresh template
+read exact parent
+read relevant ref
+write WAVE_00
+CLOSE
+
+read fresh template
+read exact parent
+read relevant ref
+write WAVE_01
+CLOSE
+```
 
 ## Parent Boundary Stop Rule
 
