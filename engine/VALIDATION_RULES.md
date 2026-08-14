@@ -25,51 +25,86 @@ PASS iff EXPECTED == ACTUAL
 ```
 
 ## VAL-04 — Approved Scope Integrity
-Scope iki aşamada doğrulanır.
+Scope iki aşamada ve capability atomları üzerinden doğrulanır.
 
 ### Stage A — WAVE_MAP → Approved Scope
 
-WAVE_MAP project execution decomposition authority'sidir.
-
-Canonical invariant:
-
 ```text
-WAVE_MAP committed scope subset-of approved executable project scope
+WAVE_MAP committed capability atoms subset-of approved executable capability atoms
 ```
 
-Map hazırlanırken INPUT_SNAPSHOT/SCP registry approved truth resolution için kullanılır.
+Validator her wave için yalnız supporting SCP ID listesi yazıp PASS veremez. Şunları ayrı ayrı çıkarmalıdır:
 
 ```text
-IN_SCOPE / KNOWN_DECISION -> executable scope support
+MAP_CAPABILITY_ATOMS
+SUPPORTED_MAP_CAPABILITIES
+UNSUPPORTED_MAP_CAPABILITIES
+```
+
+Her atom için exact support identity + exact support meaning gösterilir.
+
+Status semantics:
+
+```text
+IN_SCOPE / KNOWN_DECISION -> executable support olabilir
 VERIFIED_CURRENT_TRUTH -> reference/factual context only
 OPEN_QUESTION / FUTURE / OUT_OF_SCOPE -> non-executable
 ```
 
-Future/Open/Out-of-Scope capability current WAVE_MAP entry'sine girerse FAIL.
-Reference-only truth tek başına execution capability authorize edemez.
+Rules:
+- related/generic capability exact support değildir.
+- phone/email CTA, address/map/form/WhatsApp capability'sini authorize etmez.
+- generic corporate/contact/responsive scope arbitrary adjacent feature authorize etmez.
+- In Scope, Primary Deliverables veya executable Exit Boundary'de olup Committed Capabilities listesinde bulunmayan hidden atom → FAIL.
+- `UNSUPPORTED_MAP_CAPABILITIES != empty` → VAL-04 FAIL.
 
 ### Stage B — WAVE_PLAN → Parent WAVE_MAP Entry
 
-Her WAVE_PLAN exact parent wave entry'nin implementation detaylandırmasıdır.
-
-Canonical invariant:
-
 ```text
-WAVE_PLAN task/deliverable semantic scope subset-of exact parent WAVE_MAP entry
+WAVE_PLAN capability atoms subset-of exact parent WAVE_MAP capability atoms
 ```
 
+Validator her plan için şunları üretir:
+
+```text
+PLAN_CAPABILITY_ATOMS
+PARENT_CAPABILITY_ATOMS
+PLAN_TO_PARENT_RELATIONS
+NEW_PLAN_CAPABILITIES
+```
+
+Allowed relation:
+```text
+detail-of | implementation-of | verification-of
+```
+
+Aşağıdakiler FAIL'dir:
+```text
+new-capability
+adjacent-capability
+inferred-capability
+```
+
+Parent Goal'ın broad wording'i tek başına support sayılmaz. Parent map entry'de açık semantic support yoksa plan capability'si unsupported'dur.
+
+`NEW_PLAN_CAPABILITIES != empty` → VAL-04 FAIL.
+
 WAVE_PLAN task'larında SCP ref zorunlu değildir.
-Parent WAVE_MAP entry'de olmayan yeni capability yalnız plan içinde ortaya çıkarsa FAIL.
-Başka wave'in scope'unu almak, Future/Open/Out-of-Scope içeriği plan üzerinden geri sokmak veya parent boundary'yi genişletmek FAIL'dir.
 
 ## VAL-05 — Wave Decomposition + Execution Depth
-Meaningful independent deliverable'lar ayrı wave'lere bölünür; whole-project final QA gerektiğinde ayrı final QA wave olur. Pre-execution state başarı iddia etmez.
+Meaningful independent deliverable'lar ayrı wave'lere bölünür; whole-project final QA gerekiyorsa ayrı final QA wave olur. Pre-execution state başarı iddia etmez.
 
 ## VAL-06 — Execution-Critical Decision Completeness
 Critical unresolved karar varken active wave executable gösterilemez.
 
 ## VAL-07 — Cross-Document Execution Consistency
-README, TECH_CONTEXT, CURRENT_STATUS, NEXT_TASKS, WAVE_MAP, all WAVE_PLAN, DECISIONS ve referenced FCL identities aynı execution reality'yi anlatır. Her WAVE_PLAN kendi parent WAVE_MAP entry'siyle uyumlu olmalıdır.
+README, TECH_CONTEXT, CURRENT_STATUS, NEXT_TASKS, WAVE_MAP, all WAVE_PLAN, DECISIONS ve source/FCL identities aynı execution reality'yi anlatır.
+
+Aşağıdakiler VAL-07 FAIL'dir:
+- WAVE_PLAN parent map'ten yeni capability üretir.
+- validation source identity/state SOURCE_REGISTER'dan farklıdır.
+- validator source setine SOURCE_REGISTER'da olmayan identity ekler.
+- same source ID farklı anlam/state ile raporlanır.
 
 ## VAL-08 — Decision Provenance + Coverage
 Allowed statuses: User Approved, Engine Resolved, Pending Review, Superseded.
@@ -91,13 +126,20 @@ Blocking invariants:
 ```text
 FCL semantic content subset-of exact supporting source evidence
 generated factual claim subset-of referenced FCL semantic content
+VALIDATION source identity/state exactly mirrors SOURCE_REGISTER
 ```
 
-Exact source evidence inference/classification izni değildir. Source'ta açıkça bulunmayan faaliyet alanı, capability, alt hizmet, teknik kapsam, süreç veya modifier FCL'ye eklenemez.
+Exact source evidence inference/classification izni değildir.
 
-External source `consumed` iddiası independent observable open/read/fetch evidence gerektirir. Böyle evidence yoksa source `registered` kalmalıdır. `consumed` yazılmış fakat bağımsız evidence yoksa VAL-13 FAIL.
+External source `consumed` iddiası independent observable open/read/fetch evidence gerektirir. Böyle evidence yoksa source `registered` kalmalıdır.
 
-Registered-but-unconsumed source validation evidence olarak kullanılamaz; FCL exact evidence başka consumed/local source'tan geliyorsa yalnız o source identity gösterilmelidir.
+Validator:
+- SOURCE_REGISTER'da olmayan source ID ekleyemez,
+- source usage_state değiştiremez,
+- `via another source summary`, snapshot, self-report veya derived mention ile external consumption kanıtlayamaz.
+
+`VALIDATION_SOURCE_SET != SOURCE_REGISTER_SOURCE_SET` → VAL-07 + VAL-13 FAIL.
+Usage-state mismatch → VAL-07 + VAL-13 FAIL.
 
 ## VAL-14 — Template / Placeholder / Project Leakage
 Unresolved placeholder, duplicate skeleton veya başka proje leakage → FAIL.
@@ -111,30 +153,37 @@ VALIDATION_REPORT / PROGRESS / RUN_LOG / manifest / agent statement != E1 proof
 
 `Observable Trace Status: AVAILABLE` yalnız external trace gerçekten inspect edilmişse yazılır; aksi halde `UNAVAILABLE`.
 
-Trace AVAILABLE:
-```text
-READ_COUNT < WRITE_COUNT -> FAIL
-UNPAIRED_WRITES != empty -> FAIL
-all writes uniquely paired in order -> PASS
-```
+### Single-use token model
 
-Dynamic WAVE_PLAN için ayrıca:
+Trace AVAILABLE ise dynamic read/write pairing gerçek ordered event sequence üzerinden yapılır.
 
 ```text
-one fresh WAVE_PLAN_TEMPLATE read token -> exactly one WAVE_PLAN write
+READ_TOKENS = each observable template read event, each initially UNUSED
+WRITE_EVENTS = each observable dynamic write event
+
+for each WRITE_EVENT in order:
+  choose exactly one preceding UNUSED matching READ_TOKEN
+  mark token USED
+  if none exists -> UNPAIRED WRITE -> FAIL
 ```
 
-Aynı template read birden fazla WAVE_PLAN write için kullanılamaz.
+Bir read event'i iki write'a pair edilemez.
+Aynı filename'i raporda beş kez yazmak beş read event üretmez.
+Self-reported pair table observable event sequence yerine geçmez.
+
+Özellikle:
+```text
+1 observed WAVE_PLAN_TEMPLATE read + 5 observed WAVE_PLAN writes
+→ 1 paired write + 4 unpaired writes
+→ VAL-15 FAIL
+```
 
 Trace UNAVAILABLE → VAL-15 UNVERIFIED.
 
 ### UNVERIFIED overall semantics
-VAL-15 blocking gate olduğu için `UNVERIFIED` varken Overall `PASS` yasaktır.
-
 ```text
 VAL-15 UNVERIFIED + no other FAIL -> Overall CONDITIONAL PASS
-Publication -> BLOCKED until explicit user/operator acceptance of the evidence limitation
-No explicit acceptance -> do not publish; keep run active/paused
+Publication -> BLOCKED until explicit user/operator acceptance
 Any other blocking FAIL -> Overall FAIL
 ```
 
@@ -163,12 +212,20 @@ Highest Evidence Level Used
 Evidence Contradictions
 Validation Target
 Expected/Actual/Missing/Unexpected Wave IDs
-WAVE_MAP scope checks: wave -> approved executable scope support -> subset result
-WAVE_PLAN parent checks: plan/task/deliverable -> parent WAVE_MAP entry -> subset result
-FCL-to-Source checks: FCL -> exact source identity/evidence -> subset result
-Generated-to-FCL checks: generated claim -> FCL -> subset result
+MAP_CAPABILITY_ATOMS per wave
+exact approved support meaning per map atom
+UNSUPPORTED_MAP_CAPABILITIES per wave
+PLAN_CAPABILITY_ATOMS per plan
+PARENT_CAPABILITY_ATOMS per plan
+PLAN_TO_PARENT_RELATIONS
+NEW_PLAN_CAPABILITIES per plan
+FCL-to-Source checks with exact SOURCE_REGISTER identity/state
+Generated-to-FCL checks
+SOURCE_REGISTER vs VALIDATION source-set/state equality
 External source consumption checks
-Dynamic template read/write pairs or explicit UNAVAILABLE reason
+Actual ordered dynamic read events
+Actual ordered dynamic write events
+Consumed read-token pairing
 Unpaired writes
 overall result
 ```
@@ -178,15 +235,15 @@ Required evidence block missing → corresponding gate cannot PASS. Blocking gat
 Canonical results:
 ```text
 EXPECTED != ACTUAL -> VAL-03 FAIL
-WAVE_MAP capability outside approved executable scope -> VAL-04 FAIL
-WAVE_PLAN capability outside exact parent WAVE_MAP entry -> VAL-04 FAIL
+UNSUPPORTED_MAP_CAPABILITIES != empty -> VAL-04 FAIL
+NEW_PLAN_CAPABILITIES != empty -> VAL-04 FAIL
+validation source-set/state mismatch -> VAL-07 + VAL-13 FAIL
 FCL not subset of exact source -> VAL-13 FAIL
 generated claim not subset of FCL -> VAL-13 FAIL
-registered/unconsumed source used as evidence -> VAL-13 FAIL
 external consumed without independent read evidence -> VAL-13 FAIL
 trace origin not independent -> Trace UNAVAILABLE
-trace AVAILABLE + unpaired write -> VAL-15 FAIL
-one WAVE_PLAN_TEMPLATE read reused by multiple WAVE_PLAN writes -> VAL-15 FAIL
+reused read token -> VAL-15 FAIL
+unpaired dynamic write -> VAL-15 FAIL
 trace UNAVAILABLE -> VAL-15 UNVERIFIED -> Overall cannot PASS
 published output target -> VAL-16 FAIL
 critical FAIL -> overall FAIL
