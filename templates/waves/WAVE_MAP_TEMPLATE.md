@@ -6,7 +6,7 @@
 template_id: wave-map-template
 template_name: Canonical Wave Map Template
 document_id: WAVE-MAP
-version: 2.7.0
+version: 2.8.0
 status: active
 template_type: document
 category: waves
@@ -50,17 +50,28 @@ Bu proje hangi ana uygulama dalgalarına ayrılır ve her dalganın kesin execut
 
 WAVE_PLAN yalnız burada dondurulan exact parent wave entry'yi implementation seviyesinde detaylandırır; yeni product capability veya yeni scope icat edemez.
 
-## Non-Authoritative Decomposition Reference
+## Required Point-of-Use Decomposition Calibration
 
-Wave decomposition kalite/derinlik kalibrasyonu için `ref/waves/README.md` ve `ref/waves/Design_Wave_Plan.md` kullanılabilir.
+WAVE_MAP write öncesinde compact quality reference **zorunlu checkpoint read**'idir:
+
+```text
+ref/waves/README.md
+→ ref/waves/WAVE_MAP_REFERENCE.md
+→ fresh templates/waves/WAVE_MAP_TEMPLATE.md
+→ current approved scope + authorities
+→ generate only WAVE_MAP
+```
+
+`ref/waves/Design_Wave_Plan.md` master/full reference olarak tutulur; runtime agent'ın 400KB+ full dosyayı bütünüyle okuması zorunlu değildir. Compact `WAVE_MAP_REFERENCE.md` full planın decomposition/sequencing düşüncesini point-of-use için taşır.
 
 Reference layer yalnız şunları öğretir:
 
 ```text
 meaningful wave separation
-sequencing
+sequencing rationale
 dependency reasoning
-foundation / feature / runtime / cross-cutting boundary clarity
+foundation / shared primitive / feature / runtime / cross-cutting boundary clarity
+consolidation / regression / readiness / final-QA separation
 handoff quality
 ```
 
@@ -71,7 +82,8 @@ MUST NOT:
 - Vibehall wave count veya isimlerini kopyalamak,
 - reference capability'lerini current scope'a eklemek,
 - reference filenames/stack/architecture'i varsaymak,
-- reference completion state veya test sonuçlarını taşımak.
+- reference completion state veya test sonuçlarını taşımak,
+- küçük projeyi sırf reference uzun diye yapay micro-wave'lere bölmek.
 
 Current WAVE_MAP yalnız approved executable project scope ve current canonical authorities tarafından belirlenir.
 
@@ -103,11 +115,14 @@ Her wave entry aşağıdaki alanları açıkça taşımalıdır:
 Wave ID
 Name
 Goal
+Why Separate / Sequencing Rationale
 Committed Capabilities
 In Scope
 Out of Scope
 Primary Deliverables
 Dependencies
+Upstream Boundary Consumed
+Downstream Handoff
 Exit Boundary
 ```
 
@@ -172,49 +187,69 @@ Adres, harita, form, WhatsApp, footer, search, filter, CMS, backend gibi ayrı k
 - Wave 00 uygulanabilir foundation/bootstrapping adımıdır.
 - Distinct user-facing surface, feature, flow veya coherent delivery unit'leri ayrı wave adayıdır.
 - Aynı surface içindeki sıkı bağlı section'lar tek wave'de kalabilir; yapay mikro-wave üretilmez.
+- Shared primitive/foundation birden fazla downstream surface tarafından tüketilecekse consuming feature'lardan önce ayrı boundary olarak düşünülür.
+- Runtime/state/reconcile/lifecycle davranışları birden fazla specialized surface tarafından tüketiliyorsa tek UI wave'ine gizlenmez.
+- Whole-project responsive/accessibility/consolidation/regression/performance/readiness/final QA işleri gerçekten bağımsız horizontal boundary oluşturuyorsa feature wave checklist'ine tek satır olarak sıkıştırılmaz.
 - Her wave tek anlamlı goal ve net completion boundary taşır.
-- Whole-project responsive/regression/cross-browser/final integration/presentation QA cross-cutting ise ayrı final QA wave olur.
 - Dependency zinciri açık ve acyclic olmalıdır.
 - Bütün approved executable scope uygun wave'lere map edilmeli; hiçbir wave approved scope dışı capability icat etmemelidir.
 - WAVE_MAP freeze edildikten sonra downstream WAVE_PLAN yalnız parent entry'yi detaylandırabilir.
 - In Scope, Deliverables ve Exit Boundary içinde geçen her executable capability Committed Capabilities listesinde görünür olmalıdır. Gizli capability yasaktır.
-- Decomposition yalnız wave başlıkları üretmekle bitmez; her wave'in **neden ayrı olduğu**, hangi exact upstream deliverable'a dayandığı ve sonraki wave'e hangi tamamlanmış boundary'yi bıraktığı anlaşılır olmalıdır.
+- Her wave'in **neden ayrı olduğu**, hangi exact upstream deliverable/boundary'ye dayandığı ve sonraki wave'e hangi tamamlanmış boundary'yi bıraktığı açık olmalıdır.
 
 ## Decomposition Heuristic
 
 ```text
 1. Bu scope tek başına anlamlı bir deliverable mı?
 2. Wave sonunda complete ve bağımsız doğrulanabilir olacak mı?
-3. İçinde başka bağımsız capability var mı?
+3. İçinde başka bağımsız capability/delivery boundary var mı?
 4. Ayırmak coherence'i artırır mı, yoksa mikro-wave mi üretir?
-5. Whole-project QA feature wave'ine gizlenmiş mi?
-6. Her committed capability exact approved executable support taşıyor mu?
-7. In Scope / Deliverables / Exit Boundary aynı capability setini mi anlatıyor?
-8. Bu wave neden tam bu sırada geliyor?
-9. Hangi dependency tamamlanmadan bu wave güvenli biçimde başlayamaz?
-10. Wave kapanınca sonraki agent'a hangi somut boundary teslim edilmiş olacak?
+5. Shared foundation onu kullanan feature'ların içine gömülmüş mü?
+6. Runtime/state foundation specialized surface içine gömülmüş mü?
+7. Whole-project horizontal QA/readiness işi feature wave'ine gizlenmiş mi?
+8. Her committed capability exact approved executable support taşıyor mu?
+9. In Scope / Deliverables / Exit Boundary aynı capability setini mi anlatıyor?
+10. Bu wave neden tam bu sırada geliyor?
+11. Hangi upstream boundary tamamlanmadan başlayamaz?
+12. Wave kapanınca sonraki agent'a hangi somut boundary teslim edilmiş olacak?
 ```
 
 Kural:
 
 ```text
 multiple independent deliverables → SPLIT
+shared prerequisite consumed by multiple later waves → CONSIDER FOUNDATION SPLIT
 no meaningful standalone result → MERGE
 one coherent complete deliverable → KEEP
-whole-project QA hidden in surface wave → SPLIT QA
+whole-project horizontal closure hidden in feature wave → SPLIT IF STANDALONE
 unsupported capability atom → REMOVE / FAIL
 hidden capability outside Committed Capabilities → FAIL
 ```
 
+## Decomposition Quality Exit Test
+
+Map yalnız `N wave + acyclic dependency` olduğu için yeterli değildir.
+
+WAVE_MAP implementation decomposition olarak PASS sayılabilmesi için fresh capable agent şu üç şeyi her wave için yeniden planlamadan anlayabilmelidir:
+
+```text
+WHY SEPARATE — neden bu wave bağımsız boundary?
+UPSTREAM — hangi tamamlanmış boundary'yi tüketiyor?
+HANDOFF — sonraki wave'e hangi somut tamamlanmış sonucu bırakıyor?
+```
+
+Bu üçünden biri generic/belirsiz ise map depth yetersizdir.
+
 ## Validation Beklentileri
 
+- Required point-of-use compact map reference calibration uygulanmış olmalı; independent trace unavailable ise read event ayrıca kanıtlanamaz fakat generated map depth yine artifact üzerinden değerlendirilir.
 - Her committed capability atom exact executable approved support taşımalı.
 - Broad/generic SCP başlığı unrelated adjacent capability authorize edemez.
 - Future/Open/Out-of-Scope leakage olmamalı.
 - In Scope / Deliverables / Exit Boundary capability seti Committed Capabilities ile aynı sınırda kalmalı.
-- Her wave entry Goal + Committed Capabilities + In Scope + Out of Scope + Primary Deliverables + Dependencies + Exit Boundary taşımalı.
+- Her wave entry Goal + Why Separate + Committed Capabilities + In Scope + Out of Scope + Primary Deliverables + Dependencies + Upstream Boundary + Downstream Handoff + Exit Boundary taşımalı.
 - Dependency chain acyclic olmalı.
-- Whole-project QA gerekiyorsa ayrı wave olmalı.
+- Whole-project QA gerekiyorsa uygun ayrı wave olmalı.
 - Her wave için tek WAVE-PLAN dynamic instance üretilebilmelidir.
 - WAVE_MAP ile PROJECT_PLAN aynı teslim sırasını anlatmalıdır.
 
