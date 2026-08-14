@@ -6,7 +6,7 @@
 template_id: validation-report-template
 template_name: Validation Report Operational Template
 document_id: not_applicable
-version: 1.5.0
+version: 1.6.0
 status: active
 template_type: operational
 category: operational
@@ -34,8 +34,10 @@ output_filename: VALIDATION_REPORT.md
 - Canonical Gate Coverage
 - Evidence Priority / Trace Status
 - Dynamic Instance Coverage
-- Approved Scope Semantic Checks
+- WAVE_MAP → Approved Scope Checks
+- WAVE_PLAN → Parent Map Checks
 - Source → FCL → Generated Claim Checks
+- External Source Consumption Checks
 - Point-of-Use Read/Write Pairing
 - Validation Timing
 - VAL-01..VAL-19 Table
@@ -61,28 +63,48 @@ Unexpected Instance IDs
 ```
 `EXPECTED == ACTUAL` zorunludur.
 
-## Approved Scope Semantic Checks
-Her task/deliverable için:
+## WAVE_MAP → Approved Scope Checks
+Her wave entry için:
 ```text
-Generated Task / Deliverable
-Referenced SCP ID(s)
-Referenced SCP Semantic Scope
-Task Semantic Scope
-Semantic Subset Result
+Wave ID
+Wave Goal / Committed Scope
+Approved Executable Scope Support
+Reference-Only Context Used
+Future/Open/Out-of-Scope Leakage
+Map ⊆ Approved Result
 Reason
 ```
 
 Canonical rule:
 ```text
-task/deliverable semantic scope ⊆ referenced executable SCP semantic scope
+WAVE_MAP committed scope ⊆ approved executable project scope
 ```
+
+## WAVE_PLAN → Parent Map Checks
+Her planın task/deliverable scope'u exact parent map entry ile karşılaştırılır:
+```text
+Wave Plan
+Task / Deliverable
+Parent WAVE_MAP Entry
+Task Semantic Scope
+Task ⊆ Parent Result
+Reason
+```
+
+Canonical rule:
+```text
+WAVE_PLAN task/deliverable scope ⊆ exact parent WAVE_MAP entry
+```
+
+WAVE_PLAN task'larında SCP ref aranmaz.
 
 ## Source → FCL → Generated Claim Checks
 Her FCL için:
 ```text
 FCL ID
 FCL Claim
-Exact Supporting Source
+Exact Supporting Source Identity
+Source Usage State
 Exact Source Evidence
 FCL ⊆ Source Result
 ```
@@ -102,6 +124,18 @@ AND
 generated factual claim ⊆ referenced FCL semantic content
 ```
 
+Registered-but-unconsumed external source evidence olarak kullanılamaz.
+
+## External Source Consumption Checks
+Her external source için:
+```text
+Source ID
+Usage State
+Independent Read/Open/Fetch Evidence
+Evidence Origin
+Consumption Claim Valid
+```
+
 ## Point-of-Use Pairing
 Trace AVAILABLE ise:
 ```text
@@ -113,7 +147,7 @@ Read/Write Pairs
 Unpaired Writes
 ```
 
-Her read single-use'dur. Trace UNAVAILABLE ise VAL-15 UNVERIFIED.
+Her read single-use'dur. Özellikle bir `WAVE_PLAN_TEMPLATE` read token yalnız bir WAVE_PLAN write ile eşleşebilir. Trace UNAVAILABLE ise VAL-15 UNVERIFIED.
 
 ## Validation Timing
 ```text
@@ -146,25 +180,31 @@ Expected set `VAL-01..VAL-19`; missing gate → overall FAIL.
 ## 3. Dynamic Instance Coverage
 {{DYNAMIC_INSTANCE_COVERAGE}}
 
-## 4. Approved Scope Semantic Checks
-{{SCP_SEMANTIC_CHECKS}}
+## 4. WAVE_MAP → Approved Scope Checks
+{{WAVE_MAP_SCOPE_CHECKS}}
 
-## 5. Source → FCL → Generated Claim Checks
+## 5. WAVE_PLAN → Parent Map Checks
+{{WAVE_PLAN_PARENT_CHECKS}}
+
+## 6. Source → FCL → Generated Claim Checks
 {{FCL_SEMANTIC_CHECKS}}
 
-## 6. Point-of-Use Read/Write Pairing
+## 7. External Source Consumption Checks
+{{EXTERNAL_SOURCE_CHECKS}}
+
+## 8. Point-of-Use Read/Write Pairing
 {{TRACE_PAIRING_BLOCK}}
 
-## 7. Validation Timing / Chronology
+## 9. Validation Timing / Chronology
 {{VALIDATION_TIMING_BLOCK}}
 
-## 8. Blocking Validation Checks
+## 10. Blocking Validation Checks
 {{VALIDATION_CHECKS_TABLE}}
 
-## 9. Violations & Evidence
+## 11. Violations & Evidence
 {{VIOLATIONS_AND_EVIDENCE_BLOCK}}
 
-## 10. Repair Actions
+## 12. Repair Actions
 - FAIL/WARNING bulguları için repair aksiyonları.
 
 # OUTPUT DOCUMENT END
