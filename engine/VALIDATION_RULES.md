@@ -27,15 +27,21 @@ PASS iff EXPECTED == ACTUAL
 ## VAL-04 — Approved Scope Integrity
 Her committed deliverable/task executable SCP ref taşır.
 
-Canonical semantic invariant:
+Canonical invariants:
 ```text
-SCP semantic scope ⊆ approved input semantic support
-task/deliverable semantic scope ⊆ referenced executable SCP semantic scope
+SCP semantic scope subset-of approved input semantic support
+task/deliverable semantic scope subset-of referenced executable SCP semantic scope
 ```
 
-SCP ID'nin yalnız mevcut olması PASS için yeterli değildir. Telefon/e-posta CTA scope'u adres kartı, harita, WhatsApp veya form capability'sini ayrıca approval yoksa authorize etmez.
+SCP ref doğrulaması ID existence kontrolü değildir. Referenced SCP için ID + Item + Status + Executable değerleri INPUT_SNAPSHOT registry ile exact resolve edilmelidir.
 
-Semantic overreach → VAL-04 FAIL.
+```text
+IN_SCOPE / KNOWN_DECISION -> Executable YES
+VERIFIED_CURRENT_TRUTH -> Executable NO, reference only
+OPEN_QUESTION / FUTURE / OUT_OF_SCOPE -> Executable NO
+```
+
+Reference-only SCP executable task/deliverable authorize edemez. Telefon/e-posta CTA scope'u adres kartı, harita, WhatsApp veya form capability'sini ayrıca approval yoksa authorize etmez. SCP ID başka belge içinde registry'den farklı anlam/name ile kullanılırsa VAL-04 ve VAL-07 FAIL.
 
 ## VAL-05 — Wave Decomposition + Execution Depth
 Meaningful independent deliverable'lar ayrı wave'lere bölünür; whole-project final QA gerektiğinde ayrı final QA wave olur. Pre-execution state başarı iddia etmez.
@@ -44,7 +50,7 @@ Meaningful independent deliverable'lar ayrı wave'lere bölünür; whole-project
 Critical unresolved karar varken active wave executable gösterilemez.
 
 ## VAL-07 — Cross-Document Execution Consistency
-README, TECH_CONTEXT, CURRENT_STATUS, NEXT_TASKS, WAVE_MAP, all WAVE_PLAN ve DECISIONS aynı execution reality'yi anlatır.
+README, TECH_CONTEXT, CURRENT_STATUS, NEXT_TASKS, WAVE_MAP, all WAVE_PLAN, DECISIONS ve referenced SCP/FCL identities aynı execution reality'yi anlatır.
 
 ## VAL-08 — Decision Provenance + Coverage
 Allowed statuses: User Approved, Engine Resolved, Pending Review, Superseded.
@@ -62,22 +68,15 @@ PROJECT_PLAN, WAVE_MAP, CURRENT_STATUS ve NEXT_TASKS aynı wave gerçekliğini t
 Canonical ownership, assumptions ve conflicts doğru yönetilir.
 
 ## VAL-13 — Source Claim Integrity
-İki aşamalı blocking invariant:
+Blocking invariants:
 ```text
-FCL semantic content ⊆ exact supporting source evidence
-generated factual claim ⊆ referenced FCL semantic content
+FCL semantic content subset-of exact supporting source evidence
+generated factual claim subset-of referenced FCL semantic content
 ```
 
-Bir FCL source evidence'tan genişletilmişse downstream generated claim FCL'ye uysa bile VAL-13 FAIL.
+Exact source evidence inference/classification izni değildir. Source'ta açıkça bulunmayan faaliyet alanı, capability, alt hizmet, teknik kapsam, süreç veya modifier FCL'ye eklenemez.
 
-Örnek:
-```text
-Source: Yedek Parça Temini
-FCL: Makine ve hidrolik yedek parça temini → FAIL
-
-Source/FCL: Yerinde Teknik Destek
-Generated: arıza tespiti ve sahada müdahale → FAIL
-```
+External source `consumed` iddiası independent observable open/read/fetch evidence gerektirir. Böyle evidence yoksa source `registered` kalmalıdır. `consumed` yazılmış fakat bağımsız evidence yoksa VAL-13 FAIL.
 
 ## VAL-14 — Template / Placeholder / Project Leakage
 Unresolved placeholder, duplicate skeleton veya başka proje leakage → FAIL.
@@ -86,25 +85,31 @@ Unresolved placeholder, duplicate skeleton veya başka proje leakage → FAIL.
 E1 yalnız validator dışındaki independent observable IDE/tool execution trace'tir.
 
 ```text
-VALIDATION_REPORT / PROGRESS / RUN_LOG / manifest / agent statement ≠ E1 proof
+VALIDATION_REPORT / PROGRESS / RUN_LOG / manifest / agent statement != E1 proof
 ```
 
-`Observable Trace Status: AVAILABLE` yalnız external trace gerçekten inspect edilmişse yazılabilir. Aksi halde `UNAVAILABLE`.
-
-Dynamic pairing:
-```text
-read WAVE_PLAN_TEMPLATE #1 → write WAVE_00 consumes #1
-read WAVE_PLAN_TEMPLATE #2 → write WAVE_01 consumes #2
-```
-Her read single-use'dur.
+`Observable Trace Status: AVAILABLE` yalnız external trace gerçekten inspect edilmişse yazılır; aksi halde `UNAVAILABLE`.
 
 Trace AVAILABLE:
 ```text
-READ_COUNT < WRITE_COUNT → FAIL
-UNPAIRED_WRITES != empty → FAIL
-all writes uniquely paired in order → PASS
+READ_COUNT < WRITE_COUNT -> FAIL
+UNPAIRED_WRITES != empty -> FAIL
+all writes uniquely paired in order -> PASS
 ```
+
 Trace UNAVAILABLE → VAL-15 UNVERIFIED.
+
+### UNVERIFIED overall semantics
+VAL-15 blocking gate olduğu için `UNVERIFIED` varken Overall `PASS` yasaktır.
+
+```text
+VAL-15 UNVERIFIED + no other FAIL -> Overall CONDITIONAL PASS
+Publication -> BLOCKED until explicit user/operator acceptance of the evidence limitation
+No explicit acceptance -> do not publish; keep run active/paused
+Any other blocking FAIL -> Overall FAIL
+```
+
+Agent/tool kendi kendine evidence limitation kabulü veremez.
 
 ## VAL-16 — Validation Timeline Integrity
 Target yalnız `runs/active/<run-id>/working-output/`; validation < publication < completion.
@@ -119,6 +124,8 @@ Output paths OUTPUT_STRUCTURE ile uyumlu olmalıdır.
 Manifest, progress, run log, completion report ve lifecycle location aynı terminal gerçekliği göstermelidir.
 
 ## Validation Report Minimumu
+Aşağıdaki evidence bloklarının her biri zorunludur:
+
 ```text
 Expected/Executed/Missing VAL IDs
 Observable Trace Status
@@ -127,23 +134,28 @@ Highest Evidence Level Used
 Evidence Contradictions
 Validation Target
 Expected/Actual/Missing/Unexpected Wave IDs
-SCP semantic checks
-FCL→Source checks
-Generated→FCL checks
-Dynamic template read/write pairs
+SCP semantic checks: task -> SCP ID/Item/Status/Executable -> subset result
+FCL-to-Source checks: FCL -> exact source evidence -> subset result
+Generated-to-FCL checks: generated claim -> FCL -> subset result
+External source consumption checks
+Dynamic template read/write pairs or explicit UNAVAILABLE reason
 Unpaired writes
 overall result
 ```
 
+Required evidence block missing → corresponding gate cannot PASS. Blocking gate evidence block missing → Overall FAIL.
+
 Canonical results:
 ```text
-EXPECTED != ACTUAL → VAL-03 FAIL
-SCP semantic overreach → VAL-04 FAIL
-FCL not subset of source → VAL-13 FAIL
-generated claim not subset of FCL → VAL-13 FAIL
-trace origin not independent → Trace UNAVAILABLE
-trace AVAILABLE + unpaired write → VAL-15 FAIL
-trace UNAVAILABLE → VAL-15 UNVERIFIED
-published output target → VAL-16 FAIL
-critical FAIL → overall FAIL
+EXPECTED != ACTUAL -> VAL-03 FAIL
+reference-only/non-executable SCP task -> VAL-04 FAIL
+SCP identity mismatch -> VAL-04 + VAL-07 FAIL
+FCL not subset of source -> VAL-13 FAIL
+generated claim not subset of FCL -> VAL-13 FAIL
+external consumed without independent read evidence -> VAL-13 FAIL
+trace origin not independent -> Trace UNAVAILABLE
+trace AVAILABLE + unpaired write -> VAL-15 FAIL
+trace UNAVAILABLE -> VAL-15 UNVERIFIED -> Overall cannot PASS
+published output target -> VAL-16 FAIL
+critical FAIL -> overall FAIL
 ```
