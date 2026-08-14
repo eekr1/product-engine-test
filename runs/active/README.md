@@ -2,59 +2,107 @@
 
 ## 1. Amaç ve Kapsam
 
-`runs/active/` klasörü, Product Engine tarafımdan aktif olarak yürütülen, henüz nihai kapanışına ulaşmamış tüm çalıştırma (run) oturumlarının yaşadığı fiziksel alandır.
-
-Bir run yaşam döngüsünü tamamlayana (başarılı veya başarısız/iptal olarak sonlanana) kadar tüm operasyonel belgeleri ve çalışma çıktıları ile birlikte bu klasör altında barındırılır.
+`runs/active/` henüz terminal duruma ulaşmamış run'ların operasyonel çalışma alanıdır.
 
 ---
 
-## 2. Barındırılan Run Durumları (Active States)
+## 2. IF YOU ARE HERE — Active Run Router
 
-`runs/active/<run-id>/` altında yalnızca aşağıdaki durumlara (`status`) sahip run klasörleri bulunabilir:
+```text
+IF run is being initialized:
+→ re-open engine/RUN_PROTOCOL.md
+→ re-open templates/runs/RUN_MANIFEST_TEMPLATE.md
+→ create manifest
 
-- **Created:** Run kimliği oluşturuldu, dizin açıldı.
-- **Initialized:** Girdi anlık görüntüsü alındı, paket seçimi kaydedildi.
-- **Running:** Doküman üretimi aktif şekilde devam ediyor.
-- **Blocked:** Kritik bir engel veya çözülemeyen çelişki nedeniyle bekleniyor.
-- **Paused:** Operatör kararı veya netleştirme sorusu yanıtı bekleniyor.
-- **Resumed:** Duraklatılmış durumdan tekrar çalışmaya başlandı.
-- **Validation:** Çalışma çıktıları doğrulama aşamasında denetleniyor.
+IF creating INPUT_SNAPSHOT:
+→ re-open templates/runs/INPUT_SNAPSHOT_TEMPLATE.md
+→ re-open exact approved PROJECT_INPUT
+→ generate snapshot
+→ compare output section-by-section with template
+→ STOP if Approved Scope Registry or any required field is missing
 
-> **NOT:** `Paused` ve `Blocked` durumundaki çalışmalar da fiziksel olarak `runs/active/` klasöründe kalmaya devam eder. Ayrı bir `paused/` veya `blocked/` klasörü oluşturulmaz.
+IF creating SOURCE_REGISTER:
+→ re-open templates/runs/SOURCE_REGISTER_TEMPLATE.md
+→ resolve actual consumed/registered sources
+→ materialize claim_scope + FCL structure required by current template
+→ STOP if exact evidence/support fields are missing
+
+IF generating project artifacts:
+→ re-open engine/GENERATION_PIPELINE.md
+→ re-open templates/README.md
+→ re-open exact selected template for EACH artifact/instance
+→ write only under working-output/
+
+IF generating WAVE plans:
+→ re-open WAVE_PLAN_TEMPLATE before EACH WAVE instance
+→ one template read = one instance checkpoint
+
+IF validating:
+→ re-open engine/VALIDATION_RULES.md
+→ re-open VALIDATION_REPORT_TEMPLATE.md
+→ materialize every mandatory evidence block
+→ missing evidence block means corresponding gate cannot PASS
+
+IF validation is PASS/accepted CONDITIONAL PASS and publication is eligible:
+→ re-open engine/OUTPUT_STRUCTURE.md
+→ publish only from validated working-output
+
+IF closing/moving the run:
+→ re-open engine/RUN_PROTOCOL.md
+→ finalize manifest/progress/log/completion first
+→ only then move physical run folder
+```
+
+### STOP CHECK
+
+```text
+STOP if:
+- current artifact was generated from memory instead of exact template
+- required operational template section is missing
+- SCP/FCL/evidence structures required by current template are absent
+- future/open/non-executable scope is being committed
+- validation claims PASS without required evidence blocks
+- published output is being written before validation eligibility
+```
+
+Bu README navigation/checkpoint katmanıdır; canonical rules ilgili engine contract ve template dosyasındadır.
 
 ---
 
-## 3. Active Run İçi Yapı
+## 3. Barındırılan Run Durumları
 
-Aktif durumdaki her bir run klasörü (`runs/active/<run-id>/`) aşağıdaki kanonik 11 belgeyi ve `working-output/` dizinini barındırmalıdır:
+`Created`, `Initialized`, `Running`, `Blocked`, `Paused`, `Resumed`, `Validation` durumundaki run'lar burada bulunabilir. Logical status authority `RUN_MANIFEST.md`, lifecycle authority `engine/RUN_PROTOCOL.md`'dir.
+
+---
+
+## 4. Active Run İçi Yapı
 
 ```text
 runs/active/<run-id>/
-├── RUN_MANIFEST.md          → Durum, metadata ve üst özet
-├── INPUT_SNAPSHOT.md        → Onaylı girdinin değişmez anlık görüntüsü
-├── PACKAGE_SELECTION.md     → Seçilen paket ve teslimat profili gerekçesi
-├── SOURCE_REGISTER.md       → Kullanılan kaynak, şablon ve referans listesi
-├── ASSUMPTIONS.md           → Üretim sırasında yapılan varsayımlar
-├── CONFLICTS.md             → Tespit edilen veya çözülen çelişkiler
-├── DECISIONS.md             → Operasyonel çalıştırma kararları
-├── RUN_LOG.md               → Kronolojik olay günlüğü
-├── PROGRESS.md              → Aşama ve doküman üretim ilerlemesi
-├── VALIDATION_REPORT.md     → Doğrulama denetim sonuçları (PASS/CONDITIONAL PASS/FAIL)
-├── COMPLETION_REPORT.md     → Kapanış özeti taslağı
-└── working-output/          → Doğrulama öncesi geçici/taslak dokümanlar
+├── RUN_MANIFEST.md
+├── INPUT_SNAPSHOT.md
+├── PACKAGE_SELECTION.md
+├── SOURCE_REGISTER.md
+├── ASSUMPTIONS.md
+├── CONFLICTS.md
+├── DECISIONS.md
+├── RUN_LOG.md
+├── PROGRESS.md
+├── VALIDATION_REPORT.md
+├── COMPLETION_REPORT.md
+└── working-output/
 ```
 
----
-
-## 4. Working Output İzolasyonu
-
-- Üretilen tüm geçici ve taslak proje dokümanları **yalnızca** `runs/active/<run-id>/working-output/` klasöründe tutulur.
-- Çalışma `Validation` aşamasından başarıyla geçmeden ve run `Completed` durumuna ulaşmadan hiçbir belge `outputs/` katmanına aktarılamaz.
+Her operational belgenin yapısal kaynağı `templates/runs/` altındaki exact current template'tir.
 
 ---
 
-## 5. Yetim Run İzolasyonu ve Temizlik Kuralları (No Orphan Runs)
+## 5. Working Output İzolasyonu
 
-1. **Manuel Yetim Klasör Yasağı:** `runs/active/` altında içi boş, sahipsiz veya manuel bırakılmış runs klasörleri oluşturulamaz (`MUST NOT`).
-2. **Kesintisiz Yaşam Döngüsü:** Bir run yarım kaldığında veya duraklatıldığında `status` alanı `Blocked` veya `Paused` yapılmalı, nedeni `RUN_LOG.md` ve `RUN_MANIFEST.md` içerisine kaydedilmelidir.
-3. **Kapanış ve Taşıma:** Run tamamlandığında `runs/completed/<run-id>/` dizinine; başarısız olduğunda veya iptal edildiğinde ise `runs/failed/<run-id>/` dizinine bütün olarak taşınır. `active/` dizininde iz bırakılmaz.
+Üretilen project artifacts yalnız `runs/active/<run-id>/working-output/` altında oluşturulur. `outputs/` generation workspace değildir.
+
+---
+
+## 6. No Orphan Runs
+
+Run yarım kalırsa uygun logical status kaydedilir. Terminal kapanış tamamlanmadan folder taşınmaz; tamamlanan run `completed/`, failed/cancelled run `failed/` fiziksel bucket'ına bütün olarak taşınır.
