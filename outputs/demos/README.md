@@ -2,42 +2,78 @@
 
 ## 1. Amaç ve Kapsam
 
-`outputs/demos/` dizini, Product Engine tarafından üretilmiş demo niteliğindeki, sunulabilir, test edilebilir veya konsept doğrulama seviyesindeki nihai proje çıktılarını saklayan kanonik alt kategoridir.
+`outputs/demos/` yalnız doğrulanmış ve yayınlanmaya uygun demo deliverable'larının saklandığı final output alanıdır.
+
+> Bu klasör generation workspace değildir.
 
 ---
 
-## 2. Klasör Yapısı ve Semantik
+## 2. IF YOU ARE HERE — Publication Router
 
-Runtime sırasında bu kategori altında üretilen proje çıktıları şu standart yapıyı izler:
+```text
+IF you are still generating documents:
+→ STOP
+→ return to runs/active/<run-id>/working-output/
+
+IF validation has not completed:
+→ STOP
+→ re-open engine/VALIDATION_RULES.md
+→ validate working-output first
+
+IF validation is CONDITIONAL PASS:
+→ verify canonical acceptance requirement is satisfied
+→ do not self-accept evidence limitation
+
+IF publication is eligible:
+→ re-open engine/OUTPUT_STRUCTURE.md
+→ resolve category + project slug + output version
+→ publish immutable versions/<version>/ first
+→ verify copied package completeness
+→ update latest/ from published valid version
+→ only then continue run completion
+```
+
+### STOP CHECK
+
+```text
+STOP publication if:
+- validation target was published output instead of working-output
+- blocking gate is FAIL/UNVERIFIED without required resolution
+- required validation evidence blocks are missing
+- output version already exists and would be overwritten
+- working/runtime files are leaking into final output
+- latest/ would point to partial or unvalidated content
+```
+
+Bu README publication navigation sağlar; canonical publication contract `engine/OUTPUT_STRUCTURE.md` ve lifecycle contract `engine/RUN_PROTOCOL.md` içindedir.
+
+---
+
+## 3. Klasör Yapısı
 
 ```text
 outputs/demos/<project-slug>/
 ├── latest/
-│   ├── README.md
-│   ├── PROJECT_BRAIN.md
-│   └── ... (seçilen pakete ait doğrulanmış temiz proje belgeleri)
 └── versions/
     ├── v0.1/
     ├── v0.2/
     └── ...
 ```
 
-- **`latest/`:** Projenin şu anda geçerli, en son doğrulanmış ve aktif demo çıktısını gösterir (`derived current valid view`).
-- **`versions/`:** Projenin geçmiş demo sürümlerini dondurulmuş (`immutable`) olarak saklar.
+- `versions/`: immutable published versions.
+- `latest/`: newest valid published version'ın derived görünümü.
 
 ---
 
-## 3. Kategori Sorumluluk Sınırları
+## 4. Kategori Sorumluluk Sınırları
 
-1. **Kategori Seçim Authority'si:** Bir projenin `demos/` altında mı yoksa `products/` altında mı üretileceği kararını bu klasör vermez. Kategori çözümü `engine/PACKAGE_RULES.md` ve onaylı paket sözleşmeleri tarafından gerçekleştirilir. `outputs/demos/` yalnızca çözümlenmiş kategoriyi barındırır.
-2. **Kategori ≠ Teslimat Profili (Category ≠ Delivery Profile):** `demos/` kategorisi otomatik olarak yalnızca `Prototype` teslimat profili anlamına gelmez. Farklı teslimat profillerindeki erken teslimatlar da motor kurallarınca buraya yönlendirilebilir.
-3. **Yayınlama Kapısı Şartı:** Yalnızca başarılı sonlandırma kapısı şartlarını sağlayan (`successful completion gate eligibility`), `VALIDATION_RULES` standartlarından geçmiş (`PASS` veya onaylı `CONDITIONAL PASS`), yer tutuculardan ve operasyonel çalışma izlerinden (`runs/`) arındırılmış nihai teslimatlar yayınlanabilir.
+- `demos/` kategori seçimini kendisi yapmaz.
+- Category ≠ delivery profile.
+- Yalnız publication gate'i geçen temiz project deliverable'ları burada bulunur.
+- `runs/` operational records bu alana sızamaz.
 
 ---
 
-## 4. Operasyonel Sızıntı Yasağı (README Leakage Ban)
+## 5. README Leakage Ban
 
-Bu `outputs/demos/README.md` belgesi, Product Engine'in çıktı kategorisi operasyonel rehberidir.
-
-- Proje çıktı üretimi (`generation`) sırasında bu rehber dosya projenin `latest/` veya `versions/` dizinlerine **kesinlikle kopyalanamaz**.
-- Projenin teslimat paketi içerisindeki `README.md` belgesi projenin kendi temiz tanıtım belgesi olmalıdır.
+Bu operational README proje `latest/` veya `versions/` içine kopyalanamaz. Published package içindeki README projenin kendi canonical project README'sidir.
