@@ -25,23 +25,42 @@ PASS iff EXPECTED == ACTUAL
 ```
 
 ## VAL-04 — Approved Scope Integrity
-Her committed deliverable/task executable SCP ref taşır.
+Scope iki aşamada doğrulanır.
 
-Canonical invariants:
-```text
-SCP semantic scope subset-of approved input semantic support
-task/deliverable semantic scope subset-of referenced executable SCP semantic scope
-```
+### Stage A — WAVE_MAP → Approved Scope
 
-SCP ref doğrulaması ID existence kontrolü değildir. Referenced SCP için ID + Item + Status + Executable değerleri INPUT_SNAPSHOT registry ile exact resolve edilmelidir.
+WAVE_MAP project execution decomposition authority'sidir.
+
+Canonical invariant:
 
 ```text
-IN_SCOPE / KNOWN_DECISION -> Executable YES
-VERIFIED_CURRENT_TRUTH -> Executable NO, reference only
-OPEN_QUESTION / FUTURE / OUT_OF_SCOPE -> Executable NO
+WAVE_MAP committed scope subset-of approved executable project scope
 ```
 
-Reference-only SCP executable task/deliverable authorize edemez. Telefon/e-posta CTA scope'u adres kartı, harita, WhatsApp veya form capability'sini ayrıca approval yoksa authorize etmez. SCP ID başka belge içinde registry'den farklı anlam/name ile kullanılırsa VAL-04 ve VAL-07 FAIL.
+Map hazırlanırken INPUT_SNAPSHOT/SCP registry approved truth resolution için kullanılır.
+
+```text
+IN_SCOPE / KNOWN_DECISION -> executable scope support
+VERIFIED_CURRENT_TRUTH -> reference/factual context only
+OPEN_QUESTION / FUTURE / OUT_OF_SCOPE -> non-executable
+```
+
+Future/Open/Out-of-Scope capability current WAVE_MAP entry'sine girerse FAIL.
+Reference-only truth tek başına execution capability authorize edemez.
+
+### Stage B — WAVE_PLAN → Parent WAVE_MAP Entry
+
+Her WAVE_PLAN exact parent wave entry'nin implementation detaylandırmasıdır.
+
+Canonical invariant:
+
+```text
+WAVE_PLAN task/deliverable semantic scope subset-of exact parent WAVE_MAP entry
+```
+
+WAVE_PLAN task'larında SCP ref zorunlu değildir.
+Parent WAVE_MAP entry'de olmayan yeni capability yalnız plan içinde ortaya çıkarsa FAIL.
+Başka wave'in scope'unu almak, Future/Open/Out-of-Scope içeriği plan üzerinden geri sokmak veya parent boundary'yi genişletmek FAIL'dir.
 
 ## VAL-05 — Wave Decomposition + Execution Depth
 Meaningful independent deliverable'lar ayrı wave'lere bölünür; whole-project final QA gerektiğinde ayrı final QA wave olur. Pre-execution state başarı iddia etmez.
@@ -50,7 +69,7 @@ Meaningful independent deliverable'lar ayrı wave'lere bölünür; whole-project
 Critical unresolved karar varken active wave executable gösterilemez.
 
 ## VAL-07 — Cross-Document Execution Consistency
-README, TECH_CONTEXT, CURRENT_STATUS, NEXT_TASKS, WAVE_MAP, all WAVE_PLAN, DECISIONS ve referenced SCP/FCL identities aynı execution reality'yi anlatır.
+README, TECH_CONTEXT, CURRENT_STATUS, NEXT_TASKS, WAVE_MAP, all WAVE_PLAN, DECISIONS ve referenced FCL identities aynı execution reality'yi anlatır. Her WAVE_PLAN kendi parent WAVE_MAP entry'siyle uyumlu olmalıdır.
 
 ## VAL-08 — Decision Provenance + Coverage
 Allowed statuses: User Approved, Engine Resolved, Pending Review, Superseded.
@@ -78,6 +97,8 @@ Exact source evidence inference/classification izni değildir. Source'ta açık�
 
 External source `consumed` iddiası independent observable open/read/fetch evidence gerektirir. Böyle evidence yoksa source `registered` kalmalıdır. `consumed` yazılmış fakat bağımsız evidence yoksa VAL-13 FAIL.
 
+Registered-but-unconsumed source validation evidence olarak kullanılamaz; FCL exact evidence başka consumed/local source'tan geliyorsa yalnız o source identity gösterilmelidir.
+
 ## VAL-14 — Template / Placeholder / Project Leakage
 Unresolved placeholder, duplicate skeleton veya başka proje leakage → FAIL.
 
@@ -96,6 +117,14 @@ READ_COUNT < WRITE_COUNT -> FAIL
 UNPAIRED_WRITES != empty -> FAIL
 all writes uniquely paired in order -> PASS
 ```
+
+Dynamic WAVE_PLAN için ayrıca:
+
+```text
+one fresh WAVE_PLAN_TEMPLATE read token -> exactly one WAVE_PLAN write
+```
+
+Aynı template read birden fazla WAVE_PLAN write için kullanılamaz.
 
 Trace UNAVAILABLE → VAL-15 UNVERIFIED.
 
@@ -134,8 +163,9 @@ Highest Evidence Level Used
 Evidence Contradictions
 Validation Target
 Expected/Actual/Missing/Unexpected Wave IDs
-SCP semantic checks: task -> SCP ID/Item/Status/Executable -> subset result
-FCL-to-Source checks: FCL -> exact source evidence -> subset result
+WAVE_MAP scope checks: wave -> approved executable scope support -> subset result
+WAVE_PLAN parent checks: plan/task/deliverable -> parent WAVE_MAP entry -> subset result
+FCL-to-Source checks: FCL -> exact source identity/evidence -> subset result
 Generated-to-FCL checks: generated claim -> FCL -> subset result
 External source consumption checks
 Dynamic template read/write pairs or explicit UNAVAILABLE reason
@@ -148,13 +178,15 @@ Required evidence block missing → corresponding gate cannot PASS. Blocking gat
 Canonical results:
 ```text
 EXPECTED != ACTUAL -> VAL-03 FAIL
-reference-only/non-executable SCP task -> VAL-04 FAIL
-SCP identity mismatch -> VAL-04 + VAL-07 FAIL
-FCL not subset of source -> VAL-13 FAIL
+WAVE_MAP capability outside approved executable scope -> VAL-04 FAIL
+WAVE_PLAN capability outside exact parent WAVE_MAP entry -> VAL-04 FAIL
+FCL not subset of exact source -> VAL-13 FAIL
 generated claim not subset of FCL -> VAL-13 FAIL
+registered/unconsumed source used as evidence -> VAL-13 FAIL
 external consumed without independent read evidence -> VAL-13 FAIL
 trace origin not independent -> Trace UNAVAILABLE
 trace AVAILABLE + unpaired write -> VAL-15 FAIL
+one WAVE_PLAN_TEMPLATE read reused by multiple WAVE_PLAN writes -> VAL-15 FAIL
 trace UNAVAILABLE -> VAL-15 UNVERIFIED -> Overall cannot PASS
 published output target -> VAL-16 FAIL
 critical FAIL -> overall FAIL
