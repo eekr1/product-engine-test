@@ -6,7 +6,7 @@
 package_id: demo-frontend
 package_name: Frontend Demo Package
 package_type: base
-version: 2.1.0
+version: 2.2.0
 status: active
 default_delivery_profile: Prototype
 compatible_project_types:
@@ -24,6 +24,34 @@ Bu package planning depth sahibi değildir. Implementation/design planning belge
 
 ---
 
+## Demo / Prototype Semantics
+
+`demo`, `sales demo`, `prototype`, `local preview` veya benzeri ifadeler **delivery purpose / runtime maturity** bilgisidir; execution capability authority değildir.
+
+Canonical invariant:
+
+```text
+demo/prototype label ≠ feature approval
+```
+
+Bu etiketler tek başına şunları authorize etmez:
+
+- contact form,
+- map,
+- WhatsApp,
+- modal,
+- mock interaction,
+- placeholder capability,
+- yeni CTA türü,
+- yeni page/surface/flow,
+- approved scope dışındaki herhangi bir capability.
+
+Mock/local data kullanma izni yalnız approved current frontend scope'u desteklemek içindir; yeni product behavior icat etme izni değildir.
+
+Demo/prototype ayrıca code, architecture, design, accessibility veya responsive quality floor'unu düşürmez.
+
+---
+
 ## Domain Scope
 
 Bu base package şu gerçekleri ifade eder:
@@ -31,6 +59,7 @@ Bu base package şu gerçekleri ifade eder:
 - Birincil teslim, çalışır ve sunulabilir frontend/UI deneyimidir.
 - Gerçek backend/database/auth yalnız approved scope'ta ise aktif implementation scope'udur.
 - Gerçek backend yoksa demo mock/local data kullanabilir.
+- Mock/local adapter yalnız approved capability'lerin veri ihtiyacını karşılar; kendi başına yeni interaction veya feature oluşturmaz.
 - Demo throwaway architecture değildir.
 - UI/UX applicable olduğundan `design_planning` profile'ı intake'te zorunludur.
 
@@ -90,7 +119,8 @@ MUST NOT:
 
 - mock data'yı kontrolsüz component içine yaymak,
 - backend/API/database uydurmak,
-- demo gerekçesiyle service/config boundary'lerini yok saymak.
+- demo gerekçesiyle service/config boundary'lerini yok saymak,
+- demo/prototype gerekçesiyle approved scope'ta olmayan mock interaction veya feature eklemek.
 
 Gerçek API approved scope'a girerse `API`/`DATA` ve ilgili extension/context koşulları yeniden çözülür.
 
@@ -153,7 +183,7 @@ Corporate/landing demo için minimum decomposition sanity:
 
 - Foundation user-facing surfaces'ten ayrıdır.
 - Services distinct ise Contact altında saklanamaz.
-- Contact telefon/e-posta/adres/CTA gibi kendi interaction/data/responsive sorumluluğunu taşıyorsa distinct deliverable'dır.
+- Contact yalnız approved contact capability'lerini taşıyabilir; `Contact` etiketi form/map/WhatsApp gibi ek davranışları otomatik authorize etmez.
 - Whole-project final QA bir feature wave'inin acceptance maddesi olarak gizlenemez.
 
 Valid merge yalnız gerçekten tek coherent completion boundary varsa ve merge edilen responsibility bağımsız olarak tamamlanabilir bir deliverable değilse yapılabilir. Bu istisna explicit rationale ile WAVE_MAP içinde açıklanmalıdır.
@@ -166,16 +196,18 @@ Validator bu guard'ı heuristic tavsiye olarak değil package-level blocking con
 
 Bu package için ek doğrulamalar:
 
+- demo/prototype label yeni capability authorize etmez,
 - demo ≠ throwaway architecture,
 - integration readiness mevcut,
 - invented backend yok,
+- invented mock interaction/capability yok,
 - design profile minimumu korunmuş,
 - planning overlay implementation minimumu korunmuş,
-- sunum akışı gerçek scope ile tutarlı,
+- sunum akışı gerçek approved scope ile tutarlı,
 - distinct Services ve Contact sorumlulukları uygunsuz biçimde merge edilmemiş,
 - whole-project final QA herhangi bir feature/contact wave'ine gömülmemiş.
 
-Package granularity guard ihlali → validation FAIL / WAVE_MAP repair.
+Package scope/granularity guard ihlali → validation FAIL / WAVE_MAP repair.
 
 ---
 
