@@ -2,124 +2,17 @@
 
 ## 1. Amaç ve Otorite
 
-Bu belge, Product Engine tarafından başlatılan ve yürütülen tüm çalıştırmaların (`run`) üst seviye özet kayıt tablosudur (**secondary index**).
+Bu belge Product Engine run'larının secondary index'idir. Authoritative run truth `RUN_MANIFEST.md` belgeleridir.
 
-### Otorite Sınırı (Manifest Authority Rule)
-- **Authoritative Source of Truth:** Bir çalıştırmanın anlık durumunun, karar detaylarının ve yürütme metadata'sının tek authoritative kaynağı `runs/<location>/<run-id>/RUN_MANIFEST.md` belgesidir.
-- **`RUN_INDEX.md` Rolü:** Bu belge manifestlerin yerine geçmez; çalıştırmalar arasında hızlı görünüm, filtreleme ve karşılaştırma imkanı sunar.
-- **Detay Sızıntısı Yasağı:** Run bazlı kronolojik loglar (`RUN_LOG.md`), detaylı doğrulama kontrolleri (`VALIDATION_REPORT.md`), varsayımlar ve çelişkiler bu indekse kopyalanmaz (`MUST NOT`).
-
----
-
-## 2. Kanonik Vocabulary ve Terminoloji
-
-### Run Durumları (Run Status Vocabulary)
-`Status` kolonunda strictly `engine/RUN_PROTOCOL.md` tarafından onaylanmış aşağıdaki kanonik durum terimleri kullanılır:
+## 2. Güncel İndeks Durumu
 
 ```text
-Created      : Run ID atandı, dizin açıldı.
-Initialized  : Input snapshot alındı, paket seçildi.
-Running      : Doküman üretimi aktif.
-Validation   : Doğrulama kontrolleri yapılıyor.
-Completed    : Validation'dan geçti, temiz çıktı yayınlandı.
-Blocked      : Kritik çelişki/eksiklik nedeniyle durduruldu (active dizininde bekliyor).
-Paused       : Kullanıcı kararı/netleştirme nedeniyle duraklatıldı.
-Resumed      : Duraklatılan çalışmaya tekrar devam edildi.
-Failed       : Kurtarılamayan hata veya validation başarısızlığı ile kapanan run.
-Cancelled    : Kullanıcı/operatör tarafından bilinchli olarak iptal edilen run.
-Invalidated  : Tamamlanmış run sonradan geriye dönük geçersiz kılındı.
-```
-
-### Doğrulama Durumları (Validation Column Semantics)
-`Validation` kolonunda onaylanmış doğrulama sonuçları ile doğrulanmamış nötr indeks değerleri aşağıdaki biçimde gösterilir:
-
-```text
-PASS             : Doğrulama kurallarından eksiksiz geçti.
-CONDITIONAL PASS : Küçük ve onaylı şartlarla kabul edildi.
-FAIL             : Doğrulama kurallarından geçemedi.
-N/A              : Doğrulama henüz gerçekleşmedi veya uygulanabilir sonuç yok (Not Applicable).
-```
-
-*Not: Validation kolonunda `Pending`, `Success`, `Error`, `Passed` gibi onaylanmamış terimlerin kullanımı KESİNLİKLE YASAK'tır. `N/A` terimi validation henüz sonuçlanmadığında kullanılan nötr indeks değeridir.*
-
-### Paket Kimlikleri (Canonical Package IDs)
-`Package` kolonunda display name yerine strictly `engine/PACKAGE_RULES.md` kanonik paket kimlikleri kullanılır:
-
-```text
-demo-frontend
-corporate-website
-saas
-existing-project
-api-service
-```
-
-### Teslimat Profilleri (Delivery Profiles)
-`Profile` kolonunda onaylanmış profil isimleri kullanılır:
-
-```text
-Foundation
-Prototype
-Implementation Ready
-Production Ready
-```
-
----
-
-## 3. Güncelleme Kuralları (Update Rules)
-
-1. **Run Başlatıldığında:** Çalıştırma `Initialized` durumuna geçtiğinde indekse yeni bir özet satırı eklenir. `Validation` değeri `N/A` olarak başlar.
-2. **Durum Değişikliklerinde:** Çalıştırma `Running`, `Validation`, `Blocked`, `Paused` gibi aşamalara geçtikçe `Status` alanı güncellenir.
-3. **Kapanış Aşamasında:** Run terminal duruma (`Completed`, `Failed`, `Cancelled`) ulaştığında `Status`, `Validation`, `Output Ref` ve `Note` alanları nihai haliyle dondurulur.
-4. **Başarısız ve İptal Edilen Run'lar:** `RUN_INDEX.md` yalnızca başarılı çalışmaları listelemez. `Failed`, `Cancelled` ve `Invalidated` durumundaki tüm çalıştırmalar tarihsel izlenebilirlik için görünür kalır.
-5. **Geçersiz Kılma (Invalidation):** Bir çalışmanın kaynak girdisi veya kapsamı değiştiğinde indeksteki satırı silinmez; `Status` değeri `Invalidated` olarak güncellenir.
-
----
-
-## 4. Run Index Tablo Yapısı (Table Schema)
-
-İndeks tablosunda aşağıdaki kanonik kolon yapısı uygulanır:
-
-```markdown
-| Run ID | Project Slug | Package | Profile | Status | Validation | Date | Output Ref | Note |
-|---|---|---|---|---|---|---|---|---|
-```
-
-### Kolon Tanımları
-- **Run ID:** Kanonik çalıştırma kimliği (`RUN-YYYYMMDD-XXX`).
-- **Project Slug:** Proje tanımlayıcısı (`inputs/approved/<project-slug>/`).
-- **Package:** Kanonik paket kimliği (`corporate-website`, `demo-frontend`, `saas` vb.).
-- **Profile:** Teslimat profili (`Foundation` | `Prototype` | `Implementation Ready` | `Production Ready`).
-- **Status:** Kanonik yaşam döngüsü durumu.
-- **Validation:** Doğrulama sonucu (`PASS` | `CONDITIONAL PASS` | `FAIL` | `N/A`).
-- **Date:** Çalıştırmanın son işlem tarihi (`YYYY-MM-DD`).
-- **Output Ref:** Yayınlanan çıktının bağıl yolu (Örn: `outputs/demos/example-project/versions/v0.1` | `N/A`).
-- **Note:** Birkaç kelimelik özet sonuç veya kapatma notu.
-
----
-
-## 5. Şablon ve Format Gösterimi (Format Demonstration)
-
-Gelecekte gerçekleştirilecek çalıştırmalar için referans tablo formatı şu şekilde olacaktır:
-
-```markdown
-| Run ID | Project Slug | Package | Profile | Status | Validation | Date | Output Ref | Note |
-|---|---|---|---|---|---|---|---|---|
-| RUN-20260101-001 | example-project | demo-frontend | Prototype | Completed | PASS | 2026-01-01 | outputs/demos/example-project/versions/v0.1 | Örnek başarılı üretim formatı |
-```
-
----
-
-## 6. Güncel İndeks Durumu
-
-```text
-Total Indexed Runs : 1
+Total Indexed Runs : 0
 Active Runs        : 0
-Completed Runs     : 1
+Completed Runs     : 0
 Failed Runs        : 0
 Invalidated Runs   : 0
 ```
 
 | Run ID | Project Slug | Package | Profile | Status | Validation | Date | Output Ref | Note |
 |---|---|---|---|---|---|---|---|---|
-| RUN-20260814-001 | trakya-teknik-makine | demo-frontend | Prototype | Completed | PASS | 2026-08-14 | outputs/demos/trakya-teknik-makine/versions/v0.1/ | Trakya Teknik Makine kurumsal web sitesi yenileme demo paketi v0.1 |
-
