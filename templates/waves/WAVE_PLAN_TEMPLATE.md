@@ -6,7 +6,7 @@
 template_id: wave-plan-template
 template_name: Canonical Wave Plan Template
 document_id: WAVE-PLAN
-version: 3.1.0
+version: 3.2.0
 status: active
 template_type: dynamic-document
 category: waves
@@ -36,6 +36,42 @@ output_filename_pattern: waves/plans/WAVE_<NN>.md
 
 ## Amaç
 Tek bir WAVE_MAP entry'sini başka bir planlama turu gerektirmeden uygulanabilir execution contract haline getirir.
+
+## Non-Authoritative Quality / Depth Reference
+
+Wave plan derinliğini kalibre etmek için:
+
+```text
+ref/waves/README.md
+ref/waves/WAVE_07_HOME_REFERENCE.md
+ref/waves/WAVE_12_RUNTIME_REFERENCE.md
+```
+
+quality reference olarak kullanılabilir.
+
+Bu reference wave'ler yalnız **planning depth** öğretir. Current project authority değildir.
+
+Reference'ten alınabilecek şeyler:
+
+```text
+why-this-wave depth
+dependency clarity
+implementation task granularity
+file/area responsibility clarity
+data/state flow reasoning
+role/state/responsive/edge coverage
+verification depth
+exit/handoff precision
+```
+
+MUST NOT:
+
+- Vibehall scope, filename, component, route, technology veya architecture'i kopyalamak,
+- Vibehall wave count/name sırasını current projeye taşımak,
+- reference'teki `[x]`, QA-closed, test result, tarih veya completion claim'ini kopyalamak,
+- parent WAVE_MAP'te olmayan reference capability'yi current plan'a eklemek.
+
+Reference read canonical point-of-use `WAVE_PLAN_TEMPLATE.md` refresh yerine geçmez.
 
 ## Parent Wave Boundary
 
@@ -97,6 +133,8 @@ Acceptance / Exit Criteria = [ ]
 Wave Result = pending / not executed
 ```
 
+Reference artifact'lerdeki tamamlanmış state bu semantic'i değiştiremez.
+
 ## Zorunlu Bölümler
 
 - Wave Identity & Status
@@ -116,18 +154,46 @@ Wave Result = pending / not executed
 - Handoff / Stop Rule
 - Wave Result
 
+## Implementation-Ready Depth Standardı
+
+Bir WAVE_PLAN, fresh capable agent'ın wave'i uygulamaya başlamadan önce **ikinci bir implementation-planning turu yapmak zorunda kalmadığı** kadar açık olmalıdır.
+
+Plan yalnız “component oluştur”, “responsive yap”, “test et” gibi broad görev listesi olamaz.
+
+Fresh agent aşağıdaki soruları yeniden icat etmek zorunda kalıyorsa task yetersizdir:
+
+```text
+Değişiklik hangi exact file/area/responsibility içinde yapılacak?
+Bu unit neyin sahibi olacak, neyin sahibi olmayacak?
+Hangi mevcut dependency/contract tüketilecek?
+Data/state/interaction bu görevde nasıl akacak?
+Normal state dışında hangi applicable loading/empty/error/role/responsive/edge davranışları var?
+Hangi existing behavior korunmalı?
+Bu task'ın yapmaması gereken adjacent işler neler?
+Completion hangi otomatik/manual/debug kanıtıyla doğrulanacak?
+Wave kapanınca sonraki wave'e hangi somut boundary bırakılacak?
+```
+
+Her proje her kategoriye sahip olmak zorunda değildir; yalnız **applicable** detaylar yazılır. Derinlik gereksiz complexity veya uydurma architecture üretme izni değildir.
+
 ## Task Derinlik Standardı
 
 Her task için:
 
 ```text
 Ne yapılacak?
+Nerede / hangi responsibility alanında yapılacak?
 Hangi exact parent capability atomunun implementation/detail/verification parçası?
+Hangi dependency/contract/data/state ile ilişkili?
+Applicable normal + edge davranış nedir?
+Neyi özellikle yapmamalı / korumalı?
 Yeni capability yaratıyor mu?
 Factual claim varsa hangi source-backed FCL içinde?
-Beklenen sonuç nedir?
+Beklenen somut sonuç nedir?
 Done nasıl doğrulanacak?
 ```
+
+Task granülerliği aynı coherent responsibility altında gruplanabilir; satır sayısını yapay biçimde artırmak amaç değildir.
 
 ## Parent Boundary Stop Rule
 
@@ -179,6 +245,8 @@ Plan kendi parent map'ini sessizce genişletemez.
 
 ## 8. Implementation Checklist
 > Every task must resolve to an exact parent capability atom. New/adjacent/inferred capability introduced only here is invalid.
+>
+> Tasks must be implementation-ready: applicable responsibility location, dependency/data/state behavior, preserved boundaries and verification must be explicit enough that a fresh capable agent does not need another planning pass.
 {{IMPLEMENTATION_CHECKLIST}}
 
 ## 9. State / Role / Responsive Coverage
