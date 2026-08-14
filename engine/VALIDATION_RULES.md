@@ -92,7 +92,64 @@ Parent Goal'ın broad wording'i tek başına support sayılmaz. Parent map entry
 WAVE_PLAN task'larında SCP ref zorunlu değildir.
 
 ## VAL-05 — Wave Decomposition + Execution Depth
-Meaningful independent deliverable'lar ayrı wave'lere bölünür; whole-project final QA gerekiyorsa ayrı final QA wave olur. Pre-execution state başarı iddia etmez.
+
+VAL-05 iki ayrı kalite katmanını birlikte doğrular.
+
+### A. WAVE_MAP decomposition depth
+
+Acyclic dependency ve distinct wave count tek başına PASS için yeterli değildir.
+
+Her wave artifact üzerinden şu üç boundary açıkça çıkarılabilmelidir:
+
+```text
+WHY_SEPARATE
+UPSTREAM_BOUNDARY_CONSUMED
+DOWNSTREAM_HANDOFF
+```
+
+PASS beklentisi:
+- wave gerçek, bağımsız doğrulanabilir delivery sonucu taşır,
+- shared prerequisite downstream consumer'lardan önce konumlanır,
+- runtime/state/shared behavior birden fazla surface tarafından tüketiliyorsa uygun foundation boundary olarak ayrılır,
+- whole-project consolidation/responsive/accessibility/regression/performance/readiness/final QA gerçekten standalone ise feature checklist'ine gizlenmez,
+- küçük projede reference taklidi için yapay micro-wave üretilmez,
+- her wave neden o sırada geldiğini ve ne teslim ettiğini açıklar.
+
+Generic `Foundation → UI → QA` zinciri yalnız başına decomposition depth kanıtı değildir.
+
+### B. WAVE_PLAN implementation-ready depth
+
+Her plan fresh capable agent'ın **ikinci bir implementation-planning pass yapmadan** doğrudan execution'a geçebileceği açıklıkta olmalıdır.
+
+Validator yalnız section/checklist sayısına bakamaz. Task'lar artifact üzerinden applicable ölçüde şu execution contract'ı sağlamalıdır:
+
+```text
+location / responsibility
+parent capability relation
+inputs / dependencies / contracts
+implementation behavior
+data/state/interaction flow when applicable
+normal + relevant edge/responsive/role states
+preserve / must-not boundary
+source/FCL boundary when factual
+verification
+concrete done result / handoff
+```
+
+Şunlar tek başına yetersizdir:
+
+```text
+"component oluştur"
+"responsive yap"
+"service'e bağla"
+"test et"
+```
+
+Fresh capable agent bu görevlerden sonra hâlâ component responsibility, data/state flow, responsive behavior, preserved boundary veya verification strategy icat etmek zorundaysa VAL-05 FAIL'dir.
+
+Depth gereksiz complexity veya yeni architecture/capability üretme izni değildir. Applicable olmayan alanlar zorla eklenmez.
+
+Pre-execution state başarı iddia etmez.
 
 ## VAL-06 — Execution-Critical Decision Completeness
 Critical unresolved karar varken active wave executable gösterilemez.
@@ -178,6 +235,17 @@ Self-reported pair table observable event sequence yerine geçmez.
 → VAL-15 FAIL
 ```
 
+Trace AVAILABLE ise expected point-of-use sequence ayrıca şudur:
+
+```text
+fresh WAVE_PLAN_TEMPLATE read
+→ exact parent/reference/current-authority reads
+→ exactly one WAVE_NN write
+→ next WAVE begins with another fresh WAVE_PLAN_TEMPLATE read
+```
+
+Reference read template read-token değildir.
+
 Trace UNAVAILABLE → VAL-15 UNVERIFIED.
 
 ### UNVERIFIED overall semantics
@@ -215,10 +283,12 @@ Expected/Actual/Missing/Unexpected Wave IDs
 MAP_CAPABILITY_ATOMS per wave
 exact approved support meaning per map atom
 UNSUPPORTED_MAP_CAPABILITIES per wave
+WAVE_MAP WHY_SEPARATE / UPSTREAM / HANDOFF depth check per wave
 PLAN_CAPABILITY_ATOMS per plan
 PARENT_CAPABILITY_ATOMS per plan
 PLAN_TO_PARENT_RELATIONS
 NEW_PLAN_CAPABILITIES per plan
+WAVE_PLAN implementation-readiness depth check per plan
 FCL-to-Source checks with exact SOURCE_REGISTER identity/state
 Generated-to-FCL checks
 SOURCE_REGISTER vs VALIDATION source-set/state equality
@@ -237,6 +307,8 @@ Canonical results:
 EXPECTED != ACTUAL -> VAL-03 FAIL
 UNSUPPORTED_MAP_CAPABILITIES != empty -> VAL-04 FAIL
 NEW_PLAN_CAPABILITIES != empty -> VAL-04 FAIL
+map why/upstream/handoff ambiguous -> VAL-05 FAIL
+fresh capable agent still needs implementation planning -> VAL-05 FAIL
 validation source-set/state mismatch -> VAL-07 + VAL-13 FAIL
 FCL not subset of exact source -> VAL-13 FAIL
 generated claim not subset of FCL -> VAL-13 FAIL
