@@ -6,6 +6,44 @@ Template selection kararı burada verilmez; `DOCUMENT_CATALOG.md`, package resol
 
 ---
 
+# Runtime Navigation — If You Are Here
+
+Bu bölüm yeni template kuralı tanımlamaz; ajanı doğru action-time çalışma sırasına yönlendirir.
+
+```text
+IF generating any artifact:
+→ resolve exact Document ID / instance
+→ re-open exact selected template
+→ re-open required dependencies / input registries
+→ generate ONE artifact only
+→ compare output section-by-section with the template
+→ stop if any required section is missing
+→ only then continue
+```
+
+Boot sırasında template'i daha önce görmek action-time re-open yerine geçmez.
+
+Dynamic instance için:
+
+```text
+FOR EACH instance:
+→ re-open the same canonical dynamic template
+→ re-open exact instance context
+→ generate exactly one instance
+→ compare against template
+→ close checkpoint
+→ next instance
+```
+
+MUST NOT:
+
+- template yapısını memory'den üretmek,
+- bir template read ile birden fazla dynamic instance batch-generate etmek,
+- required section eksikken sonraki artifact'e geçmek,
+- output'ta template metadata/placeholder bırakmak.
+
+---
+
 # Template Kategorileri
 
 ```text
