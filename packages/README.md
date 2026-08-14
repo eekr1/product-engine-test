@@ -4,7 +4,39 @@
 
 `packages/` proje bağlamına göre **base domain package** kapsamını ve bütün base package'lara ortak uygulanan **planning profile overlay** katmanını tanımlar.
 
-Package sistemi artık iki parçalıdır:
+---
+
+## Runtime Navigation — If You Are Here
+
+Bu bölüm package kurallarını yeniden tanımlamaz; resolution sırasında hangi belgeye ne zaman dönüleceğini gösterir.
+
+```text
+IF selecting a package:
+→ re-open engine/PACKAGE_RULES.md
+→ read approved project_type + project_state + planning profiles
+→ open selected base package candidate
+→ open PLANNING_PROFILE_OVERLAY.md
+→ re-open engine/DOCUMENT_CATALOG.md
+→ resolve canonical document set
+→ record selection evidence
+```
+
+### STOP CHECK
+
+```text
+STOP if:
+- project/profile truth approved input'tan gelmiyor
+- base package seçimi sadece delivery profile adına bakılarak yapılıyor
+- overlay minimumları düşürülüyor
+- package catalog dışı Document ID üretiyor
+- dynamic instance count/context henüz resolve edilmeden instance seti varsayılıyor
+```
+
+Package resolution complete olmadan template generation'a geçme.
+
+---
+
+Package sistemi iki parçalıdır:
 
 ```text
 Base Package
@@ -184,16 +216,6 @@ design light ≠ generic design
 integration-ready ≠ invented backend
 ```
 
-Örneğin `demo-frontend` base package +:
-
-```yaml
-delivery_profile: Prototype
-implementation_planning: standard
-design_planning: light
-```
-
-kombinasyonu, demo domain scope'unu korurken standard execution docs + strong DESIGN_RULES üretir.
-
 ---
 
 ## Extension / Merge Kuralları
@@ -207,8 +229,6 @@ kombinasyonu, demo domain scope'unu korurken standard execution docs + strong DE
 ---
 
 ## Agent Reference Read Order
-
-Package sistemi için:
 
 ```text
 1. Root README.md
