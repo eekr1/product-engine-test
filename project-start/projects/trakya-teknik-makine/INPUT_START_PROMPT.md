@@ -6,7 +6,7 @@ Product Engine runtime'ını Trakya Teknik Makine için **yeni ve temiz bir chat
 
 Approved project input:
 
-`inputs/approved/trakya-teknik-makine/v1/PROJECT_INPUT.md`
+`inputs/approved/trakya-teknik-makine/PROJECT_INPUT.md`
 
 ## Hard Context Boundary
 
