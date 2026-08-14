@@ -14,7 +14,7 @@ CHECKPOINT START
 4. Re-open WAVE_MAP parent entry if generating a WAVE_PLAN
 5. Re-open SOURCE_REGISTER/FCL if factual claims may be introduced
 6. Generate only this artifact/instance
-7. Compare against parent boundary + exact source-backed FCL + template
+7. Run exact boundary diff
 8. Repair immediately
 9. Record audit metadata
 10. Close checkpoint
@@ -30,9 +30,6 @@ E4 — PROGRESS/RUN_LOG/manifest/self-report
 E4 kendi kendine E1'e yükseltilemez.
 
 ## Approved Scope Resolution
-SCP registry approved project truth'un operational scope registry'sidir. Execution scope önce WAVE_MAP'te çözülür ve freeze edilir.
-
-Canonical chain:
 
 ```text
 APPROVED INPUT
@@ -45,22 +42,54 @@ APPROVED INPUT
 Canonical invariants:
 
 ```text
-WAVE_MAP committed scope ⊆ approved executable project scope
-WAVE_PLAN task/deliverable scope ⊆ exact parent WAVE_MAP entry
+WAVE_MAP committed capability atoms ⊆ approved executable capability atoms
+WAVE_PLAN capability atoms ⊆ exact parent WAVE_MAP capability atoms
 ```
 
-WAVE_PLAN task'ları SCP ID taşımak zorunda değildir. Scope enforcement upstream WAVE_MAP'te yapılır; downstream plan yalnız parent map entry'yi detaylandırır.
+WAVE_PLAN task'ları SCP ID taşımak zorunda değildir. SCP registry upstream map resolution içindir.
+
+## Capability Atom Rule
+
+Scope comparison broad summary veya wave adı üzerinden yapılamaz.
+
+Executable içerik şu alanlardan capability atomlarına ayrılır:
+
+```text
+WAVE_MAP:
+- Committed Capabilities
+- In Scope
+- Primary Deliverables
+- executable parts of Exit Boundary
+
+WAVE_PLAN:
+- In Scope
+- Expected Result / Target Structure
+- Implementation Checklist
+- executable state/responsive behavior
+- verification/acceptance only when they imply product capability
+```
+
+Her atom ayrı semantic capability olarak değerlendirilir.
+
+Örnek:
+
+```text
+phone CTA != address card != static map != contact form != WhatsApp
+contact section != footer quick links
+responsive site != arbitrary new responsive widget
+```
+
+Relatedness authorization değildir.
 
 ## Factual Claim Allowlist Boundary
-Canonical chain:
+
 ```text
 FCL semantic content ⊆ exact supporting source evidence
 generated factual claim ⊆ referenced FCL semantic content
 ```
 
-FCL source'tan genişse registry repair edilir; downstream generation başlamaz.
-
 ## Observable Trace Boundary
+
 ```text
 VALIDATION_REPORT / PROGRESS / RUN_LOG / manifest / agent statement ≠ E1 proof
 ```
@@ -70,7 +99,7 @@ Independent IDE/tool trace dışarıdan inspect edilemiyorsa trace status `UNAVA
 ## Pipeline
 
 ### 1. Intake / Approval
-Ham brief pending input'a normalize edilir; explicit user approval olmadan approved snapshot/run yoktur.
+Explicit user approval olmadan approved snapshot/run yoktur.
 
 ### 2. Package + Document Resolution
 PACKAGE_RULES + PLANNING_PROFILE_OVERLAY + DOCUMENT_CATALOG uygulanır.
@@ -79,14 +108,7 @@ PACKAGE_RULES + PLANNING_PROFILE_OVERLAY + DOCUMENT_CATALOG uygulanır.
 Approved input dondurulur. SCP registry approved truth'tan geniş olamaz.
 
 ### 4. Source Register + FCL Registry
-Verified sources yeniden okunur. Her FCL exact supporting source/evidence ile kaydedilir.
-
-Pre-generation check:
-```text
-for each FCL:
-  FCL semantic content ⊆ exact source evidence
-```
-False ise FCL daraltılır/silinir.
+Her FCL exact supporting source/evidence ile kaydedilir.
 
 ### 5. Dependency-Ordered Generation
 ```text
@@ -110,12 +132,12 @@ Approved Input
 ```
 
 ### WAVE_MAP Checkpoint
-WAVE_MAP project execution decomposition authority'sidir.
 
-Her wave entry için:
+Her wave entry:
 
 ```text
 Goal
+Committed Capabilities
 In Scope
 Out of Scope
 Primary Deliverables
@@ -123,68 +145,87 @@ Dependencies
 Exit Boundary
 ```
 
-zorunlu olarak çözülür.
+taşır.
 
-Map-level scope check:
-
-```text
-wave committed scope ⊆ approved executable scope
-Future/Open/Out-of-Scope current wave'e map edilemez
-VERIFIED_CURRENT_TRUTH tek başına capability authorize etmez
-```
-
-Map valid olduktan sonra freeze edilir.
+Map generation algorithm:
 
 ```text
-EXPECTED_DYNAMIC_INSTANCES = set(WAVE_MAP Wave IDs)
+1. Extract every candidate committed capability atom.
+2. Resolve exact executable approved support for each atom.
+3. Record support ID + support meaning.
+4. Build UNSUPPORTED_MAP_CAPABILITIES.
+5. If UNSUPPORTED_MAP_CAPABILITIES != empty: repair/remove; do not freeze.
+6. Confirm In Scope / Deliverables / Exit Boundary introduce no hidden atom.
+7. Freeze map only when unsupported set is empty.
 ```
+
+`VERIFIED_CURRENT_TRUTH` factual context olabilir ama capability authorize etmez.
 
 ### Dynamic WAVE_PLAN Checkpoint
+
 Her expected instance için ayrı template refresh + generation checkpoint uygulanır.
 
-Her plan exact parent WAVE_MAP entry'yi yeniden okur ve yalnız onu detaylandırır.
-
-Her task/deliverable:
+Plan generation algorithm:
 
 ```text
-scope ⊆ exact parent WAVE_MAP entry
+1. Re-open exact parent WAVE_MAP entry.
+2. Resolve parent Committed Capabilities.
+3. Generate candidate implementation details.
+4. Atomize all candidate executable plan capabilities.
+5. Map every plan atom to exact parent capability with relation:
+   detail-of | implementation-of | verification-of
+6. Build NEW_PLAN_CAPABILITIES for anything without exact parent support.
+7. If NEW_PLAN_CAPABILITIES != empty: remove or repair upstream map if approved.
+8. Write plan only after unsupported set is empty.
 ```
 
-Parent map entry'de olmayan capability plan içinde eklenemez. Gerekirse upstream WAVE_MAP approved scope'a göre repair edilir; aksi halde task silinir.
-
-Her factual claim:
-
-```text
-FCL exists
-FCL ⊆ exact source support
-generated claim ⊆ FCL
-```
+Parent Goal'ın broad wording'i tek başına support sayılmaz.
 
 ### Dynamic Instance Completion
+
 ```text
-EXPECTED = expected instance registry
+EXPECTED = set(WAVE_MAP Wave IDs)
 ACTUAL = set(working-output/waves/plans/WAVE_*.md)
 EXPECTED == ACTUAL required
 ```
 
 ## Observable Dynamic Read/Write Pairing
-Trace AVAILABLE ise her dynamic write benzersiz preceding template read ile eşleşir. Her read single-use'dur.
+
+Her dynamic write benzersiz preceding template read ile eşleşir. Read token single-use'dur.
 
 ```text
-READ_COUNT < WRITE_COUNT → invalid
-UNPAIRED_WRITES != empty → invalid
+WAVE_PLAN_TEMPLATE_READ_TOKENS = ordered actual observable reads
+WAVE_PLAN_WRITE_EVENTS = ordered actual writes
+
+consume one unused preceding read token per write
+reused token -> invalid
+missing token -> invalid
 ```
+
+Summary/self-report pair list gerçek event üretmez.
 
 Trace UNAVAILABLE ise pairing UNVERIFIED kalır.
 
+## Source Registry Consistency
+
+Validation source identity/state yalnız SOURCE_REGISTER'dan alınır.
+
+```text
+VALIDATION_SOURCE_SET == SOURCE_REGISTER_SOURCE_SET
+validation usage_state == SOURCE_REGISTER usage_state
+```
+
+Validator yeni source ID, yeni consumption state veya dolaylı consumption kanıtı icat edemez.
+Bir source'un başka source tarafından özetlenmesi o source'un `consumed` olduğu anlamına gelmez.
+
 ## Pre-Validation Consistency Check
-Validation öncesi şunlar birlikte kontrol edilir:
-- README / TECH_CONTEXT / STATUS / TASKS / WAVE_MAP / all WAVE_PLAN / DECISIONS
+
 - expected vs actual dynamic instances
-- WAVE_MAP → approved scope checks
-- each WAVE_PLAN → exact parent WAVE_MAP boundary checks
-- FCL→source checks
+- UNSUPPORTED_MAP_CAPABILITIES == empty
+- NEW_PLAN_CAPABILITIES == empty for every plan
+- FCL→exact source checks
 - generated→FCL checks
+- validation source set/state mirrors SOURCE_REGISTER
 - package guards
 
 Blocking ihlal varsa repair edilir.
@@ -197,20 +238,21 @@ runs/active/<run-id>/working-output/
 
 VAL-04:
 ```text
-A. WAVE_MAP scope ⊆ approved executable scope
-B. each WAVE_PLAN task/deliverable ⊆ exact parent WAVE_MAP entry
+A. unsupported map capability atoms == empty
+B. new plan capability atoms == empty
 ```
 
 VAL-13:
 ```text
 FCL ⊆ exact source evidence
 AND generated claim ⊆ FCL
+AND validation source identity/state == SOURCE_REGISTER
 ```
 
 VAL-15:
 ```text
 independent trace unavailable → UNVERIFIED
-independent trace available → unique read/write pairing
+independent trace available → consume unique single-use read token per dynamic write
 ```
 
 Validation publication'dan önce tamamlanır.
