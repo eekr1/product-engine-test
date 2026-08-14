@@ -11,10 +11,10 @@ CHECKPOINT START
 1. Resolve exactly one artifact/instance
 2. Re-open canonical template
 3. Re-open primary authorities/dependencies
-4. Re-open SCP registry if scope may be introduced
+4. Re-open WAVE_MAP parent entry if generating a WAVE_PLAN
 5. Re-open SOURCE_REGISTER/FCL if factual claims may be introduced
 6. Generate only this artifact/instance
-7. Compare against SCP + exact source-backed FCL + template
+7. Compare against parent boundary + exact source-backed FCL + template
 8. Repair immediately
 9. Record audit metadata
 10. Close checkpoint
@@ -29,16 +29,27 @@ E4 — PROGRESS/RUN_LOG/manifest/self-report
 ```
 E4 kendi kendine E1'e yükseltilemez.
 
-## Approved Scope Registry Boundary
-Her committed task/deliverable executable SCP ref taşır.
+## Approved Scope Resolution
+SCP registry approved project truth'un operational scope registry'sidir. Execution scope önce WAVE_MAP'te çözülür ve freeze edilir.
 
-Canonical semantic invariant:
+Canonical chain:
+
 ```text
-SCP semantic scope ⊆ approved input semantic support
-task/deliverable semantic scope ⊆ referenced executable SCP semantic scope
+APPROVED INPUT
+→ INPUT_SNAPSHOT / SCP REGISTRY
+→ WAVE_MAP EXECUTION SCOPE
+→ freeze WAVE_MAP
+→ WAVE_PLAN instances
 ```
 
-SCP ID'nin varlığı tek başına yeterli değildir. Generic/benzer SCP yeni capability authorize etmez.
+Canonical invariants:
+
+```text
+WAVE_MAP committed scope ⊆ approved executable project scope
+WAVE_PLAN task/deliverable scope ⊆ exact parent WAVE_MAP entry
+```
+
+WAVE_PLAN task'ları SCP ID taşımak zorunda değildir. Scope enforcement upstream WAVE_MAP'te yapılır; downstream plan yalnız parent map entry'yi detaylandırır.
 
 ## Factual Claim Allowlist Boundary
 Canonical chain:
@@ -87,6 +98,7 @@ Approved Input
 → TECH-CTX
 → DESIGN
 → WAVE-MAP
+→ freeze WAVE-MAP execution boundaries
 → expected dynamic instance registry
 → WAVE-PLAN instances
 → PROJECT_PLAN
@@ -98,7 +110,30 @@ Approved Input
 ```
 
 ### WAVE_MAP Checkpoint
-Map'teki her deliverable executable SCP semantic boundary içinde kalır.
+WAVE_MAP project execution decomposition authority'sidir.
+
+Her wave entry için:
+
+```text
+Goal
+In Scope
+Out of Scope
+Primary Deliverables
+Dependencies
+Exit Boundary
+```
+
+zorunlu olarak çözülür.
+
+Map-level scope check:
+
+```text
+wave committed scope ⊆ approved executable scope
+Future/Open/Out-of-Scope current wave'e map edilemez
+VERIFIED_CURRENT_TRUTH tek başına capability authorize etmez
+```
+
+Map valid olduktan sonra freeze edilir.
 
 ```text
 EXPECTED_DYNAMIC_INSTANCES = set(WAVE_MAP Wave IDs)
@@ -107,14 +142,18 @@ EXPECTED_DYNAMIC_INSTANCES = set(WAVE_MAP Wave IDs)
 ### Dynamic WAVE_PLAN Checkpoint
 Her expected instance için ayrı template refresh + generation checkpoint uygulanır.
 
-Her task:
+Her plan exact parent WAVE_MAP entry'yi yeniden okur ve yalnız onu detaylandırır.
+
+Her task/deliverable:
+
 ```text
-Scope Ref exists
-SCP executable
-task semantic scope ⊆ referenced SCP semantic scope
+scope ⊆ exact parent WAVE_MAP entry
 ```
 
+Parent map entry'de olmayan capability plan içinde eklenemez. Gerekirse upstream WAVE_MAP approved scope'a göre repair edilir; aksi halde task silinir.
+
 Her factual claim:
+
 ```text
 FCL exists
 FCL ⊆ exact source support
@@ -142,7 +181,8 @@ Trace UNAVAILABLE ise pairing UNVERIFIED kalır.
 Validation öncesi şunlar birlikte kontrol edilir:
 - README / TECH_CONTEXT / STATUS / TASKS / WAVE_MAP / all WAVE_PLAN / DECISIONS
 - expected vs actual dynamic instances
-- SCP semantic capability checks
+- WAVE_MAP → approved scope checks
+- each WAVE_PLAN → exact parent WAVE_MAP boundary checks
 - FCL→source checks
 - generated→FCL checks
 - package guards
@@ -157,7 +197,8 @@ runs/active/<run-id>/working-output/
 
 VAL-04:
 ```text
-task/deliverable ⊆ referenced executable SCP semantic scope
+A. WAVE_MAP scope ⊆ approved executable scope
+B. each WAVE_PLAN task/deliverable ⊆ exact parent WAVE_MAP entry
 ```
 
 VAL-13:
