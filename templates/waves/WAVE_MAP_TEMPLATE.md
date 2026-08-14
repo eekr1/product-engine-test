@@ -6,7 +6,7 @@
 template_id: wave-map-template
 template_name: Canonical Wave Map Template
 document_id: WAVE-MAP
-version: 2.4.0
+version: 2.5.0
 status: active
 template_type: document
 category: waves
@@ -22,6 +22,7 @@ supported_implementation_planning:
   - full
 required_inputs:
   - approved_intake
+  - input_snapshot_scope_registry
   - project_brain
   - product_rules
   - tech_context
@@ -39,11 +40,60 @@ output_filename: WAVE_MAP.md
 
 ## Amaç
 
-Projenin implementation yolunu baştan sona anlamlı delivery wave'lerine bölen; her wave'in amacı, scope boundary'si, dependency'si, ana deliverable'ı ve exit kriterini üst seviyede tanımlayan canonical haritadır.
+Projenin approved execution scope'unu baştan sona anlamlı delivery wave'lerine bölen canonical **execution decomposition authority** belgesidir.
+
+WAVE_MAP şu soruyu cevaplar:
+
+```text
+Bu proje hangi ana uygulama dalgalarına ayrılır ve her dalganın kesin execution boundary'si nedir?
+```
+
+WAVE_PLAN ise yalnızca burada dondurulan exact parent wave entry'yi implementation seviyesinde detaylandırır; yeni product capability veya yeni scope icat edemez.
+
+## Scope Resolution Model
+
+Approved scope enforcement WAVE_PLAN task seviyesinde tekrar kurulmaz. Scope önce burada çözülür ve freeze edilir.
+
+Canonical chain:
+
+```text
+APPROVED INPUT
+→ INPUT_SNAPSHOT / SCP REGISTRY
+→ WAVE_MAP EXECUTION SCOPE
+→ freeze WAVE_MAP
+→ WAVE_PLAN instances
+```
+
+Canonical invariants:
+
+```text
+WAVE_MAP committed scope ⊆ approved executable project scope
+WAVE_PLAN scope ⊆ exact parent WAVE_MAP entry
+```
+
+`VERIFIED_CURRENT_TRUTH` factual/reference context sağlayabilir fakat tek başına execution capability oluşturmaz.
+`Future Possibilities`, `Open Questions` ve `Out of Scope` current wave scope'una map edilemez.
 
 ## Kullanım Koşulları
 
 `implementation_planning: standard | full` olan implementation-bearing projelerde zorunludur. Delivery profile'ın Prototype olması bu belgeyi kapsam dışı bırakmaz.
+
+## Her Wave Entry İçin Zorunlu Boundary
+
+Her wave entry aşağıdaki üst-seviye alanları açıkça taşımalıdır:
+
+```text
+Wave ID
+Name
+Goal
+In Scope
+Out of Scope
+Primary Deliverables
+Dependencies
+Exit Boundary
+```
+
+WAVE_MAP implementation checklist, component-level task listesi veya ayrıntılı verification command üretmez. Bunlar WAVE_PLAN sorumluluğudur.
 
 ## Zorunlu Bölümler
 
@@ -58,52 +108,42 @@ Projenin implementation yolunu baştan sona anlamlı delivery wave'lerine bölen
 
 - Wave'ler repository folder'larına veya broad teknik fazlara göre değil, anlamlı ve bağımsız doğrulanabilir teslim sonuçlarına göre bölünmelidir.
 - `Frontend Implementation`, `Build UI`, `Backend Work`, `Polish Everything` gibi birden fazla distinct teslimi tek torbaya atan mega-wave adları/scope'ları kullanılmamalıdır.
-- Wave 00, projenin ilk uygulanabilir foundation/bootstrapping adımını temsil etmelidir; boş formalite wave'i olmamalıdır.
-- Foundation sonrasında distinct user-facing surface, feature, flow veya coherent delivery unit'leri ayrı wave adayı olarak değerlendirilmelidir.
-- Bir surface kendi başına anlamlı biçimde tamamlanıp doğrulanabiliyorsa, başka bağımsız surface'lerle aynı wave'e yalnız teknik benzerlik veya aynı sayfada yer alma nedeniyle sıkıştırılmamalıdır.
-- Aynı page içinde `Home/Hero`, `Corporate/Trust`, `Services`, `Contact` gibi farklı kullanıcı sorumlulukları taşıyan büyük surface'ler küçük ve gerçekten tek-deliverable bir sayfa olmadığı sürece tek `Core Frontend` wave'ine yığılmamalıdır.
-- Bir wave'in scope'u başka bir wave'e ayrılabilecek birden fazla bağımsız anlamlı teslim içeriyorsa wave fazla büyüktür; split edilmelidir.
-- Bir wave sonunda tek başına anlamlı ve doğrulanabilir bir sonuç oluşmuyorsa wave fazla küçüktür; coherent komşu scope ile merge edilmelidir.
-- Aynı surface içinde birbirine sıkı bağlı section'lar tek wave'de kalabilir; her section yapay biçimde ayrı wave yapılmaz.
-- Her wave tek bir anlamlı goal ve net bir completion boundary taşır.
-- Wave entry, o wave sonunda hangi kullanıcı yüzeyi/feature/foundation alanının **tamamlanmış** sayılacağını açıkça belirtmelidir.
-- Bir feature/surface wave'i yalnız kendi deliverable'ının responsive/state/QA sorumluluğunu taşır.
-- **Whole-project** responsive sweep, regression, cross-browser verification, final integration veya sales-demo presentation QA birden fazla önceki surface'i yeniden doğruluyorsa bu cross-cutting iştir ve **ayrı final QA wave'i olmak zorundadır**.
-- `Contact + Final QA`, `Checkout + Global Regression`, `Admin + Whole-App QA` gibi scope'lar, QA yalnız o surface'e ait değilse tek wave olarak kabul edilmez.
-- Dependency zinciri açık olmalı; circular dependency olamaz.
+- Wave 00 ilk uygulanabilir foundation/bootstrapping adımıdır; boş formalite wave'i değildir.
+- Foundation sonrasında distinct user-facing surface, feature, flow veya coherent delivery unit'leri ayrı wave adayıdır.
+- Bir surface kendi başına anlamlı biçimde tamamlanıp doğrulanabiliyorsa başka bağımsız surface'lerle yalnız teknik benzerlik nedeniyle birleştirilmez.
+- Aynı surface içinde birbirine sıkı bağlı section'lar tek wave'de kalabilir; yapay mikro-wave üretilmez.
+- Her wave tek anlamlı goal ve net completion boundary taşır.
+- Whole-project responsive sweep, regression, cross-browser verification, final integration veya sales-demo presentation QA birden fazla önceki surface'i yeniden doğruluyorsa ayrı final QA wave'i olur.
+- Dependency zinciri açık ve acyclic olmalıdır.
 - Design/data/API/test belgeleri applicable ise wave scope bunlarla hizalanmalıdır.
-- `full` planning daha granüler dependency/risk planning getirebilir; yapay wave çoğaltamaz.
-- Bütün approved scope en az bir wave'e map edilmeli, hiçbir wave approved scope dışı iş icat etmemelidir.
-- `Future Possibilities`, `Open Questions` ve `Out of Scope` içeriği approved current scope gibi wave'e map edilemez.
+- Bütün approved executable scope en az bir wave'e map edilmeli; hiçbir wave approved scope dışı capability icat etmemelidir.
+- WAVE_MAP freeze edildikten sonra downstream WAVE_PLAN yalnız parent entry'yi detaylandırabilir.
 
 ## Decomposition Heuristic
 
-Wave map hazırlanırken her candidate scope için şu sorular cevaplanır:
-
 ```text
 1. Bu scope tek başına anlamlı bir deliverable mı?
-2. Wave sonunda bu deliverable complete ve bağımsız doğrulanabilir olacak mı?
-3. İçinde başka bağımsız surface/feature/flow'lar gizleniyor mu?
-4. Bunları ayırmak coherence'i artırır mı, yoksa yapay mikro-wave mi üretir?
-5. Son surface wave'i aynı zamanda önceki birden fazla surface'i test eden whole-project QA taşıyor mu?
-6. Candidate scope gerçekten approved In Scope mu, yoksa Future/Open/Out-of-Scope alanından mı geliyor?
+2. Wave sonunda complete ve bağımsız doğrulanabilir olacak mı?
+3. İçinde başka bağımsız surface/feature/flow var mı?
+4. Ayırmak coherence'i artırır mı, yoksa mikro-wave mi üretir?
+5. Whole-project QA feature wave'ine gizlenmiş mi?
+6. Candidate scope gerçekten approved executable scope mu?
+7. In Scope / Out of Scope boundary downstream planı yeterince sınırlar mı?
 ```
 
 Kural:
 
 ```text
-multiple independent deliverables inside one wave → SPLIT
+multiple independent deliverables → SPLIT
 no meaningful standalone result → MERGE
 one coherent complete deliverable → KEEP
-whole-project QA hidden in feature/surface wave → SPLIT QA (mandatory)
-Future/Open/Out-of-Scope mapped as current deliverable → REMOVE / FAIL
+whole-project QA hidden in surface wave → SPLIT QA
+Future/Open/Out-of-Scope as current deliverable → REMOVE / FAIL
 ```
-
-Domain/package bağlamı decomposition'a yardımcı olabilir; ancak sabit bir wave reçetesi değildir. Gerçek approved scope'a göre split/merge yapılır.
 
 ## Granularity Reference Example
 
-Aşağıdaki örnek **zorunlu wave listesi değildir**. Corporate / landing UI projelerinde beklenen decomposition granülerliğini göstermek içindir:
+Aşağıdaki örnek zorunlu wave listesi değildir:
 
 ```text
 WAVE_00 — Foundation
@@ -114,16 +154,7 @@ WAVE_04 — Contact
 WAVE_05 — Final Integration / Responsive / QA
 ```
 
-Bu örneğin anlattığı kurallar:
-
-- Foundation, user-facing surface'lerden ayrılır.
-- Birbirinden ayrı kullanıcı sorumlulukları tek broad `Core Frontend` wave'ine yığılmaz.
-- `Header + Hero + About + Services + Contact` bütününün tek wave olması, yalnız kapsam gerçekten küçük ve tek coherent deliverable ise kabul edilebilir.
-- Contact wave kendi contact deliverable'ını responsive/state/QA ile tamamlar.
-- Bütün siteyi tekrar gezen regression/cross-browser/final responsive/presentation QA varsa ayrı final wave olur.
-- Future scope örneğin `WhatsApp`, `interactive form`, `live map` olarak kayıtlıysa explicit approval olmadan bu örneğe yeni wave diye eklenmez.
-
-Örnek bir reçete değil, **granularity calibration reference** olarak kullanılır.
+Örnek yalnız granularity calibration içindir.
 
 ## Placeholder Tanımları
 
@@ -137,14 +168,13 @@ Bu örneğin anlattığı kurallar:
 
 ## Validation Beklentileri
 
-- Approved scope coverage tam olmalı.
+- WAVE_MAP committed scope approved executable scope içinde olmalı.
 - Future/Open/Out-of-Scope leakage olmamalı.
+- Her wave entry Goal + In Scope + Out of Scope + Primary Deliverables + Dependencies + Exit Boundary taşımalı.
 - Wave dependency chain acyclic ve uygulanabilir olmalı.
-- Her wave meaningful, independently verifiable ve completion boundary'si net bir deliverable tanımlamalı.
-- Broad technical mega-wave içinde birden fazla bağımsız product surface/feature saklanmamalı.
-- Whole-project cross-cutting QA son feature/surface wave'ine gizlenmemeli; varsa ayrı wave olmalı.
-- Granularity, yukarıdaki reference example'ın anlattığı separation seviyesine makul biçimde yakın olmalı; örneğin birebir kopyalanması gerekmez.
-- Her wave için WAVE-PLAN dynamic instance üretilebilmelidir.
+- Her wave meaningful, independently verifiable ve completion boundary'si net olmalı.
+- Whole-project cross-cutting QA gerekiyorsa ayrı wave olmalı.
+- Her wave için tek WAVE-PLAN dynamic instance üretilebilmelidir.
 - WAVE_MAP ile PROJECT_PLAN aynı teslim sırasını anlatmalıdır.
 
 ---
