@@ -81,6 +81,47 @@ responsive site != arbitrary new responsive widget
 
 Relatedness authorization değildir.
 
+## Wave Quality Reference Layer
+
+`ref/waves/` canonical authority değildir; wave artifact'lerinin **quality/depth calibration** katmanıdır.
+
+Canonical boundary:
+
+```text
+engine/ + templates/ + approved current project authorities = WHAT IS ALLOWED / REQUIRED
+ref/waves/ = HOW DEEP / CLEAR / IMPLEMENTATION-READY GOOD PLANNING CAN LOOK
+```
+
+Wave planning phase'ine girildiğinde:
+
+```text
+1. Read ref/waves/README.md boundary.
+2. For WAVE_MAP quality calibration, consult Design_Wave_Plan.md decomposition/index/sequencing patterns.
+3. Before generating WAVE_PLAN instances, read both isolated depth references once:
+   - WAVE_07_HOME_REFERENCE.md
+   - WAVE_12_RUNTIME_REFERENCE.md
+4. For every actual WAVE_PLAN write, still perform the normal fresh WAVE_PLAN_TEMPLATE read + exact parent map refresh.
+```
+
+Reference layer MUST NOT authorize project scope or architecture.
+
+Forbidden reference leakage:
+
+```text
+Vibehall facts/capabilities -> current project
+Vibehall wave count/names -> current wave map
+Vibehall filenames/components/routes/stack -> invented current architecture
+reference [x] / QA-closed / test results -> current pre-execution state
+```
+
+Reference read is not a canonical template read token and is not VAL-15 pairing evidence.
+
+Depth expectation:
+
+A generated WAVE_PLAN is not implementation-ready if a fresh capable agent must perform another planning pass to decide applicable responsibility location, dependency/data/state behavior, preserved boundaries, edge-state handling or verification strategy.
+
+This rule does not require unnecessary complexity. Only details applicable to the exact parent wave and current project architecture are generated.
+
 ## Factual Claim Allowlist Boundary
 
 ```text
@@ -150,16 +191,33 @@ taşır.
 Map generation algorithm:
 
 ```text
-1. Extract every candidate committed capability atom.
-2. Resolve exact executable approved support for each atom.
-3. Record support ID + support meaning.
-4. Build UNSUPPORTED_MAP_CAPABILITIES.
-5. If UNSUPPORTED_MAP_CAPABILITIES != empty: repair/remove; do not freeze.
-6. Confirm In Scope / Deliverables / Exit Boundary introduce no hidden atom.
-7. Freeze map only when unsupported set is empty.
+1. Read wave reference boundary and calibrate decomposition quality without importing reference scope.
+2. Extract every candidate committed capability atom.
+3. Resolve exact executable approved support for each atom.
+4. Record support ID + support meaning.
+5. Build UNSUPPORTED_MAP_CAPABILITIES.
+6. If UNSUPPORTED_MAP_CAPABILITIES != empty: repair/remove; do not freeze.
+7. Confirm In Scope / Deliverables / Exit Boundary introduce no hidden atom.
+8. Confirm sequencing/dependencies explain why each wave is separate and what it hands off.
+9. Freeze map only when unsupported set is empty.
 ```
 
 `VERIFIED_CURRENT_TRUTH` factual context olabilir ama capability authorize etmez.
+
+### Dynamic WAVEPLAN Phase Calibration
+
+WAVE_PLAN instance loop'una girmeden önce iki isolated reference wave bir kez okunur.
+
+Amaç:
+
+```text
+calibrate task depth
+calibrate state/role/edge coverage
+calibrate dependency and handoff clarity
+calibrate automated/manual/debug verification depth
+```
+
+Bu phase calibration current project scope veya filenames üretmez ve per-instance canonical refresh yerine geçmez.
 
 ### Dynamic WAVE_PLAN Checkpoint
 
@@ -168,18 +226,21 @@ Her expected instance için ayrı template refresh + generation checkpoint uygul
 Plan generation algorithm:
 
 ```text
-1. Re-open exact parent WAVE_MAP entry.
-2. Resolve parent Committed Capabilities.
-3. Generate candidate implementation details.
-4. Atomize all candidate executable plan capabilities.
-5. Map every plan atom to exact parent capability with relation:
+1. Re-open fresh WAVE_PLAN_TEMPLATE.
+2. Re-open exact parent WAVE_MAP entry.
+3. Resolve parent Committed Capabilities.
+4. Generate candidate implementation details at implementation-ready depth.
+5. For each applicable task, make responsibility location, dependency/data/state behavior, preserved boundary and verification explicit enough to avoid a second planning pass.
+6. Atomize all candidate executable plan capabilities from every executable section.
+7. Map every plan atom to exact parent capability with relation:
    detail-of | implementation-of | verification-of
-6. Build NEW_PLAN_CAPABILITIES for anything without exact parent support.
-7. If NEW_PLAN_CAPABILITIES != empty: remove or repair upstream map if approved.
-8. Write plan only after unsupported set is empty.
+8. Build NEW_PLAN_CAPABILITIES for anything without exact parent support.
+9. If NEW_PLAN_CAPABILITIES != empty: remove or repair upstream map if approved.
+10. Write plan only after unsupported set is empty.
 ```
 
 Parent Goal'ın broad wording'i tek başına support sayılmaz.
+Reference depth example'i parent capability desteği yerine geçmez.
 
 ### Dynamic Instance Completion
 
@@ -203,6 +264,7 @@ missing token -> invalid
 ```
 
 Summary/self-report pair list gerçek event üretmez.
+Reference reads `WAVE_PLAN_TEMPLATE_READ_TOKENS` oluşturmaz.
 
 Trace UNAVAILABLE ise pairing UNVERIFIED kalır.
 
