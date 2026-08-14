@@ -6,7 +6,7 @@
 template_id: validation-report-template
 template_name: Validation Report Operational Template
 document_id: not_applicable
-version: 1.6.0
+version: 1.7.0
 status: active
 template_type: operational
 category: operational
@@ -25,7 +25,7 @@ output_filename: VALIDATION_REPORT.md
 ```
 
 ## Amaç
-`engine/VALIDATION_RULES.md` uyarınca working-output ve observable evidence üzerinde canonical validation kaydı üretmek.
+`engine/VALIDATION_RULES.md` uyarınca working-output ve observable evidence üzerinde fail-closed canonical validation kaydı üretmek.
 
 ## Canonical Target
 `runs/active/{{RUN_ID}}/working-output/`
@@ -34,82 +34,111 @@ output_filename: VALIDATION_REPORT.md
 - Canonical Gate Coverage
 - Evidence Priority / Trace Status
 - Dynamic Instance Coverage
-- WAVE_MAP → Approved Scope Checks
-- WAVE_PLAN → Parent Map Checks
+- WAVE_MAP Capability Diff
+- WAVE_PLAN Parent Capability Diff
+- Source Registry Consistency
 - Source → FCL → Generated Claim Checks
 - External Source Consumption Checks
-- Point-of-Use Read/Write Pairing
+- Point-of-Use Read/Write Token Pairing
 - Validation Timing
 - VAL-01..VAL-19 Table
 - Violations & Repairs
 
 ## Evidence Contract
-Rapor şunları açıkça taşır:
+
 ```text
 Observable Trace Status: AVAILABLE | UNAVAILABLE
-Trace Evidence Origin: <tool/IDE trace reference | None>
+Trace Evidence Origin
 Highest Evidence Level Used
 Evidence Contradictions
 ```
 
-`AVAILABLE` yalnız validator raporu dışındaki gerçek tool/IDE trace inspect edilmişse kullanılabilir. VALIDATION_REPORT, PROGRESS, RUN_LOG veya agent beyanı tek başına E1 proof değildir.
+`AVAILABLE` yalnız validator dışındaki gerçek observable tool/IDE trace inspect edilmişse kullanılabilir.
 
-## Dynamic Instance Coverage
-```text
-Expected Instance IDs
-Actual Instance IDs
-Missing Instance IDs
-Unexpected Instance IDs
-```
-`EXPECTED == ACTUAL` zorunludur.
+## WAVE_MAP Capability Diff
 
-## WAVE_MAP → Approved Scope Checks
-Her wave entry için:
+Her wave için atomik tablo zorunludur:
+
 ```text
 Wave ID
-Wave Goal / Committed Scope
-Approved Executable Scope Support
-Reference-Only Context Used
-Future/Open/Out-of-Scope Leakage
-Map ⊆ Approved Result
-Reason
+Map Capability Atom
+Exact Approved Support ID
+Exact Approved Support Meaning
+Relation
+Result
 ```
 
-Canonical rule:
+Ardından zorunlu set özeti:
+
 ```text
-WAVE_MAP committed scope ⊆ approved executable project scope
+MAP_CAPABILITY_ATOMS = [...]
+SUPPORTED_MAP_CAPABILITIES = [...]
+UNSUPPORTED_MAP_CAPABILITIES = [...]
 ```
 
-## WAVE_PLAN → Parent Map Checks
-Her planın task/deliverable scope'u exact parent map entry ile karşılaştırılır:
+`UNSUPPORTED_MAP_CAPABILITIES` boş değilse VAL-04 PASS yazılamaz.
+Generic support ID listesi tek başına evidence değildir.
+
+## WAVE_PLAN Parent Capability Diff
+
+Her plan capability atomu için:
+
 ```text
 Wave Plan
-Task / Deliverable
-Parent WAVE_MAP Entry
-Task Semantic Scope
-Task ⊆ Parent Result
-Reason
+Plan Capability Atom
+Exact Parent Capability Atom
+Relation: detail-of | implementation-of | verification-of | new-capability | adjacent-capability | inferred-capability
+Result
 ```
 
-Canonical rule:
+Ardından:
+
 ```text
-WAVE_PLAN task/deliverable scope ⊆ exact parent WAVE_MAP entry
+PLAN_CAPABILITY_ATOMS = [...]
+PARENT_CAPABILITY_ATOMS = [...]
+NEW_PLAN_CAPABILITIES = [...]
 ```
 
-WAVE_PLAN task'larında SCP ref aranmaz.
+`NEW_PLAN_CAPABILITIES` boş değilse VAL-04 PASS yazılamaz.
+
+## Source Registry Consistency
+
+Validation başlamadan SOURCE_REGISTER source table exact mirror edilir:
+
+```text
+SOURCE_REGISTER_SOURCE_SET
+VALIDATION_SOURCE_SET
+SOURCE_SET_EQUAL: YES | NO
+```
+
+Her source için:
+
+```text
+Source ID
+SOURCE_REGISTER Identity
+Validation Identity
+SOURCE_REGISTER Usage State
+Validation Usage State
+Exact Match
+```
+
+Mismatch varsa VAL-07 ve VAL-13 PASS yazılamaz.
+Validator yeni source veya yeni usage state icat edemez.
 
 ## Source → FCL → Generated Claim Checks
-Her FCL için:
+
+Her FCL:
 ```text
 FCL ID
 FCL Claim
-Exact Supporting Source Identity
-Source Usage State
+Exact Supporting Source ID
+Exact Source Identity copied from SOURCE_REGISTER
+Source Usage State copied from SOURCE_REGISTER
 Exact Source Evidence
 FCL ⊆ Source Result
 ```
 
-Her generated claim için:
+Her generated claim:
 ```text
 Generated Claim
 Referenced FCL ID
@@ -117,37 +146,52 @@ Referenced FCL Claim
 Generated ⊆ FCL Result
 ```
 
-Canonical chain:
-```text
-FCL semantic content ⊆ exact source evidence
-AND
-generated factual claim ⊆ referenced FCL semantic content
-```
-
-Registered-but-unconsumed external source evidence olarak kullanılamaz.
-
 ## External Source Consumption Checks
+
 Her external source için:
 ```text
 Source ID
-Usage State
-Independent Read/Open/Fetch Evidence
+SOURCE_REGISTER Usage State
+Independent Read/Open/Fetch Event
 Evidence Origin
 Consumption Claim Valid
 ```
 
-## Point-of-Use Pairing
-Trace AVAILABLE ise:
+Başka source summary'si external consumption evidence değildir.
+
+## Point-of-Use Read/Write Token Pairing
+
+Trace AVAILABLE ise actual ordered events ayrı listelenir:
+
 ```text
-Trace Evidence Origin
-Dynamic Template
-Template Read Count
-Dynamic Instance Write Count
-Read/Write Pairs
-Unpaired Writes
+Observed Dynamic Template Read Events:
+R1 ...
+R2 ...
+
+Observed Dynamic Write Events:
+W1 ...
+W2 ...
 ```
 
-Her read single-use'dur. Özellikle bir `WAVE_PLAN_TEMPLATE` read token yalnız bir WAVE_PLAN write ile eşleşebilir. Trace UNAVAILABLE ise VAL-15 UNVERIFIED.
+Sonra token consumption tablosu:
+
+```text
+Write Event | Matching Read Token | Token Previously Used? | Pair Result
+```
+
+Her read token single-use'dur.
+
+Zorunlu özet:
+```text
+READ_TOKEN_COUNT
+WRITE_EVENT_COUNT
+CONSUMED_READ_TOKENS
+UNPAIRED_WRITES
+REUSED_READ_TOKENS
+```
+
+`UNPAIRED_WRITES` veya `REUSED_READ_TOKENS` boş değilse VAL-15 FAIL.
+Self-reported pairing listesi actual observable read event yerine geçmez.
 
 ## Validation Timing
 ```text
@@ -180,31 +224,34 @@ Expected set `VAL-01..VAL-19`; missing gate → overall FAIL.
 ## 3. Dynamic Instance Coverage
 {{DYNAMIC_INSTANCE_COVERAGE}}
 
-## 4. WAVE_MAP → Approved Scope Checks
-{{WAVE_MAP_SCOPE_CHECKS}}
+## 4. WAVE_MAP Capability Diff
+{{WAVE_MAP_CAPABILITY_DIFF}}
 
-## 5. WAVE_PLAN → Parent Map Checks
-{{WAVE_PLAN_PARENT_CHECKS}}
+## 5. WAVE_PLAN Parent Capability Diff
+{{WAVE_PLAN_PARENT_CAPABILITY_DIFF}}
 
-## 6. Source → FCL → Generated Claim Checks
+## 6. Source Registry Consistency
+{{SOURCE_REGISTRY_CONSISTENCY}}
+
+## 7. Source → FCL → Generated Claim Checks
 {{FCL_SEMANTIC_CHECKS}}
 
-## 7. External Source Consumption Checks
+## 8. External Source Consumption Checks
 {{EXTERNAL_SOURCE_CHECKS}}
 
-## 8. Point-of-Use Read/Write Pairing
-{{TRACE_PAIRING_BLOCK}}
+## 9. Point-of-Use Read/Write Token Pairing
+{{TRACE_TOKEN_PAIRING_BLOCK}}
 
-## 9. Validation Timing / Chronology
+## 10. Validation Timing / Chronology
 {{VALIDATION_TIMING_BLOCK}}
 
-## 10. Blocking Validation Checks
+## 11. Blocking Validation Checks
 {{VALIDATION_CHECKS_TABLE}}
 
-## 11. Violations & Evidence
+## 12. Violations & Evidence
 {{VIOLATIONS_AND_EVIDENCE_BLOCK}}
 
-## 12. Repair Actions
-- FAIL/WARNING bulguları için repair aksiyonları.
+## 13. Repair Actions
+{{REPAIR_ACTIONS}}
 
 # OUTPUT DOCUMENT END
