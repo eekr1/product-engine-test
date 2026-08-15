@@ -6,7 +6,7 @@
 template_id: wave-plan-template
 template_name: Canonical Wave Plan Template
 document_id: WAVE-PLAN
-version: 3.4.0
+version: 3.5.0
 status: active
 template_type: dynamic-document
 category: waves
@@ -46,27 +46,46 @@ Her exact `WAVE_NN` için required order:
 ```text
 fresh templates/waves/WAVE_PLAN_TEMPLATE.md
 → exact WAVE_NN parent entry in current WAVE_MAP
-→ relevant isolated depth reference(s)
+→ AT LEAST ONE isolated depth reference re-opened for THIS wave
 → current project authorities / source-FCL as applicable
 → generate ONLY WAVE_NN
 → atomize + validate + repair
 → close checkpoint
 ```
 
+### Zero-Reference Is Invalid
+
+Bir wave checkpoint'i **0 quality-reference read ile kapatılamaz**.
+
+```text
+QUALITY_REF_READ_COUNT(WAVE_NN) >= 1
+```
+
+Aynı reference önceki wave'de okunmuş olsa bile current wave için yeniden açılmalıdır. Önceki wave'in reference read'i reuse edilemez.
+
 Relevant isolated depth references:
 
 ```text
-UI / page / feature delivery
+UI / page / feature / content surface / responsive / cross-surface QA delivery
 → ref/waves/WAVE_07_HOME_REFERENCE.md
 
-runtime / lifecycle / state-heavy delivery
+runtime / lifecycle / state-heavy / data-service-foundation delivery
 → ref/waves/WAVE_12_RUNTIME_REFERENCE.md
 
 hybrid wave
 → applicable parts of both references
 ```
 
-Reference seçimi wave'in gerçek karakterine göre yapılır. Aynı ref önceki wave'de okunmuş olsa bile current wave point-of-use calibration gerektiğinde yeniden açılır.
+Wave yukarıdaki kategorilerden birine kusursuz oturmuyorsa **en yakın depth pattern'i seçmek zorunludur; reference read'i atlamak seçenek değildir**.
+
+Reference seçimi current wave'in karakterine göre yapılır:
+
+```text
+foundation/service/data contract -> runtime reference preferred
+UI/content/contact/services/hero/about -> home/UI reference preferred
+responsive/integration/presentation QA -> home/UI reference preferred
+hybrid UI + runtime/state -> both allowed
+```
 
 Reference read canonical fresh `WAVE_PLAN_TEMPLATE.md` read-token yerine geçmez.
 
@@ -301,6 +320,14 @@ WRITE WAVE_NN
 → NEXT checkpoint starts with NEW fresh WAVE_PLAN_TEMPLATE read
 ```
 
+Checkpoint CLOSE öncesi ayrıca:
+
+```text
+current wave quality-reference read count >= 1
+```
+
+olmalıdır. Aksi halde checkpoint invalid'dir ve write yeniden point-of-use calibration ile repair edilmelidir.
+
 Aşağıdaki event pattern invalid'dir:
 
 ```text
@@ -310,6 +337,15 @@ write WAVE_00
 write WAVE_01
 write WAVE_02
 ...
+```
+
+Aşağıdaki pattern de invalid'dir:
+
+```text
+read fresh WAVE_PLAN_TEMPLATE
+read parent
+write WAVE_NN
+# no quality reference read for this wave
 ```
 
 Doğru pattern:
