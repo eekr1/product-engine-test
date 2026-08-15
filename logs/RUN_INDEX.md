@@ -7,12 +7,13 @@ Bu belge Product Engine run'larının secondary index'idir. Authoritative run tr
 ## 2. Güncel İndeks Durumu
 
 ```text
-Total Indexed Runs : 0
+Total Indexed Runs : 1
 Active Runs        : 0
-Completed Runs     : 0
+Completed Runs     : 1
 Failed Runs        : 0
 Invalidated Runs   : 0
 ```
 
 | Run ID | Project Slug | Package | Profile | Status | Validation | Date | Output Ref | Note |
 |---|---|---|---|---|---|---|---|---|
+| `RUN-20260815-001` | `trakya-teknik-makine` | `demo-frontend` | `Prototype` (`standard`/`light`) | Completed | PASS | 2026-08-15 | `outputs/demos/trakya-teknik-makine/versions/v0.2/` | Fresh Product Engine v0.2.0 boot for Trakya Teknik Makine |
