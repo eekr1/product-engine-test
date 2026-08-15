@@ -33,10 +33,25 @@ Scope iki aşamada ve capability atomları üzerinden doğrulanır.
 WAVE_MAP committed capability atoms subset-of approved executable capability atoms
 ```
 
-Validator her wave için yalnız supporting SCP ID listesi yazıp PASS veremez. Şunları ayrı ayrı çıkarmalıdır:
+Validator yalnız `Committed Capabilities` satırlarını okuyup PASS veremez. Her wave için **bütün executable-bearing alanları** atomize etmelidir:
+
+```text
+Wave Map Summary / Deliverables
+Goal
+Committed Capabilities
+In Scope
+Primary Deliverables
+Downstream Handoff
+executable parts of Exit Boundary
+other prose only when it introduces a concrete surface / behavior / deliverable
+```
+
+Validator her wave için şunları ayrı ayrı çıkarmalıdır:
 
 ```text
 MAP_CAPABILITY_ATOMS
+COMMITTED_CAPABILITY_ATOMS
+HIDDEN_MAP_CAPABILITIES
 SUPPORTED_MAP_CAPABILITIES
 UNSUPPORTED_MAP_CAPABILITIES
 ```
@@ -55,13 +70,31 @@ Rules:
 - related/generic capability exact support değildir.
 - phone/email CTA, address/map/form/WhatsApp capability'sini authorize etmez.
 - generic corporate/contact/responsive scope arbitrary adjacent feature authorize etmez.
-- In Scope, Primary Deliverables veya executable Exit Boundary'de olup Committed Capabilities listesinde bulunmayan hidden atom → FAIL.
+- Footer, sticky action bar, technical details overlay, search/filter, modal, badge, map, form veya ayrı interaction surface gibi concrete deliverable'lar yalnız başka broad capability'nin “detayı” denilerek gizlenemez; gerçekten aynı approved behavior'ın implementation detail'i olduğu kanıtlanmalı, aksi halde ayrı atomdur.
+- `MAP_CAPABILITY_ATOMS - COMMITTED_CAPABILITY_ATOMS != empty` ve fark gerçek executable capability içeriyorsa `HIDDEN_MAP_CAPABILITIES != empty` → FAIL.
+- Bir hidden atom approved scope'ta destekli olsa bile Committed Capabilities altında görünmüyorsa map contract ihlalidir; önce atomize edilip committed listesine alınmalı veya kaldırılmalıdır.
 - `UNSUPPORTED_MAP_CAPABILITIES != empty` → VAL-04 FAIL.
 
 ### Stage B — WAVE_PLAN → Parent WAVE_MAP Entry
 
 ```text
 WAVE_PLAN capability atoms subset-of exact parent WAVE_MAP capability atoms
+```
+
+Validator yalnız capability coverage tablosunu veya checklist başlıklarını okuyamaz. Her plan için executable atomlar şu alanların tamamından çıkarılır:
+
+```text
+Goal
+Parent Capability Coverage
+In Scope
+Expected Result / Target Structure
+Implementation Checklist
+State / Role / Responsive Coverage
+Automated Verification when it implies product behavior
+Manual QA when it implies product behavior
+Acceptance / Exit Criteria
+Handoff when it implies a new deliverable
+other prose only when it introduces a concrete surface / behavior / deliverable
 ```
 
 Validator her plan için şunları üretir:
@@ -162,6 +195,7 @@ Aşağıdakiler VAL-07 FAIL'dir:
 - validation source identity/state SOURCE_REGISTER'dan farklıdır.
 - validator source setine SOURCE_REGISTER'da olmayan identity ekler.
 - same source ID farklı anlam/state ile raporlanır.
+- approved delivery profile'dan daha yüksek maturity ima eden output wording'i execution reality'yi yanlış anlatır.
 
 ## VAL-08 — Decision Provenance + Coverage
 Allowed statuses: User Approved, Engine Resolved, Pending Review, Superseded.
@@ -186,6 +220,34 @@ generated factual claim subset-of referenced FCL semantic content
 VALIDATION source identity/state exactly mirrors SOURCE_REGISTER
 ```
 
+### Generated factual claim extraction
+
+Validator yalnız açık “fact” tablolarını tarayamaz. Gerçek dünya / firma / domain gerçeği ima eden modifier ve açıklamalar **claim'dir** ve generated output'un tüm prose alanlarından çıkarılmalıdır.
+
+Örnek factual expansion'lar:
+
+```text
+"Yedek Parça Temini" -> "orijinal yedek parça", "stoktan parça", belirli marka kapsamı
+"Yerinde Teknik Destek" -> "acil arıza müdahalesi", "mobil filo", belirli SLA/yanıt süresi
+"Makine Bakım ve Onarım" -> "periyodik bakım paketi", "revizyon", belirli makine/alt sistem uzmanlığı
+"Trakya bölgesi teknik servis" -> çalışma saatleri, şube/ağ, kapsama garantisi
+```
+
+Bunlar source-backed FCL içinde exact semantic support yoksa FAIL'dir; “marketing copy”, “kısa açıklama”, “kart detayı”, “technical detail”, “regional context” veya benzer presentation etiketi factual genişlemeyi meşrulaştırmaz.
+
+Teknik implementation kararları factual claim değildir ve FCL gerektirmez; örneğin grid, component boundary, CSS transition, responsive breakpoint, adapter veya file structure Engine tarafından resolve edilebilir. Ancak bu teknik kararlar yeni product capability veya real-world fact üretemez.
+
+Validator generated factual claims'i minimum şu alanlardan taramalıdır:
+
+```text
+WAVE_MAP Summary / Goal / In Scope / Deliverables / Handoff / Exit
+all WAVE_PLAN prose
+Implementation Checklist behavior/copy/details
+State / Responsive sections when real-world claims appear
+Acceptance Criteria
+PROJECT_BRAIN / PRODUCT_RULES / TECH_CONTEXT / DESIGN / PROJECT_PLAN / README when factual claims appear
+```
+
 Exact source evidence inference/classification izni değildir.
 
 External source `consumed` iddiası independent observable open/read/fetch evidence gerektirir. Böyle evidence yoksa source `registered` kalmalıdır.
@@ -197,6 +259,23 @@ Validator:
 
 `VALIDATION_SOURCE_SET != SOURCE_REGISTER_SOURCE_SET` → VAL-07 + VAL-13 FAIL.
 Usage-state mismatch → VAL-07 + VAL-13 FAIL.
+
+## Delivery Profile Wording Integrity
+
+Generated artifacts approved delivery profile'dan daha yüksek maturity iddia edemez.
+
+```text
+Foundation -> Implementation Ready / Production Ready claim yasak
+Prototype -> Implementation Ready / Production Ready claim yasak
+Implementation Ready -> Production Ready claim yasak
+Production Ready -> Production Ready allowed
+```
+
+`production-ready`, `launch-ready`, `production-grade release`, `deployment-ready production package` gibi maturity claim'leri ancak approved profile semantically destekliyorsa kullanılabilir.
+
+Prototype içinde `clean static package`, `demo-ready`, `sales-demo ready`, `validated prototype output` gibi profile-consistent wording kullanılabilir.
+
+Profile yükselten wording → VAL-07 FAIL; claim ayrıca source/decision uyduruyorsa ilgili diğer gate'ler de FAIL olabilir.
 
 ## VAL-14 — Template / Placeholder / Project Leakage
 Unresolved placeholder, duplicate skeleton veya başka proje leakage → FAIL.
@@ -281,6 +360,8 @@ Evidence Contradictions
 Validation Target
 Expected/Actual/Missing/Unexpected Wave IDs
 MAP_CAPABILITY_ATOMS per wave
+COMMITTED_CAPABILITY_ATOMS per wave
+HIDDEN_MAP_CAPABILITIES per wave
 exact approved support meaning per map atom
 UNSUPPORTED_MAP_CAPABILITIES per wave
 WAVE_MAP WHY_SEPARATE / UPSTREAM / HANDOFF depth check per wave
@@ -290,7 +371,9 @@ PLAN_TO_PARENT_RELATIONS
 NEW_PLAN_CAPABILITIES per plan
 WAVE_PLAN implementation-readiness depth check per plan
 FCL-to-Source checks with exact SOURCE_REGISTER identity/state
-Generated-to-FCL checks
+GENERATED_FACTUAL_CLAIMS
+Generated-to-FCL checks per extracted factual claim
+DELIVERY_PROFILE_WORDING_CHECKS
 SOURCE_REGISTER vs VALIDATION source-set/state equality
 External source consumption checks
 Actual ordered dynamic read events
@@ -305,13 +388,15 @@ Required evidence block missing → corresponding gate cannot PASS. Blocking gat
 Canonical results:
 ```text
 EXPECTED != ACTUAL -> VAL-03 FAIL
+HIDDEN_MAP_CAPABILITIES != empty -> VAL-04 FAIL
 UNSUPPORTED_MAP_CAPABILITIES != empty -> VAL-04 FAIL
 NEW_PLAN_CAPABILITIES != empty -> VAL-04 FAIL
 map why/upstream/handoff ambiguous -> VAL-05 FAIL
 fresh capable agent still needs implementation planning -> VAL-05 FAIL
 validation source-set/state mismatch -> VAL-07 + VAL-13 FAIL
+profile-upgrading wording -> VAL-07 FAIL
 FCL not subset of exact source -> VAL-13 FAIL
-generated claim not subset of FCL -> VAL-13 FAIL
+generated factual claim not subset of FCL -> VAL-13 FAIL
 external consumed without independent read evidence -> VAL-13 FAIL
 trace origin not independent -> Trace UNAVAILABLE
 reused read token -> VAL-15 FAIL
