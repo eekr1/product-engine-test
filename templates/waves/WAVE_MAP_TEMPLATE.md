@@ -6,7 +6,7 @@
 template_id: wave-map-template
 template_name: Canonical Wave Map Template
 document_id: WAVE-MAP
-version: 2.8.0
+version: 2.9.0
 status: active
 template_type: document
 category: waves
@@ -165,7 +165,74 @@ for each committed capability atom:
   if no exact semantic support -> FAIL / REMOVE
 ```
 
-Adres, harita, form, WhatsApp, footer, search, filter, CMS, backend gibi ayrı kullanıcı/ürün capability'leri generic `contact`, `responsive site`, `corporate surface` veya benzer geniş başlıklar altında gizlenemez.
+Adres, harita, form, WhatsApp, footer, sticky action bar, search, filter, modal, technical-detail overlay, CMS, backend gibi ayrı kullanıcı/ürün capability'leri generic `contact`, `responsive site`, `corporate surface`, `regional context` veya benzer geniş başlıklar altında gizlenemez.
+
+## Hidden Capability Self-Diff
+
+WAVE_MAP freeze edilmeden önce yalnız Committed Capabilities listesi değil **bütün executable-bearing alanlar** atomize edilir:
+
+```text
+Wave Map Summary / Deliverables
+Goal
+Committed Capabilities
+In Scope
+Primary Deliverables
+Downstream Handoff
+executable parts of Exit Boundary
+other prose when it introduces a concrete surface / behavior / deliverable
+```
+
+Sonra:
+
+```text
+MAP_CAPABILITY_ATOMS = union(all executable-bearing fields)
+COMMITTED_CAPABILITY_ATOMS = atoms explicitly listed under Committed Capabilities
+HIDDEN_MAP_CAPABILITIES = MAP_CAPABILITY_ATOMS - semantically-covered(COMMITTED_CAPABILITY_ATOMS)
+```
+
+`HIDDEN_MAP_CAPABILITIES` gerçek executable surface/behavior/deliverable içeriyorsa map freeze edilemez.
+
+Örnek:
+
+```text
+Committed: phone CTA + email CTA
+In Scope: phone CTA + email CTA + mobile sticky CTA + footer
+→ sticky CTA ve footer ayrı executable atoms ise HIDDEN_MAP_CAPABILITIES
+→ commit atomu ekle + exact approved support çöz veya kaldır
+```
+
+Approved scope'ta destekli olması hidden kalmasına izin vermez; executable contract görünür olmalıdır.
+
+## Factual Modifier Guard
+
+Map decomposition gerçek dünya/firma/domain gerçeğini genişletemez.
+
+```text
+source/FCL: Yedek Parça Temini
+map allowed: hizmet sunum wave'i / kart presentation boundary
+map not allowed without exact FCL: orijinal parça, stok, belirli marka/ürün kapsamı
+
+source/FCL: Yerinde Teknik Destek
+map allowed: approved hizmetin presentation boundary'si
+map not allowed without exact FCL: arıza müdahalesi, mobil filo, acil servis, SLA
+```
+
+“technical details”, “regional context”, “marketing copy”, “service detail” gibi presentation wording'i factual modifier üretme lisansı değildir.
+
+Teknik implementation/decomposition kararı FCL gerektirmez; component/file/layout/adapter/responsive/QA kararları Engine tarafından resolve edilebilir, fakat yeni real-world fact veya product capability üretemez.
+
+## Delivery Profile Wording Guard
+
+Map approved delivery profile'dan daha yüksek maturity iddia edemez.
+
+```text
+Prototype -> demo-ready / validated prototype / sales-demo ready allowed
+Prototype -> implementation-ready / production-ready / launch-ready forbidden
+Implementation Ready -> production-ready forbidden unless approved profile changes
+Production Ready -> production-ready allowed
+```
+
+Summary, Goal, Deliverables, Handoff ve Exit Boundary bu guard'a tabidir.
 
 ## Kullanım Koşulları
 
@@ -194,8 +261,10 @@ Adres, harita, form, WhatsApp, footer, search, filter, CMS, backend gibi ayrı k
 - Dependency zinciri açık ve acyclic olmalıdır.
 - Bütün approved executable scope uygun wave'lere map edilmeli; hiçbir wave approved scope dışı capability icat etmemelidir.
 - WAVE_MAP freeze edildikten sonra downstream WAVE_PLAN yalnız parent entry'yi detaylandırabilir.
-- In Scope, Deliverables ve Exit Boundary içinde geçen her executable capability Committed Capabilities listesinde görünür olmalıdır. Gizli capability yasaktır.
+- Summary, Goal, In Scope, Deliverables, Handoff ve Exit Boundary içinde geçen her executable capability Committed Capabilities listesinde görünür olmalıdır. Gizli capability yasaktır.
 - Her wave'in **neden ayrı olduğu**, hangi exact upstream deliverable/boundary'ye dayandığı ve sonraki wave'e hangi tamamlanmış boundary'yi bıraktığı açık olmalıdır.
+- Factual copy/decomposition detail exact FCL semantic boundary'sini aşamaz.
+- Delivery maturity wording approved profile ile aynı veya daha düşük olmalıdır.
 
 ## Decomposition Heuristic
 
@@ -208,10 +277,12 @@ Adres, harita, form, WhatsApp, footer, search, filter, CMS, backend gibi ayrı k
 6. Runtime/state foundation specialized surface içine gömülmüş mü?
 7. Whole-project horizontal QA/readiness işi feature wave'ine gizlenmiş mi?
 8. Her committed capability exact approved executable support taşıyor mu?
-9. In Scope / Deliverables / Exit Boundary aynı capability setini mi anlatıyor?
-10. Bu wave neden tam bu sırada geliyor?
-11. Hangi upstream boundary tamamlanmadan başlayamaz?
-12. Wave kapanınca sonraki agent'a hangi somut boundary teslim edilmiş olacak?
+9. Summary / Goal / In Scope / Deliverables / Handoff / Exit aynı committed capability setini mi anlatıyor?
+10. Her factual modifier exact FCL içinde mi?
+11. Delivery wording approved profile'ı aşmıyor mu?
+12. Bu wave neden tam bu sırada geliyor?
+13. Hangi upstream boundary tamamlanmadan başlayamaz?
+14. Wave kapanınca sonraki agent'a hangi somut boundary teslim edilmiş olacak?
 ```
 
 Kural:
@@ -224,6 +295,8 @@ one coherent complete deliverable → KEEP
 whole-project horizontal closure hidden in feature wave → SPLIT IF STANDALONE
 unsupported capability atom → REMOVE / FAIL
 hidden capability outside Committed Capabilities → FAIL
+factual modifier outside FCL → REMOVE / FAIL
+profile-upgrading wording → REWRITE / FAIL
 ```
 
 ## Decomposition Quality Exit Test
@@ -246,7 +319,10 @@ Bu üçünden biri generic/belirsiz ise map depth yetersizdir.
 - Her committed capability atom exact executable approved support taşımalı.
 - Broad/generic SCP başlığı unrelated adjacent capability authorize edemez.
 - Future/Open/Out-of-Scope leakage olmamalı.
-- In Scope / Deliverables / Exit Boundary capability seti Committed Capabilities ile aynı sınırda kalmalı.
+- `HIDDEN_MAP_CAPABILITIES == empty` olmalı.
+- Summary / Goal / In Scope / Deliverables / Handoff / Exit capability seti Committed Capabilities ile aynı sınırda kalmalı.
+- Factual modifiers exact FCL semantic boundary'sini aşmamalı.
+- Delivery wording approved profile'dan yüksek maturity ima etmemeli.
 - Her wave entry Goal + Why Separate + Committed Capabilities + In Scope + Out of Scope + Primary Deliverables + Dependencies + Upstream Boundary + Downstream Handoff + Exit Boundary taşımalı.
 - Dependency chain acyclic olmalı.
 - Whole-project QA gerekiyorsa uygun ayrı wave olmalı.
