@@ -205,12 +205,54 @@ Operational record ile working/final output path'i çelişirse validation FAIL o
 
 # SOURCE / ASSUMPTION / CONFLICT / DECISION RECORDS
 
-- SOURCE_REGISTER kullanılan approved input, package, overlay, engine contracts, templates ve gerçek project/ref sources'u kaydeder.
-- `ref/` materyali Reference Only'dir; project truth değildir.
+- `SOURCE_REGISTER` içindeki `SRC-*` identities yalnız bağımsız **factual project sources** veya explicit factual enrichment sources olabilir.
+- Normal source-closed project-start run'ında project source file primary factual source'tur.
+- Approved `PROJECT_INPUT` ve `INPUT_SNAPSHOT` source truth'un approved/frozen türev authority'leridir; `SRC-*` factual source identity değildir.
+- `engine/*`, `packages/*`, `templates/*`, planning overlays ve runtime contracts okunabilir authority/schema'dır; `SRC-*` factual source identity değildir.
+- `ref/` materyali Reference Only quality calibration'dır; project truth veya factual source değildir.
+- Template/version, ref usage ve authority read kayıtları SOURCE_REGISTER içinde ayrı operational tablolar halinde tutulabilir fakat `SOURCE_REGISTER_SOURCE_SET` içine alınamaz.
+- FCL provenance exact `PROJECT_SOURCE` evidence üzerinden kurulmalıdır; yalnız approved input/package/engine evidence'ına dayanamaz.
 - ASSUMPTIONS `ASSUMPTION_RULES.md`'ye uyar.
 - CONFLICTS `CONFLICT_RESOLUTION.md`'ye uyar.
 - Run DECISIONS operasyonel kararlardır; final `ai/DECISIONS.md` ile aynı dosya değildir.
 - Karar provenance'ı kullanıcı onayı ile Engine resolution'ı birbirine karıştırmamalıdır.
+
+Canonical normal-run truth chain:
+
+```text
+PROJECT_SOURCE factual evidence
+→ APPROVED_PROJECT_INPUT approval/filter boundary
+→ INPUT_SNAPSHOT frozen derivative
+→ SOURCE_REGISTER/FCL from PROJECT_SOURCE evidence
+→ generated artifacts
+```
+
+---
+
+# Operational Artifact Point-of-Use Rule
+
+Operational record'lar da template bypass edemez.
+
+Bir templated operational artifact yazılmadan hemen önce kendi canonical template'i fresh-read edilmelidir. Önceki artifact için yapılan template read sonraki artifact için reusable değildir.
+
+Özellikle:
+
+```text
+SOURCE_REGISTER write
+→ fresh templates/runs/SOURCE_REGISTER_TEMPLATE.md
+→ exact project source + approved derivative authorities
+→ write SOURCE_REGISTER
+
+VALIDATION_REPORT write
+→ fresh templates/runs/VALIDATION_REPORT_TEMPLATE.md
+→ engine/VALIDATION_RULES.md
+→ current validation target/evidence
+→ write VALIDATION_REPORT
+```
+
+Canonical template okunmadan stale schema/memory ile operational artifact yazılamaz.
+
+`VALIDATION_REPORT` current `VAL-01..VAL-19` gate setini eksiksiz temsil etmelidir. `VAL-15 = UNVERIFIED` ise overall result `PASS` olamaz; canonical semantics uygulanır.
 
 ---
 
