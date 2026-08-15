@@ -66,6 +66,102 @@ VERIFIED_CURRENT_TRUTH -> reference/factual context only
 OPEN_QUESTION / FUTURE / OUT_OF_SCOPE -> non-executable
 ```
 
+### Stage A Support Eligibility Gate
+
+Bir approved-scope atomunun map capability support adayı sayılması için iki koşulun **ikisi de** zorunludur:
+
+```text
+support_status ∈ {IN_SCOPE, KNOWN_DECISION}
+AND
+Executable = YES
+```
+
+Canonical invariant:
+
+```text
+MAP_CAPABILITY_SUPPORT_CANDIDATES
+= approved scope atoms where allowed executable status AND Executable=YES
+```
+
+Aşağıdakiler hiçbir koşulda executable map capability authorize edemez:
+
+```text
+VERIFIED_CURRENT_TRUTH
+OPEN_QUESTION
+FUTURE
+OUT_OF_SCOPE
+Executable = NO olan herhangi bir registry atomu
+```
+
+`VERIFIED_CURRENT_TRUTH` yalnız factual/reference context sağlar. Örneğin:
+
+```text
+SCP: Trakya bölgesi makine servis bağlamı
+Status: VERIFIED_CURRENT_TRUTH
+Executable: NO
+
+Allowed:
+- zaten approved bir hero/about/contact capability'si içinde FCL-bounded factual copy olarak kullanılabilir
+
+Not allowed:
+- bunun için yeni About/Regional Context surface oluşturmak
+- bağımsız WAVE üretmek
+- yeni component/deliverable capability authorize etmek
+```
+
+Her map atomu için validator minimum şu eligibility evidence'ını yazmalıdır:
+
+```text
+Map Capability Atom
+Candidate Support ID
+Candidate Status
+Candidate Executable Flag
+Candidate Exact Meaning
+Eligibility Result
+Semantic Subset Result
+Final Support Result
+```
+
+`Eligibility Result != PASS` ise semantic benzerlik incelenmeden atom `UNSUPPORTED_MAP_CAPABILITIES` içine girer.
+
+### Exact Semantic Support Gate
+
+Eligible support adayı bulunması tek başına PASS değildir. Map atomu candidate support meaning'in **semantic subset'i** olmalıdır.
+
+Broad/generic scope ayrı surface veya adjacent capability authorize etmez.
+
+Invalid examples:
+
+```text
+approved: modern responsive corporate frontend
+map: corporate footer
+→ unsupported unless footer/shell/navigation structure separately executable-approved
+
+approved: modern responsive corporate frontend
+map: independent About/Regional Context surface
+→ unsupported unless that presentation surface separately executable-approved
+
+approved: phone/email direct-contact CTA
+map: sticky contact bar
+→ unsupported unless sticky behavior is semantically justified as implementation detail of exact CTA behavior without creating a new product surface; otherwise separate support required
+
+approved: corporate identity presentation
+map: search / filter / modal / map / form
+→ unsupported
+```
+
+Implementation detail ayrımı yalnız şu durumda geçerlidir:
+
+```text
+same approved behavior
++ no new user-facing capability
++ no new interaction contract
++ no new factual/business meaning
++ no independently meaningful deliverable surface
+```
+
+Bu koşullardan biri sağlanmıyorsa broad support kullanılamaz.
+
 Rules:
 - related/generic capability exact support değildir.
 - phone/email CTA, address/map/form/WhatsApp capability'sini authorize etmez.
@@ -362,6 +458,7 @@ Expected/Actual/Missing/Unexpected Wave IDs
 MAP_CAPABILITY_ATOMS per wave
 COMMITTED_CAPABILITY_ATOMS per wave
 HIDDEN_MAP_CAPABILITIES per wave
+MAP_SUPPORT_ELIGIBILITY per map atom (support ID + status + executable flag + result)
 exact approved support meaning per map atom
 UNSUPPORTED_MAP_CAPABILITIES per wave
 WAVE_MAP WHY_SEPARATE / UPSTREAM / HANDOFF depth check per wave
@@ -388,6 +485,9 @@ Required evidence block missing → corresponding gate cannot PASS. Blocking gat
 Canonical results:
 ```text
 EXPECTED != ACTUAL -> VAL-03 FAIL
+map support candidate status not IN_SCOPE/KNOWN_DECISION -> VAL-04 FAIL
+map support candidate Executable != YES -> VAL-04 FAIL
+map capability not semantic subset of eligible executable support -> VAL-04 FAIL
 HIDDEN_MAP_CAPABILITIES != empty -> VAL-04 FAIL
 UNSUPPORTED_MAP_CAPABILITIES != empty -> VAL-04 FAIL
 NEW_PLAN_CAPABILITIES != empty -> VAL-04 FAIL
