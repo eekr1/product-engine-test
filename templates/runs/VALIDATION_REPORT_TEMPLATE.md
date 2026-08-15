@@ -6,7 +6,7 @@
 template_id: validation-report-template
 template_name: Validation Report Operational Template
 document_id: not_applicable
-version: 1.7.0
+version: 1.8.0
 status: active
 template_type: operational
 category: operational
@@ -36,10 +36,10 @@ output_filename: VALIDATION_REPORT.md
 - Dynamic Instance Coverage
 - WAVE_MAP Capability Diff
 - WAVE_PLAN Parent Capability Diff
-- Source Registry Consistency
+- Source Registry Consistency + Source Classification
 - Source → FCL → Generated Claim Checks
 - External Source Consumption Checks
-- Point-of-Use Read/Write Token Pairing
+- Point-of-Use Template + Quality-Reference Evidence
 - Validation Timing
 - VAL-01..VAL-19 Table
 - Violations & Repairs
@@ -63,8 +63,11 @@ Her wave için atomik tablo zorunludur:
 Wave ID
 Map Capability Atom
 Exact Approved Support ID
+Support Status
+Support Executable Flag
 Exact Approved Support Meaning
-Relation
+Eligibility Result
+Semantic Subset Result
 Result
 ```
 
@@ -72,11 +75,13 @@ Ardından zorunlu set özeti:
 
 ```text
 MAP_CAPABILITY_ATOMS = [...]
+COMMITTED_CAPABILITY_ATOMS = [...]
+HIDDEN_MAP_CAPABILITIES = [...]
 SUPPORTED_MAP_CAPABILITIES = [...]
 UNSUPPORTED_MAP_CAPABILITIES = [...]
 ```
 
-`UNSUPPORTED_MAP_CAPABILITIES` boş değilse VAL-04 PASS yazılamaz.
+`HIDDEN_MAP_CAPABILITIES` veya `UNSUPPORTED_MAP_CAPABILITIES` boş değilse VAL-04 PASS yazılamaz.
 Generic support ID listesi tek başına evidence değildir.
 
 ## WAVE_PLAN Parent Capability Diff
@@ -101,26 +106,57 @@ NEW_PLAN_CAPABILITIES = [...]
 
 `NEW_PLAN_CAPABILITIES` boş değilse VAL-04 PASS yazılamaz.
 
-## Source Registry Consistency
+## Source Registry Consistency + Classification
 
-Validation başlamadan SOURCE_REGISTER source table exact mirror edilir:
+SOURCE_REGISTER içindeki `SRC-*` seti yalnız factual source identities içerebilir.
+
+Canonical classification:
+
+```text
+PROJECT_SOURCE -> factual source / allowed SRC
+explicit factual enrichment source -> allowed SRC only when explicitly requested and actually consumed
+APPROVED_PROJECT_INPUT -> derived approved authority / NOT SRC
+INPUT_SNAPSHOT -> derived frozen registry / NOT SRC
+engine/* -> runtime authority / NOT SRC
+packages/* -> package authority / NOT SRC
+templates/* -> schema/template / NOT SRC
+ref/* -> quality reference / NOT SRC
+generated output -> derived artifact / NOT SRC
+```
+
+Validation başlamadan source table exact mirror edilir:
 
 ```text
 SOURCE_REGISTER_SOURCE_SET
 VALIDATION_SOURCE_SET
 SOURCE_SET_EQUAL: YES | NO
+SOURCE_CLASSIFICATION_ERRORS = [...]
 ```
 
-Her source için:
+Her `SRC-*` için:
 
 ```text
 Source ID
-SOURCE_REGISTER Identity
-Validation Identity
-SOURCE_REGISTER Usage State
-Validation Usage State
-Exact Match
+Identity
+Declared Source Role
+Actual Artifact Role
+Usage State
+Classification Valid
 ```
+
+`SOURCE_CLASSIFICATION_ERRORS != empty` ise VAL-12 ve VAL-13 PASS yazılamaz.
+
+Özellikle aşağıdaki pattern invalid'dir:
+
+```text
+SRC-01 project source
+SRC-02 approved PROJECT_INPUT
+SRC-03 package
+SRC-04 planning overlay
+SRC-05 engine/*
+```
+
+Approved input/package/engine read edilmiş olabilir fakat factual source değildir.
 
 Mismatch varsa VAL-07 ve VAL-13 PASS yazılamaz.
 Validator yeni source veya yeni usage state icat edemez.
@@ -131,12 +167,14 @@ Her FCL:
 ```text
 FCL ID
 FCL Claim
-Exact Supporting Source ID
-Exact Source Identity copied from SOURCE_REGISTER
+Exact Supporting Factual Source ID
+Exact PROJECT_SOURCE Identity copied from SOURCE_REGISTER
 Source Usage State copied from SOURCE_REGISTER
-Exact Source Evidence
+Exact PROJECT_SOURCE Evidence
 FCL ⊆ Source Result
 ```
+
+FCL yalnız `PROJECT_INPUT`, `INPUT_SNAPSHOT`, engine/package/template/ref identity'ye dayanıyorsa FAIL'dir.
 
 Her generated claim:
 ```text
@@ -148,7 +186,7 @@ Generated ⊆ FCL Result
 
 ## External Source Consumption Checks
 
-Her external source için:
+Her external factual source için:
 ```text
 Source ID
 SOURCE_REGISTER Usage State
@@ -159,9 +197,51 @@ Consumption Claim Valid
 
 Başka source summary'si external consumption evidence değildir.
 
-## Point-of-Use Read/Write Token Pairing
+## Point-of-Use Template + Quality-Reference Evidence
 
-Trace AVAILABLE ise actual ordered events ayrı listelenir:
+Trace AVAILABLE ise actual ordered events ayrı listelenir.
+
+### WAVE_MAP checkpoint
+
+Required observable sequence:
+
+```text
+ref/waves/README.md
+→ ref/waves/WAVE_MAP_REFERENCE.md
+→ WAVE_MAP_TEMPLATE.md
+→ current authorities
+→ WAVE_MAP write
+```
+
+`WAVE_MAP_REFERENCE.md` current map write öncesinde observable olarak açılmamışsa point-of-use calibration FAIL'dir.
+
+### WAVE_PLAN checkpoints
+
+Her exact WAVE_NN için:
+
+```text
+fresh WAVE_PLAN_TEMPLATE read
+→ exact parent read
+→ at least one isolated quality-reference read for THIS WAVE
+→ authorities as applicable
+→ exactly one WAVE_NN write
+```
+
+Zorunlu per-wave evidence:
+
+```text
+Wave ID | Template Read Event | Quality Ref Read Event(s) | Write Event | Result
+```
+
+Canonical rule:
+
+```text
+QUALITY_REF_READ_COUNT(WAVE_NN) >= 1
+```
+
+Önceki wave'deki ref read current wave için reuse edilemez. UI/runtime taxonomy'ye net oturmayan wave en yakın quality reference'i seçmek zorundadır; `0 ref` geçerli seçim değildir.
+
+Dynamic template token pairing ayrıca uygulanır:
 
 ```text
 Observed Dynamic Template Read Events:
@@ -171,15 +251,9 @@ R2 ...
 Observed Dynamic Write Events:
 W1 ...
 W2 ...
-```
 
-Sonra token consumption tablosu:
-
-```text
 Write Event | Matching Read Token | Token Previously Used? | Pair Result
 ```
-
-Her read token single-use'dur.
 
 Zorunlu özet:
 ```text
@@ -188,10 +262,21 @@ WRITE_EVENT_COUNT
 CONSUMED_READ_TOKENS
 UNPAIRED_WRITES
 REUSED_READ_TOKENS
+MISSING_MAP_REFERENCE_READS
+WAVES_WITH_ZERO_QUALITY_REF_READS
 ```
 
-`UNPAIRED_WRITES` veya `REUSED_READ_TOKENS` boş değilse VAL-15 FAIL.
-Self-reported pairing listesi actual observable read event yerine geçmez.
+Aşağıdakilerden biri non-empty ise VAL-15 FAIL:
+
+```text
+UNPAIRED_WRITES
+REUSED_READ_TOKENS
+MISSING_MAP_REFERENCE_READS
+WAVES_WITH_ZERO_QUALITY_REF_READS
+```
+
+Self-reported pairing/ref listesi actual observable event yerine geçmez.
+Trace UNAVAILABLE ise VAL-15 UNVERIFIED kalır.
 
 ## Validation Timing
 ```text
@@ -230,7 +315,7 @@ Expected set `VAL-01..VAL-19`; missing gate → overall FAIL.
 ## 5. WAVE_PLAN Parent Capability Diff
 {{WAVE_PLAN_PARENT_CAPABILITY_DIFF}}
 
-## 6. Source Registry Consistency
+## 6. Source Registry Consistency + Classification
 {{SOURCE_REGISTRY_CONSISTENCY}}
 
 ## 7. Source → FCL → Generated Claim Checks
@@ -239,7 +324,7 @@ Expected set `VAL-01..VAL-19`; missing gate → overall FAIL.
 ## 8. External Source Consumption Checks
 {{EXTERNAL_SOURCE_CHECKS}}
 
-## 9. Point-of-Use Read/Write Token Pairing
+## 9. Point-of-Use Template + Quality-Reference Evidence
 {{TRACE_TOKEN_PAIRING_BLOCK}}
 
 ## 10. Validation Timing / Chronology
