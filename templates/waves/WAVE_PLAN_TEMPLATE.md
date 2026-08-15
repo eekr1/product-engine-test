@@ -6,7 +6,7 @@
 template_id: wave-plan-template
 template_name: Canonical Wave Plan Template
 document_id: WAVE-PLAN
-version: 3.3.0
+version: 3.4.0
 status: active
 template_type: dynamic-document
 category: waves
@@ -141,6 +141,51 @@ FCL semantic content ⊆ exact supporting source evidence
 generated factual claim ⊆ referenced FCL semantic content
 ```
 
+### Factual Modifier Guard
+
+Planning depth gerçek-dünya/firma/domain bilgisini genişletme izni değildir.
+
+Aşağıdakiler teknik implementation detail değildir; factual claim/modifier olarak kabul edilir ve exact FCL support gerektirir:
+
+```text
+hizmet adına yeni qualifier eklemek
+hizmetin nasıl/nerede/ne hızda verildiğini açıklamak
+stok/orijinallik/garanti iddiası
+acil müdahale / mobil filo / SLA / yanıt süresi
+periyodik bakım / revizyon / spesifik makine-alt sistem uzmanlığı
+çalışma saatleri / şube / servis ağı / coğrafi garanti
+müşteri / sertifika / başarı / partnerlik / referans iddiası
+```
+
+Örnek:
+
+```text
+FCL: Yerinde Teknik Destek
+Allowed: "Yerinde Teknik Destek" başlığının presentation/layout kararı
+Not allowed without exact support: "arıza müdahalesi", "mobil servis", "acil teknik destek"
+
+FCL: Makine Bakım ve Onarım
+Allowed: kart/component/layout/CTA implementation detail
+Not allowed without exact support: "periyodik bakım", "revizyon", "hidrolik pres", "güç ünitesi"
+```
+
+“marketing copy”, “technical detail”, “regional context”, “kısa açıklama” veya “card description” etiketi bu sınırı gevşetmez.
+
+Teknik implementation kararları FCL gerektirmez; grid, component boundary, CSS transition, responsive behavior, adapter/file structure gibi kararlar current authorities içinde Engine tarafından resolve edilebilir.
+
+## Delivery Profile Wording Guard
+
+Plan approved delivery profile'dan daha yüksek maturity iddia edemez.
+
+```text
+Prototype -> demo-ready / validated prototype / sales-demo ready allowed
+Prototype -> implementation-ready / production-ready / launch-ready forbidden
+Implementation Ready -> production-ready forbidden unless profile changes through approval
+Production Ready -> production-ready allowed
+```
+
+Bu guard yalnız wording değil, Handoff / Exit / Expected Result / Acceptance alanlarındaki maturity iddialarına da uygulanır.
+
 ## Pre-Execution State
 
 ```text
@@ -212,6 +257,15 @@ Concrete Done Result
 
 Task aynı coherent responsibility altında birkaç alt-adımı birleştirebilir; amaç yapay satır sayısı değil, execution ambiguity'yi kaldırmaktır.
 
+Task yazıldıktan sonra iki ayrı diff zorunludur:
+
+```text
+CAPABILITY DIFF: task parent map'e yeni surface/behavior/deliverable ekliyor mu?
+FACT DIFF: task/prose exact FCL'den daha geniş gerçek-dünya anlamı taşıyor mu?
+```
+
+İkisinden biri genişliyorsa write öncesi repair/remove edilir.
+
 ### Insufficient task example
 
 ```text
@@ -240,6 +294,8 @@ Bir `WAVE_NN` planı yazıldıktan sonra aynı checkpoint içinde `WAVE_NN+1` ya
 ```text
 WRITE WAVE_NN
 → boundary diff
+→ factual diff
+→ profile wording diff
 → repair
 → checkpoint CLOSE
 → NEXT checkpoint starts with NEW fresh WAVE_PLAN_TEMPLATE read
@@ -324,6 +380,8 @@ Plan kendi parent map'ini sessizce genişletemez.
 > Every task must resolve to an exact parent capability atom. New/adjacent/inferred capability introduced only here is invalid.
 >
 > Tasks must be implementation-ready: applicable responsibility location, dependency/data/state behavior, preserved boundaries and verification must be explicit enough that a fresh capable agent does not need another planning pass.
+>
+> Factual prose/modifiers must remain exact-FCL bounded; planning depth cannot enrich company/domain truth.
 {{IMPLEMENTATION_CHECKLIST}}
 
 ## 9. State / Role / Responsive Coverage
