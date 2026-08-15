@@ -6,7 +6,7 @@
 template_id: wave-map-template
 template_name: Canonical Wave Map Template
 document_id: WAVE-MAP
-version: 2.9.0
+version: 3.0.0
 status: active
 template_type: document
 category: waves
@@ -107,6 +107,95 @@ WAVE_PLAN capability atoms ⊆ exact parent WAVE_MAP capability atoms
 `VERIFIED_CURRENT_TRUTH` factual/reference context sağlayabilir fakat tek başına execution capability oluşturmaz.
 `Future Possibilities`, `Open Questions` ve `Out of Scope` current wave scope'una map edilemez.
 
+## Executable Support Eligibility
+
+Bir SCP/approved-scope atomu WAVE_MAP capability support adayı olabilmek için:
+
+```text
+Status ∈ {IN_SCOPE, KNOWN_DECISION}
+AND
+Executable = YES
+```
+
+olmalıdır.
+
+Canonical support candidate set:
+
+```text
+EXECUTABLE_SUPPORT_CANDIDATES
+= approved scope atoms where allowed executable status AND Executable=YES
+```
+
+Aşağıdakiler capability authorize edemez:
+
+```text
+VERIFIED_CURRENT_TRUTH
+OPEN_QUESTION
+FUTURE
+OUT_OF_SCOPE
+Executable = NO
+```
+
+`VERIFIED_CURRENT_TRUTH` yalnız factual/reference context'tir. Bir truth atomu approved başka bir surface içinde copy/context olarak kullanılabilir; kendi başına yeni About, Footer, Regional Context, badge, modal, map, form, widget, wave veya başka executable deliverable oluşturamaz.
+
+Örnek:
+
+```text
+SCP-006: Trakya bölgesi makine servis bağlamı
+Status: VERIFIED_CURRENT_TRUTH
+Executable: NO
+
+allowed:
+- already approved hero/contact surface içinde FCL-bounded Trakya context copy
+
+not allowed:
+- WAVE: Corporate Background & Regional Context Presentation
+- About.js capability
+- regional context card capability
+```
+
+## Exact Semantic Support
+
+Eligible support adayı bulunması tek başına yeterli değildir.
+
+```text
+map capability semantic meaning ⊆ exact executable support meaning
+```
+
+olmalıdır.
+
+Broad/generic capability adjacent surface authorize etmez.
+
+```text
+approved: modern responsive corporate frontend
+NOT automatically approved:
+- corporate footer
+- independent About section
+- sticky action bar
+- modal
+- search/filter
+- map/form
+
+approved: phone/email direct-contact CTA
+NOT automatically approved:
+- WhatsApp
+- contact form
+- map
+- independently meaningful sticky contact surface
+```
+
+Bir generated item yalnız şu koşulların tümü sağlanıyorsa aynı approved capability'nin implementation detail'i sayılabilir:
+
+```text
+same approved behavior
+no new user-facing capability
+no new interaction contract
+no new factual/business meaning
+no independently meaningful deliverable surface
+```
+
+Aksi halde ayrı executable capability atomudur ve exact support gerekir.
+
 ## Her Wave Entry İçin Zorunlu Boundary
 
 Her wave entry aşağıdaki alanları açıkça taşımalıdır:
@@ -135,7 +224,11 @@ Her atom için:
 ```text
 Capability
 Approved Support ID(s)
+Support Status
+Support Executable Flag
 Support Meaning
+Eligibility Result
+Semantic Subset Result
 Map Subset Result
 ```
 
@@ -144,8 +237,8 @@ zorunludur.
 Örnek:
 
 ```text
-- phone CTA | SCP-006 | phone direct-contact CTA | PASS
-- email CTA | SCP-006 | email direct-contact CTA | PASS
+- phone CTA | SCP-006 | IN_SCOPE | YES | phone direct-contact CTA | PASS | PASS | PASS
+- email CTA | SCP-006 | IN_SCOPE | YES | email direct-contact CTA | PASS | PASS | PASS
 ```
 
 Şu kullanım geçersizdir:
@@ -160,9 +253,12 @@ Canonical comparison:
 
 ```text
 for each committed capability atom:
-  identify exact supporting executable approved scope atom(s)
-  compare semantic meaning
-  if no exact semantic support -> FAIL / REMOVE
+  resolve candidate support
+  require candidate status IN_SCOPE/KNOWN_DECISION
+  require candidate Executable=YES
+  compare exact semantic meaning
+  if eligibility fails -> FAIL / REMOVE
+  if semantic subset fails -> FAIL / REMOVE
 ```
 
 Adres, harita, form, WhatsApp, footer, sticky action bar, search, filter, modal, technical-detail overlay, CMS, backend gibi ayrı kullanıcı/ürün capability'leri generic `contact`, `responsive site`, `corporate surface`, `regional context` veya benzer geniş başlıklar altında gizlenemez.
@@ -263,6 +359,8 @@ Summary, Goal, Deliverables, Handoff ve Exit Boundary bu guard'a tabidir.
 - WAVE_MAP freeze edildikten sonra downstream WAVE_PLAN yalnız parent entry'yi detaylandırabilir.
 - Summary, Goal, In Scope, Deliverables, Handoff ve Exit Boundary içinde geçen her executable capability Committed Capabilities listesinde görünür olmalıdır. Gizli capability yasaktır.
 - Her wave'in **neden ayrı olduğu**, hangi exact upstream deliverable/boundary'ye dayandığı ve sonraki wave'e hangi tamamlanmış boundary'yi bıraktığı açık olmalıdır.
+- Her committed capability support adayı executable-eligible olmalıdır; truth/reference status capability support yerine kullanılamaz.
+- Broad scope atomu adjacent surface authorize edemez; exact semantic subset zorunludur.
 - Factual copy/decomposition detail exact FCL semantic boundary'sini aşamaz.
 - Delivery maturity wording approved profile ile aynı veya daha düşük olmalıdır.
 
@@ -276,13 +374,15 @@ Summary, Goal, Deliverables, Handoff ve Exit Boundary bu guard'a tabidir.
 5. Shared foundation onu kullanan feature'ların içine gömülmüş mü?
 6. Runtime/state foundation specialized surface içine gömülmüş mü?
 7. Whole-project horizontal QA/readiness işi feature wave'ine gizlenmiş mi?
-8. Her committed capability exact approved executable support taşıyor mu?
-9. Summary / Goal / In Scope / Deliverables / Handoff / Exit aynı committed capability setini mi anlatıyor?
-10. Her factual modifier exact FCL içinde mi?
-11. Delivery wording approved profile'ı aşmıyor mu?
-12. Bu wave neden tam bu sırada geliyor?
-13. Hangi upstream boundary tamamlanmadan başlayamaz?
-14. Wave kapanınca sonraki agent'a hangi somut boundary teslim edilmiş olacak?
+8. Her committed capability support status'u executable-eligible mı?
+9. Her committed capability support atomunda Executable=YES mi?
+10. Her committed capability exact executable support meaning'in semantic subset'i mi?
+11. Summary / Goal / In Scope / Deliverables / Handoff / Exit aynı committed capability setini mi anlatıyor?
+12. Her factual modifier exact FCL içinde mi?
+13. Delivery wording approved profile'ı aşmıyor mu?
+14. Bu wave neden tam bu sırada geliyor?
+15. Hangi upstream boundary tamamlanmadan başlayamaz?
+16. Wave kapanınca sonraki agent'a hangi somut boundary teslim edilmiş olacak?
 ```
 
 Kural:
@@ -293,6 +393,8 @@ shared prerequisite consumed by multiple later waves → CONSIDER FOUNDATION SPL
 no meaningful standalone result → MERGE
 one coherent complete deliverable → KEEP
 whole-project horizontal closure hidden in feature wave → SPLIT IF STANDALONE
+non-executable/truth-only support candidate → REMOVE / FAIL
+broad support without semantic subset → REMOVE / FAIL
 unsupported capability atom → REMOVE / FAIL
 hidden capability outside Committed Capabilities → FAIL
 factual modifier outside FCL → REMOVE / FAIL
@@ -316,7 +418,9 @@ Bu üçünden biri generic/belirsiz ise map depth yetersizdir.
 ## Validation Beklentileri
 
 - Required point-of-use compact map reference calibration uygulanmış olmalı; independent trace unavailable ise read event ayrıca kanıtlanamaz fakat generated map depth yine artifact üzerinden değerlendirilir.
-- Her committed capability atom exact executable approved support taşımalı.
+- Her committed capability support adayı `IN_SCOPE|KNOWN_DECISION` + `Executable=YES` olmalı.
+- `VERIFIED_CURRENT_TRUTH` yalnız factual/reference context olarak kullanılmalı; capability support olmamalı.
+- Her committed capability atom exact executable approved support taşımalı ve semantic subset olmalı.
 - Broad/generic SCP başlığı unrelated adjacent capability authorize edemez.
 - Future/Open/Out-of-Scope leakage olmamalı.
 - `HIDDEN_MAP_CAPABILITIES == empty` olmalı.
