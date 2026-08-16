@@ -11,12 +11,12 @@ Kullanılan ajanın Codex, Claude, Gemini veya başka bir sistem olması fark et
 ## Current Version
 
 ```text
-Product Engine Version: 0.2.1
+Product Engine Version: 0.2.2
 Active Version Authority: Root README.md (bu dosya)
 Version History Authority: logs/ENGINE_CHANGELOG.md
 ```
 
-`v0.2.1`, `v0.2.0` planning-profile mimarisini korur ve gerçek demo implementation kullanımından öğrenilen **continuation-ready frontend stack selection** guard'ını ekler. Sales/client demo projelerinde demo olgunluğu, ileride aynı codebase üzerinde devam etmeyi gereksiz migration'a zorlayan bir frontend foundation seçmek için gerekçe değildir.
+`v0.2.2`, continuation-ready frontend stack guard'ını deterministic hale getirir. Continuation beklenen sales/client demo projelerinde explicit approved zero-build constraint yoksa package-managed, component-oriented frontend baseline ve repeatable dev/build/preview workflow zorunludur. Agent'ın “ileride framework'e migrate edilir” veya “Vanilla düşük maliyetli” yorumu istisna oluşturamaz; `VAL-09` bu kuralı blocking olarak doğrular.
 
 Bu dosya (Root `README.md`), Product Engine'in tek birincil aktif sürüm otoritesidir (`current active version authority`). Sürüm geçmişinin sahibi ise `logs/ENGINE_CHANGELOG.md` belgesidir.
 
@@ -138,23 +138,14 @@ AGENT-READY OUTPUT
 RUN COMPLETION / HISTORY
 ```
 
-Planning axes:
-
-```text
-delivery_profile         → teslim olgunluğu
-implementation_planning  → standard | full
-design_planning          → light | standard | full (UI/UX applicable ise)
-```
-
 Core quality rules:
 
 ```text
 Profile depth ≠ quality level
 Prototype/demo ≠ throwaway architecture
-Light design ≠ generic/template design
 Integration-ready ≠ invented backend
-Continuation-ready demo ≠ forced framework; migration-heavy foundation requires justification
-Full ≠ gereksiz belge üretme izni
+Continuation expected + no approved zero-build constraint → package-managed/component-oriented baseline REQUIRED
+Future framework migration ≠ same-codebase continuation
 ```
 
 ---
@@ -162,41 +153,22 @@ Full ≠ gereksiz belge üretme izni
 ## Current Build State
 
 ```text
-Core Engine Foundation                 : Completed
-First Real Project Test (v0.1.0)       : Completed
-First-Run Hardening                    : Completed
-Planning Profile System                : Completed
-Implementation / Wave Planning         : Completed
-Design Planning Foundation             : Completed
-Design Canonical Templates             : Completed
-Selection / Overlay Integration        : Completed
-Validation Expansion                   : Completed
-Post-Build Integration Audit           : Completed
-Audit Cleanup                          : Completed
-Continuation-Ready Stack Guard (v0.2.1): Implemented — Awaiting Next Real-Run Validation
-Overall v0.2.1 State                   : Operational; real-project usage active
+Core Engine Foundation                    : Completed
+Planning / Wave / Design Systems           : Completed
+Continuation-Ready Stack Guard v0.2.1      : Failed real-run validation
+Deterministic Continuation Gate v0.2.2     : Implemented — Awaiting Validation
+Overall v0.2.2 State                       : Operational; next Trakya run is validation target
 ```
 
-Engine artık gerçek proje üretiminde aktif olarak kullanılabilir. Blocking/Major mimari sapmalar Engine'e geri beslenir; tekil düşük etkili hardening gözlemleri `logs/ENGINE_HARDENING_LOG.md` üzerinden takip edilir ve proje üretimini otomatik durdurmaz.
-
-`ISSUE-001` continuation-ready frontend stack guard'ı uygulanmıştır; bir sonraki gerçek demo generation run'ı bu davranışın validation kanıtı olacaktır.
-
----
-
-## Historical / Non-Runtime Layers
-
-- `planning/`: İlk Product Engine inşa sürecindeki şartnameler ve tarihsel durum takibi. Active contracts üzerine geçemez.
-- `planning/build-prompts/`: İlk build orchestration prompt'ları. Runtime instruction değildir.
-- `examples/`: Test/reference fixture'ları; authority değildir.
-- `archive/`: Kullanımdan kaldırılmış veya dondurulmuş tarihsel belgeler.
-- `ref/`: Tasarım ve kalite pattern referansları; canonical rule olarak doğrudan kopyalanmaz.
+`ISSUE-001` açık kalır. `RUN-20260817-002`, v0.2.1'in agent-generated rationale ile Vanilla'ya kaçabildiğini kanıtladı. v0.2.2 bu loophole'u kapatır ve `VAL-09` enforcement ekler.
 
 ---
 
 ## Version History Boundary
 
-- `v0.1.0`: İlk gerçek Trakya Teknik Makine run'ını gerçekleştiren temel Engine. Historical output `outputs/demos/trakya-teknik-makine/versions/v0.1/` ve `runs/completed/RUN-20260811-001/` altında korunur.
-- `v0.2.0`: Planning Profiles + implementation/wave planning + design planning + integration readiness + agent-readiness validation mimarisi.
-- `v0.2.1`: Demo/frontend continuation-ready stack selection guard; sales/client demo stack kararlarında low-migration continuation rationale ve repeatable tooling beklentisi.
+- `v0.1.0`: İlk gerçek Engine runtime.
+- `v0.2.0`: Planning profiles + implementation/design/wave architecture.
+- `v0.2.1`: Continuation-ready stack intent/rationale guard.
+- `v0.2.2`: Deterministic continuation gate + blocking VAL-09 enforcement.
 
-Historical bir eski run/output yeni contract'lara göre geriye dönük olarak mutate edilmez. Yeni contract'ları doğrulamak için yeni intake/run veya yeni gerçek proje generation evidence'ı kullanılır.
+Historical eski run/output yeni contract'lara göre geriye dönük mutate edilmez; validation için fresh run kullanılır.
