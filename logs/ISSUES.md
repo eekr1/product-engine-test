@@ -102,16 +102,40 @@ Bir issue kaydı doğrudan `Resolved` durumuna geçirilemez. `Resolved` yapılab
 
 ---
 
-## 6. Güncel Issue Durumu (Initial Neutral State)
+## 6. Güncel Issue Durumu
 
 ```text
 Open Issues                           : 0
-Implemented — Awaiting Validation     : 0
+Implemented — Awaiting Validation     : 1
 Resolved Issues                       : 0
-Total Recorded                        : 0
+Total Recorded                        : 1
 ```
 
-> [!NOTE]
-> Henüz Product Engine çekirdeğinde doğrulanmış ve kaydedilmiş açık bir sistemsel kusur (`engine issue`) bulunmamaktadır.
->
-> Gerçek bir çalıştırma veya test sırasında doğrulanmış bir hataya rastlandığında kanonik şemaya uygun olarak `ISSUE-001` kimliği ile ilk kayıt açılacaktır. Sahte veya kanıtsız hata kaydı üretilmemiştir.
+---
+
+## ISSUE-001 — Demo frontend stack continuation readiness not enforced
+
+- **Status:** Implemented — Awaiting Validation
+- **Severity:** Major
+- **Category:** Engine Rules | Packages | Templates | Validation
+- **Owner:** engine maintainer
+- **First Seen:** 2026-08-17
+- **Last Seen:** 2026-08-17
+- **Related Runs:** `runs/completed/RUN-20260815-001/`
+- **Resolved in Version:** not_assigned
+- **Related Change:** PE-CHANGE-007
+- **Validation Run:** None
+
+### Description
+Engine, demo/prototype projelerde service/data-access boundary ve future API adapter ayrımını doğru kurmasına rağmen frontend stack/tooling kararının aynı codebase üzerinde gerçek ürüne devam etmeyi destekleyip desteklemediğini blocking biçimde değerlendirmiyordu. Trakya Teknik Makine satış demosunda bu boşluk dependency-free Vanilla HTML/CSS/JS baseline seçilmesine izin verdi.
+
+### Impact
+Çıktı çalışan ve backend adapter açısından integration-ready olmasına rağmen müşteri kabulü sonrası daha fazla page/component/state, CMS/API/auth veya build/deployment ihtiyacı geldiğinde gereksiz frontend migration/refactor maliyeti doğurabilecek bir foundation üretildi. Bu durum `Temporary scope ≠ throwaway architecture` amacının yalnız data-boundary tarafında uygulanıp stack/tooling evolution tarafında eksik kalmasına neden oldu.
+
+### Reproduction / Evidence
+- `outputs/demos/trakya-teknik-makine/latest/ai/TECH_CONTEXT.md` dependency-free Vanilla frontend seçti.
+- `outputs/demos/trakya-teknik-makine/latest/waves/plans/WAVE_00.md` target structure'ı package manifest/dev-build tooling olmadan `index.html + src/` olarak dondurdu.
+- Approved/demo context gerçek satış demosu olup kabul sonrası aynı proje üzerinde devam etme çalışma modeline uygundur.
+
+### Proposed Resolution
+`engine/PLANNING_PROFILES.md` içinde continuation-ready frontend stack selection invariant'ı authoritative hale getirildi; `packages/DEMO_FRONTEND_PACKAGE.md` satış demolarında package-managed/component-ready modern baseline preference ve zero-build justification gate'i ekledi; `templates/ai/TECH_CONTEXT_TEMPLATE.md` stack continuation rationale ile repeatable dev/build/preview workflow evidence'ını zorunlu hale getirdi. Bir sonraki gerçek generation run'ında bu davranış doğrulanana kadar issue `Implemented — Awaiting Validation` kalır.
