@@ -6,7 +6,7 @@
 package_id: demo-frontend
 package_name: Frontend Demo Package
 package_type: base
-version: 2.2.0
+version: 2.2.1
 status: active
 default_delivery_profile: Prototype
 compatible_project_types:
@@ -124,6 +124,45 @@ MUST NOT:
 
 Gerçek API approved scope'a girerse `API`/`DATA` ve ilgili extension/context koşulları yeniden çözülür.
 
+### Continuation-Ready Frontend Foundation
+
+`demo-frontend` package için integration readiness yalnız data adapter ile tamamlanmış sayılmaz. Özellikle satış demosu veya müşteri kabul ederse gerçek projeye dönüşmesi beklenen frontend'lerde, bugünkü stack/tooling seçimi aynı codebase üzerinde devam etmeyi desteklemelidir.
+
+Canonical package expectation:
+
+```text
+sales demo
+→ same frontend foundation
+→ additional pages/components/state
+→ real service/API/CMS integration when approved
+```
+
+Aksi yönde approved teknik constraint yoksa Engine, modern package-managed ve component-ready bir frontend development baseline'ını tercih etmelidir. Bu kural belirli bir framework'ü global olarak zorunlu kılmaz; framework/tooling seçimi project-specific teknik synthesis kararıdır.
+
+Beklenen baseline class:
+
+```text
+package/dependency manifest
++ repeatable dev/build/preview workflow
++ modular component/module structure
++ service/config boundary
++ production-continuation friendly source layout
+```
+
+Zero-build / dependency-free Vanilla yaklaşımı otomatik yasak değildir; fakat yalnızca `engine/PLANNING_PROFILES.md` içindeki continuation-ready selection gate'i karşılayan açık gerekçeyle seçilebilir.
+
+Şunlar tek başına yeterli gerekçe değildir:
+
+```text
+demo
+prototype
+small project
+fast implementation
+no dependencies
+```
+
+TECH_CONTEXT, seçilen stack'in kabul sonrası continuation yolunu ve migration maliyetini açıkça gerekçelendirmelidir.
+
 ---
 
 ## Design Kuralı
@@ -199,6 +238,9 @@ Bu package için ek doğrulamalar:
 - demo/prototype label yeni capability authorize etmez,
 - demo ≠ throwaway architecture,
 - integration readiness mevcut,
+- continuation beklenen demo için frontend stack/tooling continuation-ready ve düşük migration maliyetli gerekçelendirilmiş,
+- zero-build/dependency-free seçim varsa explicit constraint veya güçlü continuation rationale mevcut,
+- repeatable dev/build/preview workflow ve package/tooling reality TECH_CONTEXT ile tutarlı,
 - invented backend yok,
 - invented mock interaction/capability yok,
 - design profile minimumu korunmuş,
@@ -207,7 +249,7 @@ Bu package için ek doğrulamalar:
 - distinct Services ve Contact sorumlulukları uygunsuz biçimde merge edilmemiş,
 - whole-project final QA herhangi bir feature/contact wave'ine gömülmemiş.
 
-Package scope/granularity guard ihlali → validation FAIL / WAVE_MAP repair.
+Package scope/granularity/continuation guard ihlali → validation FAIL / TECH_CONTEXT or WAVE_MAP repair.
 
 ---
 
