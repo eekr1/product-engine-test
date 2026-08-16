@@ -9,7 +9,7 @@ Bu belge, Product Engine'in çekirdek motor yapısında (`engine/`), paket kural
 - **Root `README.md`**: Güncel aktif Product Engine sürümünün birincil otoritesi.
 - **`logs/ENGINE_CHANGELOG.md`**: Product Engine sürüm geçmişinin birincil otoritesi.
 
-Güncel aktif sürüm: `v0.2.0`.
+Güncel aktif sürüm: `v0.2.1`.
 
 ---
 
@@ -68,7 +68,7 @@ Historical kanıt:
 - `runs/completed/RUN-20260811-001/`
 - `outputs/demos/trakya-teknik-makine/versions/v0.1/`
 
-Bu historical artefact'ler `v0.2.0` contract'larına uyarlamak amacıyla geriye dönük mutate edilmez.
+Bu historical artefact'ler `v0.2.0+` contract'larına uyarlamak amacıyla geriye dönük mutate edilmez.
 
 ---
 
@@ -259,11 +259,51 @@ Trakya Teknik Makine ikinci gerçek test için temiz source state'ine döndü. B
 
 ---
 
+## PE-CHANGE-007 — 2026-08-17
+
+- **Version:** v0.2.1
+- **Change Type:** Fixed
+- **Affected Area:** engine/PLANNING_PROFILES.md | packages/DEMO_FRONTEND_PACKAGE.md | templates/ai/TECH_CONTEXT_TEMPLATE.md | logs/ISSUES.md
+- **Breaking Change:** No
+- **Related Issue:** ISSUE-001
+- **Related Run:** RUN-20260815-001
+
+### Summary
+
+Demo/frontend architecture quality guard, data/service adapter readiness'ten **frontend continuation readiness** seviyesine genişletildi.
+
+Yeni canonical invariant:
+
+```text
+Prototype/demo maturity ≠ migration-heavy frontend foundation izni
+```
+
+Continuation beklenen sales/client demo projelerinde Engine artık yalnız bugünkü scope'u çalıştıran stack'i seçemez. Stack/tooling kararı aynı codebase üzerinde daha fazla page/component/state ve ileride approved API/CMS/auth katmanlarına büyümeyi düşük migration maliyetiyle desteklemelidir.
+
+`demo-frontend` package, aksi yönde approved constraint yoksa package-managed, component-ready ve repeatable dev/build/preview workflow taşıyan modern frontend baseline'ını tercih eder. Zero-build/dependency-free yaklaşım yasaklanmadı; ancak explicit constraint veya güçlü low-migration continuation rationale olmadan seçilemez.
+
+### Reason
+
+Gerçek Trakya Teknik Makine uygulaması, Engine'in `Temporary scope ≠ throwaway architecture` ilkesini data-access boundary açısından doğru uygularken frontend stack/tooling evolution açısından eksik bıraktığını gösterdi. Generated TECH_CONTEXT dependency-free Vanilla HTML/CSS/JS seçti ve WAVE_00 package manifest/dev-build tooling olmadan `index.html + src/` foundation'ı dondurdu.
+
+Çıktı çalışır durumdaydı; ancak satış demosu kabul edildiğinde aynı frontend'in gerçek ürüne büyütülmesi için gereksiz migration/refactor riski oluşuyordu.
+
+### Impact
+
+- Sales/client demo stack selection artık future continuation path'i hesaba katmak zorunda.
+- TECH_CONTEXT içinde stack selection + continuation rationale zorunlu hale geldi.
+- Repeatable dev/build/preview workflow teknik planın parçası oldu.
+- Package-managed/component-ready baseline, continuation beklenen demo için varsayılan tercih eğilimi oldu.
+- Vanilla/zero-build hâlâ mümkündür; fakat demo/küçüklük/hız gerekçeleri tek başına yeterli değildir.
+- Backend/API/database hâlâ invented edilemez; değişiklik yalnız frontend foundation/tooling kalitesini güçlendirir.
+
+---
+
 ## 5. Güncel Durum
 
 ```text
-Active Engine Version Authority : Root README.md (v0.2.0)
+Active Engine Version Authority : Root README.md (v0.2.1)
 Version History Authority       : logs/ENGINE_CHANGELOG.md
-Recorded Change Entries         : 6
-Next Acceptance Gate            : Clean second real-project run
+Recorded Change Entries         : 7
+Next Acceptance Gate            : Next real demo generation validates continuation-ready stack selection
 ```
