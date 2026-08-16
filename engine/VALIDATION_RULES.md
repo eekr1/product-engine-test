@@ -296,8 +296,68 @@ Aşağıdakiler VAL-07 FAIL'dir:
 ## VAL-08 — Decision Provenance + Coverage
 Allowed statuses: User Approved, Engine Resolved, Pending Review, Superseded.
 
-## VAL-09 — Tech Context / Integration Readiness
+## VAL-09 — Tech Context / Integration + Continuation Readiness
 Unapproved backend/API/database uydurulamaz; current data/service boundary açık olmalıdır.
+
+Frontend/demo projelerde validator ayrıca `engine/PLANNING_PROFILES.md` continuation gate'ini **blocking** olarak uygular.
+
+TECH_CONTEXT'ten minimum şu evidence çıkarılır:
+
+```text
+CONTINUATION_EXPECTED = YES | NO
+CONTINUATION_EVIDENCE = exact approved source/input evidence
+APPROVED_ZERO_BUILD_CONSTRAINT = exact evidence | NONE
+SELECTED_FRONTEND_BASELINE
+PACKAGE_MANIFEST
+DEV_COMMAND
+BUILD_COMMAND
+PREVIEW_COMMAND
+SAME_CODEBASE_CONTINUATION = PASS | FAIL
+```
+
+Deterministic validation:
+
+```text
+if CONTINUATION_EXPECTED == YES:
+  if APPROVED_ZERO_BUILD_CONSTRAINT == NONE:
+    require package-managed/component-oriented baseline
+    require PACKAGE_MANIFEST != NONE
+    require DEV_COMMAND != NONE
+    require BUILD_COMMAND != NONE
+    require PREVIEW_COMMAND != NONE
+    require SAME_CODEBASE_CONTINUATION == PASS
+```
+
+Aşağıdaki gerekçeler approved zero-build constraint değildir:
+
+```text
+small/demo/fast
+no dependency risk
+modular ES6
+low migration cost
+future React/Vite/Next migration is easy
+agent/Engine technical preference
+```
+
+`future framework migration` same-codebase continuation sayılmaz.
+
+Canonical failures:
+
+```text
+CONTINUATION_EXPECTED=YES + APPROVED_ZERO_BUILD_CONSTRAINT=NONE + zero-build/dependency-free stack
+→ VAL-09 FAIL
+
+CONTINUATION_EXPECTED=YES + missing package manifest/dev/build/preview evidence
+→ VAL-09 FAIL
+
+APPROVED_ZERO_BUILD_CONSTRAINT claimed without exact approved source/input evidence
+→ VAL-09 FAIL
+
+TECH_CONTEXT continuation fields missing
+→ VAL-09 FAIL
+```
+
+Validator yalnız “adapter var / future API path var” diye PASS veremez.
 
 ## VAL-10 — Design Profile + Quality
 Light profile düşük kalite izni değildir.
@@ -467,6 +527,13 @@ PARENT_CAPABILITY_ATOMS per plan
 PLAN_TO_PARENT_RELATIONS
 NEW_PLAN_CAPABILITIES per plan
 WAVE_PLAN implementation-readiness depth check per plan
+CONTINUATION_EXPECTED
+CONTINUATION_EVIDENCE
+APPROVED_ZERO_BUILD_CONSTRAINT
+SELECTED_FRONTEND_BASELINE
+PACKAGE_MANIFEST
+DEV_COMMAND / BUILD_COMMAND / PREVIEW_COMMAND
+SAME_CODEBASE_CONTINUATION
 FCL-to-Source checks with exact SOURCE_REGISTER identity/state
 GENERATED_FACTUAL_CLAIMS
 Generated-to-FCL checks per extracted factual claim
@@ -495,6 +562,10 @@ map why/upstream/handoff ambiguous -> VAL-05 FAIL
 fresh capable agent still needs implementation planning -> VAL-05 FAIL
 validation source-set/state mismatch -> VAL-07 + VAL-13 FAIL
 profile-upgrading wording -> VAL-07 FAIL
+continuation YES + no approved zero-build constraint + zero-build stack -> VAL-09 FAIL
+continuation YES + missing package manifest/dev/build/preview -> VAL-09 FAIL
+claimed zero-build constraint without approved evidence -> VAL-09 FAIL
+future framework migration used as same-codebase continuation -> VAL-09 FAIL
 FCL not subset of exact source -> VAL-13 FAIL
 generated factual claim not subset of FCL -> VAL-13 FAIL
 external consumed without independent read evidence -> VAL-13 FAIL
