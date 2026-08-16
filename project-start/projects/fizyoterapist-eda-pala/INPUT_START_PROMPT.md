@@ -17,9 +17,9 @@ Bu chat intake chat'inin devamı değildir.
 - Approved input'ta olmayan önceki fikir, öneri, varsayım veya niyet current scope'a taşınamaz.
 - Gerekli factual/source context canonical source/input registry üzerinden yeniden okunur; chat memory ile tamamlanmaz.
 
-## Low-Information / Health-Domain Guard
+## Limited-Source / Health-Domain Guard
 
-Bu proje bilinçli olarak düşük bilgi yoğunluklu bir gerçek proje testidir.
+Bu projede mevcut kişi ve hizmet bilgileri sınırlıdır.
 
 Approved input kaynak sınırları dışında:
 
@@ -115,7 +115,7 @@ Validation report current canonical `VAL-*` gate setini eksiksiz taşımalıdır
 8. Her WAVE_PLAN yalnız exact parent WAVE_MAP entry'yi implementation seviyesinde detaylandırsın; parent'ta olmayan yeni capability, sağlık claim'i veya content family ekleme.
 9. Her WAVE_PLAN için fresh template + current-wave quality ref gerçekten re-open edilsin; ref/template context'i wave'ler arasında reuse etme.
 10. Factual claims yalnız source-backed SOURCE_REGISTER/FCL zinciriyle desteklensin.
-11. Düşük bilgi yoğunluğunu çözmek için generic fizyoterapi domain bilgisiyle içerik üretme; eksik factual content açıkça eksik kalabilir, tasarım bunu layout/composition ile çözmelidir.
+11. Eksik factual içeriği generic fizyoterapi domain bilgisiyle doldurma; eksik bilgiler open question olarak kalabilir ve tasarım bunları layout/composition ile ele alabilir.
 12. VALIDATION_REPORT write öncesi current validation template ve validation rules fresh-read edilsin.
 13. Independent observable IDE/tool trace gerçekten inspect edilemiyorsa `AVAILABLE` ilan etme; canonical UNAVAILABLE/UNVERIFIED davranışını uygula.
 14. Validation report current gate seti, source classification, semantic capability diff ve gerçek evidence sınırlarına göre fail-closed çalışsın; agent self-report ground truth değildir.

@@ -2,7 +2,7 @@
 
 Bu dosya Fizyoterapist Eda Pala projesi için Product Engine'in self-contained project source material'idir.
 
-Bu proje bilinçli olarak **düşük bilgi yoğunluklu gerçek proje testi** olarak hazırlanmıştır. Amaç, Product Engine'in eksik gerçek dünya bilgisini uydurmadan; known fact, open question, design synthesis ve implementation decision sınırlarını koruyarak çalışıp çalışmadığını gözlemlemektir.
+Mevcut proje bilgileri sınırlıdır. Bu nedenle yalnız açıkça bilinen kişi, meslek ve konum bilgileri project truth kabul edilir; eksik gerçek dünya bilgileri tahmin edilmez ve gerektiğinde open question olarak korunur.
 
 ## 1. Proje Kimliği
 
@@ -13,22 +13,22 @@ Bu proje bilinçli olarak **düşük bilgi yoğunluklu gerçek proje testi** ola
 - Delivery profile: Prototype
 - Implementation planning: standard
 - Design planning: light
-- Tek cümlelik açıklama: Tekirdağ'daki Fizyoterapist Eda Pala için, yalnız doğrulanmış sınırlı bilgilerle çalışan; modern, güven veren ve profesyonel bir frontend web sitesi demosu hazırlamak.
+- Tek cümlelik açıklama: Tekirdağ'daki Fizyoterapist Eda Pala için, mevcut doğrulanmış bilgilerle çalışan; modern, güven veren ve profesyonel bir frontend web sitesi demosu hazırlamak.
 - Sahip / müşteri: Fizyoterapist Eda Pala; çalışma potansiyel satış görüşmesi amacıyla hazırlanacaktır.
 
 > Planning profile değerleri source hint'idir; canonical approved input gerçeği approval gate'te kesinleşir.
 
 ## 2. Problem / Amaç
 
-Fizyoterapist Eda Pala için bağımsız bir web sitesi olmadığı varsayımıyla değil, bu proje kapsamında **yeni bir web sitesi demosu oluşturulacağı** gerçeğiyle hareket edilir. Amaç; adı, mesleki unvanı ve Tekirdağ konum bağlamını profesyonel bir dijital sunuma dönüştürmek ve satış görüşmesinde gösterilebilecek güçlü bir frontend demo hazırlamaktır.
+Bu proje kapsamında Fizyoterapist Eda Pala için yeni bir web sitesi demosu oluşturulacaktır. Amaç; adı, mesleki unvanı ve Tekirdağ konum bağlamını profesyonel bir dijital sunuma dönüştürmek ve satış görüşmesinde gösterilebilecek güçlü bir frontend demo hazırlamaktır.
 
-Bu source deliberately sınırlıdır. Demo daha dolu görünsün diye uzmanlık, tedavi alanı, eğitim, deneyim, klinik, hizmet, başarı, sağlık sonucu veya iletişim bilgisi uydurulamaz.
+Mevcut kaynaklarda uzmanlık, tedavi alanı, eğitim, deneyim, klinik, hizmet, başarı, sağlık sonucu veya doğrudan iletişim bilgileri bulunmamaktadır. Bu alanlar doğrulanmış bilgi sağlanmadan factual içerik olarak üretilemez.
 
 ## 3. Ürün / İş Bağlamı
 
 - Bu çalışma proaktif satış demosudur.
 - İlk hedef production sağlık platformu veya randevu sistemi değil, görsel ve yapısal olarak güçlü bir profesyonel frontend demodur.
-- Kaynak bilgi azlığı bu testin temel koşuludur; Engine eksik alanları generic fizyoterapi bilgisiyle doldurmamalıdır.
+- Mevcut kişi ve hizmet bilgileri sınırlıdır; eksik alanlar generic fizyoterapi bilgisiyle kişi özelinde doldurulmamalıdır.
 - Prototype teslim olgunluğunu sınırlar; tasarım, kod veya mimari kalite tabanını düşürmez.
 - Demo başarılı bulunursa gerçek hizmetler, biyografi, iletişim bilgileri, randevu akışı ve production ihtiyaçları müşteri tarafından doğrulandıktan sonra ayrı kapsam olarak ele alınabilir.
 
@@ -59,7 +59,7 @@ Bu source deliberately sınırlıdır. Demo daha dolu görünsün diye uzmanlık
 
 - Modern ve responsive profesyonel frontend demo.
 - Fizyoterapist Eda Pala adının, mesleki unvanının ve Tekirdağ bağlamının güçlü sunumu.
-- Minimal factual content ile güçlü bir dijital profil/landing experience oluşturulması.
+- Mevcut factual content ile güçlü bir dijital profil/landing experience oluşturulması.
 - Kullanıcı tarafından sağlanan Instagram profiline outbound CTA/link.
 - İçeriğin gelecekte doğrulanmış bilgiler eklendiğinde büyüyebilmesini destekleyen temiz frontend yapı.
 - Mock/local data kullanılacaksa bunun yalnız presentation/configuration amaçlı olması; gerçek dünya claim'i üretmemesi.
@@ -93,8 +93,8 @@ Bu source deliberately sınırlıdır. Demo daha dolu görünsün diye uzmanlık
 - Bu Product Engine çalışması için yeni frontend demo kod tabanı henüz oluşturulmamıştır.
 - Proje yeni proje olarak ele alınacaktır.
 - Kullanıcı tarafından sağlanan tek sosyal profil Instagram profilidir.
-- Instagram içeriği bu source hazırlanırken araştırılmamış ve factual enrichment amacıyla kullanılmamıştır.
-- Engine'in normal intake/run sırasında Instagram profilini açmasına veya dış araştırma yapmasına gerek yoktur ve buna izin verilmemektedir.
+- Instagram içeriği source hazırlanırken factual enrichment amacıyla kullanılmamıştır.
+- Normal intake/run sırasında external research yapılmayacaktır; project truth bu source dosyada verilen bilgilerle sınırlıdır.
 
 ## 9. Approved Project Facts / Content Truth
 
@@ -142,7 +142,7 @@ Source support olmadan hiçbir fizyoterapi hizmeti, yöntem, hastalık/rahatsız
 - Spesifik marka rengi, logo, tipografi veya görsel kimlik source tarafından tanımlanmamıştır; Engine bunları design synthesis olarak çözebilir fakat brand fact gibi sunamaz.
 - Generic sağlık sitesi klişesi olan `turkuaz/mavi gradient + doktor stok fotoğrafı + üç tedavi kartı` varsayılan çözüm olarak kullanılmamalıdır.
 - Anatomi, hasta, tedavi uygulaması veya klinik ekipman görselleri gerçek hizmet/uzmanlık çağrışımı yaratacak şekilde source-backed olmayan claim üretmemelidir.
-- Düşük bilgi yoğunluğu tasarım boşluğu olarak değil, kontrollü tipografi, kompozisyon, whitespace, imagery ve motion ile çözülebilir.
+- Sınırlı factual içerik; kontrollü tipografi, kompozisyon, whitespace, imagery ve motion ile profesyonel biçimde sunulabilir.
 - Masaüstü ve mobil birlikte düşünülmelidir.
 
 ## 13. Deployment / Operasyonlar
@@ -155,7 +155,7 @@ Source support olmadan hiçbir fizyoterapi hizmeti, yöntem, hastalık/rahatsız
 
 - İlk çıktı satış amaçlı frontend demo olacaktır.
 - Delivery profile `Prototype`, implementation planning `standard`, design planning `light` source hint'idir.
-- Proje intentionally low-information testidir; bilgi eksikliği uydurma içerikle kapatılmayacaktır.
+- Eksik kişi/hizmet bilgileri factual içerik olarak uydurulmayacaktır.
 - Kullanıcı tarafından sağlanan Instagram URL'si yalnız outbound profile link olarak kullanılabilir.
 - Sağlık/meslek alanındaki factual claim'ler source allowlist dışında genişletilmeyecektir.
 
@@ -164,7 +164,7 @@ Source support olmadan hiçbir fizyoterapi hizmeti, yöntem, hastalık/rahatsız
 - Müşteri tarafından doğrulanmış production brief değildir.
 - Yalnız bu source dosyada açıkça bulunan kişi/domain gerçekleri factual truth kabul edilir.
 - Kişinin uzmanlık alanları, sunduğu hizmetler, eğitim/sertifikaları ve iletişim bilgileri bilinmemektedir.
-- Sağlık alanı nedeniyle generic industry knowledge ile kişi özelinde tedavi/uzmanlık claim'i üretmek özellikle yasaktır.
+- Sağlık alanı nedeniyle generic industry knowledge ile kişi özelinde tedavi/uzmanlık claim'i üretmek yasaktır.
 - Gereksiz backend, panel, booking veya operational complexity eklenmemelidir.
 - Tasarım başka Engine çıktılarının görünümüne veya sektör klişesine bağlanmamalıdır.
 
@@ -185,7 +185,7 @@ Source support olmadan hiçbir fizyoterapi hizmeti, yöntem, hastalık/rahatsız
 - Eda Pala adı, `Fizyoterapist` unvanı ve `Tekirdağ` bağlamı hızlıca anlaşılmalı.
 - Kullanıcı sağlanan Instagram profiline kolayca ulaşabilmeli.
 - Mobil ve masaüstü görünüm satış görüşmesinde gösterilecek kalitede olmalı.
-- Bilgi azlığına rağmen source-backed olmayan hizmet, uzmanlık, eğitim, klinik veya sağlık claim'i üretilmemeli.
+- Source-backed olmayan hizmet, uzmanlık, eğitim, klinik veya sağlık claim'i üretilmemeli.
 - Eksik bilgiler açık soru olarak korunmalı; tasarımın dolu görünmesi uğruna factual placeholder kullanılmamalı.
 - Frontend yapısı gelecekte doğrulanmış içerik eklenmesini gereksiz yeniden yazım olmadan desteklemeli.
 - `implementation_planning: standard` çıktısı fresh capable agent'ın aktif wave'i ikinci planning pass olmadan uygulayabileceği açıklıkta olmalı.
@@ -197,7 +197,6 @@ Source support olmadan hiçbir fizyoterapi hizmeti, yöntem, hastalık/rahatsız
 - Agent Instagram URL'sini açarak factual enrichment yapamaz.
 - Missing factual info open question olarak kalır; generic fizyoterapi bilgisiyle doldurulmaz.
 - Teknik implementation ve yaratıcı design kararları Engine-resolved olabilir; kişi/meslek/sağlık claim'leri source-backed olmak zorundadır.
-- Low-information source, Engine'e "makul görünen" klinik içerik üretme izni vermez.
 
 ## 19. Referanslar
 
