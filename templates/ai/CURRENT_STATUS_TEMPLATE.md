@@ -6,7 +6,7 @@
 template_id: current-status-template
 template_name: Current Status Template
 document_id: STATUS
-version: 1.1.0
+version: 1.1.1
 status: active
 template_type: document
 category: ai
@@ -51,6 +51,7 @@ Projenin anlık gerçeğini; aktif phase/wave'i, tamamlanan işleri, devam eden 
 - Current truth ile desired state karıştırılmaz.
 - New projede henüz uygulanmamış wave'ler tamamlanmış gösterilmez.
 - Aktif wave WAVE_MAP ve ilgili WAVE_PLAN ile tutarlı olmalıdır.
+- CURRENT_STATUS generated project state'i temsil eder; Product Engine run lifecycle (`active/completed`, generation/publication progress) bu belgeye taşınmaz. Run lifecycle run artifacts tarafından tutulur.
 - Bir agent çalışma sonunda yaptığı gerçek ilerlemeye göre bu belgeyi güncellemelidir.
 - NEXT_TASKS sıradaki iş listesi; CURRENT_STATUS mevcut gerçeklik sahibidir.
 

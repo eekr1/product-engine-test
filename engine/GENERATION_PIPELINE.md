@@ -168,6 +168,8 @@ FCL semantic content ⊆ exact supporting source evidence
 generated factual claim ⊆ referenced FCL semantic content
 ```
 
+Generated wording approved fact'in anlamını genişleten yeni fiil, ilişki veya operational meaning ekleyemez. Özellikle location/context fact; FCL açıkça desteklemedikçe service area, residence, office/clinic location, ownership veya operational presence claim'ine dönüştürülemez.
+
 ## Observable Trace Boundary
 
 ```text
@@ -248,6 +250,8 @@ Map generation algorithm:
 13. Freeze map only when scope and decomposition depth are both sufficient.
 14. CLOSE map checkpoint.
 ```
+
+Capability support identity yalnız `IN_SCOPE | KNOWN_DECISION` + `Executable=YES` SCP atomlarından gelebilir. `VERIFIED_CURRENT_TRUTH`, FCL veya `Executable=NO` atomlar factual/reference context olarak kullanılabilir ama capability support olarak yazılamaz; mixed-support satırı authorization ile factual context'i ayırmalıdır.
 
 `VERIFIED_CURRENT_TRUTH` factual context olabilir ama capability authorize etmez.
 
