@@ -15,90 +15,30 @@ Bir durumun `ISSUES.md` içinde yer alabilmesi için:
 
 ## 2. Issue ≠ Improvement Ayrımı
 
-`ISSUES.md` ile `IMPROVEMENTS.md` arasındaki mülkiyet sınırı kesin kurallarla korunur:
-
 ```text
-ISSUE (Kusur / Defect)
-→ Mevcut motor davranışında bozukluk, tutarsızlık veya sözleşme ihlali var.
-  Örnek: "Şablon talimatları nihai çıktı içerisine sızıyor."
-
-IMPROVEMENT (Geliştirme / Enhancement)
-→ Mevcut sistem doğru çalışıyor; ancak gelecekte daha performanslı veya otomatik hale getirilebilir.
-  Örnek: "Placeholder doğrulamasını otomatik hale getiren yeni bir CLI modülü eklemek."
+ISSUE → mevcut davranışta doğrulanmış kusur
+IMPROVEMENT → doğru çalışan sistemi daha iyi hale getirme
 ```
 
 ---
 
-## 3. Kanonik Issue Yapısı ve Şeması (Entry Schema)
+## 3. Kanonik Issue Yapısı
 
-Her issue kaydı aşağıdaki dondurulmuş kanonik şemaya göre açılır ve güncellenir:
-
-```markdown
-## ISSUE-<NNN> — <Kısa ve Net Başlık>
-
-- **Status:** <Open | Investigating | Planned | In Progress | Blocked | Implemented — Awaiting Validation | Resolved | Won't Fix | Duplicate | Invalid>
-- **Severity:** <Critical | Major | Minor | Low>
-- **Category:** <Engine Rules | Packages | Templates | Inputs | Runs | Outputs | Validation>
-- **Owner:** <unassigned | engine maintainer | review agent>
-- **First Seen:** <YYYY-MM-DD>
-- **Last Seen:** <YYYY-MM-DD>
-- **Related Runs:** <runs/location/run-id/ | None>
-- **Resolved in Version:** <not_assigned | vX.Y>
-- **Related Change:** <PE-CHANGE-XXX | Pending>
-- **Validation Run:** <RUN-YYYYMMDD-XXX | None>
-
-### Description
-<Problemin detaylı açıklaması ve gözlemlenen hatalı davranış>
-
-### Impact
-<Hatanın motor çıktısına, kalitesine veya güvenilirliğine etkisi>
-
-### Reproduction / Evidence
-<Hatayı kanıtlayan kısa gözlem veya bağıl dosya referansı (Log kopyası eklenmez)>
-
-### Proposed Resolution
-<Önerilen veya uygulanan çözüm yaklaşımı>
-```
+Her issue minimum status, severity, category, owner, first/last seen, related runs, related change ve validation run alanlarını taşır.
 
 ---
 
-## 4. Durum ve Önem Seviyeleri (Status & Severity Vocabulary)
+## 4. Durum ve Önem Seviyeleri
 
-### Durumlar (Status Vocabulary)
-- **`Open`**: Kusur tespit edildi, henüz incelenmeye alınmadı.
-- **`Investigating`**: Hatanın kök nedeni araştırılıyor.
-- **`Planned`**: Çözüm planlandı, bir sonraki değişikliğe dahil edilecek.
-- **`In Progress`**: Düzeltme aktif olarak uygulanıyor.
-- **`Blocked`**: Düzeltme başka bir bağımlılık veya karar nedeniyle durdu.
-- **`Implemented — Awaiting Validation`**: Düzeltme uygulandı ve dokümanlar güncellendi; ancak henüz doğrulama çalışması (`validation run`) tamamlanmadı.
-- **`Resolved`**: Düzeltme uygulandı, ilgili changelog girdisi (`PE-CHANGE-XXX`) oluşturuldu, doğrulama çalışmasıyla hatanın tekrar etmediği kesinleşti.
-- **`Won't Fix`**: Düzeltilmemesine karar verilen bilinen durum.
-- **`Duplicate`**: Başka bir issue kaydının mükerreri olan dosya.
-- **`Invalid`**: Hata olmadığı anlaşılan geçersiz bildirim.
+Allowed status: `Open | Investigating | Planned | In Progress | Blocked | Implemented — Awaiting Validation | Resolved | Won't Fix | Duplicate | Invalid`.
 
-### Önem Seviyeleri (Severity Vocabulary)
-- **`Critical`**: Engine'in güvenilir çıktı üretmesini engeller (Örn: Başka projeden içerik sızıntısı, onaylı girdi ihlali).
-- **`Major`**: Çıktı kalitesini veya kullanılabilirliğini ciddi biçimde etkiler (Örn: Şablon yer tutucularının çıktıya sızması).
-- **`Minor`**: Kullanımı engellemeyen ancak düzeltilmesi gereken tutarsızlık.
-- **`Low`**: Küçük biçimlendirme veya açıklama eksikliği.
+Severity: `Critical | Major | Minor | Low`.
 
 ---
 
-## 5. Çözüm Kapısı ve Yaşam Döngüsü Kuralları (Resolved Gate & Deduplication)
+## 5. Resolved Gate
 
-### Resolved Kapısı Şartları (Resolved Gate)
-Bir issue kaydı doğrudan `Resolved` durumuna geçirilemez. `Resolved` yapılabilmesi için aşağıdaki şartların **tamamı** sağlanmış olmalıdır:
-1. Düzeltme uygulanmış olmalıdır (`fix implemented`).
-2. İlgili motor belgeleri ve sözleşmeleri güncellenmiş olmalıdır (`relevant docs/contracts updated`).
-3. Kalıcı changelog kaydı oluşturulmuş olmalıdır (`related changelog entry created — PE-CHANGE-XXX`).
-4. Gerekli durumlarda doğrulama çalışması yürütülmüş olmalıdır (`validation run performed`).
-5. Kusurun tekrar etmediği kanıtlanmış olmalıdır.
-
-*Not: Düzeltme uygulandığı halde doğrulama çalışması henüz gerçekleştirilmediyse durum `Implemented — Awaiting Validation` olarak tutulur.*
-
-### Tekilleştirme ve Saklama (Deduplication & Retention)
-1. **Deduplication (Tekilleştirme):** Yeni bir kusur tespit edildiğinde önce `ISSUES.md` taranır. Aynı kök nedene sahip bir issue zaten varsa yeni ID açılmaz. Mevcut kaydın `Last Seen` tarihi ve `Related Runs` listesi güncellenir.
-2. **Kayıt Silme Yasağı:** Çözülen (`Resolved`), reddedilen (`Won't Fix`) veya mükerrer (`Duplicate`) issue kayıtları dosyadan kesinlikle silinemez (`MUST NOT`).
+Bir issue ancak fix + canonical docs + changelog + gerçek validation run + non-recurrence evidence tamamlandığında `Resolved` olabilir. Fix uygulanmış ama fresh validation tamamlanmamışsa `Implemented — Awaiting Validation` kalır.
 
 ---
 
@@ -121,21 +61,28 @@ Total Recorded                        : 1
 - **Owner:** engine maintainer
 - **First Seen:** 2026-08-17
 - **Last Seen:** 2026-08-17
-- **Related Runs:** `runs/completed/RUN-20260815-001/`
+- **Related Runs:** `RUN-20260815-001`, `RUN-20260817-002`
 - **Resolved in Version:** not_assigned
-- **Related Change:** PE-CHANGE-007
-- **Validation Run:** None
+- **Related Change:** PE-CHANGE-007, PE-CHANGE-008
+- **Validation Run:** `RUN-20260817-002` = FAILED TO RESOLVE ISSUE; next fresh run required
 
 ### Description
-Engine, demo/prototype projelerde service/data-access boundary ve future API adapter ayrımını doğru kurmasına rağmen frontend stack/tooling kararının aynı codebase üzerinde gerçek ürüne devam etmeyi destekleyip desteklemediğini blocking biçimde değerlendirmiyordu. Trakya Teknik Makine satış demosunda bu boşluk dependency-free Vanilla HTML/CSS/JS baseline seçilmesine izin verdi.
+Engine demo/prototype projelerde data/service boundary'yi doğru kurmasına rağmen continuation beklenen sales/client demo için frontend stack/tooling seçimini blocking biçimde enforce etmiyordu.
 
-### Impact
-Çıktı çalışan ve backend adapter açısından integration-ready olmasına rağmen müşteri kabulü sonrası daha fazla page/component/state, CMS/API/auth veya build/deployment ihtiyacı geldiğinde gereksiz frontend migration/refactor maliyeti doğurabilecek bir foundation üretildi. Bu durum `Temporary scope ≠ throwaway architecture` amacının yalnız data-boundary tarafında uygulanıp stack/tooling evolution tarafında eksik kalmasına neden oldu.
+### Evidence
+İlk Trakya implementation dependency-free Vanilla foundation üretti. v0.2.1 sonrası fresh `RUN-20260817-002` yeni continuation rationale bölümünü üretti fakat yine Vanilla seçti ve bunu “ileride React/Vite/Next.js'e migrate edilebilir” gerekçesiyle meşrulaştırdı. `WAVE_00` hâlâ package manifest/dev-build tooling olmadan `index.html + src/` foundation planladı. Validator `VAL-09` yalnız data adapter/future API path kontrol ederek PASS verdi.
 
-### Reproduction / Evidence
-- `outputs/demos/trakya-teknik-makine/latest/ai/TECH_CONTEXT.md` dependency-free Vanilla frontend seçti.
-- `outputs/demos/trakya-teknik-makine/latest/waves/plans/WAVE_00.md` target structure'ı package manifest/dev-build tooling olmadan `index.html + src/` olarak dondurdu.
-- Approved/demo context gerçek satış demosu olup kabul sonrası aynı proje üzerinde devam etme çalışma modeline uygundur.
+### Root Cause Refined
+v0.2.1 iki loophole bıraktı:
 
-### Proposed Resolution
-`engine/PLANNING_PROFILES.md` içinde continuation-ready frontend stack selection invariant'ı authoritative hale getirildi; `packages/DEMO_FRONTEND_PACKAGE.md` satış demolarında package-managed/component-ready modern baseline preference ve zero-build justification gate'i ekledi; `templates/ai/TECH_CONTEXT_TEMPLATE.md` stack continuation rationale ile repeatable dev/build/preview workflow evidence'ını zorunlu hale getirdi. Bir sonraki gerçek generation run'ında bu davranış doğrulanana kadar issue `Implemented — Awaiting Validation` kalır.
+1. `PLANNING_PROFILES` zero-build istisnasını agent-generated “low migration rationale” ile açabiliyordu.
+2. `VAL-09` continuation stack/tooling evidence'ını blocking doğrulamıyordu.
+
+### v0.2.2 Resolution
+- Continuation beklenen sales/client demo için explicit approved user/project/environment zero-build constraint yoksa package-managed/component-oriented baseline **REQUIRED**.
+- Agent/Engine kendi rationale'ıyla zero-build istisnası yaratamaz.
+- “Future framework migration” same-codebase continuation değildir.
+- TECH_CONTEXT explicit continuation evidence + approved zero-build constraint + package manifest + dev/build/preview commands üretmek zorundadır.
+- `VAL-09` bu alanları blocking olarak doğrular.
+
+Issue fresh v0.2.2 real run başarılı olana kadar `Implemented — Awaiting Validation` kalır.
