@@ -23,6 +23,7 @@ Bu belge şunların authoritative sahibidir:
 - planning profile seçiminin kalite tabanı
 - demo/prototype projelerde mimari kalite beklentisi
 - frontend projelerde backend/integration readiness tabanı
+- frontend stack/tooling kararlarında continuation/evolution readiness kalite tabanı
 - design planning derinliği ile tasarım kalitesinin birbirinden ayrılması
 - generic/template drift'e karşı design diversity kuralları
 
@@ -270,6 +271,82 @@ invented backend → NO
 ```
 
 Gerçek backend/API/database kapsamı onaylanırsa ilgili canonical package/document selection kuralları ayrıca uygulanır.
+
+---
+
+## 6A. Continuation-Ready Frontend Stack Selection
+
+Frontend demo/prototype projelerde integration readiness yalnız data adapter boundary ile tamamlanmış sayılmaz. Product Engine, seçilen frontend stack ve tooling'in **proje kabul edildiğinde aynı codebase'in gerçek uygulamaya büyümesini gereksiz structural rewrite olmadan destekleyip desteklemediğini** ayrıca değerlendirmek zorundadır.
+
+Canonical invariant:
+
+```text
+Prototype/demo maturity ≠ migration-heavy frontend foundation izni
+```
+
+Bir satış demosu, müşteri demosu veya ürün doğrulama frontend'i için approved/current context gelecekte aynı proje üzerinde devam edilmesini makul kılıyorsa stack kararı şu hedefi korumalıdır:
+
+```text
+demo frontend
+→ same application foundation
+→ more pages/components/state
+→ real service/API adapter
+→ optional CMS/admin/auth/integration layers
+```
+
+Bu kural belirli bir framework'ü global olarak zorunlu kılmaz. React, Vue, Svelte, Vanilla veya başka bir frontend yaklaşımı ancak current project constraints ve continuation path ile gerekçelendirildiği ölçüde seçilebilir.
+
+### Varsayılan Karar Eğilimi
+
+Aşağıdaki bağlamlarda, aksi yönde approved teknik constraint veya güçlü project-specific gerekçe yoksa **package-managed, component-ready, modern development tooling taşıyan bir frontend baseline** tercih edilmelidir:
+
+- proaktif satış demosu,
+- müşteri kabul ederse gerçek site/ürüne devam edilmesi beklenen demo,
+- birden fazla surface/page/component'a doğal biçimde büyüyebilecek frontend,
+- backend/API/CMS entegrasyonunun future possibility olarak açıkça bulunduğu proje.
+
+Örnek uygun baseline class'ı:
+
+```text
+modern frontend build tooling
++ package manifest / dependency lifecycle
++ component/module structure
++ dev/build/preview commands
++ service/config boundary
+```
+
+Bu örnek bir specific framework mandate değildir.
+
+### Zero-Build / Dependency-Free Seçim Kapısı
+
+Standalone HTML/CSS/Vanilla JS veya dependency-free/zero-build yaklaşım ancak şu koşullardan en az biri açıkça destekleniyorsa seçilebilir:
+
+- approved requirement gerçekten zero-build/static teslim istiyordur,
+- proje bilinçli olarak disposable/one-off proof olarak tanımlanmıştır ve continuation beklenmiyordur,
+- deployment/environment constraint package-managed tooling'i anlamsız kılıyordur,
+- proje ölçeği ve future path için seçimin migration maliyeti yaratmayacağı TECH_CONTEXT içinde somut gerekçeyle açıklanmıştır.
+
+Sadece şu gerekçeler yeterli değildir:
+
+```text
+"demo olduğu için"
+"küçük olduğu için"
+"daha hızlı olduğu için"
+"dependency olmasın diye"
+```
+
+### Continuation Readiness Soruları
+
+TECH_CONTEXT stack kararı minimum şu sorulara cevap verebilmelidir:
+
+1. Bu demo kabul edilirse aynı frontend codebase üzerinde devam edilecek mi, yoksa bilinçli rewrite mı bekleniyor?
+2. Yeni page/component/state eklendiğinde mevcut stack doğal biçimde ölçeklenebiliyor mu?
+3. Gerçek API/CMS/auth gibi katmanlar geldiğinde hangi frontend boundary'leri korunacak?
+4. Local development, build ve preview workflow tekrar üretilebilir mi?
+5. Seçilen stack future continuation için neden düşük migration maliyetlidir?
+6. Daha minimal/zero-build alternatif seçildiyse neden ileride structural rewrite riski yaratmıyor?
+
+Bu cevaplar yoksa frontend stack kararı implementation-ready değildir.
 
 ---
 
