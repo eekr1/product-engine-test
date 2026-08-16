@@ -1,0 +1,264 @@
+/* ==========================================
+   Trakya Teknik Makine — Corporate Hero Surface CSS
+   Visual Direction: Technical Industrial Precision & Heavy Mechanical Trust
+   ========================================== */
+
+.hero-section {
+  position: relative;
+  padding: var(--section-spacing) 0;
+  background-color: var(--bg-primary);
+  background-image: 
+    radial-gradient(circle at 80% 20%, rgba(249, 115, 22, 0.07) 0%, transparent 40%),
+    linear-gradient(to bottom, rgba(15, 23, 42, 0.6), var(--bg-primary)),
+    linear-gradient(90deg, rgba(51, 65, 85, 0.15) 1px, transparent 1px),
+    linear-gradient(0deg, rgba(51, 65, 85, 0.15) 1px, transparent 1px);
+  background-size: 100% 100%, 100% 100%, 40px 40px, 40px 40px;
+  border-bottom: 1px solid var(--border-color);
+  overflow: hidden;
+}
+
+.hero-layout {
+  display: grid;
+  grid-template-columns: 1.25fr 0.95fr;
+  gap: 3.5rem;
+  align-items: center;
+}
+
+/* Skeleton Loading State */
+.skeleton-loading {
+  opacity: 0.6;
+  animation: pulse 1.5s infinite ease-in-out;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 0.4; }
+  50% { opacity: 0.8; }
+}
+
+.skeleton-pill {
+  width: 140px;
+  height: 24px;
+  background-color: var(--bg-elevated);
+  border-radius: var(--radius-sm);
+  margin-bottom: 1rem;
+}
+
+.skeleton-title {
+  width: 90%;
+  height: 56px;
+  background-color: var(--bg-elevated);
+  border-radius: var(--radius-md);
+  margin-bottom: 1.5rem;
+}
+
+.skeleton-text {
+  width: 100%;
+  height: 80px;
+  background-color: var(--bg-elevated);
+  border-radius: var(--radius-md);
+}
+
+/* Hero Left Column Content */
+.hero-content {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.hero-kicker {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.35rem 0.85rem;
+  background-color: rgba(30, 41, 59, 0.8);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-sm);
+  font-size: var(--font-size-sm);
+  color: var(--text-muted);
+  margin-bottom: 1.25rem;
+}
+
+.kicker-tag {
+  color: var(--accent-primary);
+  font-weight: var(--weight-semibold);
+  letter-spacing: var(--letter-spacing-wide);
+  text-transform: uppercase;
+}
+
+.kicker-divider {
+  color: var(--text-subtle);
+}
+
+.kicker-subtitle {
+  color: var(--text-main);
+  font-weight: var(--weight-medium);
+}
+
+.hero-title {
+  font-family: var(--font-heading);
+  font-size: var(--font-size-hero);
+  font-weight: var(--weight-bold);
+  line-height: var(--line-height-tight);
+  color: var(--text-main);
+  letter-spacing: var(--letter-spacing-tight);
+  margin-bottom: 1.25rem;
+}
+
+.hero-title .highlight {
+  color: var(--accent-primary);
+  position: relative;
+  display: inline-block;
+}
+
+.hero-description {
+  font-size: 1.125rem;
+  line-height: 1.65;
+  color: var(--text-muted);
+  max-width: 600px;
+  margin-bottom: 2rem;
+}
+
+.hero-technical-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1.5rem;
+  padding-top: 1.25rem;
+  border-top: 1px solid rgba(51, 65, 85, 0.6);
+  width: 100%;
+}
+
+.meta-item {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  font-size: var(--font-size-sm);
+  color: var(--text-muted);
+  font-weight: var(--weight-medium);
+}
+
+.meta-item svg {
+  color: var(--accent-primary);
+  flex-shrink: 0;
+}
+
+/* Hero Right Column: Authorized Badge Trust Card */
+.hero-badge-column {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.authorized-service-badge-card {
+  width: 100%;
+  max-width: 440px;
+  background-color: var(--bg-surface);
+  border: 1px solid var(--border-accent);
+  border-radius: var(--radius-lg);
+  padding: 2.25rem 2rem;
+  box-shadow: var(--shadow-card), var(--shadow-glow);
+  position: relative;
+  transition: var(--transition-smooth);
+}
+
+.authorized-service-badge-card:hover {
+  transform: translateY(-4px);
+  border-color: var(--accent-primary);
+}
+
+.badge-card-header {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  margin-bottom: 1.25rem;
+}
+
+.badge-status-dot {
+  width: 10px;
+  height: 10px;
+  background-color: var(--accent-primary);
+  border-radius: 50%;
+  box-shadow: 0 0 10px var(--accent-primary);
+  animation: statusPulse 2s infinite;
+}
+
+@keyframes statusPulse {
+  0%, 100% { transform: scale(1); opacity: 1; }
+  50% { transform: scale(1.2); opacity: 0.7; }
+}
+
+.badge-category-label {
+  font-size: 0.8rem;
+  font-weight: var(--weight-bold);
+  color: var(--accent-primary);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.badge-card-body {
+  margin-bottom: 1.75rem;
+  padding-bottom: 1.5rem;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.badge-brand-title {
+  font-family: var(--font-heading);
+  font-size: 1.75rem;
+  font-weight: var(--weight-bold);
+  color: var(--text-main);
+  line-height: 1.2;
+  margin-bottom: 0.35rem;
+}
+
+.badge-role-title {
+  font-size: 1.1rem;
+  font-weight: var(--weight-semibold);
+  color: var(--accent-primary);
+}
+
+.badge-card-footer {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  font-size: 0.9rem;
+  font-weight: var(--weight-medium);
+  color: var(--text-muted);
+}
+
+.badge-shield-icon {
+  color: var(--accent-primary);
+  flex-shrink: 0;
+}
+
+/* Responsive Adaptations */
+@media (max-width: 992px) {
+  .hero-layout {
+    grid-template-columns: 1fr;
+    gap: 2.5rem;
+  }
+  
+  .hero-badge-column {
+    justify-content: flex-start;
+  }
+  
+  .authorized-service-badge-card {
+    max-width: 100%;
+  }
+}
+
+@media (max-width: 576px) {
+  .hero-section {
+    padding: 2.5rem 0;
+  }
+  
+  .hero-description {
+    font-size: 1.0rem;
+  }
+  
+  .authorized-service-badge-card {
+    padding: 1.5rem 1.25rem;
+  }
+  
+  .badge-brand-title {
+    font-size: 1.4rem;
+  }
+}

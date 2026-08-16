@@ -1,0 +1,209 @@
+@import './tokens.css';
+@import './hero.css';
+@import './services.css';
+@import './contact.css';
+
+/* ==========================================
+   Trakya Teknik Makine — Main Layout Shell CSS
+   ========================================== */
+
+/* Modern CSS Reset */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  font-family: var(--font-body);
+  font-size: 16px;
+  scroll-behavior: smooth;
+  background-color: var(--bg-primary);
+  color: var(--text-main);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  overflow-x: hidden;
+}
+
+body {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background-color: var(--bg-primary);
+  color: var(--text-main);
+  line-height: var(--line-height-body);
+}
+
+/* Accessibility Focus States */
+:focus-visible {
+  outline: var(--focus-outline);
+  outline-offset: var(--focus-offset);
+}
+
+/* Container Shell */
+.container {
+  width: 100%;
+  max-width: var(--container-max-width);
+  margin: 0 auto;
+  padding-left: var(--container-padding);
+  padding-right: var(--container-padding);
+}
+
+/* Base Typography Elements */
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-heading);
+  color: var(--text-main);
+  font-weight: var(--weight-bold);
+  line-height: var(--line-height-heading);
+  letter-spacing: var(--letter-spacing-tight);
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+  transition: var(--transition-fast);
+}
+
+/* Authorized Service Badge Utility */
+.badge-authorized {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.4rem 0.9rem;
+  background-color: var(--accent-glow);
+  border: 1px solid var(--accent-primary);
+  color: var(--accent-primary);
+  border-radius: var(--radius-sm);
+  font-weight: var(--weight-semibold);
+  font-size: var(--font-size-sm);
+  letter-spacing: var(--letter-spacing-wide);
+  text-transform: uppercase;
+}
+
+.badge-authorized::before {
+  content: '';
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  background-color: var(--accent-primary);
+  border-radius: 50%;
+  box-shadow: 0 0 8px var(--accent-primary);
+}
+
+/* Header Application Shell */
+.site-header {
+  width: 100%;
+  background-color: rgba(15, 23, 42, 0.92);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--border-color);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  padding: 1.15rem 0;
+}
+
+.header-inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.brand-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.brand-title {
+  font-family: var(--font-heading);
+  font-size: 1.35rem;
+  font-weight: var(--weight-bold);
+  color: var(--text-main);
+  letter-spacing: var(--letter-spacing-tight);
+}
+
+.brand-title span {
+  color: var(--accent-primary);
+}
+
+/* Main Application Workspace Shell */
+.site-main {
+  flex: 1 0 auto;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
+
+.shell-status-banner {
+  padding: 2.5rem 0;
+  background-color: var(--bg-surface);
+  border-bottom: 1px solid var(--border-color);
+  margin-bottom: var(--section-spacing);
+}
+
+.shell-status-card {
+  background-color: var(--bg-primary);
+  border: 1px solid var(--border-color);
+  border-left: 4px solid var(--accent-primary);
+  border-radius: var(--radius-md);
+  padding: 1.5rem 1.75rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  box-shadow: var(--shadow-card);
+}
+
+.shell-status-title {
+  font-size: 1.15rem;
+  color: var(--text-main);
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.shell-status-desc {
+  color: var(--text-muted);
+  font-size: var(--font-size-sm);
+}
+
+/* Footer Application Shell */
+.site-footer {
+  background-color: var(--bg-surface);
+  border-top: 1px solid var(--border-color);
+  padding: 2rem 0;
+  margin-top: auto;
+  color: var(--text-muted);
+  font-size: var(--font-size-sm);
+}
+
+.footer-inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+/* Utilities */
+.text-accent {
+  color: var(--accent-primary);
+}
+
+.text-muted {
+  color: var(--text-muted);
+}
+
+/* Mobile Responsive Tweaks */
+@media (max-width: 768px) {
+  .header-inner {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  .footer-inner {
+    flex-direction: column;
+    text-align: center;
+    align-items: center;
+  }
+}

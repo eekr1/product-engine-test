@@ -1,6 +1,6 @@
 # Trakya Teknik Makine Kurumsal Web Sitesi Demo — WAVE_02: Core Services Presentation Surface
 
-- **Status**: Ready for Execution
+- **Status**: Completed
 - **Parent Wave**: `WAVE_02` in `waves/WAVE_MAP.md`
 - **Goal**: 3 approved hizmetin (`Yedek Parça Temini`, `Yerinde Teknik Destek`, `Makine Bakım ve Onarım`) görsel kartlar ve grid düzeninde sunulması.
 
@@ -65,7 +65,7 @@ src/
 
 ## 8. Implementation Checklist
 
-- [ ] **Task 02.1 — Build Core Services Section & Grid Container**:
+- [x] **Task 02.1 — Build Core Services Section & Grid Container**:
   - **Location / Responsibility**: `src/components/ServicesSection.js` ve `src/styles/services.css`. Hizmetler bölüm başlığı (`Hizmetlerimiz`) ve 3 kolonlu responsive grid kapsayıcısının oluşturulması.
   - **Parent Capability Relation**: `implementation-of` (`3 approved services visual presentation grid & card surfaces`).
   - **Inputs / Contracts**: `DESIGN_RULES.md#Section 3, 4`. CSS Grid layout (desktop 3 kolon, mobile 1 kolon).
@@ -76,7 +76,7 @@ src/
   - **Verification**: Tarayıcıda 3 kolonlu grid yapısının kırılmadan render edilmesi.
   - **Done Result**: Hizmetler kapsayıcı bileşeni.
 
-- [ ] **Task 02.2 — Build Individual Service Card Presentation Components**:
+- [x] **Task 02.2 — Build Individual Service Card Presentation Components**:
   - **Location / Responsibility**: `src/components/ServiceCard.js` ve `src/styles/services.css`. Her bir onaylı hizmet için görsel kart anatomisinin (ikon, hizmet adı, teknik açıklama kartı) geliştirilmesi.
   - **Parent Capability Relation**: `implementation-of` (`3 approved services visual presentation grid & card surfaces`).
   - **Inputs / Contracts**: FCL-003 (`Yedek Parça Temini`), FCL-004 (`Yerinde Teknik Destek`), FCL-005 (`Makine Bakım ve Onarım`). `DESIGN_RULES.md#Section 4` (yüzey rengi `#1E293B`, kenarlık `#334155`).
@@ -87,7 +87,7 @@ src/
   - **Verification**: Kartlarda 3 approved hizmet adının eksiksiz görünmesi.
   - **Done Result**: Hizmet kart bileşeni.
 
-- [ ] **Task 02.3 — Integrate Data Access Service Adapter**:
+- [x] **Task 02.3 — Integrate Data Access Service Adapter**:
   - **Location / Responsibility**: `src/components/ServicesSection.js`. `dataService.getServices()` metodu ile kartların dinamik beslenmesi.
   - **Parent Capability Relation**: `implementation-of` (`Service data consumption via dataService.getServices() adapter`).
   - **Inputs / Contracts**: `src/services/dataService.js`.
@@ -117,10 +117,10 @@ src/
 
 ## 12. Acceptance / Exit Criteria
 
-- [ ] Onaylı 3 hizmet (`Yedek Parça Temini`, `Yerinde Teknik Destek`, `Makine Bakım ve Onarım`) eksiksiz render edilmektedir.
-- [ ] Kartlar verilerini `dataService.getServices()` üzerinden okumaktadır.
-- [ ] Tasarım `DESIGN_RULES.md` renk ve yüzey kontratlarına uygundur.
-- [ ] Prototype satış demosu olgunluğunda responsive kart kalitesi sağlanmıştır.
+- [x] Onaylı 3 hizmet (`Yedek Parça Temini`, `Yerinde Teknik Destek`, `Makine Bakım ve Onarım`) eksiksiz render edilmektedir.
+- [x] Kartlar verilerini `dataService.getServices()` üzerinden okumaktadır.
+- [x] Tasarım `DESIGN_RULES.md` renk ve yüzey kontratlarına uygundur.
+- [x] Prototype satış demosu olgunluğunda responsive kart kalitesi sağlanmıştır.
 
 ## 13. Handoff / Stop Rule
 
@@ -129,4 +129,4 @@ src/
 ---
 ## Wave Result
 
-*Pending Execution — Core services presentation surface ready for execution.*
+*Execution Complete — Core services presentation surface fully implemented and verified in `products/trakya-teknik-makine/`.*

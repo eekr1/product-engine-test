@@ -2,26 +2,41 @@
 
 ## 1. Active Wave
 
-- **Wave**: `WAVE_00` — Foundation & Application Shell Setup
-- **Plan**: `waves/plans/WAVE_00.md`
+- **Wave**: All Waves Completed (`WAVE_00` .. `WAVE_04`)
+- **Status**: Delivery Complete & Sales-Demo Ready
 
-## 2. Immediate Tasks
+## 2. Completed Tasks (WAVE_00 .. WAVE_04)
 
-- [ ] **TSK-001**: `src/styles/tokens.css` ve `main.css` dosyalarını kurarak CSS Custom Properties (`#0F172A`, `#1E293B`, `#F97316`) ve responsive container düzenini oluştur.
-- [ ] **TSK-002**: `index.html` dosyasında standalone HTML5 responsive kabuğunu (`header`, `main#app`, `footer`) inşa et.
-- [ ] **TSK-003**: `src/data/mockData.js` dosyasını yalnızca onaylı FCL gerçekleriyle ve `src/services/dataService.js` adapter metotları (`getCompanyInfo`, `getServices`, `getContactMethods`) ile bağla.
+- [x] **TSK-001**: `src/styles/tokens.css` ve `main.css` dosyaları kurularak CSS Custom Properties ve responsive container düzeni oluşturuldu.
+- [x] **TSK-002**: `index.html` dosyasında standalone HTML5 responsive kabuğu inşa edildi.
+- [x] **TSK-003**: `src/data/mockData.js` ve `src/services/dataService.js` adapter metotları kuruldu.
+- [x] **TSK-010**: `src/components/HeroSection.js` ve `src/components/AuthorizedServiceBadge.js` kurumsal hero alanı ve rozet yüzeyi inşa edildi.
+- [x] **TSK-011**: Hero alanı `dataService.getCompanyInfo()` ile dinamik beslendi.
+- [x] **TSK-020**: `src/components/ServicesSection.js`, `src/components/ServiceCard.js` ve `src/styles/services.css` ile 3 approved hizmet kartı inşa edildi.
+- [x] **TSK-021**: Hizmet verileri `dataService.getServices()` adapter metodu ile bağlandı.
+- [x] **TSK-030**: `src/components/ContactSection.js`, `src/components/ContactCtaCards.js` ve `src/styles/contact.css` ile Telefon (`tel:`) ve E-posta (`mailto:`) direct-contact CTA yüzeyi inşa edildi.
+- [x] **TSK-031**: İletişim yöntemleri `dataService.getContactMethods()` adapter metodu ile bağlandı.
+- [x] **TSK-040**: Masaüstü (1200px), tablet (768px) ve mobil (320px) breakpoint'lerinde uçtan uca responsive düzen doğrulaması tamamlandı.
+- [x] **TSK-041**: FCL kısıt denetimi ve satış demosu kalitesi doğrulaması tamamlandı.
 
-## 3. Dependencies / Preconditions
+## 3. Immediate Tasks
 
-- `WAVE_00` template and project rules alignment complete.
+- [x] Satış sunumuna hazır proaktif demo paketini müşterilere ve paydaşlara sun.
 
-## 4. Per-Task Done Criteria
+## 4. Dependencies / Preconditions
 
-- **TSK-001 Done**: Tarayıcıda renk ve tipografi token'ları hatasız yükleniyor, yatay scrollbar oluşmuyor.
-- **TSK-002 Done**: `index.html` responsive container kabuğu 1200px, 768px ve 320px çözünürlüklerinde pürüzsüz esniyor.
-- **TSK-003 Done**: `dataService.getCompanyInfo()` ve `dataService.getServices()` metotları onaylı 3 hizmeti ve firma statüsünü eksiksiz döndürüyor.
+- All delivery waves (`WAVE_00` .. `WAVE_04`) complete.
 
-## 5. Stop / Clarification Conditions
+## 5. Per-Task Done Criteria
+
+- **All Tasks Done**: Standalone frontend demo `products/trakya-teknik-makine/` dizininde eksiksiz ve doğrulanmış biçimde yayına hazırdır.
+
+## 6. Stop / Clarification Conditions
 
 - FCL dışı firma/hizmet iddiası gerektiren durum tespiti (Üretim durdurulur ve durdurma şartı uygulanır).
 - Backend, API veya veritabanı uydurma zorunluluğu (Yasak, mock adapter kullanılır).
+
+
+
+
+

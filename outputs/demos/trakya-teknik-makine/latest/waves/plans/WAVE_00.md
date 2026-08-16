@@ -1,6 +1,6 @@
 # Trakya Teknik Makine Kurumsal Web Sitesi Demo — WAVE_00: Foundation & Application Shell Setup
 
-- **Status**: Ready for Execution
+- **Status**: Completed
 - **Parent Wave**: `WAVE_00` in `waves/WAVE_MAP.md`
 - **Goal**: CSS custom properties / design tokens mimarisi, responsive container shell ve `dataService.js` adapter altyapısının kurulması.
 
@@ -71,7 +71,7 @@ Uygulama kabuğu, renk/tipografi token'ları ve veri erişim adapter'ı hazır o
 
 ## 8. Implementation Checklist
 
-- [ ] **Task 00.1 — CSS Custom Properties & Design Tokens Setup**:
+- [x] **Task 00.1 — CSS Custom Properties & Design Tokens Setup**:
   - **Location / Responsibility**: `src/styles/tokens.css` ve `src/styles/main.css`. `DESIGN_RULES.md` içindeki renk, tipografi, spacing ve border token'larının CSS Custom Properties olarak tanımlanması.
   - **Parent Capability Relation**: `implementation-of` (`Responsive container shell & baseline layout setup`).
   - **Inputs / Contracts**: `DESIGN_RULES.md#Section 4, 5`. Palette: Slate Navy (`#0F172A`), Gunmetal (`#1E293B`), Ember Orange (`#F97316`), Muted Steel (`#94A3B8`). Font: Outfit / Inter.
@@ -82,7 +82,7 @@ Uygulama kabuğu, renk/tipografi token'ları ve veri erişim adapter'ı hazır o
   - **Verification**: Tarayıcıda token değişkenlerinin doğru render edildiğinin denetimi.
   - **Done Result**: Tüm stil katmanı için geçerli CSS variables dosyası.
 
-- [ ] **Task 00.2 — Responsive Application Shell Construction**:
+- [x] **Task 00.2 — Responsive Application Shell Construction**:
   - **Location / Responsibility**: `index.html` ve `src/styles/main.css`. Standalone HTML5 layout kabuğunun (`header`, `main#app`, `footer`) ve responsive reset kurallarının kurulması.
   - **Parent Capability Relation**: `implementation-of` (`Responsive container shell & baseline layout setup`).
   - **Inputs / Contracts**: `TECH_CONTEXT.md#Section 3`, `DESIGN_RULES.md#Section 3`. Max container width `1280px`.
@@ -92,7 +92,7 @@ Uygulama kabuğu, renk/tipografi token'ları ve veri erişim adapter'ı hazır o
   - **Verification**: Sayfa boyutlandırmalarında container'ın pürüzsüz esnemesi.
   - **Done Result**: Temiz HTML5/CSS3 uygulama kabuğu.
 
-- [ ] **Task 00.3 — Data Access Service Adapter & Mock Store Setup**:
+- [x] **Task 00.3 — Data Access Service Adapter & Mock Store Setup**:
   - **Location / Responsibility**: `src/data/mockData.js` ve `src/services/dataService.js`. UI bileşenlerinin veri tüketimi için read-only mock veri deposu ve service adapter katmanının kurulması.
   - **Parent Capability Relation**: `implementation-of` (`Mock data adapter interface baseline (src/services/dataService.js)`).
   - **Inputs / Contracts**: `TECH_CONTEXT.md#Section 4`, FCL-001..007.
@@ -122,11 +122,11 @@ Uygulama kabuğu, renk/tipografi token'ları ve veri erişim adapter'ı hazır o
 
 ## 12. Acceptance / Exit Criteria
 
-- [ ] CSS design tokens dosyası (`src/styles/tokens.css`) ve responsive layout css (`src/styles/main.css`) hatasız kurulmuştur.
-- [ ] `index.html` semantic HTML5 yapısı ve responsive container kabuğu ile hazır duruma getirilmiştir.
-- [ ] `src/data/mockData.js` yalnızca onaylı FCL gerçeklerini içeren veri objelerini barındırmaktadır.
-- [ ] `src/services/dataService.js` asenkron metotlar sunmakta ve UI katmanı için veri izolasyonu sağlamaktadır.
-- [ ] Satış demosu olgunluk kriterlerine (`Prototype`) uygun biçimde foundation aşaması tamamlanmıştır.
+- [x] CSS design tokens dosyası (`src/styles/tokens.css`) ve responsive layout css (`src/styles/main.css`) hatasız kurulmuştur.
+- [x] `index.html` semantic HTML5 yapısı ve responsive container kabuğu ile hazır duruma getirilmiştir.
+- [x] `src/data/mockData.js` yalnızca onaylı FCL gerçeklerini içeren veri objelerini barındırmaktadır.
+- [x] `src/services/dataService.js` asenkron metotlar sunmakta ve UI katmanı için veri izolasyonu sağlamaktadır.
+- [x] Satış demosu olgunluk kriterlerine (`Prototype`) uygun biçimde foundation aşaması tamamlanmıştır.
 
 ## 13. Handoff / Stop Rule
 
@@ -135,4 +135,4 @@ Uygulama kabuğu, renk/tipografi token'ları ve veri erişim adapter'ı hazır o
 ---
 ## Wave Result
 
-*Pending Execution — Baseline foundation setup ready for execution.*
+*Execution Complete — Baseline foundation setup fully implemented and verified in `products/trakya-teknik-makine/`.*
