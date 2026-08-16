@@ -142,6 +142,8 @@ hybrid wave
 → applicable parts of both
 ```
 
+Setup/foundation adı tek başına runtime reference gerekçesi değildir; actual lifecycle/state/realtime sorumluluğu yoksa UI/page/feature route kullanılır.
+
 Reference layer MUST NOT authorize project scope or architecture.
 
 Forbidden reference leakage:
@@ -168,7 +170,7 @@ FCL semantic content ⊆ exact supporting source evidence
 generated factual claim ⊆ referenced FCL semantic content
 ```
 
-Generated wording approved fact'in anlamını genişleten yeni fiil, ilişki veya operational meaning ekleyemez. Özellikle location/context fact; FCL açıkça desteklemedikçe service area, residence, office/clinic location, ownership veya operational presence claim'ine dönüştürülemez.
+Generated wording approved fact'in anlamını genişleten yeni fiil, ilişki veya operational meaning ekleyemez. Özellikle location/context fact; FCL açıkça desteklemedikçe service area, residence, office/clinic location, ownership veya operational presence claim'ine dönüştürülemez. Outbound profile/link fact de source support olmadan contact, communication, booking veya official channel claim'ine dönüştürülemez.
 
 ## Observable Trace Boundary
 
@@ -394,4 +396,4 @@ independent trace available → consume unique single-use read token per dynamic
 Validation publication'dan önce tamamlanır.
 
 ## Publication / Completion
-PASS veya policy'nin izin verdiği accepted CONDITIONAL PASS sonrası publish edilir; ardından run terminal state'e kapatılır.
+PASS sonrası doğrudan publish edilebilir. CONDITIONAL PASS yalnız validation sonrasında explicit user/operator acceptance event'i kaydedildikten sonra publish edilir; önceki intake/plan approval acceptance sayılmaz. Ardından run terminal state'e kapatılır.

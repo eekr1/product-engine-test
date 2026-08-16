@@ -289,6 +289,8 @@ Başarılı kapanış sırası:
 10. active kopyanın olmadığı doğrulandı.
 ```
 
+`CONDITIONAL PASS` publication için validation sonrasında verilmiş explicit user/operator acceptance event'i zorunludur. Intake/plan approval bu acceptance yerine geçmez; event yoksa output publish edilmez ve run Completed'a kapatılamaz.
+
 ## Operational Closure Integrity
 
 Run fiziksel olarak `runs/completed/<run-id>/` altına taşınmadan önce mevcut operational records kapanış state'iyle uyumlu hale getirilir.

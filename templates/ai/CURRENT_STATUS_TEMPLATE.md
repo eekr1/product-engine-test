@@ -51,6 +51,7 @@ Projenin anlık gerçeğini; aktif phase/wave'i, tamamlanan işleri, devam eden 
 - Current truth ile desired state karıştırılmaz.
 - New projede henüz uygulanmamış wave'ler tamamlanmış gösterilmez.
 - Aktif wave WAVE_MAP ve ilgili WAVE_PLAN ile tutarlı olmalıdır.
+- `Active Wave` sıradaki/current execution authority'yi gösterir; `In Progress` yalnız gerçek implementation çalışması başlamışsa doldurulur. Dokümantasyon generation'ının tamamlanması tek başına WAVE_00'ı in-progress yapmaz.
 - CURRENT_STATUS generated project state'i temsil eder; Product Engine run lifecycle (`active/completed`, generation/publication progress) bu belgeye taşınmaz. Run lifecycle run artifacts tarafından tutulur.
 - Bir agent çalışma sonunda yaptığı gerçek ilerlemeye göre bu belgeyi güncellemelidir.
 - NEXT_TASKS sıradaki iş listesi; CURRENT_STATUS mevcut gerçeklik sahibidir.
