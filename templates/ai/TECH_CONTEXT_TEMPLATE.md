@@ -6,7 +6,7 @@
 template_id: tech-context-template
 template_name: Tech Context Template
 document_id: TECH-CTX
-version: 1.1.0
+version: 1.1.1
 status: active
 template_type: document
 category: ai
@@ -25,12 +25,11 @@ required_inputs:
 conditional_inputs: []
 dependencies:
   - PROJECT-BRAIN
-output_filename: TECH_CONTEXT.md
 ```
 
 ## Amaç
 
-Sistemin teknoloji yığınını, mimari kararlarını, bileşen yapısını, entegrasyon noktalarını ve teknik kısıtlamalarını tanımlamak; gerçek backend henüz kapsamda değilse dahi gelecekteki entegrasyonu gereksiz yeniden yazım olmadan destekleyecek boundary'leri görünür kılmak.
+Sistemin teknoloji yığınını, mimari kararlarını, bileşen yapısını, entegrasyon noktalarını ve teknik kısıtlamalarını tanımlamak; gerçek backend henüz kapsamda değilse dahi gelecekteki entegrasyonu ve ürün continuation path'ini gereksiz yeniden yazım olmadan destekleyecek boundary'leri görünür kılmak.
 
 ## Kullanım Koşulları
 
@@ -45,6 +44,7 @@ Implementation planning uygulanan tüm teknik projelerde zorunludur. `Prototype`
 ## Zorunlu Bölümler
 
 - Teknoloji Yığını (Technology Stack)
+- Stack Selection & Continuation Rationale
 - Mimari Kararlar ve Yaklaşım (Architectural Decisions)
 - Sistem Bileşenleri ve Boundary'ler (System Components & Boundaries)
 - Data / Service / Integration Readiness
@@ -60,10 +60,39 @@ Implementation planning uygulanan tüm teknik projelerde zorunludur. `Prototype`
 
 - Teknoloji ve mimari kararlar net gerekçeleriyle sunulmalıdır.
 - İş mantığı veya UX kurallarını sahiplenmemelidir (bkz: `PRODUCT_RULES.md`).
-- Kullanıcı tarafından onaylanmamış kütüphane, backend stack'i, API endpoint'i, database veya hosting sağlayıcıları uydurulmamalıdır.
+- Kullanıcı tarafından onaylanmamış backend stack'i, API endpoint'i, database veya hosting sağlayıcıları uydurulmamalıdır.
+- Frontend framework/tooling kararı, approved constraints yoksa Engine tarafından teknik synthesis olarak resolve edilebilir; ancak karar `engine/PLANNING_PROFILES.md` continuation-ready stack gate'ine uymalıdır.
 - Demo/prototype projeler throwaway architecture olarak yorumlanmamalıdır.
 - Frontend verisi presentation component'lerine kontrolsüz biçimde gömülmemelidir; mock/local data ile gerçek data source arasında değiştirilebilir boundary tanımlanmalıdır.
 - Gerçek backend kapsamda değilse `unresolved / future integration` olarak açıkça belirtilmeli; sahte implementation contract'ı üretilmemelidir.
+- Sales demo / client demo bağlamında, sırf küçük veya hızlı olduğu için zero-build/dependency-free stack seçilemez.
+- Package-managed/component-ready modern baseline yerine minimal stack seçiliyorsa exact project constraint veya düşük migration maliyetini kanıtlayan explicit continuation rationale zorunludur.
+
+## Stack Selection & Continuation Readiness Minimumu
+
+Frontend veya demo projelerde teknoloji yığını yalnız bugünkü scope'u çalıştırdığı için yeterli sayılmaz. TECH_CONTEXT minimum şu sorulara cevap vermelidir:
+
+1. Bu proje kabul edilirse aynı frontend codebase üzerinde devam edilmesi bekleniyor mu?
+2. Seçilen stack yeni page/component/state eklenmesini structural rewrite olmadan destekliyor mu?
+3. Local development workflow nedir?
+4. Build workflow nedir veya neden bilinçli olarak yoktur?
+5. Preview workflow nedir?
+6. Dependency/package lifecycle nasıl yönetilir veya neden dependency-free seçim continuation açısından güvenlidir?
+7. Gerçek API/CMS/auth gibi future layers geldiğinde hangi frontend boundaries korunacaktır?
+8. Seçilen stack neden düşük migration maliyetlidir?
+9. Zero-build / Vanilla seçildiyse hangi exact constraint/rationale bu seçimi modern package-managed baseline'dan daha doğru kılar?
+
+Canonical expectation:
+
+```text
+continuation expected
+→ package-managed / component-ready / repeatable tooling baseline preferred
+
+zero-build / dependency-free
+→ explicit constraint OR explicit low-migration continuation rationale required
+```
+
+Bu kural belirli bir framework zorunluluğu değildir.
 
 ## Integration Readiness Minimumu
 
@@ -94,6 +123,7 @@ Bu bir framework veya klasör adı zorunluluğu değildir; architectural separat
 
 - `{{PROJECT_NAME}}`: Proje adı.
 - `{{TECH_STACK_BLOCK}}`: Frontend, backend, veritabanı ve altyapı bileşenleri listesi; bilinmeyenler açıkça unresolved olmalı.
+- `{{STACK_CONTINUATION_RATIONALE}}`: Seçilen frontend stack/tooling'in bugünkü demo scope'u ile gelecekteki continuation path'i neden birlikte desteklediğini açıklayan karar bloğu.
 - `{{ARCHITECTURE_OVERVIEW}}`: Sistem mimari yaklaşımının açıklaması.
 - `{{SYSTEM_COMPONENTS_LIST}}`: Ana yazılım bileşenleri, modüller ve boundary'ler.
 - `{{INTEGRATION_READINESS_BLOCK}}`: Bugünkü data source ile gelecekteki integration boundary arasındaki ilişki.
@@ -108,12 +138,12 @@ Bu bir framework veya klasör adı zorunluluğu değildir; architectural separat
 
 ## Diğer Dokümanlarla İlişki
 
-- Primary Owner: `technical_stack`, `architecture_decisions`, `system_components`, `integration_points`, `technical_constraints`, `integration_readiness`.
+- Primary Owner: `technical_stack`, `stack_continuation_rationale`, `architecture_decisions`, `system_components`, `integration_points`, `technical_constraints`, `integration_readiness`.
 - Referenced By: `PROJECT_BRAIN.md`, `PROJECT_PLAN.md`, `WAVE_MAP.md`, `WAVE_PLAN.md`, `DEPLOYMENT.md`, `TEST_STRATEGY.md`, `DATA_MODEL.md`, `README.md`.
 
 ## Planning Profile Davranışı
 
-- **standard**: Teknik stack, module/boundary yapısı, data source gerçekliği ve integration readiness uygulanabilir seviyede netleşir.
+- **standard**: Teknik stack, stack continuation rationale, module/boundary yapısı, data source gerçekliği ve integration readiness uygulanabilir seviyede netleşir.
 - **full**: Standard kapsamına ek olarak karmaşık data/API/test/deployment/operational bağımlılıklar, onaylı gerçek scope kadar derinleştirilir.
 
 Delivery profile yalnızca teslim olgunluğunu etkiler; bu belgenin temel mimari kalite beklentisini düşürmez.
@@ -123,6 +153,9 @@ Delivery profile yalnızca teslim olgunluğunu etkiler; bu belgenin temel mimari
 - `PROJECT_BRAIN.md` ile stack ve kapsam uyumlu olmalıdır.
 - Tanımlanan bileşenler proje kapsamını tam olarak karşılamalıdır.
 - Demo/prototype ise mock/local data boundary ve future integration boundary görünür olmalıdır.
+- Frontend/demo ise stack selection ve continuation rationale görünür olmalıdır.
+- Continuation beklenen demo için package-managed/component-ready baseline'dan sapma açık constraint/rationale olmadan yapılamaz.
+- Dev/build/preview workflow stack reality ile tutarlı ve tekrar üretilebilir olmalıdır.
 - Onaylanmamış backend/API/database kararı gerçekmiş gibi yazılmamalıdır.
 
 ---
@@ -135,34 +168,38 @@ Delivery profile yalnızca teslim olgunluğunu etkiler; bu belgenin temel mimari
 
 {{TECH_STACK_BLOCK}}
 
-## 2. Mimari Kararlar ve Yaklaşım
+## 2. Stack Selection & Continuation Rationale
+
+{{STACK_CONTINUATION_RATIONALE}}
+
+## 3. Mimari Kararlar ve Yaklaşım
 
 {{ARCHITECTURE_OVERVIEW}}
 
-## 3. Sistem Bileşenleri ve Boundary'ler
+## 4. Sistem Bileşenleri ve Boundary'ler
 
 {{SYSTEM_COMPONENTS_LIST}}
 
-## 4. Data / Service / Integration Readiness
+## 5. Data / Service / Integration Readiness
 
 {{INTEGRATION_READINESS_BLOCK}}
 
-## 5. Teknik Kısıtlamalar ve Sınırlar
+## 6. Teknik Kısıtlamalar ve Sınırlar
 
 {{TECHNICAL_CONSTRAINTS_LIST}}
 
 [CONDITIONAL: include only if third-party integrations exist]
-## 6. Dış Entegrasyon Noktaları
+## 7. Dış Entegrasyon Noktaları
 
 - Dış servisler, API'ler ve entegrasyon protokolleri.
 
 [CONDITIONAL: include only if real-time functionality exists]
-## 7. Real-time / WebSocket Mimarisi
+## 8. Real-time / WebSocket Mimarisi
 
 - Real-time veri akışı ve bağlantı yönetimi mimarisi.
 
 [CONDITIONAL: include only if actual backend/API is approved scope]
-## 8. Backend / API Mimarisi
+## 9. Backend / API Mimarisi
 
 - Yalnızca approved scope içinde gerçekten kararlaştırılmış backend/API bileşenleri.
 
