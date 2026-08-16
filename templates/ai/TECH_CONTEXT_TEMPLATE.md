@@ -6,7 +6,7 @@
 template_id: tech-context-template
 template_name: Tech Context Template
 document_id: TECH-CTX
-version: 1.1.1
+version: 1.1.2
 status: active
 template_type: document
 category: ai
@@ -44,7 +44,7 @@ Implementation planning uygulanan tüm teknik projelerde zorunludur. `Prototype`
 ## Zorunlu Bölümler
 
 - Teknoloji Yığını (Technology Stack)
-- Stack Selection & Continuation Rationale
+- Stack Selection & Continuation Gate
 - Mimari Kararlar ve Yaklaşım (Architectural Decisions)
 - Sistem Bileşenleri ve Boundary'ler (System Components & Boundaries)
 - Data / Service / Integration Readiness
@@ -61,38 +61,42 @@ Implementation planning uygulanan tüm teknik projelerde zorunludur. `Prototype`
 - Teknoloji ve mimari kararlar net gerekçeleriyle sunulmalıdır.
 - İş mantığı veya UX kurallarını sahiplenmemelidir (bkz: `PRODUCT_RULES.md`).
 - Kullanıcı tarafından onaylanmamış backend stack'i, API endpoint'i, database veya hosting sağlayıcıları uydurulmamalıdır.
-- Frontend framework/tooling kararı, approved constraints yoksa Engine tarafından teknik synthesis olarak resolve edilebilir; ancak karar `engine/PLANNING_PROFILES.md` continuation-ready stack gate'ine uymalıdır.
+- Frontend framework/tooling kararı, approved constraints yoksa Engine tarafından teknik synthesis olarak resolve edilebilir; ancak `engine/PLANNING_PROFILES.md` continuation gate'ine uymalıdır.
 - Demo/prototype projeler throwaway architecture olarak yorumlanmamalıdır.
 - Frontend verisi presentation component'lerine kontrolsüz biçimde gömülmemelidir; mock/local data ile gerçek data source arasında değiştirilebilir boundary tanımlanmalıdır.
 - Gerçek backend kapsamda değilse `unresolved / future integration` olarak açıkça belirtilmeli; sahte implementation contract'ı üretilmemelidir.
-- Sales demo / client demo bağlamında, sırf küçük veya hızlı olduğu için zero-build/dependency-free stack seçilemez.
-- Package-managed/component-ready modern baseline yerine minimal stack seçiliyorsa exact project constraint veya düşük migration maliyetini kanıtlayan explicit continuation rationale zorunludur.
+- Continuation beklenen sales/client demo'da zero-build/dependency-free stack yalnız approved user/project/environment constraint ile seçilebilir.
+- Agent'ın kendi “low migration cost”, “modüler ES6”, “ileride framework'e geçilebilir” gerekçesi approved constraint değildir.
 
-## Stack Selection & Continuation Readiness Minimumu
+## Stack Selection & Continuation Gate Minimumu
 
-Frontend veya demo projelerde teknoloji yığını yalnız bugünkü scope'u çalıştırdığı için yeterli sayılmaz. TECH_CONTEXT minimum şu sorulara cevap vermelidir:
-
-1. Bu proje kabul edilirse aynı frontend codebase üzerinde devam edilmesi bekleniyor mu?
-2. Seçilen stack yeni page/component/state eklenmesini structural rewrite olmadan destekliyor mu?
-3. Local development workflow nedir?
-4. Build workflow nedir veya neden bilinçli olarak yoktur?
-5. Preview workflow nedir?
-6. Dependency/package lifecycle nasıl yönetilir veya neden dependency-free seçim continuation açısından güvenlidir?
-7. Gerçek API/CMS/auth gibi future layers geldiğinde hangi frontend boundaries korunacaktır?
-8. Seçilen stack neden düşük migration maliyetlidir?
-9. Zero-build / Vanilla seçildiyse hangi exact constraint/rationale bu seçimi modern package-managed baseline'dan daha doğru kılar?
-
-Canonical expectation:
+Frontend/demo TECH_CONTEXT şu alanları **explicit** üretmelidir:
 
 ```text
-continuation expected
-→ package-managed / component-ready / repeatable tooling baseline preferred
-
-zero-build / dependency-free
-→ explicit constraint OR explicit low-migration continuation rationale required
+Continuation Expected: YES | NO
+Continuation Evidence: <approved source/input evidence>
+Approved Zero-Build Constraint: <exact approved evidence | NONE>
+Selected Frontend Baseline: <stack/tooling>
+Package Manifest: <path | N/A with approved reason>
+Dev Command: <command | N/A with approved reason>
+Build Command: <command | N/A with approved reason>
+Preview Command: <command | N/A with approved reason>
+Same-Codebase Continuation: PASS | FAIL
 ```
 
-Bu kural belirli bir framework zorunluluğu değildir.
+Deterministic rule:
+
+```text
+Continuation Expected = YES
+AND Approved Zero-Build Constraint = NONE
+→ package-managed/component-oriented baseline REQUIRED
+→ package manifest REQUIRED
+→ repeatable dev/build/preview workflow REQUIRED
+```
+
+Bu durumda `Vanilla/zero-build/dependency-free` seçimi geçersizdir; “ileride React/Vite/Next'e migrate edilir” ifadesi continuation kanıtı değildir.
+
+Framework adı global olarak zorunlu değildir. React/Vite, Vue/Vite, SvelteKit veya başka uygun modern package-managed component-oriented çözüm project-specific synthesis ile seçilebilir.
 
 ## Integration Readiness Minimumu
 
@@ -117,13 +121,11 @@ Mock / Local Adapter (bugün)
 Real API Adapter (gelecekte, onaylanırsa)
 ```
 
-Bu bir framework veya klasör adı zorunluluğu değildir; architectural separation beklentisidir.
-
 ## Placeholder Tanımları
 
 - `{{PROJECT_NAME}}`: Proje adı.
 - `{{TECH_STACK_BLOCK}}`: Frontend, backend, veritabanı ve altyapı bileşenleri listesi; bilinmeyenler açıkça unresolved olmalı.
-- `{{STACK_CONTINUATION_RATIONALE}}`: Seçilen frontend stack/tooling'in bugünkü demo scope'u ile gelecekteki continuation path'i neden birlikte desteklediğini açıklayan karar bloğu.
+- `{{STACK_CONTINUATION_GATE}}`: Continuation Expected/Evidence, approved zero-build constraint, selected baseline, package manifest, dev/build/preview commands ve same-codebase continuation sonucunu içerir.
 - `{{ARCHITECTURE_OVERVIEW}}`: Sistem mimari yaklaşımının açıklaması.
 - `{{SYSTEM_COMPONENTS_LIST}}`: Ana yazılım bileşenleri, modüller ve boundary'ler.
 - `{{INTEGRATION_READINESS_BLOCK}}`: Bugünkü data source ile gelecekteki integration boundary arasındaki ilişki.
@@ -138,24 +140,23 @@ Bu bir framework veya klasör adı zorunluluğu değildir; architectural separat
 
 ## Diğer Dokümanlarla İlişki
 
-- Primary Owner: `technical_stack`, `stack_continuation_rationale`, `architecture_decisions`, `system_components`, `integration_points`, `technical_constraints`, `integration_readiness`.
+- Primary Owner: `technical_stack`, `stack_continuation_gate`, `architecture_decisions`, `system_components`, `integration_points`, `technical_constraints`, `integration_readiness`.
 - Referenced By: `PROJECT_BRAIN.md`, `PROJECT_PLAN.md`, `WAVE_MAP.md`, `WAVE_PLAN.md`, `DEPLOYMENT.md`, `TEST_STRATEGY.md`, `DATA_MODEL.md`, `README.md`.
 
 ## Planning Profile Davranışı
 
-- **standard**: Teknik stack, stack continuation rationale, module/boundary yapısı, data source gerçekliği ve integration readiness uygulanabilir seviyede netleşir.
+- **standard**: Teknik stack, continuation gate evidence, module/boundary yapısı, data source gerçekliği ve integration readiness uygulanabilir seviyede netleşir.
 - **full**: Standard kapsamına ek olarak karmaşık data/API/test/deployment/operational bağımlılıklar, onaylı gerçek scope kadar derinleştirilir.
-
-Delivery profile yalnızca teslim olgunluğunu etkiler; bu belgenin temel mimari kalite beklentisini düşürmez.
 
 ## Validation Beklentileri
 
 - `PROJECT_BRAIN.md` ile stack ve kapsam uyumlu olmalıdır.
 - Tanımlanan bileşenler proje kapsamını tam olarak karşılamalıdır.
 - Demo/prototype ise mock/local data boundary ve future integration boundary görünür olmalıdır.
-- Frontend/demo ise stack selection ve continuation rationale görünür olmalıdır.
-- Continuation beklenen demo için package-managed/component-ready baseline'dan sapma açık constraint/rationale olmadan yapılamaz.
+- Frontend/demo ise continuation gate alanları eksiksiz olmalıdır.
+- Continuation YES + approved zero-build constraint NONE ise package-managed/component-oriented baseline zorunludur.
 - Dev/build/preview workflow stack reality ile tutarlı ve tekrar üretilebilir olmalıdır.
+- “Future framework migration” same-codebase continuation sayılmaz.
 - Onaylanmamış backend/API/database kararı gerçekmiş gibi yazılmamalıdır.
 
 ---
@@ -168,9 +169,9 @@ Delivery profile yalnızca teslim olgunluğunu etkiler; bu belgenin temel mimari
 
 {{TECH_STACK_BLOCK}}
 
-## 2. Stack Selection & Continuation Rationale
+## 2. Stack Selection & Continuation Gate
 
-{{STACK_CONTINUATION_RATIONALE}}
+{{STACK_CONTINUATION_GATE}}
 
 ## 3. Mimari Kararlar ve Yaklaşım
 
