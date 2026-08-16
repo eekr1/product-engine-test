@@ -294,57 +294,70 @@ demo frontend
 → optional CMS/admin/auth/integration layers
 ```
 
-Bu kural belirli bir framework'ü global olarak zorunlu kılmaz. React, Vue, Svelte, Vanilla veya başka bir frontend yaklaşımı ancak current project constraints ve continuation path ile gerekçelendirildiği ölçüde seçilebilir.
+Bu kural belirli bir framework'ü global olarak zorunlu kılmaz. React, Vue, Svelte veya başka bir component-oriented frontend yaklaşımı current project constraints ve continuation path ile gerekçelendirildiği ölçüde seçilebilir.
 
-### Varsayılan Karar Eğilimi
+### Deterministic Continuation Gate
 
-Aşağıdaki bağlamlarda, aksi yönde approved teknik constraint veya güçlü project-specific gerekçe yoksa **package-managed, component-ready, modern development tooling taşıyan bir frontend baseline** tercih edilmelidir:
+Aşağıdaki koşullardan herhangi biri mevcutsa `continuation_expected = YES` kabul edilir:
 
-- proaktif satış demosu,
-- müşteri kabul ederse gerçek site/ürüne devam edilmesi beklenen demo,
-- birden fazla surface/page/component'a doğal biçimde büyüyebilecek frontend,
-- backend/API/CMS entegrasyonunun future possibility olarak açıkça bulunduğu proje.
+- proaktif satış/client demosu,
+- müşteri kabul ederse aynı site/ürün üzerinde devam edilmesi bekleniyor,
+- future scope içinde backend/API/CMS/auth/admin veya yeni page/component/state büyümesi açıkça bulunuyor,
+- mevcut source/approved input demo'nun gerçek uygulamaya dönüşebileceğini söylüyor.
 
-Örnek uygun baseline class'ı:
+`continuation_expected = YES` ise ve approved input/source içinde aksi yönde explicit constraint yoksa Engine **MUST** şu baseline class'ını seçmelidir:
 
 ```text
-modern frontend build tooling
-+ package manifest / dependency lifecycle
-+ component/module structure
-+ dev/build/preview commands
+package-managed frontend
++ package/dependency manifest
++ repeatable dev/build/preview commands
++ component/module-oriented source structure
 + service/config boundary
++ same-codebase continuation path
 ```
 
-Bu örnek bir specific framework mandate değildir.
+Bu gate bir framework adı zorunlu kılmaz; ancak zero-build/dependency-free foundation bu durumda default teknik synthesis seçeneği değildir.
 
-### Zero-Build / Dependency-Free Seçim Kapısı
+### Zero-Build / Dependency-Free İstisnası
 
-Standalone HTML/CSS/Vanilla JS veya dependency-free/zero-build yaklaşım ancak şu koşullardan en az biri açıkça destekleniyorsa seçilebilir:
+Standalone HTML/CSS/Vanilla JS veya dependency-free/zero-build yaklaşım, `continuation_expected = YES` iken **yalnızca approved user/project/environment constraint** ile seçilebilir.
 
-- approved requirement gerçekten zero-build/static teslim istiyordur,
-- proje bilinçli olarak disposable/one-off proof olarak tanımlanmıştır ve continuation beklenmiyordur,
-- deployment/environment constraint package-managed tooling'i anlamsız kılıyordur,
-- proje ölçeği ve future path için seçimin migration maliyeti yaratmayacağı TECH_CONTEXT içinde somut gerekçeyle açıklanmıştır.
+Geçerli istisna kanıtı örnekleri:
 
-Sadece şu gerekçeler yeterli değildir:
+- kullanıcı açıkça framework/package tooling istemediğini onaylamıştır,
+- teslim ortamı Node/package tooling çalıştıramaz,
+- teslim gereksinimi explicit single-file/static/zero-build artifact zorunluluğudur,
+- approved scope projeyi bilinçli one-off/disposable proof olarak tanımlar ve continuation beklenmediğini açıkça söyler.
+
+Engine/agent kendi teknik yorumu ile istisna üretemez. TECH_CONTEXT içindeki “low migration cost”, “modüler ES6”, “ileride React/Vite'a taşınabilir”, “küçük proje”, “daha hızlı”, “dependency riski yok” veya benzeri rationale **approved constraint yerine geçmez**.
+
+Canonical invalid pattern:
 
 ```text
-"demo olduğu için"
-"küçük olduğu için"
-"daha hızlı olduğu için"
-"dependency olmasın diye"
+continuation_expected = YES
++ no approved zero-build constraint
++ Vanilla/zero-build selected
+→ INVALID STACK SELECTION
 ```
+
+Özellikle şu ifade continuation-ready sayılmaz:
+
+```text
+"Gerekirse ileride React/Vite/Next.js'e migrate edilir."
+```
+
+Çünkü continuation hedefi migration planlamak değil, aynı application foundation üzerinde büyümektir.
 
 ### Continuation Readiness Soruları
 
 TECH_CONTEXT stack kararı minimum şu sorulara cevap verebilmelidir:
 
-1. Bu demo kabul edilirse aynı frontend codebase üzerinde devam edilecek mi, yoksa bilinçli rewrite mı bekleniyor?
-2. Yeni page/component/state eklendiğinde mevcut stack doğal biçimde ölçeklenebiliyor mu?
-3. Gerçek API/CMS/auth gibi katmanlar geldiğinde hangi frontend boundary'leri korunacak?
-4. Local development, build ve preview workflow tekrar üretilebilir mi?
-5. Seçilen stack future continuation için neden düşük migration maliyetlidir?
-6. Daha minimal/zero-build alternatif seçildiyse neden ileride structural rewrite riski yaratmıyor?
+1. `continuation_expected` YES mi NO mu ve hangi approved evidence bunu belirliyor?
+2. Seçilen stack yeni page/component/state eklenmesini structural rewrite olmadan destekliyor mu?
+3. Local development, build ve preview workflow nedir?
+4. Package/dependency lifecycle nasıl yönetiliyor?
+5. Gerçek API/CMS/auth gibi katmanlar geldiğinde hangi frontend boundary'leri korunacak?
+6. Zero-build seçildiyse exact approved constraint ID/evidence nedir?
 
 Bu cevaplar yoksa frontend stack kararı implementation-ready değildir.
 
