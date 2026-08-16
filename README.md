@@ -11,12 +11,12 @@ Kullanılan ajanın Codex, Claude, Gemini veya başka bir sistem olması fark et
 ## Current Version
 
 ```text
-Product Engine Version: 0.2.0
+Product Engine Version: 0.2.1
 Active Version Authority: Root README.md (bu dosya)
 Version History Authority: logs/ENGINE_CHANGELOG.md
 ```
 
-`v0.2.0`, ilk gerçek `v0.1.0` run'ından sonra eklenen Planning Profiles, implementation/wave planning, design planning, integration-readiness, agent-readiness ve genişletilmiş validation mimarisini temsil eder.
+`v0.2.1`, `v0.2.0` planning-profile mimarisini korur ve gerçek demo implementation kullanımından öğrenilen **continuation-ready frontend stack selection** guard'ını ekler. Sales/client demo projelerinde demo olgunluğu, ileride aynı codebase üzerinde devam etmeyi gereksiz migration'a zorlayan bir frontend foundation seçmek için gerekçe değildir.
 
 Bu dosya (Root `README.md`), Product Engine'in tek birincil aktif sürüm otoritesidir (`current active version authority`). Sürüm geçmişinin sahibi ise `logs/ENGINE_CHANGELOG.md` belgesidir.
 
@@ -35,7 +35,7 @@ Bu dosya (Root `README.md`), Product Engine'in tek birincil aktif sürüm otorit
 | `inputs/` | Pending ve explicit approval sonrası approved proje truth katmanı. |
 | `runs/` | Tekil Product Engine çalışmalarının operasyonel yaşam döngüsü ve kayıt yeri. |
 | `outputs/` | Geçerli kılınmış ve teslim edilebilir nihai agent-ready proje dokümantasyon paketleri. |
-| `logs/` | Kalıcı motor hafızası, changelog ve engine-level history. |
+| `logs/` | Kalıcı motor hafızası, changelog, issue/hardening takibi ve engine-level history. |
 | `examples/` | Doğru/hatalı çalışma örnekleri ve test senaryoları (non-authoritative). |
 | `archive/` | Aktif kullanımdan kaldırılmış tarihsel materyal ve izole edilmiş belgeler. |
 | `planning/` | İlk inşa süreci şartnameleri ve tarihsel build takibi (runtime authority değildir). |
@@ -78,7 +78,7 @@ outputs/
 └── Final validated agent-ready deliverables
 
 logs/
-└── Persistent engine-level memory & version history
+└── Persistent engine-level memory, issue/hardening tracking & version history
 
 examples/ / archive/ / planning/ / ref/
 └── Non-runtime reference or historical layers
@@ -153,6 +153,7 @@ Profile depth ≠ quality level
 Prototype/demo ≠ throwaway architecture
 Light design ≠ generic/template design
 Integration-ready ≠ invented backend
+Continuation-ready demo ≠ forced framework; migration-heavy foundation requires justification
 Full ≠ gereksiz belge üretme izni
 ```
 
@@ -161,22 +162,24 @@ Full ≠ gereksiz belge üretme izni
 ## Current Build State
 
 ```text
-Core Engine Foundation            : Completed
-First Real Project Test (v0.1.0)  : Completed
-First-Run Hardening               : Completed
-Planning Profile System           : Completed
-Implementation / Wave Planning    : Completed
-Design Planning Foundation        : Completed
-Design Canonical Templates        : Completed
-Selection / Overlay Integration   : Completed
-Validation Expansion              : Completed
-Post-Build Integration Audit      : Completed
-Audit Cleanup                     : Completed
-Second Real Project Validation    : Pending
-Overall v0.2.0 State              : Built; awaiting clean second real-project run
+Core Engine Foundation                 : Completed
+First Real Project Test (v0.1.0)       : Completed
+First-Run Hardening                    : Completed
+Planning Profile System                : Completed
+Implementation / Wave Planning         : Completed
+Design Planning Foundation             : Completed
+Design Canonical Templates             : Completed
+Selection / Overlay Integration        : Completed
+Validation Expansion                   : Completed
+Post-Build Integration Audit           : Completed
+Audit Cleanup                          : Completed
+Continuation-Ready Stack Guard (v0.2.1): Implemented — Awaiting Next Real-Run Validation
+Overall v0.2.1 State                   : Operational; real-project usage active
 ```
 
-`v0.2.0` mimarisi ve cleanup tamamlanmıştır. Engine'in bir sonraki kabul kapısı, temizlenmiş Trakya Teknik Makine source'u üzerinden yeni planning profile sisteminin baştan sona gerçek run ile doğrulanmasıdır.
+Engine artık gerçek proje üretiminde aktif olarak kullanılabilir. Blocking/Major mimari sapmalar Engine'e geri beslenir; tekil düşük etkili hardening gözlemleri `logs/ENGINE_HARDENING_LOG.md` üzerinden takip edilir ve proje üretimini otomatik durdurmaz.
+
+`ISSUE-001` continuation-ready frontend stack guard'ı uygulanmıştır; bir sonraki gerçek demo generation run'ı bu davranışın validation kanıtı olacaktır.
 
 ---
 
@@ -194,5 +197,6 @@ Overall v0.2.0 State              : Built; awaiting clean second real-project ru
 
 - `v0.1.0`: İlk gerçek Trakya Teknik Makine run'ını gerçekleştiren temel Engine. Historical output `outputs/demos/trakya-teknik-makine/versions/v0.1/` ve `runs/completed/RUN-20260811-001/` altında korunur.
 - `v0.2.0`: Planning Profiles + implementation/wave planning + design planning + integration readiness + agent-readiness validation mimarisi.
+- `v0.2.1`: Demo/frontend continuation-ready stack selection guard; sales/client demo stack kararlarında low-migration continuation rationale ve repeatable tooling beklentisi.
 
-Historical bir `v0.1.0` run/output yeni `v0.2.0` contract'larına göre geriye dönük olarak mutate edilmez. Yeni contract'ları doğrulamak için yeni intake ve yeni run üretilir.
+Historical bir eski run/output yeni contract'lara göre geriye dönük olarak mutate edilmez. Yeni contract'ları doğrulamak için yeni intake/run veya yeni gerçek proje generation evidence'ı kullanılır.
