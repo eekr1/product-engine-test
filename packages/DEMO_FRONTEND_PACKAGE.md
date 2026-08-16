@@ -6,7 +6,7 @@
 package_id: demo-frontend
 package_name: Frontend Demo Package
 package_type: base
-version: 2.2.1
+version: 2.2.2
 status: active
 default_delivery_profile: Prototype
 compatible_project_types:
@@ -131,37 +131,76 @@ Gerçek API approved scope'a girerse `API`/`DATA` ve ilgili extension/context ko
 Canonical package expectation:
 
 ```text
-sales demo
+sales/client demo
 → same frontend foundation
 → additional pages/components/state
 → real service/API/CMS integration when approved
 ```
 
-Aksi yönde approved teknik constraint yoksa Engine, modern package-managed ve component-ready bir frontend development baseline'ını tercih etmelidir. Bu kural belirli bir framework'ü global olarak zorunlu kılmaz; framework/tooling seçimi project-specific teknik synthesis kararıdır.
+### Deterministic Package Gate
+
+Aşağıdakilerden herhangi biri mevcutsa continuation beklenir:
+
+- proje sales/client demo'dur,
+- kabul sonrası aynı site/ürün üzerinde devam edilmesi beklenir,
+- future scope içinde backend/API/CMS/auth/admin veya yeni page/component/state büyümesi vardır.
+
+Continuation bekleniyorsa ve approved source/input içinde aksi yönde explicit constraint yoksa Engine **MUST** package-managed, component-ready modern frontend baseline seçmelidir.
 
 Beklenen baseline class:
 
 ```text
 package/dependency manifest
 + repeatable dev/build/preview workflow
-+ modular component/module structure
++ component/module-oriented source structure
 + service/config boundary
 + production-continuation friendly source layout
 ```
 
-Zero-build / dependency-free Vanilla yaklaşımı otomatik yasak değildir; fakat yalnızca `engine/PLANNING_PROFILES.md` içindeki continuation-ready selection gate'i karşılayan açık gerekçeyle seçilebilir.
+Belirli framework global olarak zorunlu değildir. React/Vite, Vue/Vite, SvelteKit veya başka uygun package-managed component-oriented çözüm current project synthesis ile seçilebilir.
 
-Şunlar tek başına yeterli gerekçe değildir:
+### Zero-Build İstisna Kuralı
+
+Continuation beklenen `demo-frontend` projesinde Vanilla/zero-build/dependency-free foundation yalnız approved user/project/environment constraint ile mümkündür.
+
+Geçerli kanıt örnekleri:
 
 ```text
-demo
-prototype
-small project
-fast implementation
-no dependencies
+user explicitly requires no framework/package tooling
+runtime environment cannot run Node/package tooling
+explicit single-file/static/zero-build delivery requirement
+approved one-off/disposable proof with continuation explicitly not expected
 ```
 
-TECH_CONTEXT, seçilen stack'in kabul sonrası continuation yolunu ve migration maliyetini açıkça gerekçelendirmelidir.
+Aşağıdakiler **geçerli istisna değildir**:
+
+```text
+demo olduğu için
+küçük olduğu için
+hızlı olduğu için
+no dependency risk
+modüler ES6 yeterli
+ileride React/Vite/Next'e migrate edilebilir
+migration düşük maliyetli görünüyor
+```
+
+Engine/agent kendi rationale'ını approved constraint yerine koyamaz.
+
+Canonical failure:
+
+```text
+continuation_expected = YES
++ approved_zero_build_constraint = NONE
++ selected_stack = zero-build/dependency-free
+→ PACKAGE GUARD FAIL
+```
+
+TECH_CONTEXT bu iki alanı explicit göstermelidir:
+
+```text
+Continuation Expected: YES | NO
+Approved Zero-Build Constraint: <exact evidence | NONE>
+```
 
 ---
 
@@ -238,9 +277,12 @@ Bu package için ek doğrulamalar:
 - demo/prototype label yeni capability authorize etmez,
 - demo ≠ throwaway architecture,
 - integration readiness mevcut,
-- continuation beklenen demo için frontend stack/tooling continuation-ready ve düşük migration maliyetli gerekçelendirilmiş,
-- zero-build/dependency-free seçim varsa explicit constraint veya güçlü continuation rationale mevcut,
-- repeatable dev/build/preview workflow ve package/tooling reality TECH_CONTEXT ile tutarlı,
+- `continuation_expected` explicit resolve edilmiş,
+- continuation YES ise package/dependency manifest mevcut,
+- continuation YES ise repeatable dev/build/preview workflow mevcut,
+- continuation YES ise component/module-oriented source foundation mevcut,
+- continuation YES + zero-build seçimi varsa exact approved constraint evidence mevcut,
+- agent-generated low-migration rationale approved constraint sayılmamış,
 - invented backend yok,
 - invented mock interaction/capability yok,
 - design profile minimumu korunmuş,
