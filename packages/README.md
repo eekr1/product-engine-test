@@ -8,16 +8,15 @@
 
 ## Runtime Navigation — If You Are Here
 
-Bu bölüm package kurallarını yeniden tanımlamaz; resolution sırasında hangi belgeye ne zaman dönüleceğini gösterir.
-
 ```text
 IF selecting a package:
 → re-open engine/PACKAGE_RULES.md
 → read approved project_type + project_state + planning profiles
+→ if corporate-website, verify approved site_architecture exists
 → open selected base package candidate
 → open PLANNING_PROFILE_OVERLAY.md
 → re-open engine/DOCUMENT_CATALOG.md
-→ resolve canonical document set
+→ resolve canonical document/dynamic instance set
 → record selection evidence
 ```
 
@@ -26,35 +25,42 @@ IF selecting a package:
 ```text
 STOP if:
 - project/profile truth approved input'tan gelmiyor
-- base package seçimi sadece delivery profile adına bakılarak yapılıyor
+- base package seçimi sadece delivery/demo wording'e bakılarak yapılıyor
+- corporate-website demo-frontend'e indirgeniyor
+- corporate-website approved page registry taşımıyor
 - overlay minimumları düşürülüyor
 - package catalog dışı Document ID üretiyor
-- dynamic instance count/context henüz resolve edilmeden instance seti varsayılıyor
+- dynamic instance count/context resolve edilmeden varsayılıyor
 ```
-
-Package resolution complete olmadan template generation'a geçme.
 
 ---
 
-Package sistemi iki parçalıdır:
+## Package Model
 
 ```text
 Base Package
-→ proje/domain bağlamının özel belge gereksinimleri
+→ project/domain requirements
 
 PLANNING_PROFILE_OVERLAY
-→ approved implementation/design planning profile minimumları
+→ approved planning depth minimums
+
+Approved Site Architecture (corporate-website)
+→ project-specific page identity truth
 ```
 
-Resolved document scope:
+Resolved scope:
 
 ```text
-base package
+approved project_type/domain
 +
-PLANNING_PROFILE_OVERLAY
+selected base package
++
+planning overlay
 +
 contextual conditions
-→ canonical document set
++
+approved page registry when applicable
+→ canonical document + dynamic instance set
 ```
 
 ---
@@ -63,28 +69,29 @@ contextual conditions
 
 ```text
 engine/PROJECT_INTAKE.md
-→ approved project truth için gereken alanlar
+→ project type vocabulary + required intake fields + approval
+
+engine/SITE_ARCHITECTURE_RULES.md
+→ corporate page/surface architecture semantics
 
 engine/PLANNING_PROFILES.md
-→ implementation/design planning profile anlamları ve kalite tabanı
+→ implementation/design planning meanings + quality floor
 
 engine/PACKAGE_RULES.md
-→ base package + overlay resolution sırası
+→ deterministic base package + overlay resolution
 
 engine/DOCUMENT_CATALOG.md
 → canonical Document ID / applicability registry
 
 packages/<BASE_PACKAGE>.md
-→ domain-specific package gereksinimleri
+→ domain-specific package requirements
 
 packages/PLANNING_PROFILE_OVERLAY.md
-→ bütün package'lar için shared planning minimumları
+→ shared planning minimums
 
 templates/
-→ canonical document skeleton'ları
+→ canonical document skeletons
 ```
-
-Package yeni Document ID icat edemez ve catalog/planning minimumunu ezemez.
 
 ---
 
@@ -92,58 +99,48 @@ Package yeni Document ID icat edemez ve catalog/planning minimumunu ezemez.
 
 | Package | Ana Kullanım |
 |---|---|
-| `DEMO_FRONTEND_PACKAGE.md` | Frontend demo / satış prototipi / UI proof |
-| `CORPORATE_WEBSITE_PACKAGE.md` | Kurumsal site / içerik-hizmet sunumu |
+| `CORPORATE_WEBSITE_PACKAGE.md` | `project_type: corporate-website`; multi-page corporate information architecture |
+| `DEMO_FRONTEND_PACKAGE.md` | Corporate domain olmayan UI proof / frontend prototype / concept demo |
 | `SAAS_PACKAGE.md` | Account/data/backend/API ağırlıklı ürün |
-| `EXISTING_PROJECT_PACKAGE.md` | Existing/brownfield proje extension bağlamı |
 | `API_SERVICE_PACKAGE.md` | API/backend/integration ağırlıklı servis |
+| `EXISTING_PROJECT_PACKAGE.md` | Existing/brownfield extension bağlamı |
 
-Shared overlay:
-
-| Dosya | Rol |
-|---|---|
-| `PLANNING_PROFILE_OVERLAY.md` | `implementation_planning` ve applicable `design_planning` profile minimumlarını bütün base package'lara uygular. |
-
----
-
-## Package Ne Değildir?
-
-Package:
-
-- planning profile authority değildir,
-- template deposu değildir,
-- output klasörü değildir,
-- project truth kaynağı değildir,
-- runtime approval gate değildir.
-
----
-
-## Deterministik Resolution
-
-Approved input üzerinden:
+### Corporate Sales Demo Rule
 
 ```text
-1. project_type okunur
-2. delivery_profile okunur
-3. implementation_planning okunur
-4. design_planning (applicable ise) okunur
-5. base package seçilir
-6. base package domain candidate seti alınır
-7. PLANNING_PROFILE_OVERLAY uygulanır
-8. DOCUMENT_CATALOG type/profile/planning applicability filtreleri uygulanır
-9. contextual DATA/API/TEST/DEPLOY/OPS vb. koşullar değerlendirilir
-10. dynamic WAVE/PAGE/FEATURE instance registry çözülür
+project_type: corporate-website
+delivery_profile: Prototype
+purpose: sales demo
+→ CORPORATE_WEBSITE_PACKAGE
 ```
 
-Profile tahmini bu aşamada yapılmaz; approved input'ta kesinleşmiş olmalıdır.
+`demo`, `sales demo`, `Prototype` delivery context'tir; corporate domain'i `DEMO_FRONTEND_PACKAGE` ile override etmez.
+
+---
+
+## Deterministic Resolution
+
+```text
+1. approved project_type
+2. delivery_profile
+3. implementation_planning
+4. design_planning (applicable)
+5. site_architecture (corporate-website)
+6. deterministic base package selection
+7. package domain candidate set
+8. PLANNING_PROFILE_OVERLAY
+9. DOCUMENT_CATALOG filters
+10. contextual DATA/API/TEST/DEPLOY/OPS conditions
+11. PAGE/WAVE/FEATURE dynamic instance registry
+```
+
+Profile/page approval bu aşamada tahmin edilmez.
 
 ---
 
 ## Planning Overlay Minimumları
 
-### Implementation `standard`
-
-Applicable project type için agent-ready minimum:
+### Implementation standard
 
 ```text
 README-DOC
@@ -159,9 +156,9 @@ WAVE-MAP
 WAVE-PLAN instances
 ```
 
-### Implementation `full`
+### Implementation full
 
-Standard set korunur; gerçek scope/karmaşıklık koşuluna göre:
+Standard set + real scope/complexity gerektiğinde:
 
 ```text
 DATA
@@ -172,33 +169,29 @@ DEPLOY
 OPS
 ```
 
-değerlendirilir.
-
-Full = hepsini otomatik üret demek değildir.
-
-### Design `light`
+### Design light
 
 ```text
 DESIGN
 ```
 
-Light artifact sayısı hafiftir; design quality düşük değildir.
+Light quality reduction değildir.
 
-### Design `standard`
-
-Applicable ise:
+### Design standard
 
 ```text
 DESIGN
 DESIGN-SYSTEM
 GLOBAL-SHELL
 PAGE-DESIGN instances
-SYSTEM-STATES
+SYSTEM-STATES (applicable)
 ```
 
-### Design `full`
+Corporate multi-page website için default intake recommendation `standard`dır.
 
-Standard set + gerçek ihtiyaç varsa:
+### Design full
+
+Standard + real complexity varsa:
 
 ```text
 FEATURE-DESIGN instances
@@ -207,11 +200,14 @@ ADMIN-DESIGN
 
 ---
 
-## Demo / Prototype Invariant
+## Core Invariants
 
 ```text
+delivery purpose ≠ project type
+corporate website ≠ landing page
+corporate sales demo → corporate package
+Prototype ≠ page/planning reduction
 demo ≠ throwaway architecture
-Prototype ≠ planning reduction
 design light ≠ generic design
 integration-ready ≠ invented backend
 ```
@@ -222,9 +218,10 @@ integration-ready ≠ invented backend
 
 1. Aynı Document ID iki kez üretilmez.
 2. Base + extension birleşiminde catalog applicability korunur.
-3. Planning overlay minimumu extension/reduction tarafından düşürülemez.
-4. Existing-project gibi extension context yeni project truth uyduramaz.
-5. Dynamic instance'lar aynı canonical ID/template'i kullanır.
+3. Planning overlay minimumu düşürülemez.
+4. Existing-project extension yeni truth/page identity uyduramaz.
+5. Dynamic instances aynı canonical ID/template'i kullanır.
+6. Approved site architecture package merge sırasında genişletilemez veya küçültülemez.
 
 ---
 
@@ -235,13 +232,14 @@ integration-ready ≠ invented backend
 2. PRODUCT_ENGINE_BRAIN.md
 3. engine/README.md
 4. engine/PROJECT_INTAKE.md
-5. engine/PLANNING_PROFILES.md
-6. engine/DOCUMENT_CATALOG.md
-7. engine/PACKAGE_RULES.md
-8. packages/README.md
-9. selected base package
-10. packages/PLANNING_PROFILE_OVERLAY.md
-11. relevant templates
+5. engine/SITE_ARCHITECTURE_RULES.md (corporate/page-based applicable ise)
+6. engine/PLANNING_PROFILES.md
+7. engine/DOCUMENT_CATALOG.md
+8. engine/PACKAGE_RULES.md
+9. packages/README.md
+10. selected base package
+11. packages/PLANNING_PROFILE_OVERLAY.md
+12. relevant templates
 ```
 
 Runtime execution sırası `engine/GENERATION_PIPELINE.md` tarafından yönetilir.
