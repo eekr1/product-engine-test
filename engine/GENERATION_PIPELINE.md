@@ -11,8 +11,8 @@ CHECKPOINT START
 1. Resolve exactly one artifact/instance
 2. Re-open canonical template
 3. Re-open primary authorities/dependencies
-4. Re-open exact WAVE_MAP parent entry if generating a WAVE_PLAN
-5. Re-open relevant wave quality reference if wave artifact
+4. Re-open exact parent identity/entry if generating a dynamic child
+5. Re-open relevant quality reference if applicable
 6. Re-open SOURCE_REGISTER/FCL if factual claims may be introduced
 7. Generate only this artifact/instance
 8. Run exact boundary diff
@@ -32,11 +32,14 @@ E4 — PROGRESS/RUN_LOG/manifest/self-report
 ```
 E4 kendi kendine E1'e yükseltilemez.
 
+---
+
 ## Approved Scope Resolution
 
 ```text
 APPROVED INPUT
 → INPUT_SNAPSHOT / SCP REGISTRY
+→ approved SITE ARCHITECTURE (corporate-website ise)
 → WAVE_MAP EXECUTION SCOPE
 → freeze WAVE_MAP
 → WAVE_PLAN instances
@@ -47,9 +50,47 @@ Canonical invariants:
 ```text
 WAVE_MAP committed capability atoms ⊆ approved executable capability atoms
 WAVE_PLAN capability atoms ⊆ exact parent WAVE_MAP capability atoms
+
+corporate-website ise:
+APPROVED_PAGE_SET == PLANNED_PAGE_SET
+APPROVED_PAGE_SET == NAVIGATION_PAGE_SET
 ```
 
+Exact site architecture semantics: `engine/SITE_ARCHITECTURE_RULES.md`.
+
 WAVE_PLAN task'ları SCP ID taşımak zorunda değildir. SCP registry upstream map resolution içindir.
+
+---
+
+## Corporate Website Page-Set Freeze
+
+`project_type: corporate-website` için generation'ın hiçbir adımı site architecture'ı yeniden icat edemez.
+
+Run başında approved input'tan şu set çıkarılır:
+
+```text
+APPROVED_PAGE_SET = set(IN_SCOPE PAGE-XXX identities)
+```
+
+Precondition:
+
+```text
+APPROVED_PAGE_SET != empty
+```
+
+Bu set run boyunca immutable execution boundary'dir.
+
+Aşağıdakiler yasaktır:
+
+- page eklemek,
+- approved page'i silmek,
+- iki distinct page'i tek page/section'a collapse etmek,
+- page identity'yi değiştirmek,
+- future/unresolved page'i current scope'a almak.
+
+Page relation değişikliği gerekiyorsa yeni approved input gerekir.
+
+---
 
 ## Capability Atom Rule
 
@@ -74,15 +115,36 @@ WAVE_PLAN:
 
 Her atom ayrı semantic capability olarak değerlendirilir.
 
-Örnek:
-
 ```text
 phone CTA != address card != static map != contact form != WhatsApp
-contact section != footer quick links
-responsive site != arbitrary new responsive widget
+approved Corporate page != Home page #corporate section
+approved Service Detail page != accordion/card expansion
 ```
 
 Relatedness authorization değildir.
+
+---
+
+## Page Architecture Coverage Rule
+
+Corporate website generated artifacts page identities üzerinden izlenebilir olmalıdır.
+
+Minimum downstream relation:
+
+```text
+APPROVED PAGE-XXX
+→ PROJECT_BRAIN / PRODUCT_RULES summary reference
+→ GLOBAL_SHELL navigation identity (design standard/full ise)
+→ PAGE-DESIGN instance (design standard/full ise)
+→ WAVE_MAP implementation coverage
+→ one or more WAVE_PLAN tasks
+```
+
+Wave count page count'a eşit olmak zorunda değildir. Coherent page'ler aynı wave içinde gruplanabilir; grouping page omission/collapse anlamına gelemez.
+
+`design_planning: light` seçilmiş corporate website'te PAGE-DESIGN instance üretilmeyebilir; buna rağmen approved page set WAVE_MAP + navigation implementation planında eksiksiz korunur.
+
+---
 
 ## Wave Quality Reference Layer
 
@@ -97,23 +159,19 @@ ref/waves/ = HOW DEEP / CLEAR / IMPLEMENTATION-READY GOOD PLANNING CAN LOOK
 
 ### WAVE_MAP point-of-use routing
 
-WAVE_MAP checkpoint required order:
-
 ```text
 ref/waves/README.md
 → ref/waves/WAVE_MAP_REFERENCE.md
 → fresh WAVE_MAP_TEMPLATE.md
-→ current approved executable scope + current authorities
+→ current approved executable scope + current authorities + APPROVED_PAGE_SET if applicable
 → generate ONLY WAVE_MAP
-→ validate decomposition + capability boundaries
+→ validate decomposition + capability + page boundaries
 → CLOSE
 ```
 
-`Design_Wave_Plan.md` full/master reference'tır. Runtime agent'ın 400KB+ full dosyayı bütünüyle consume etmesi zorunlu değildir; compact `WAVE_MAP_REFERENCE.md` decomposition calibration için canonical ref route'tur.
+Reference layer MUST NOT authorize project scope, page identities veya architecture.
 
 ### WAVE_PLAN point-of-use routing
-
-Phase-level calibration kaldırılmıştır. **İki isolated ref'i bir kez okuyup bütün WAVE_PLAN instance'larını batch üretmek geçersizdir.**
 
 Her exact `WAVE_NN` ayrı checkpoint'tir:
 
@@ -121,9 +179,10 @@ Her exact `WAVE_NN` ayrı checkpoint'tir:
 fresh WAVE_PLAN_TEMPLATE.md
 → exact WAVE_NN parent entry
 → relevant isolated reference(s)
-→ current project authorities / FCL as applicable
+→ current project authorities / FCL / approved page identities as applicable
 → generate ONLY WAVE_NN
 → atomize + NEW_PLAN_CAPABILITIES diff
+→ page coverage check
 → depth check
 → repair
 → CLOSE
@@ -142,26 +201,9 @@ hybrid wave
 → applicable parts of both
 ```
 
-Setup/foundation adı tek başına runtime reference gerekçesi değildir; actual lifecycle/state/realtime sorumluluğu yoksa UI/page/feature route kullanılır.
+Reference MUST NOT leak another project's facts, filenames, routes, stack, page set veya completion state.
 
-Reference layer MUST NOT authorize project scope or architecture.
-
-Forbidden reference leakage:
-
-```text
-Vibehall facts/capabilities -> current project
-Vibehall wave count/names -> current wave map
-Vibehall filenames/components/routes/stack -> invented current architecture
-reference [x] / QA-closed / test results -> current pre-execution state
-```
-
-Reference read is not a canonical template read token and is not VAL-15 pairing evidence.
-
-Depth expectation:
-
-A generated WAVE_PLAN is not implementation-ready if a fresh capable agent must perform another planning pass to decide applicable responsibility location, dependency/data/state behavior, preserved boundaries, edge-state handling, verification strategy or exact wave handoff.
-
-Bu rule unnecessary complexity gerektirmez; yalnız exact parent wave ve current architecture için applicable detaylar yazılır.
+---
 
 ## Factual Claim Allowlist Boundary
 
@@ -170,7 +212,9 @@ FCL semantic content ⊆ exact supporting source evidence
 generated factual claim ⊆ referenced FCL semantic content
 ```
 
-Generated wording approved fact'in anlamını genişleten yeni fiil, ilişki veya operational meaning ekleyemez. Özellikle location/context fact; FCL açıkça desteklemedikçe service area, residence, office/clinic location, ownership veya operational presence claim'ine dönüştürülemez. Outbound profile/link fact de source support olmadan contact, communication, booking veya official channel claim'ine dönüştürülemez.
+Page architecture factual enrichment değildir. Approved hizmet/fact farklı page'lerde organize edilebilir; semantic meaning genişletilemez.
+
+---
 
 ## Observable Trace Boundary
 
@@ -180,29 +224,47 @@ VALIDATION_REPORT / PROGRESS / RUN_LOG / manifest / agent statement ≠ E1 proof
 
 Independent IDE/tool trace dışarıdan inspect edilemiyorsa trace status `UNAVAILABLE` kalır.
 
-## Pipeline
+---
 
-### 1. Intake / Approval
+# Pipeline
+
+## 1. Intake / Approval
 Explicit user approval olmadan approved snapshot/run yoktur.
 
-### 2. Package + Document Resolution
-PACKAGE_RULES + PLANNING_PROFILE_OVERLAY + DOCUMENT_CATALOG uygulanır.
+Corporate website ise approved `site_architecture` olmadan approved intake hazır sayılamaz.
 
-### 3. Input Snapshot + SCP Registry
+## 2. Package + Document Resolution
+`PACKAGE_RULES + PLANNING_PROFILE_OVERLAY + DOCUMENT_CATALOG` uygulanır.
+
+Corporate website sales demo, delivery wording nedeniyle `demo-frontend` package'a indirgenemez.
+
+## 3. Input Snapshot + SCP + Page Registry
 Approved input dondurulur. SCP registry approved truth'tan geniş olamaz.
 
-### 4. Source Register + FCL Registry
+Corporate website ise run record içinde immutable page registry özetlenir:
+
+```text
+APPROVED_PAGE_SET
+PAGE identity → purpose → route/navigation identity → scope status
+```
+
+## 4. Source Register + FCL Registry
 Her FCL exact supporting source/evidence ile kaydedilir.
 
-### 5. Dependency-Ordered Generation
+## 5. Dependency-Ordered Generation
+
 ```text
 Approved Input
-→ INPUT_SNAPSHOT + SCP
+→ INPUT_SNAPSHOT + SCP + APPROVED_PAGE_SET(if applicable)
 → SOURCE_REGISTER + source-bounded FCL
 → PROJECT-BRAIN
 → PRODUCT-RULES
 → TECH-CTX
 → DESIGN
+→ DESIGN-SYSTEM (if applicable)
+→ GLOBAL-SHELL (if applicable)
+→ PAGE-DESIGN instance checkpoints (if applicable, one per approved page)
+→ SYSTEM-STATES (if applicable)
 → WAVE-MAP checkpoint
 → freeze WAVE-MAP execution boundaries
 → expected dynamic instance registry
@@ -215,7 +277,33 @@ Approved Input
 → README-DOC
 ```
 
-### WAVE_MAP Checkpoint
+### PAGE-DESIGN Dynamic Checkpoint Loop
+
+`design_planning: standard | full` ve page/screen-based UI için her approved distinct page ayrı checkpoint'tir.
+
+```text
+START PAGE-XXX CHECKPOINT
+1. Fresh-read PAGE_DESIGN_PACKAGE_TEMPLATE.
+2. Re-open exact approved PAGE-XXX registry row.
+3. Re-open DESIGN / DESIGN_SYSTEM / GLOBAL_SHELL and product/source authorities as applicable.
+4. Generate only PAGE-XXX design package.
+5. Confirm no new page/capability/factual claim introduced.
+6. Confirm route/navigation identity matches approved architecture.
+7. CLOSE.
+END
+```
+
+Corporate website için:
+
+```text
+EXPECTED_PAGE_DESIGN_INSTANCES = APPROVED_PAGE_SET
+ACTUAL_PAGE_DESIGN_INSTANCES = generated PAGE-DESIGN identities
+EXPECTED == ACTUAL required when design standard/full
+```
+
+---
+
+## WAVE_MAP Checkpoint
 
 Her wave entry:
 
@@ -223,6 +311,7 @@ Her wave entry:
 Goal
 Why Separate / Sequencing Rationale
 Committed Capabilities
+Covered Page IDs (corporate/page-based scope applicable ise)
 In Scope
 Out of Scope
 Primary Deliverables
@@ -241,25 +330,28 @@ Map generation algorithm:
 2. Read compact ref/waves/WAVE_MAP_REFERENCE.md at point-of-use.
 3. Fresh-read WAVE_MAP_TEMPLATE.md.
 4. Re-open current approved executable scope and current authorities.
-5. Identify meaningful standalone delivery boundaries; do not target a reference wave count.
-6. For every wave explain WHY SEPARATE, UPSTREAM boundary and HANDOFF boundary.
-7. Extract every candidate committed capability atom.
-8. Resolve exact executable approved support for each atom.
-9. Build UNSUPPORTED_MAP_CAPABILITIES.
-10. If non-empty: repair/remove; do not freeze.
-11. Confirm In Scope / Deliverables / Exit Boundary introduce no hidden atom.
-12. Confirm shared foundations precede consumers and horizontal closure is not hidden inside feature waves when independently meaningful.
-13. Freeze map only when scope and decomposition depth are both sufficient.
-14. CLOSE map checkpoint.
+5. Corporate website ise APPROVED_PAGE_SET'i freeze edilmiş authority olarak re-open et.
+6. Identify meaningful standalone delivery boundaries; do not target a reference wave count.
+7. Corporate website'te foundation + routing/global shell consumers'tan önce planlanır.
+8. Her approved PAGE-XXX'i en az bir implementation wave'e map et.
+9. Distinct page'leri anchor section'a collapse etme.
+10. For every wave explain WHY SEPARATE, UPSTREAM boundary and HANDOFF boundary.
+11. Extract every candidate committed capability atom.
+12. Resolve exact executable approved support for each atom.
+13. Build UNSUPPORTED_MAP_CAPABILITIES.
+14. Build PLANNED_PAGE_SET from map coverage.
+15. If unsupported capabilities exist OR PLANNED_PAGE_SET != APPROVED_PAGE_SET: repair; do not freeze.
+16. Confirm In Scope / Deliverables / Exit Boundary introduce no hidden atom/page.
+17. Confirm shared foundations precede consumers and final cross-page QA is standalone when meaningful.
+18. Freeze map only when scope, page coverage and decomposition depth are sufficient.
+19. CLOSE map checkpoint.
 ```
 
-Capability support identity yalnız `IN_SCOPE | KNOWN_DECISION` + `Executable=YES` SCP atomlarından gelebilir. `VERIFIED_CURRENT_TRUTH`, FCL veya `Executable=NO` atomlar factual/reference context olarak kullanılabilir ama capability support olarak yazılamaz; mixed-support satırı authorization ile factual context'i ayırmalıdır.
+Capability support identity yalnız `IN_SCOPE | KNOWN_DECISION` + `Executable=YES` SCP atomlarından gelebilir. Site architecture page identity capability fact üretmez; page içeriği ayrıca approved scope/FCL sınırında kalır.
 
-`VERIFIED_CURRENT_TRUTH` factual context olabilir ama capability authorize etmez.
+---
 
-### Dynamic WAVE_PLAN Checkpoint Loop
-
-No phase-level reusable calibration exists.
+## Dynamic WAVE_PLAN Checkpoint Loop
 
 For each expected WAVE ID in order:
 
@@ -269,72 +361,53 @@ START WAVE_NN CHECKPOINT
 2. Re-open exact parent WAVE_NN map entry.
 3. Select and re-open relevant isolated depth reference(s) for THIS wave.
 4. Re-open current tech/design/product/source authorities as applicable.
-5. Resolve parent Committed Capabilities.
-6. Generate candidate implementation details at implementation-ready depth.
-7. Every task must make applicable location/responsibility, dependencies/contracts, behavior, states/edges, preserve/must-not, verification and concrete done result explicit.
-8. Atomize all candidate executable plan capabilities from every executable section.
-9. Map every atom to exact parent capability relation: detail-of | implementation-of | verification-of.
-10. Build NEW_PLAN_CAPABILITIES.
-11. If non-empty: remove or repair upstream map only if genuinely approved.
-12. Run implementation-readiness question: would a fresh capable agent still need a planning pass? If yes, deepen applicable task contracts.
-13. Write ONLY WAVE_NN.
-14. Validate/repair WAVE_NN.
-15. CLOSE checkpoint.
+5. Re-open exact Covered Page IDs when applicable.
+6. Resolve parent Committed Capabilities.
+7. Generate candidate implementation details at implementation-ready depth.
+8. Every task must make applicable location/responsibility, dependencies/contracts, behavior, states/edges, preserve/must-not, verification and concrete done result explicit.
+9. Page task ise route/navigation identity and page responsibility explicit olmalıdır.
+10. Atomize candidate executable capabilities and map them to exact parent relations.
+11. Build NEW_PLAN_CAPABILITIES.
+12. Build plan page identity set; it must be subset of parent Covered Page IDs.
+13. If invalid: repair upstream only if genuinely approved; otherwise remove.
+14. Run implementation-readiness question: would a fresh capable agent still need a planning pass? If yes, deepen applicable task contracts.
+15. Write ONLY WAVE_NN.
+16. Validate/repair WAVE_NN.
+17. CLOSE checkpoint.
 END
 ```
 
-Only after CLOSE may the next WAVE ID be resolved, and the next checkpoint **must begin with a new fresh WAVE_PLAN_TEMPLATE read**.
+Only after CLOSE may the next WAVE ID be resolved.
 
-Invalid pattern:
+---
 
-```text
-read template once
-read refs once
-write WAVE_00
-write WAVE_01
-write WAVE_02
-...
-```
-
-Parent Goal'ın broad wording'i tek başına support sayılmaz.
-Reference depth example'i parent capability desteği yerine geçmez.
-
-### Dynamic Instance Completion
+## Dynamic Instance Completion
 
 ```text
-EXPECTED = set(WAVE_MAP Wave IDs)
-ACTUAL = set(working-output/waves/plans/WAVE_*.md)
-EXPECTED == ACTUAL required
+EXPECTED_WAVES = set(WAVE_MAP Wave IDs)
+ACTUAL_WAVES = set(working-output/waves/plans/WAVE_*.md)
+EXPECTED_WAVES == ACTUAL_WAVES required
 ```
+
+Corporate design standard/full:
+
+```text
+EXPECTED_PAGES = APPROVED_PAGE_SET
+ACTUAL_PAGE_DESIGNS = set(PAGE-DESIGN instance PAGE IDs)
+EXPECTED_PAGES == ACTUAL_PAGE_DESIGNS required
+```
+
+---
 
 ## Observable Dynamic Read/Write Pairing
 
 Her dynamic write benzersiz preceding template read ile eşleşir. Read token single-use'dur.
 
-```text
-WAVE_PLAN_TEMPLATE_READ_TOKENS = ordered actual observable reads
-WAVE_PLAN_WRITE_EVENTS = ordered actual writes
-
-consume one unused preceding read token per write
-reused token -> invalid
-missing token -> invalid
-```
-
-Summary/self-report pair list gerçek event üretmez.
-Reference reads `WAVE_PLAN_TEMPLATE_READ_TOKENS` oluşturmaz.
-
-Trace AVAILABLE ise ayrıca sequence şu checkpoint pattern'ini göstermelidir:
-
-```text
-fresh template read
-→ exact parent/ref reads
-→ one WAVE write
-→ next fresh template read
-```
-
-Bir fresh template read sonrasında birden fazla WAVE write görülürse sonraki writes unpaired sayılır.
+WAVE_PLAN ve PAGE-DESIGN dynamic instance'larında aynı principle uygulanır. Summary/self-report pair list gerçek event üretmez.
 
 Trace UNAVAILABLE ise pairing UNVERIFIED kalır.
+
+---
 
 ## Source Registry Consistency
 
@@ -345,16 +418,20 @@ VALIDATION_SOURCE_SET == SOURCE_REGISTER_SOURCE_SET
 validation usage_state == SOURCE_REGISTER usage_state
 ```
 
-Validator yeni source ID, yeni consumption state veya dolaylı consumption kanıtı icat edemez.
-Bir source'un başka source tarafından özetlenmesi o source'un `consumed` olduğu anlamına gelmez.
+Validator yeni source ID veya consumption state icat edemez.
+
+---
 
 ## Pre-Validation Consistency Check
 
 - expected vs actual dynamic instances
+- corporate website ise APPROVED_PAGE_SET == PLANNED_PAGE_SET == NAVIGATION_PAGE_SET
+- design standard/full corporate website ise PAGE-DESIGN set equality
+- no distinct approved page collapsed into anchor-only section
 - UNSUPPORTED_MAP_CAPABILITIES == empty
 - NEW_PLAN_CAPABILITIES == empty for every plan
-- WAVE_MAP decomposition depth: WHY SEPARATE + UPSTREAM + HANDOFF clear per wave
-- WAVE_PLAN implementation-readiness: fresh agent needs no second planning pass for applicable details
+- WAVE_MAP decomposition depth sufficient
+- WAVE_PLAN implementation-readiness sufficient
 - FCL→exact source checks
 - generated→FCL checks
 - validation source set/state mirrors SOURCE_REGISTER
@@ -362,38 +439,20 @@ Bir source'un başka source tarafından özetlenmesi o source'un `consumed` oldu
 
 Blocking ihlal varsa repair edilir.
 
+---
+
 ## Validation
 Canonical target:
+
 ```text
 runs/active/<run-id>/working-output/
 ```
 
-VAL-04:
-```text
-A. unsupported map capability atoms == empty
-B. new plan capability atoms == empty
-```
-
-VAL-05:
-```text
-map has meaningful delivery boundaries + explicit why/upstream/handoff
-AND every wave plan is implementation-ready without second planning pass
-```
-
-VAL-13:
-```text
-FCL ⊆ exact source evidence
-AND generated claim ⊆ FCL
-AND validation source identity/state == SOURCE_REGISTER
-```
-
-VAL-15:
-```text
-independent trace unavailable → UNVERIFIED
-independent trace available → consume unique single-use read token per dynamic write
-```
+VAL-04 scope/page integrity, VAL-05 planning depth, VAL-09 tech/continuation, VAL-13 factual claims ve VAL-15 trace integrity current `VALIDATION_RULES.md` üzerinden uygulanır.
 
 Validation publication'dan önce tamamlanır.
+
+---
 
 ## Publication / Completion
 PASS sonrası doğrudan publish edilebilir. CONDITIONAL PASS yalnız validation sonrasında explicit user/operator acceptance event'i kaydedildikten sonra publish edilir; önceki intake/plan approval acceptance sayılmaz. Ardından run terminal state'e kapatılır.
