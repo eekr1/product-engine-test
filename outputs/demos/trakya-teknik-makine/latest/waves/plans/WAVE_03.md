@@ -61,7 +61,7 @@ dist/
 
 ## 8. Implementation Checklist
 
-- [ ] **Task 1 / Responsive Layout Adaptation**:
+- [x] **Task 1 / Responsive Layout Adaptation**:
   - Location: `src/styles/global.css`, `src/components/*.css`
   - Consumes: `design/DESIGN_RULES.md` Section 7 (Responsive Principles)
   - Owns: Desktop, tablet ve mobil breakpoint medya sorguları
@@ -69,7 +69,7 @@ dist/
   - Verification: Chrome DevTools cihaz modunda 320px, 375px, 768px, 1024px ekran çözünürlüklerinde test edilmesi
   - Done: Masaüstü ve mobil ekranlarda kusursuz uyum sağlanması.
 
-- [ ] **Task 2 / Interactive State & Accessibility Polish**:
+- [x] **Task 2 / Interactive State & Accessibility Polish**:
   - Location: `src/styles/tokens.css`, `src/components/*.css`
   - Consumes: `design/DESIGN_RULES.md` Section 6 & 8
   - Owns: Hover kart kaldırma efekti, CTA odak halkası, klavye Tab navigasyonu
@@ -77,7 +77,7 @@ dist/
   - Verification: Tab tuşuyla navigasyon yapıldığında amber odak çerçevesinin görünmesi
   - Done: Mikro etkileşimlerin ve erişilebilirliğin tamamlanması.
 
-- [ ] **Task 3 / Static Build Verification**:
+- [x] **Task 3 / Static Build Verification**:
   - Location: `./package.json`, `./vite.config.js`
   - Consumes: `ai/TECH_CONTEXT.md` build komutları
   - Owns: Satış demosu için derlenmiş static `dist/` paketi
@@ -109,10 +109,10 @@ npm run preview
 
 ## 12. Acceptance / Exit Criteria
 
-- [ ] Masaüstü, tablet ve mobil ekranlarda yatay kayma (horizontal overflow) yok.
-- [ ] Direct-contact CTA butonları mobilde en az `44px` yüksekliğe ve dokunmatik alana sahip.
-- [ ] Klavye ile gezintide görünür amber odak halkası mevcut.
-- [ ] `npm run build` komutu uyarısız ve hatasız `dist/` önizleme paketi üretiyor.
+- [x] Masaüstü, tablet ve mobil ekranlarda yatay kayma (horizontal overflow) yok.
+- [x] Direct-contact CTA butonları mobilde en az `44px` yüksekliğe ve dokunmatik alana sahip.
+- [x] Klavye ile gezintide görünür amber odak halkası mevcut.
+- [x] `npm run build` komutu uyarısız ve hatasız `dist/` önizleme paketi üretiyor.
 
 ## 13. Handoff / Stop Rule
 
@@ -121,4 +121,4 @@ npm run preview
 ---
 ## Wave Result
 
-- **Result Status**: pending / not executed
+- **Result Status**: completed

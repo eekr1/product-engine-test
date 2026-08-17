@@ -71,7 +71,7 @@ product-engine/
 
 ## 8. Implementation Checklist
 
-- [ ] **Task 1 / Project Infrastructure Scaffolding**:
+- [x] **Task 1 / Project Infrastructure Scaffolding**:
   - Location: `./package.json`, `./vite.config.js`, `./index.html`
   - Consumes: `ai/TECH_CONTEXT.md` continuation gate requirements
   - Owns: React 18, Vite ve npm build workflow yapılandırması
@@ -79,7 +79,7 @@ product-engine/
   - Verification: `npm run dev` ve `npm run build` komutlarının hatasız çalışması
   - Done: Derlenebilir boş Vite+React proje altyapısının kurulması.
 
-- [ ] **Task 2 / Design Tokens System Setup**:
+- [x] **Task 2 / Design Tokens System Setup**:
   - Location: `src/styles/tokens.css`, `src/styles/global.css`
   - Consumes: `design/DESIGN_RULES.md` renk ve tipografi değerleri
   - Owns: CSS custom properties (`--color-primary-dark: #1E2530`, `--color-secondary-slate: #3A475A`, `--color-accent-amber: #D97706`, `--color-bg-light: #F8FAFC`, `--font-main: 'Outfit', sans-serif`)
@@ -87,7 +87,7 @@ product-engine/
   - Verification: `global.css` import edildiğinde CSS değişkenlerinin tarayıcıda çözümlenmesi
   - Done: Tüm tasarım token'larının tek noktadan erişilebilir kılınması.
 
-- [ ] **Task 3 / Service & Presentation Data Boundary Setup**:
+- [x] **Task 3 / Service & Presentation Data Boundary Setup**:
   - Location: `src/data/presentationData.js`, `src/services/presentationService.js`
   - Consumes: FCL-001..FCL-006 allowlist verisi
   - Owns: Firma adı, yetkili servis statüsü, 3 approved hizmet ve direct-contact CTA eylem tanımları
@@ -95,7 +95,7 @@ product-engine/
   - Verification: `presentationService.getCompanyInfo()` ve `getServices()` metotlarının doğru verileri döndürmesi
   - Done: Presentation katmanının veriden tamamen izole edilmesi.
 
-- [ ] **Task 4 / Root Container Integration**:
+- [x] **Task 4 / Root Container Integration**:
   - Location: `src/App.jsx`, `src/main.jsx`
   - Consumes: `tokens.css` ve `presentationService.js`
   - Owns: Ana uygulama kabuğu layout zemin yerleşimi
@@ -129,10 +129,10 @@ npm run build
 
 ## 12. Acceptance / Exit Criteria
 
-- [ ] `package.json` manifest'i Vite+React bağımlılıklarını eksiksiz içeriyor.
-- [ ] `src/styles/tokens.css` tasarım token'ları `#1E2530`, `#3A475A`, `#D97706` değerleriyle tanımlı.
-- [ ] `src/services/presentationService.js` FCL allowlist verilerini izole servis olarak sunuyor.
-- [ ] `npm run build` komutu uyarısız ve hatasız `dist/` klasörü üretiyor.
+- [x] `package.json` manifest'i Vite+React bağımlılıklarını eksiksiz içeriyor.
+- [x] `src/styles/tokens.css` tasarım token'ları `#1E2530`, `#3A475A`, `#D97706` değerleriyle tanımlı.
+- [x] `src/services/presentationService.js` FCL allowlist verilerini izole servis olarak sunuyor.
+- [x] `npm run build` komutu uyarısız ve hatasız `dist/` klasörü üretiyor.
 
 ## 13. Handoff / Stop Rule
 
@@ -141,4 +141,5 @@ npm run build
 ---
 ## Wave Result
 
-- **Result Status**: pending / not executed
+- **Result Status**: completed
+

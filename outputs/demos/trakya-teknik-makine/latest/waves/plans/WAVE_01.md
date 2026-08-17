@@ -61,7 +61,7 @@ src/
 
 ## 8. Implementation Checklist
 
-- [ ] **Task 1 / Header Component Implementation**:
+- [x] **Task 1 / Header Component Implementation**:
   - Location: `src/components/Header.jsx`, `src/components/Header.css`
   - Consumes: `presentationService.getCompanyInfo()` verisi ve `tokens.css`
   - Owns: Kurumsal üst navigasyon çubuğu, firma adı markalama alanı ve mobil menü yapısı
@@ -69,7 +69,7 @@ src/
   - Verification: Header'ın sayfa üstünde sabit durması, responsive daralmada menünün düzgün davranması
   - Done: Kurumsal header bileşeninin tamamlanması.
 
-- [ ] **Task 2 / Hero Presentation Component Implementation**:
+- [x] **Task 2 / Hero Presentation Component Implementation**:
   - Location: `src/components/HeroPresentation.jsx`, `src/components/HeroPresentation.css`
   - Consumes: `presentationService.getCompanyInfo()` (FCL-001 & FCL-002) ve `tokens.css`
   - Owns: Ana H1 başlığı, Disan Hidrolik Makine Trakya Bölge Yetkili Servisi vurgu rozeti, endüstriyel teknik visual zemin
@@ -77,7 +77,7 @@ src/
   - Verification: H1 başlığı ve yetkili servis statüsünün ilk görünümde okunabilir olması
   - Done: Yetkili servis rozetli Hero sunum bileşeninin yazılması.
 
-- [ ] **Task 3 / Shell Composition Integration**:
+- [x] **Task 3 / Shell Composition Integration**:
   - Location: `src/App.jsx`
   - Consumes: `Header.jsx` ve `HeroPresentation.jsx`
   - Owns: Sayfa üst kabuk düzeni ve zemin hiyerarşisi
@@ -108,10 +108,10 @@ npm run build
 
 ## 12. Acceptance / Exit Criteria
 
-- [ ] `Header.jsx` kurumsal firma adı ve navigasyon alanını render ediyor.
-- [ ] `HeroPresentation.jsx` H1 başlığında Trakya Teknik Makine adını ve yetkili servis rozetinde "Disan Hidrolik Makine Trakya Bölge Yetkili Servisi" statüsünü hatasız gösteriyor.
-- [ ] Tasarımda lacivert klişesi yerine Antrasit `#1E2530` ve Amber `#D97706` renk dengesi uygulanmış.
-- [ ] `npm run build` komutu derleme hatası vermiyor.
+- [x] `Header.jsx` kurumsal firma adı ve navigasyon alanını render ediyor.
+- [x] `HeroPresentation.jsx` H1 başlığında Trakya Teknik Makine adını ve yetkili servis rozetinde "Disan Hidrolik Makine Trakya Bölge Yetkili Servisi" statüsünü hatasız gösteriyor.
+- [x] Tasarımda lacivert klişesi yerine Antrasit `#1E2530` ve Amber `#D97706` renk dengesi uygulanmış.
+- [x] `npm run build` komutu derleme hatası vermiyor.
 
 ## 13. Handoff / Stop Rule
 
@@ -120,4 +120,5 @@ npm run build
 ---
 ## Wave Result
 
-- **Result Status**: pending / not executed
+- **Result Status**: completed
+

@@ -1,0 +1,67 @@
+:root {
+  /* Brand Color Palette */
+  --color-primary-dark: #1E2530;        /* Deep Anthracite / Slate */
+  --color-secondary-slate: #3A475A;     /* Steel Slate */
+  --color-accent-amber: #D97706;        /* Precision Amber */
+  --color-accent-amber-hover: #B45309;  /* Darker Amber for hover */
+  --color-accent-amber-light: rgba(217, 119, 6, 0.1);
+  
+  /* Background Colors */
+  --color-bg-light: #F8FAFC;
+  --color-bg-white: #FFFFFF;
+  --color-bg-card: #FFFFFF;
+  --color-bg-surface-dark: #1E2530;
+  
+  /* Text Colors */
+  --color-text-main: #0F172A;
+  --color-text-muted: #64748B;
+  --color-text-inverse: #F8FAFC;
+  --color-text-inverse-muted: #94A3B8;
+  
+  /* Border & Line Colors */
+  --color-border-card: rgba(226, 232, 240, 0.8);
+  --color-border-dark: rgba(255, 255, 255, 0.1);
+  --color-border-accent: rgba(217, 119, 6, 0.3);
+  
+  /* Typography */
+  --font-main: 'Outfit', 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-size-h1: 2.75rem;
+  --font-size-h2: 2.0rem;
+  --font-size-h3: 1.25rem;
+  --font-size-body: 1.0rem;
+  --font-size-sm: 0.875rem;
+  --font-size-xs: 0.75rem;
+  
+  --font-weight-regular: 400;
+  --font-weight-medium: 500;
+  --font-weight-semibold: 600;
+  --font-weight-bold: 700;
+  --font-weight-extrabold: 800;
+  
+  --line-height-tight: 1.15;
+  --line-height-heading: 1.25;
+  --line-height-body: 1.6;
+  
+  /* Layout & Spacing */
+  --container-max-width: 1200px;
+  --container-padding: 1.25rem;
+  
+  --space-xs: 0.25rem;
+  --space-sm: 0.5rem;
+  --space-md: 1.0rem;
+  --space-lg: 1.5rem;
+  --space-xl: 2.5rem;
+  --space-2xl: 4.0rem;
+  
+  /* Borders & Shadows */
+  --border-radius-sm: 4px;
+  --border-radius-md: 8px;
+  --border-radius-lg: 12px;
+  
+  --shadow-card: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+  --shadow-hover: 0 10px 15px -3px rgba(0, 0, 0, 0.08), 0 4px 6px -2px rgba(0, 0, 0, 0.04);
+  
+  /* Transitions */
+  --transition-fast: 0.15s ease-in-out;
+  --transition-normal: 0.25s ease-in-out;
+}

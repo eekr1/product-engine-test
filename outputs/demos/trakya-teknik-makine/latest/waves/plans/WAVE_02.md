@@ -69,7 +69,7 @@ src/
 
 ## 8. Implementation Checklist
 
-- [ ] **Task 1 / Services Grid Component Implementation**:
+- [x] **Task 1 / Services Grid Component Implementation**:
   - Location: `src/components/ServicesGrid.jsx`, `src/components/ServiceCard.jsx`, CSS dosyaları
   - Consumes: `presentationService.getServices()` (FCL-003, FCL-004, FCL-005) ve `tokens.css`
   - Owns: 3 doğrulanmış hizmetin (Yedek Parça Temini, Yerinde Teknik Destek, Makine Bakım ve Onarım) teknik kart hiyerarşisiyle sunulması
@@ -77,7 +77,7 @@ src/
   - Verification: 3 kartın ızgara düzeninde hatasız render olması
   - Done: Doğrulanmış 3 hizmet sunum grid'inin tamamlanması.
 
-- [ ] **Task 2 / Direct-Contact CTA Component Implementation**:
+- [x] **Task 2 / Direct-Contact CTA Component Implementation**:
   - Location: `src/components/ContactCTA.jsx`, `src/components/ContactCTA.css`
   - Consumes: `presentationService.getContactActions()` (PR-003)
   - Owns: İletişim butonları, `tel:` ve `mailto:` bağlantı protokolleri
@@ -85,7 +85,7 @@ src/
   - Verification: Butonlara tıklandığında/dokunulduğunda uygun protokollerin tetiklenmesi
   - Done: Direct-contact telefon/e-posta CTA alanının tamamlanması.
 
-- [ ] **Task 3 / Corporate Footer Component Implementation**:
+- [x] **Task 3 / Corporate Footer Component Implementation**:
   - Location: `src/components/Footer.jsx`, `src/components/Footer.css`
   - Consumes: `presentationService.getCompanyInfo()` ve `tokens.css`
   - Owns: Kurumsal alt telif alanı ve hızlı sayfa navigasyon linkleri
@@ -116,10 +116,10 @@ npm run build
 
 ## 12. Acceptance / Exit Criteria
 
-- [ ] 3 doğrulanmış hizmet (Yedek Parça Temini, Yerinde Teknik Destek, Makine Bakım ve Onarım) `ServicesGrid` üzerinde render oluyor.
-- [ ] Direct-contact CTA butonları telefon ve e-posta protokolleriyle çalışıyor.
-- [ ] FCL allowlist dışında uydurma qualifier veya iddia bulunmuyor.
-- [ ] `npm run build` komutu derleme hatası vermiyor.
+- [x] 3 doğrulanmış hizmet (Yedek Parça Temini, Yerinde Teknik Destek, Makine Bakım ve Onarım) `ServicesGrid` üzerinde render oluyor.
+- [x] Direct-contact CTA butonları telefon ve e-posta protokolleriyle çalışıyor.
+- [x] FCL allowlist dışında uydurma qualifier veya iddia bulunmuyor.
+- [x] `npm run build` komutu derleme hatası vermiyor.
 
 ## 13. Handoff / Stop Rule
 
@@ -128,4 +128,5 @@ npm run build
 ---
 ## Wave Result
 
-- **Result Status**: pending / not executed
+- **Result Status**: completed
+

@@ -2,8 +2,8 @@
 
 ## 1. Current Phase / Active Wave
 
-- **Phase**: Implementation Ready (Generation Phase Complete)
-- **Active Wave**: `WAVE_00` — Foundation & Design System Infrastructure
+- **Phase**: Completed (Sales-Demo Ready)
+- **Active Wave**: `WAVE_03` — Completed (All Waves Executed)
 - **Last Updated**: 2026-08-17
 
 ## 2. Completed
@@ -12,10 +12,14 @@
 - Canonical document resolution ve package overlay tamamlandı (`demo-frontend`, `standard` implementation, `light` design).
 - Operational run kütüğü donduruldu (Snapshot, Scope Registry, FCL Allowlist, Decisions, Manifest).
 - Agent-ready canonical dokümantasyon paketi (`PROJECT_BRAIN`, `PRODUCT_RULES`, `TECH_CONTEXT`, `DESIGN_RULES`, `PROJECT_PLAN`, `WAVE_MAP`, `WAVE_00`..`WAVE_03` planları) eksiksiz olarak üretildi.
+- **WAVE_00 Foundation & Design System Infrastructure**: Vite+React projesi scaffold edildi, CSS token yapısı ve presentation service boundary'si kuruldu.
+- **WAVE_01 Global Shell & Corporate Header Presentation**: Header navigasyonu ve yetkili servis statülü H1 hero sunum alanı geliştirildi.
+- **WAVE_02 Verified Services & Direct-Contact Capabilities**: 3 doğrulanmış hizmet kartı, `tel:` ve `mailto:` direct-contact CTA butonları ve Footer entegrasyonu tamamlandı.
+- **WAVE_03 Responsive Polish & Sales Demo Readiness**: Responsive break-point uyumları, dokunmatik touch target'lar (`>= 44px`), focus halkaları ve static production bundle (`dist/`) doğrulaması tamamlandı.
 
 ## 3. In Progress
 
-- Henüz kod tabanı geliştirme aşamasına (WAVE_00 kodlama adımlarına) başlanmadı. Dokümantasyon paketi kodlama ajanı için `Ready for Execution` durumundadır.
+- Tüm wave planları (`WAVE_00` - `WAVE_03`) eksiksiz olarak uygulandı. Proje satış görüşmesinde sunulmaya hazır (Sales-Demo Ready) durumdadır.
 
 ## 4. Known Blockers
 
@@ -23,10 +27,9 @@
 
 ## 5. Immediate Priorities
 
-1. `WAVE_00`'ı başlatmak: Vite + React + Vanilla CSS projesini scaffold etmek, package manifest ve dev/build komutlarını hazırlamak.
-2. `src/styles/tokens.css` altında renk, tipografi ve layout token'larını tanımlamak.
-3. `src/services/presentationService.js` altında presentation data boundary'sini oluşturmak.
+1. Proaktif satış görüşmelerinde `products/trakya-teknik-makine/dist/` paketinin sunulması.
+2. Müşteri onayından sonra future scope (gerçek backend, CMS, canlı harita, WhatsApp) aşamasına geçiş.
 
 ## 6. Last Verified State
 
-- Canonical planlama belgeleri `inputs/approved/trakya-teknik-makine/PROJECT_INPUT.md` doğrulanmış gerçekleriyle tam uyumlu ve tutarlıdır.
+- `products/trakya-teknik-makine/` uygulaması `npm run build` komutu ile 978ms sürede hatasız derlenmiş ve `dist/` static paketi üretilmiştir.
