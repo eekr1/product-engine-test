@@ -12,40 +12,83 @@ Approved project input:
 
 ## Hard Context Boundary
 
-Bu session, intake session'ın devamı değildir.
+Bu session intake session'ın devamı değildir.
 
-- Önceki chat, raw brief konuşması, intake reasoning'i veya agent memory'si authority değildir.
-- Project-specific truth için authoritative başlangıç yukarıdaki approved `PROJECT_INPUT` dosyasıdır; factual provenance ise canonical project source evidence zincirinden çözülür.
-- Approved input'ta bulunmayan önceki niyet, fikir, varsayım veya öneri current scope'a taşınamaz.
-- Gerekli context canonical source/input registry üzerinden yeniden okunur; chat memory ile tamamlanmaz.
+- Önceki chat/raw brief/intake reasoning/agent memory authority değildir.
+- Project-specific truth için authoritative başlangıç approved `PROJECT_INPUT` dosyasıdır.
+- Approved input'ta bulunmayan önceki niyet, page önerisi, varsayım veya fikir current scope'a taşınamaz.
+- Factual provenance canonical source/FCL zincirinden çözülür.
 
-## Delivery Semantics Guard
+---
 
-`demo`, `sales demo`, `prototype`, `local preview` veya benzeri ifadeler yalnız delivery purpose / runtime maturity belirtir.
+## Delivery / Domain Guard
 
-Bunlar şunları authorize etmez:
+`demo`, `sales demo`, `prototype`, `local preview` delivery purpose/maturity bilgisidir; project type/domain authority değildir.
 
-- approved input'ta olmayan feature veya capability,
-- mock interaction / form / map / WhatsApp / modal gibi yeni davranışlar,
-- placeholder factual claims,
-- scope expansion,
-- daha düşük code, architecture veya design quality.
+```text
+project_type: corporate-website
++ delivery_profile: Prototype
+→ corporate-website domain korunur
+```
 
-Her executable capability approved input ve canonical Engine scope resolution üzerinden gelmelidir.
+Demo wording approved feature/page scope'u, code/architecture/design quality'yi veya site breadth'i düşürmez.
+
+---
+
+## Corporate Site Architecture Runtime Gate
+
+Approved input `project_type: corporate-website` ise runtime başlamadan önce:
+
+1. `engine/SITE_ARCHITECTURE_RULES.md` fresh-read et.
+2. Approved input Site Architecture registry'sini tamamen oku.
+3. `APPROVED_PAGE_SET = set(IN_SCOPE PAGE-XXX identities)` olarak freeze et.
+4. Set boşsa STOP / intake correction.
+5. Package selection `corporate-website` olmalıdır; `demo-frontend` delivery wording nedeniyle override edemez.
+
+Run boyunca:
+
+```text
+APPROVED_PAGE_SET immutable
+new page forbidden
+missing page forbidden
+page rename/identity drift forbidden
+distinct page → anchor section collapse forbidden
+```
+
+---
 
 ## Mandatory Operational Checkpoints
 
-Bu run'da templated artifact'ler memory/stale schema ile yazılamaz.
+Templated artifact'ler memory/stale schema ile yazılamaz.
 
 ### SOURCE_REGISTER
 
 ```text
-fresh templates/runs/SOURCE_REGISTER_TEMPLATE.md read
+fresh templates/runs/SOURCE_REGISTER_TEMPLATE.md
 → exact project source evidence + approved derivative authorities
 → SOURCE_REGISTER write
 ```
 
-`SRC-*` yalnız factual project/enrichment sources içindir. `PROJECT_INPUT`, `INPUT_SNAPSHOT`, `engine/*`, `packages/*`, `templates/*`, `ref/*` factual SRC değildir.
+### PAGE-DESIGN (when applicable)
+
+Corporate/page-based project + `design_planning: standard | full` ise her approved PAGE-XXX ayrı dynamic checkpoint'tir:
+
+```text
+fresh PAGE_DESIGN_PACKAGE_TEMPLATE.md
+→ exact approved PAGE-XXX registry row
+→ current DESIGN / DESIGN_SYSTEM / GLOBAL_SHELL / PRODUCT_RULES
+→ ONE page-design instance write
+→ identity/capability/factual diff
+→ CLOSE
+```
+
+Bir template read birden fazla page instance için reuse edilemez.
+
+Expected corporate page-design set:
+
+```text
+PAGE_DESIGN_INSTANCE_SET == APPROVED_PAGE_SET
+```
 
 ### WAVE_MAP
 
@@ -53,26 +96,32 @@ fresh templates/runs/SOURCE_REGISTER_TEMPLATE.md read
 ref/waves/README.md
 → ref/waves/WAVE_MAP_REFERENCE.md
 → fresh WAVE_MAP_TEMPLATE.md
-→ exact current authorities
+→ exact current authorities + APPROVED_PAGE_SET if applicable
 → ONE WAVE_MAP write
+→ page/capability/decomposition validation
 → close
+```
+
+Corporate website:
+
+```text
+PLANNED_PAGE_SET == APPROVED_PAGE_SET
 ```
 
 ### EACH WAVE_PLAN
 
-Her `WAVE_NN` tamamen ayrı checkpoint'tir:
+Her `WAVE_NN` ayrı checkpoint:
 
 ```text
 fresh WAVE_PLAN_TEMPLATE.md
 → exact parent WAVE_NN
+→ current parent Covered Page IDs
 → at least one isolated quality ref for THIS WAVE
-→ current authorities/FCL as applicable
+→ current authorities/FCL
 → ONE WAVE_NN write
-→ validate/repair
+→ capability/page/factual diff
 → CLOSE
 ```
-
-Önceki wave'in template veya ref read'i current wave için reuse edilemez. `0 quality-ref read` ile WAVE_PLAN yazılamaz.
 
 ### VALIDATION_REPORT
 
@@ -83,36 +132,51 @@ fresh templates/runs/VALIDATION_REPORT_TEMPLATE.md
 → write VALIDATION_REPORT
 ```
 
-Validation report current `VAL-01..VAL-19` gate setini eksiksiz taşır. `VAL-15 = UNVERIFIED` ise overall `PASS` yazılamaz; canonical result en fazla `CONDITIONAL PASS` olabilir.
+Current `VAL-01..VAL-19` eksiksiz uygulanır. Corporate website ise validation minimum page evidence'ı taşır:
+
+```text
+APPROVED_PAGE_SET
+PLANNED_PAGE_SET
+NAVIGATION_PAGE_SET
+PAGE_DESIGN_INSTANCE_SET when applicable
+MISSING_MAP_PAGES
+UNAPPROVED_MAP_PAGES
+COLLAPSED_APPROVED_PAGES
+```
+
+`VAL-15 = UNVERIFIED` ise overall en fazla `CONDITIONAL PASS` olabilir.
+
+---
 
 ## Talimatlar
 
 1. Product Engine canonical boot/read order'ını baştan uygula.
-2. Approved `PROJECT_INPUT` dosyasını tamamen oku ve project truth başlangıcı olarak freeze et.
-3. Package/document/profile resolution'ı canonical Engine authority'lerinden yeniden çöz.
-4. Run lifecycle'ını `RUN_PROTOCOL`, `GENERATION_PIPELINE`, `OUTPUT_STRUCTURE` ve applicable templates/contracts uyarınca yürüt.
-5. Her artifact/instance için point-of-use template refresh kuralını uygula; batch-read + batch-generate yapma.
-6. SOURCE_REGISTER factual source classification'ını `RUN_PROTOCOL` + `SOURCE_REGISTER_TEMPLATE` ile çöz; read edilen authority'leri factual source diye kaydetme.
-7. WAVE_MAP approved execution scope'u decomposition seviyesinde freeze etsin; WAVE_PLAN yalnız exact parent map entry'yi detaylandırsın.
-8. Her WAVE_PLAN için fresh template + current-wave quality-ref checkpoint'i gerçekten uygula; önceki read event'lerini reuse etme.
+2. Approved PROJECT_INPUT'u tamamen oku ve freeze et.
+3. Corporate website ise approved page registry'yi ayrıca immutable execution boundary olarak freeze et.
+4. Package/document/profile resolution'ı canonical Engine authority'lerinden yeniden çöz.
+5. Run lifecycle'ını `RUN_PROTOCOL`, `GENERATION_PIPELINE`, `OUTPUT_STRUCTURE` uyarınca yürüt.
+6. Her dynamic artifact için point-of-use template refresh uygula; batch-read + batch-generate yapma.
+7. WAVE_MAP approved capability + page scope'u decomposition seviyesinde freeze etsin; WAVE_PLAN exact parent'ı detaylandırsın.
+8. PAGE-DESIGN applicable ise her approved PAGE identity için isolated checkpoint uygula.
 9. Factual claims yalnız source-backed SOURCE_REGISTER/FCL zinciriyle desteklensin.
-10. VALIDATION_REPORT yazmadan immediately önce current validation template ve validation rules fresh-read edilsin.
-11. Independent observable trace bu session tarafından gerçekten inspect edilemiyorsa trace'i `AVAILABLE` ilan etme; canonical UNAVAILABLE/UNVERIFIED davranışını uygula.
-12. Validation sonucu canonical gate evidence'ından türemelidir; agent self-report veya kendi completion beyanı ground truth değildir.
-13. Publication/completion yalnız canonical validation ve publication gate izin veriyorsa yapılır.
+10. Distinct corporate page'leri single-page anchor/section structure'a collapse etme.
+11. Continuation expected frontend için TECH_CONTEXT package/tooling/routing expansion path'i canonical guards'a göre çözsün.
+12. VALIDATION_REPORT yazmadan önce current validation template/rules fresh-read edilsin.
+13. Independent trace inspect edilemiyorsa `AVAILABLE` ilan etme.
+14. Validation sonucu canonical evidence'dan türemeli; self-report ground truth değildir.
+15. Publication/completion yalnız canonical validation/publication gate izin veriyorsa yapılır.
 
 ## Beklenen Akış
 
 ```text
 approved PROJECT_INPUT
-→ fresh Product Engine boot
-→ package/document resolution
-→ source-register checkpoint
-→ run
-→ working-output
-→ per-wave isolated checkpoints
-→ validation-report checkpoint
+→ fresh Engine boot
+→ approved PAGE_SET freeze if corporate
+→ deterministic package/document resolution
+→ source register
+→ design/page checkpoints if applicable
+→ WAVE_MAP
+→ isolated WAVE_PLAN checkpoints
+→ validation
 → publication/completion when allowed
 ```
-
-Bu session approved input öncesindeki chat bağlamını yeniden inşa etmeye veya yorum yoluyla taşımaya çalışmaz.
