@@ -6,7 +6,7 @@
 template_id: project-brain-template
 template_name: Project Brain Template
 document_id: PROJECT-BRAIN
-version: 1.0.0
+version: 1.1.0
 status: active
 template_type: document
 category: ai
@@ -19,23 +19,25 @@ supported_delivery_profiles:
   - production-ready
 required_inputs:
   - approved_intake
-conditional_inputs: []
+conditional_inputs:
+  - approved_site_architecture
 dependencies: []
 output_filename: PROJECT_BRAIN.md
 ```
 
 ## Amaç
 
-Projenin tüm bağlamını, amacını, hedef kitlesini, mimari özetini ve durumunu tek bir yerde özetleyen ajanın birincil başvuru belgesini oluşturmak.
+Projenin tüm bağlamını, amacını, hedef kitlesini, approved scope/site architecture özetini, mimari özetini ve durumunu tek yerde sunan ajanın birincil başvuru belgesini oluşturmak.
 
 ## Kullanım Koşulları
 
-Tüm proje paketlerinde ve delivery profile seviyelerinde zorunludur (`Required: required`).
+Tüm proje paketlerinde ve delivery profile seviyelerinde zorunludur.
 
 ## Girdi Kaynakları
 
 - Approved Project Intake (`engine/PROJECT_INTAKE.md`)
-- `engine/INFORMATION_MAP.md` (Bağlam sınırları uyarınca)
+- Corporate website için approved Site Architecture registry
+- `engine/INFORMATION_MAP.md`
 
 ## Zorunlu Bölümler
 
@@ -43,55 +45,53 @@ Tüm proje paketlerinde ve delivery profile seviyelerinde zorunludur (`Required:
 - Problem ve Değer Önermesi
 - Hedef Kullanıcı Kitleleri
 - Temel Kapsam Özeti
+- Site / Surface Architecture Özeti (applicable ise)
 - Sistem Mimari Özeti
 - Kritik Kararlar Özet Tablosu
 - Aktif Faz ve Durum Özeti
 - İlgili Doküman Referansları
 
-## Koşullu Bölümler
-
-- `[CONDITIONAL: include only if product has strategy document]` Büyüme ve Strateji Özeti
-
 ## İçerik Üretim Kuralları
 
-- `PROJECT_BRAIN.md` projenin merkezi özetidir; diğer detaylı belgelerin (örn: `PRODUCT_RULES`, `TECH_CONTEXT`) tam metinlerini kopyalamamalı, özetleyip ilgili belgelere link/referans vermelidir.
-- Uydurma veya varsayımsal bilgi eklenmemelidir. Eksik bilgiler için `engine/ASSUMPTION_RULES.md` uyarınca kayıt yapılmalıdır.
+- PROJECT_BRAIN merkezi özet belgesidir; detay owner belgeleri kopyalanmaz.
+- Corporate website'te approved `PAGE-XXX` seti kısa ve exact identity'lerle özetlenir.
+- PROJECT_BRAIN yeni page/surface icat edemez veya approved distinct page'leri merge edemez.
+- Uydurma/varsayımsal factual bilgi eklenmez.
+- `Prototype` wording'i approved page breadth'ini küçültmez.
 
 ## Placeholder Tanımları
 
-- `{{PROJECT_NAME}}`: Projenin resmi adı.
-- `{{PROJECT_SLUG}}`: Projenin kısa kimliği (slug).
-- `{{PROJECT_PURPOSE}}`: Projenin tek cümlelik tanımı ve amacı.
-- `{{PROBLEM_STATEMENT}}`: Çözülen temel problem.
-- `{{VALUE_PROPOSITION}}`: Sağlanan değer önermesi.
-- `{{TARGET_USERS_LIST}}`: Hedef kullanıcı rolleri listesi.
-- `{{SCOPE_SUMMARY}}`: Kapsam içi ve kapsam dışı özet.
-- `{{TECH_STACK_SUMMARY}}`: Kullanılan teknoloji yığını özeti.
-- `{{KEY_DECISIONS_TABLE}}`: Kritik mimari ve ürün kararlarının özet tablosu.
-- `{{CURRENT_PHASE_SUMMARY}}`: Projenin mevcut aşaması ve durumu.
+- `{{PROJECT_NAME}}`
+- `{{PROJECT_SLUG}}`
+- `{{PROJECT_TYPE}}`
+- `{{PROJECT_PURPOSE}}`
+- `{{PROBLEM_STATEMENT}}`
+- `{{VALUE_PROPOSITION}}`
+- `{{TARGET_USERS_LIST}}`
+- `{{SCOPE_SUMMARY}}`
+- `{{SITE_ARCHITECTURE_SUMMARY}}`
+- `{{TECH_STACK_SUMMARY}}`
+- `{{KEY_DECISIONS_TABLE}}`
+- `{{CURRENT_PHASE_SUMMARY}}`
 
 ## Kapsam Dışı
 
-- Detaylı API sözleşmeleri (bkz: `API_CONTRACTS.md`)
-- Detaylı veritabanı şemaları (bkz: `DATA_MODEL.md`)
-- Tam kodlama kuralları (bkz: `AGENT_INSTRUCTIONS.md`)
+- Site architecture semantiğini yeniden tanımlamak (bkz: `engine/SITE_ARCHITECTURE_RULES.md`)
+- Detaylı API sözleşmeleri
+- Detaylı data model
+- Tam coding instructions
 
 ## Diğer Dokümanlarla İlişki
 
-- Primary Owner: `project_purpose`, `project_summary`, `tech_overview`, `scope_summary`, `key_decisions_summary`, `current_phase_summary`.
+- Primary Owner: `project_purpose`, `project_summary`, `tech_overview`, `scope_summary`, `site_architecture_summary`, `key_decisions_summary`, `current_phase_summary`.
+- Site architecture truth owner: Approved Project Input.
 - Referenced By: `README.md`, `CURRENT_STATUS.md`, `TECH_CONTEXT.md`, `PRODUCT_RULES.md`.
-
-## Delivery Profile Davranışı
-
-- **Foundation**: Yüksek seviye proje amacı ve temel kapsam özeti.
-- **Prototype**: Kullanıcı rolleri ve görsel/işlevsel odak noktaları eklenir.
-- **Implementation Ready**: Detaylı bağımlılık haritası ve karar tablosu eklenir.
-- **Production Ready**: Operasyonel hedefler ve sürdürülebilirlik notları dahil edilir.
 
 ## Validation Beklentileri
 
-- `PRODUCT_RULES.md` ve `TECH_CONTEXT.md` ile bağlamsal çelişki barındırmamalıdır.
-- Çözülmemiş placeholder kalmamalıdır.
+- Approved input ve site architecture ile exact identity consistency korunmalı.
+- PRODUCT_RULES / TECH_CONTEXT ile çelişmemeli.
+- Çözülmemiş placeholder kalmamalı.
 
 ---
 
@@ -103,6 +103,7 @@ Tüm proje paketlerinde ve delivery profile seviyelerinde zorunludur (`Required:
 
 - **Proje Adı**: {{PROJECT_NAME}}
 - **Proje Slug**: {{PROJECT_SLUG}}
+- **Proje Türü**: {{PROJECT_TYPE}}
 - **Tanım**: {{PROJECT_PURPOSE}}
 
 ## 2. Problem ve Değer Önermesi
@@ -118,19 +119,23 @@ Tüm proje paketlerinde ve delivery profile seviyelerinde zorunludur (`Required:
 
 {{SCOPE_SUMMARY}}
 
-## 5. Sistem Mimari Özeti
+## 5. Site / Surface Architecture Özeti
+
+{{SITE_ARCHITECTURE_SUMMARY}}
+
+## 6. Sistem Mimari Özeti
 
 - **Teknoloji Yığını**: {{TECH_STACK_SUMMARY}}
 
-## 6. Kritik Kararlar Özet Tablosu
+## 7. Kritik Kararlar Özet Tablosu
 
 {{KEY_DECISIONS_TABLE}}
 
-## 7. Aktif Faz ve Durum Özeti
+## 8. Aktif Faz ve Durum Özeti
 
 - **Mevcut Durum**: {{CURRENT_PHASE_SUMMARY}}
 
-## 8. Doküman Referansları
+## 9. Doküman Referansları
 
 - [PRODUCT_RULES.md](./PRODUCT_RULES.md)
 - [TECH_CONTEXT.md](./TECH_CONTEXT.md)
