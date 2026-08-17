@@ -21,7 +21,7 @@ Derived Into  : Owner bilgisinden türetilen uygulama/plan bilgileri
 Must Not Own  : Bu bilgiyi bağımsız truth olarak tutmaması gereken belgeler
 ```
 
-Planning profile değerlerinin project truth sahibi `inputs/approved/.../PROJECT_INPUT.md`'dir; run manifest yalnız operational snapshot olarak tekrar kaydeder.
+Planning profile ve approved site architecture değerlerinin project truth sahibi `inputs/approved/.../PROJECT_INPUT.md`'dir. Engine contract'ları semantiği tanımlar; project-specific value'yu sahiplenmez.
 
 ---
 
@@ -54,6 +54,24 @@ Derived Into  : Planning overlay document scope
 Must Not Own  : Base package dosyaları, PROJECT_BRAIN.md, DESIGN_RULES.md
 ```
 
+## Corporate Site Architecture / Page Registry
+
+```text
+Project-Specific Truth Owner : Approved PROJECT_INPUT.md / Site Architecture section
+Semantic Contract Owner      : engine/SITE_ARCHITECTURE_RULES.md
+Referenced By                : PROJECT_BRAIN.md, PRODUCT_RULES.md, GLOBAL_SHELL.md, PAGE-DESIGN instances, WAVE_MAP.md, WAVE_PLAN instances, PROJECT_PLAN.md
+Derived Into                 : navigation registry, page-design instance set, wave page coverage, route/page implementation tasks
+Must Not Own                 : GLOBAL_SHELL.md, PAGE-DESIGN, WAVE_MAP.md, WAVE_PLAN (bunlar yeni PAGE identity icat edemez)
+```
+
+Canonical rule:
+
+```text
+approved PAGE-XXX truth
+→ downstream reference/implementation
+≠ downstream re-definition
+```
+
 ---
 
 # Technical Ownership
@@ -63,7 +81,7 @@ Must Not Own  : Base package dosyaları, PROJECT_BRAIN.md, DESIGN_RULES.md
 ```text
 Primary Owner : TECH_CONTEXT.md
 Referenced By : PROJECT_BRAIN.md (özet), PROJECT_PLAN.md, WAVE_MAP.md, WAVE_PLAN instances, README.md
-Derived Into  : Data/API/test/deployment planları
+Derived Into  : Data/API/test/deployment planları, routing/tooling implementation
 Must Not Own  : PRODUCT_RULES.md, DESIGN_RULES.md
 ```
 
@@ -139,22 +157,24 @@ Must Not Own  : PAGE-DESIGN, FEATURE-DESIGN, DESIGN_RULES.md (yalnız yön/karak
 ## Global Shell / Navigation / Global Layout
 
 ```text
-Primary Owner : GLOBAL_SHELL.md
+Primary Owner : GLOBAL_SHELL.md (implementation/design representation)
+Truth Input   : Approved Site Architecture PAGE registry
 Referenced By : PAGE-DESIGN, FEATURE-DESIGN, README.md
-Derived Into  : Page shell ilişkisi ve route presentation
-Must Not Own  : PAGE-DESIGN
+Derived Into  : Navigation composition, route presentation, responsive shell behavior
+Must Not Own  : Yeni page identity, page-specific content
 ```
 
 ## Page / Screen-Specific Design
 
 ```text
-Primary Owner : İlgili PAGE-DESIGN instance
+Primary Owner : İlgili PAGE-DESIGN instance (yalnız design contract)
+Identity Truth: Approved PAGE-XXX registry
 Referenced By : FEATURE-DESIGN, WAVE_PLAN instances
 Derived Into  : Page implementation tasks
-Must Not Own  : GLOBAL_SHELL.md, DESIGN_SYSTEM.md
+Must Not Own  : Global shell, design tokens, yeni page identity
 ```
 
-PAGE-DESIGN yalnız kendi surface'inin layout, sections, actions, responsive behavior ve local state ilişkisini sahiplenir.
+PAGE-DESIGN yalnız approved surface'inin layout, sections, actions, responsive behavior ve local state ilişkisini sahiplenir.
 
 ## Cross-Screen / Complex Feature Design
 
@@ -162,7 +182,7 @@ PAGE-DESIGN yalnız kendi surface'inin layout, sections, actions, responsive beh
 Primary Owner : İlgili FEATURE-DESIGN instance
 Referenced By : WAVE_PLAN instances, PAGE-DESIGN (kısa referans)
 Derived Into  : Feature implementation / state transition görevleri
-Must Not Own  : PAGE-DESIGN layout ownership, SYSTEM_STATES global rules
+Must Not Own  : PAGE-DESIGN layout ownership, SYSTEM_STATES global rules, new page identities
 ```
 
 ## Shared UI States
@@ -180,7 +200,7 @@ Must Not Own  : Tekil page layout veya business rule
 Primary Owner : ADMIN_OPERATIONAL_DESIGN.md
 Referenced By : Relevant PAGE-DESIGN / FEATURE-DESIGN / WAVE_PLAN instances
 Derived Into  : Admin/ops implementation tasks
-Must Not Own  : Auth/business permission truth (PRODUCT_RULES/API/TECH_CONTEXT owner'dır)
+Must Not Own  : Auth/business permission truth
 ```
 
 ---
@@ -193,25 +213,27 @@ Must Not Own  : Auth/business permission truth (PRODUCT_RULES/API/TECH_CONTEXT o
 Primary Owner : PROJECT_PLAN.md
 Referenced By : README.md, WAVE_MAP.md
 Derived Into  : Wave architecture
-Must Not Own  : WAVE_MAP.md ayrıntılı wave structure
+Must Not Own  : WAVE_MAP ayrıntılı wave structure veya page truth
 ```
 
-## Wave Architecture / Wave Scope Boundaries / Dependency Chain
+## Wave Architecture / Scope / Page Coverage / Dependency Chain
 
 ```text
-Primary Owner : WAVE_MAP.md
+Primary Owner : WAVE_MAP.md (execution decomposition)
+Truth Inputs  : Approved capability scope + approved PAGE registry
 Referenced By : PROJECT_PLAN.md, CURRENT_STATUS.md, AGENT_INSTRUCTIONS.md, WAVE_PLAN instances
-Derived Into  : Her wave için dynamic WAVE-PLAN instance
-Must Not Own  : NEXT_TASKS.md
+Derived Into  : Dynamic WAVE-PLAN instances
+Must Not Own  : Yeni capability veya page identity
 ```
 
 ## Tekil Wave Tasks / Acceptance / Verification
 
 ```text
-Primary Owner : İlgili WAVE-PLAN instance (`waves/plans/WAVE_<NN>.md`)
+Primary Owner : İlgili WAVE-PLAN instance
+Truth Inputs  : Parent WAVE_MAP capability + Covered Page IDs
 Referenced By : CURRENT_STATUS.md, NEXT_TASKS.md, AGENT_INSTRUCTIONS.md
 Derived Into  : Immediate execution queue
-Must Not Own  : WAVE_MAP.md
+Must Not Own  : WAVE_MAP scope veya yeni page identity
 ```
 
 ## Current Project State / Active Wave
@@ -259,28 +281,31 @@ Must Not Own  : ASSUMPTIONS kayıtlarının kendisi
 ```text
 Primary Owner : README.md
 Purpose       : Project output read-order / navigation / quick start
-Referenced By : —
-Must Not Own  : Diğer belgelerin detay truth alanları
+Must Not Own  : Diğer belgelerin detay truth alanları veya site architecture
 ```
 
-README özetler ve yönlendirir; PROJECT_BRAIN/TECH_CONTEXT/DESIGN/WAVE_PLAN içeriğini kopyalamaz.
+README özetler ve yönlendirir; owner belgelerin içeriğini kopyalamaz.
 
 ---
 
 # Aynı Bilginin Farklı Seviyelerde Temsili
 
-Aynı gerçek farklı belgelerde **referans/özet** seviyesinde görünebilir; ownership değişmez.
-
-Örnek:
-
 ```text
+Site architecture:
+  Approved PROJECT_INPUT → authoritative PAGE registry
+  PROJECT_BRAIN          → summary
+  GLOBAL_SHELL           → navigation/design representation
+  PAGE-DESIGN            → exact page design contract
+  WAVE_MAP               → execution coverage
+  WAVE_PLAN              → implementation tasks
+
 Visual direction:
   DESIGN_RULES      → authoritative concept
   DESIGN_SYSTEM     → token'a dönüştürür
   PAGE-DESIGN       → page composition'da uygular
 
 Wave:
-  WAVE_MAP          → goal/scope/dependency
+  WAVE_MAP          → goal/scope/dependency/page coverage
   WAVE_PLAN         → concrete tasks/acceptance
   CURRENT_STATUS    → aktif wave gerçeği
   NEXT_TASKS        → aktif wave'in sıradaki görevleri
@@ -293,6 +318,9 @@ Wave:
 Primary owner değişirse dependent belgeler kontrol edilmelidir:
 
 ```text
+Approved Site Architecture
+→ PROJECT_BRAIN / PRODUCT_RULES / GLOBAL_SHELL / PAGE-DESIGN instances / WAVE_MAP / PROJECT_PLAN
+
 PROJECT_BRAIN
 → PRODUCT_RULES / TECH_CONTEXT / PROJECT_PLAN / WAVE_MAP / DESIGN
 
@@ -310,9 +338,6 @@ WAVE_MAP
 
 WAVE_PLAN(active)
 → CURRENT_STATUS / NEXT_TASKS
-
-CURRENT_STATUS
-→ NEXT_TASKS
 ```
 
 Validation bu dependency zincirlerinde drift olup olmadığını kontrol eder.
@@ -323,10 +348,12 @@ Validation bu dependency zincirlerinde drift olup olmadığını kontrol eder.
 
 MUST NOT:
 
-- Aynı teknik kararın PROJECT_BRAIN ve TECH_CONTEXT'te bağımsız truth olması,
-- page package'ın kendi color/token sistemi icat etmesi,
-- feature package'ın page layout'u yeniden sahiplenmesi,
-- NEXT_TASKS'ın future wave roadmap'i haline gelmesi,
-- WAVE_PLAN'ın WAVE_MAP scope'unu değiştirmesi,
-- design document'ın business fact uydurması,
-- TECH_CONTEXT'in integration readiness gerekçesiyle sahte API/database contract'ı üretmesi.
+- Same technical decision PROJECT_BRAIN ve TECH_CONTEXT'te bağımsız truth olmak,
+- GLOBAL_SHELL yeni PAGE ID icat etmek,
+- PAGE-DESIGN approved registry dışında page üretmek,
+- WAVE_MAP approved page setini azaltmak veya genişletmek,
+- WAVE_PLAN parent Covered Page IDs dışına çıkmak,
+- page package kendi token system'ini icat etmek,
+- NEXT_TASKS future roadmap'e dönüşmek,
+- design document business fact uydurmak,
+- TECH_CONTEXT integration readiness gerekçesiyle sahte API/database contract üretmek.
