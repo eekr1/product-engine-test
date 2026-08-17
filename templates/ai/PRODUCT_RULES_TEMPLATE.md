@@ -6,7 +6,7 @@
 template_id: product-rules-template
 template_name: Product Rules Template
 document_id: PRODUCT-RULES
-version: 1.0.0
+version: 1.1.0
 status: active
 template_type: document
 category: ai
@@ -23,7 +23,8 @@ supported_delivery_profiles:
   - production-ready
 required_inputs:
   - approved_intake
-conditional_inputs: []
+conditional_inputs:
+  - approved_site_architecture
 dependencies:
   - PROJECT-BRAIN
 output_filename: PRODUCT_RULES.md
@@ -40,56 +41,53 @@ UI ve iş mantığı içeren projelerde zorunludur. Altyapı/pure infrastructure
 ## Girdi Kaynakları
 
 - Approved Project Intake (`engine/PROJECT_INTAKE.md`)
+- Corporate website ise approved Site Architecture registry
 - `PROJECT_BRAIN.md`
 
 ## Zorunlu Bölümler
 
-- İş Mantığı ve Ürün Kuralları (Product Business Rules)
-- Davranış ve Akış Kısıtlamaları (Behavioral Constraints)
-- Kapsam Sınırları ve Kuralları (Scope Boundaries & Rules)
-- Kullanıcı Deneyimi ve İşlevsel Kurallar (UX Functional Rules)
-
-## Koşullu Bölümler
-
-- `[CONDITIONAL: include only if authentication is present]` Kimlik Doğrulama ve Yetki Kuralları
-- `[CONDITIONAL: include only if multi-tenancy is present]` Tenant ve İzolasyon Kuralları
+- İş Mantığı ve Ürün Kuralları
+- Davranış ve Akış Kısıtlamaları
+- Kapsam Sınırları ve Kuralları
+- Site / Surface Integrity Rules (applicable ise)
+- Kullanıcı Deneyimi ve İşlevsel Kurallar
 
 ## İçerik Üretim Kuralları
 
 - Yalnızca ürün davranışı ve kısıtlamalarına odaklanmalıdır.
-- Kodlama, veritabanı şeması veya hosting gibi teknik detayları sahiplenmemelidir (bkz: `TECH_CONTEXT.md`).
+- Kodlama, routing library, veritabanı şeması veya hosting gibi teknik detayları sahiplenmemelidir.
+- Corporate website'te approved PAGE identities product scope boundary olarak referanslanabilir ancak site architecture truth yeniden tanımlanamaz.
+- Distinct approved page'lerin silent merge/collapse yasağı product-level invariant olarak görünür olmalıdır.
+- `Prototype` veya `sales demo` etiketi page breadth'i azaltma izni vermez.
 - Her kural test edilebilir ve net ifadelerle tanımlanmalıdır.
 
 ## Placeholder Tanımları
 
-- `{{PROJECT_NAME}}`: Proje adı.
-- `{{BUSINESS_RULES_LIST}}`: Temel iş mantığı kuralları listesi.
-- `{{BEHAVIORAL_CONSTRAINTS_LIST}}`: Davranışsal kısıtlamalar.
-- `{{SCOPE_RULES_LIST}}`: Kapsam kuralları ve sınırları.
-- `{{UX_FUNCTIONAL_RULES_LIST}}`: UX ve etkileşim kuralları.
+- `{{PROJECT_NAME}}`
+- `{{BUSINESS_RULES_LIST}}`
+- `{{BEHAVIORAL_CONSTRAINTS_LIST}}`
+- `{{SCOPE_RULES_LIST}}`
+- `{{SITE_SURFACE_INTEGRITY_RULES}}`
+- `{{UX_FUNCTIONAL_RULES_LIST}}`
 
 ## Kapsam Dışı
 
-- Görsel tasarım sistemi kuralları (bkz: `DESIGN_RULES.md`)
-- Veritabanı ilişki tanımları (bkz: `DATA_MODEL.md`)
-- API Endpoint detayları (bkz: `API_CONTRACTS.md`)
+- Site architecture truth owner olmak (bkz: approved input + `engine/SITE_ARCHITECTURE_RULES.md`)
+- Görsel tasarım sistemi kuralları
+- Routing/tooling implementation detayları
+- Data model / API contract detayları
 
 ## Diğer Dokümanlarla İlişki
 
-- Primary Owner: `product_rules`, `behavior_constraints`, `scope_rules`, `ux_rules`.
-- Referenced By: `PROJECT_BRAIN.md`, `AGENT_INSTRUCTIONS.md`, `DESIGN_RULES.md`.
-
-## Delivery Profile Davranışı
-
-- **Foundation**: Temel kapsayıcı ürün kuralları ve kısıtlamalar.
-- **Prototype**: Kullanıcı etkileşim ve akış kuralları eklenir.
-- **Implementation Ready**: Tüm sınır durumları (edge-cases) ve veri doğrulama kuralları detaylandırılır.
-- **Production Ready**: Hata toleransı ve güvenlik/yetkilendirme kısıtlamaları eklenir.
+- Primary Owner: `product_rules`, `behavior_constraints`, `scope_rules`, `ux_rules`, `page_collapse_constraints`.
+- Site Architecture Truth Owner: Approved PROJECT_INPUT.
+- Referenced By: `PROJECT_BRAIN.md`, `AGENT_INSTRUCTIONS.md`, `DESIGN_RULES.md`, `WAVE_MAP.md`.
 
 ## Validation Beklentileri
 
-- `PROJECT_BRAIN.md` ile kapsam çelişkisi olmamalıdır.
-- Teknik kodlama detayları içermemelidir.
+- PROJECT_BRAIN ve approved site architecture ile kapsam çelişkisi olmamalıdır.
+- Corporate website'te distinct approved pages section/anchor reduction'a izin veren kural bulunmamalıdır.
+- Teknik coding/library detayları içermemelidir.
 
 ---
 
@@ -109,17 +107,21 @@ UI ve iş mantığı içeren projelerde zorunludur. Altyapı/pure infrastructure
 
 {{SCOPE_RULES_LIST}}
 
-## 4. Kullanıcı Deneyimi ve İşlevsel Kurallar
+## 4. Site / Surface Integrity Rules
+
+{{SITE_SURFACE_INTEGRITY_RULES}}
+
+## 5. Kullanıcı Deneyimi ve İşlevsel Kurallar
 
 {{UX_FUNCTIONAL_RULES_LIST}}
 
 [CONDITIONAL: include only if authentication is present]
-## 5. Kimlik Doğrulama ve Yetki Kuralları
+## 6. Kimlik Doğrulama ve Yetki Kuralları
 
 - Kullanıcı rolleri ve erişim yetki sınırları tanımlanır.
 
 [CONDITIONAL: include only if multi-tenancy is present]
-## 6. Tenant ve İzolasyon Kuralları
+## 7. Tenant ve İzolasyon Kuralları
 
 - Veri ve kullanıcı izolasyon kuralları tanımlanır.
 
