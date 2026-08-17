@@ -24,8 +24,10 @@ canonical document set + dynamic instances
 
 Authority:
 
+- project type + required intake fields → `PROJECT_INTAKE.md`
+- corporate page architecture semantics → `SITE_ARCHITECTURE_RULES.md`
 - profile semantiği → `PLANNING_PROFILES.md`
-- project truth → `PROJECT_INTAKE.md` + `inputs/approved/`
+- project truth → `inputs/approved/`
 - shared planning minimumları → `packages/PLANNING_PROFILE_OVERLAY.md`
 - Document ID/applicability → `DOCUMENT_CATALOG.md`
 - runtime sırası → `GENERATION_PIPELINE.md`
@@ -41,9 +43,10 @@ project_type
 delivery_profile
 implementation_planning: standard | full
 design_planning: light | standard | full  (UI applicable ise)
+site_architecture                        (corporate-website ise required)
 ```
 
-Bu aşamada profile tahmini yapılmaz.
+Bu aşamada profile veya site architecture tahmini yapılmaz.
 
 Eksik/invalid canonical alan → intake correction gerekir; generation başlamaz.
 
@@ -51,7 +54,25 @@ Eksik/invalid canonical alan → intake correction gerekir; generation başlamaz
 
 ## 2. Base Package Selection
 
-Project/domain bağlamına en uygun base package seçilir:
+Base package **delivery wording'e değil project/domain type'a** göre seçilir.
+
+Deterministic mapping:
+
+```text
+project_type: corporate-website
+→ corporate-website
+
+project_type: api-service
+→ api-service
+
+project_type: web-app
+→ saas OR demo-frontend yalnız approved domain/product context'e göre
+
+project_type: prototype
+→ demo-frontend (frontend/UI prototype ise)
+```
+
+Base package registry:
 
 ```text
 demo-frontend
@@ -62,11 +83,51 @@ api-service
 
 `existing-project` gerektiğinde extension context olarak uygulanır.
 
+### Demo / Delivery Override Yasağı
+
+```text
+sales demo
+prototype delivery
+client demo
+local preview
+```
+
+ifadeleri base domain package'ı override edemez.
+
+Örnek:
+
+```text
+project_type: corporate-website
+delivery_profile: Prototype
+purpose: proactive sales demo
+
+→ base package MUST be corporate-website
+→ demo-frontend MUST NOT replace it
+```
+
 Base package yalnız domain-specific gereksinimlerin sahibidir; planning depth sahibi değildir.
 
 ---
 
-## 3. Shared Planning Overlay — Zorunlu Adım
+## 3. Corporate Website Precondition
+
+`project_type: corporate-website` için package resolution başlamadan önce:
+
+```text
+approved site_architecture exists
+APPROVED_PAGE_SET non-empty
+all executable pages have PAGE-XXX identity
+```
+
+zorunludur.
+
+Eksikse package resolution devam etmez; intake correction gerekir.
+
+Exact page semantics `SITE_ARCHITECTURE_RULES.md` sahibidir.
+
+---
+
+## 4. Shared Planning Overlay — Zorunlu Adım
 
 Base package seçildikten sonra **her run'da**:
 
@@ -75,8 +136,6 @@ packages/PLANNING_PROFILE_OVERLAY.md
 ```
 
 uygulanır.
-
-Bu adım optional değildir.
 
 ### Implementation `standard`
 
@@ -138,9 +197,11 @@ FEATURE-DESIGN instances
 ADMIN-DESIGN
 ```
 
+Multi-page corporate website için intake default recommendation `design_planning: standard`dır; package layer approved profile'ı sessizce yükseltemez veya düşüremez.
+
 ---
 
-## 4. Contextual Conditions
+## 5. Contextual Conditions
 
 Overlay sonrasında gerçek proje context'i değerlendirilir.
 
@@ -171,7 +232,7 @@ Integration readiness tek başına DATA/API üretim koşulu değildir.
 
 ---
 
-## 5. Catalog Filtering
+## 6. Catalog Filtering
 
 Candidate documents `DOCUMENT_CATALOG.md` üzerinden filtrelenir:
 
@@ -186,7 +247,7 @@ Catalog sınırını hiçbir package aşamaz.
 
 ---
 
-## 6. Dynamic Instance Resolution
+## 7. Dynamic Instance Resolution
 
 ### WAVE-PLAN
 
@@ -198,7 +259,9 @@ waves/plans/WAVE_<NN>.md
 
 ### PAGE-DESIGN
 
-`design standard | full` için her distinct page/screen implementation surface başına bir instance.
+`design standard | full` için her approved distinct page/screen implementation surface başına bir instance.
+
+Corporate website için instance identity approved `PAGE-XXX` registry ile bire bir izlenebilir olmalıdır.
 
 ### FEATURE-DESIGN
 
@@ -208,29 +271,26 @@ Yeni instance yeni Document ID değildir.
 
 ---
 
-## 7. Reduction Rules
+## 8. Reduction Rules
 
 MUST NOT:
 
 ```text
 Prototype → planning belgelerini çıkar
 Demo → TECH_CONTEXT çıkar
+Corporate website → single-page structure'a indir
+Corporate sales demo → demo-frontend package'a çevir
 Light design → generic/basic DESIGN yeterli de
 Base package default'u → approved planning profile'ı düşür
 ```
 
-Reduction yalnız:
+Reduction yalnız non-applicable conditional belge veya gerçek scope dışında kalan optional/conditional belge üzerinde yapılabilir.
 
-- non-applicable conditional belge,
-- gerçek scope dışında kalan optional/conditional belge
-
-üzerinde yapılabilir.
-
-Planning profile minimumları reduction floor'dur.
+Approved site architecture reduction target değildir.
 
 ---
 
-## 8. Demo / Frontend Readiness
+## 9. Demo / Frontend Readiness
 
 Frontend-only current scope:
 
@@ -243,29 +303,33 @@ UI
 
 beklentisini korur.
 
+Continuation beklenen client/sales frontend aynı codebase üzerinde büyüyebilecek tooling/foundation kullanmalıdır.
 Sahte backend/API/database üretmek yasaktır.
 
 ---
 
-## 9. Multiple Package / Extension Merge
+## 10. Multiple Package / Extension Merge
 
 1. Document ID duplicate üretilmez.
 2. Approved planning profiles korunur.
 3. Domain requirement'lar union olarak değerlendirilir.
 4. Catalog applicability son filtredir.
 5. Existing-project extension current/target/transition ayrımını korur.
+6. Domain base package başka bir delivery-purpose package tarafından override edilemez.
 
 ---
 
-## 10. Run Record
+## 11. Run Record
 
 `PACKAGE_SELECTION.md` en az:
 
 ```text
 selected base package
+selection rationale
 extensions
 implementation_planning
 design_planning
+site architecture summary (corporate-website ise)
 PLANNING_PROFILE_OVERLAY application
 canonical document IDs
 conditional include/exclude decisions
@@ -274,15 +338,16 @@ dynamic instance registry summary
 
 içermelidir.
 
-Bu seçim validation ve run manifest ile izlenebilir olmalıdır.
-
 ---
 
 # Core Invariants
 
 ```text
+project type owns domain package selection
+delivery purpose ≠ project type
+corporate website ≠ landing page
+Prototype ≠ site breadth reduction
 PROFILE DEPTH ≠ QUALITY LEVEL
-Prototype ≠ planning reduction
 Demo ≠ throwaway architecture
 Light design ≠ generic design
 Integration-ready ≠ invented backend
