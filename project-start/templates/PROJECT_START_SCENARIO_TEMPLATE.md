@@ -26,6 +26,7 @@ Bu nedenle bu dosya, Engine'in proje planı üretmek için ihtiyaç duyduğu ger
 - approved iletişim bilgileri,
 - kullanıcılar ve akışlar,
 - scope / out-of-scope,
+- corporate website ise bilinen/istenen page-surface architecture,
 - mevcut durumun yalnız planlamayı etkileyen kısmı,
 - teknik ve tasarım bağlamı,
 - bilinen kısıtlar,
@@ -39,7 +40,7 @@ External URL veya web sitesi bilgisi normal project truth için gerekli değildi
 
 - Proje adı:
 - Proje slug'ı:
-- Proje türü:
+- Proje türü: `web-app | corporate-website | api-service | mobile-app | internal-tool | content-platform | integration | infrastructure | prototype | other | Tanımlanmadı`
 - Proje modu: yeni / mevcut
 - Delivery profile: Foundation / Prototype / Implementation Ready / Production Ready / Tanımlanmadı
 - Implementation planning: standard / full / Tanımlanmadı
@@ -48,6 +49,7 @@ External URL veya web sitesi bilgisi normal project truth için gerekli değildi
 - Sahip / müşteri:
 
 > Planning profile değerleri kaynak dosyada belirtilmiş olsa bile canonical approved input gerçeği hâline gelmeleri için Product Engine intake/approval sürecinden geçmelidir.
+> `demo` / `sales demo` delivery context'tir; kurumsal web sitesi intent'i `corporate-website` project type olarak modellenir.
 
 ## 2. Problem / Amaç
 
@@ -77,15 +79,37 @@ Projeyi maddi olarak etkileyen ürün, müşteri, iş, ticari, iç kullanım, de
 ### Kapsam Dışı
 - 
 
-## 7. Fonksiyonel Gereksinimler
+## 7. Site / Surface Architecture
+
+Corporate website veya page/screen based UI için bilinen structure'ı açıkla.
+
+### Known / Desired Pages
 
 - 
 
-## 8. Mevcut Durum / Current Reality
+### Page Relationships
+
+- overview/detail ilişkileri:
+- navigation beklentisi:
+- kesin sayfalar:
+- öneriye açık sayfalar:
+- future pages:
+
+Kurallar:
+
+- `corporate-website` intent'i tek bir hero/services/contact sayfasına indirgenmemelidir.
+- Exact page listesi source'ta kesin değilse boşluğu factual invention ile doldurma; intake agent pending aşamada Proposed Site Architecture sunabilir.
+- Source'ta yazılan page intent'i approval gate'i atlamaz; canonical site architecture approved PROJECT_INPUT içinde kesinleşir.
+
+## 8. Fonksiyonel Gereksinimler
+
+- 
+
+## 9. Mevcut Durum / Current Reality
 
 Yalnız yeni planı etkileyen mevcut proje gerçekliğini açıkla. Bir web sitesi veya dış sistem varsa URL vermek zorunlu değildir; Engine'in bilmesi gereken şey sistemin planlama açısından taşıdığı gerçekliktir.
 
-## 9. Approved Project Facts / Content Truth
+## 10. Approved Project Facts / Content Truth
 
 Engine'in factual content üretirken kullanmasına izin verilen gerçek dünya bilgilerini açık ve yeterli ayrıntıyla burada topla.
 
@@ -106,48 +130,51 @@ Bu bölümde veya source dosyanın başka açık factual bölümünde bulunmayan
 firma/domain gerçeği Engine tarafından uydurulamaz.
 ```
 
-## 10. Teknik Bağlam / Tercihler
+## 11. Teknik Bağlam / Tercihler
 
 Bilinen veya tercih edilen stack, mimari, frontend/backend/database ayrımı, entegrasyonlar, hosting, repository, platform, environment veya implementasyon kısıtlarını belirt.
 
 Bilinmeyen teknik kararları uydurma; `Tanımlanmadı` kullan.
 
-## 11. Veri / Entegrasyonlar
+## 12. Veri / Entegrasyonlar
 
 Bilinen data source, depolama, API, üçüncü taraf servis ve entegrasyon sınırlarını belirt.
 
-## 12. Tasarım Yönü
+## 13. Tasarım Yönü
 
 Bilinen görsel yön, marka kuralları, tasarım dili, responsive ve erişilebilirlik beklentilerini belirt. Spesifik kullanıcı kararı yoksa sektör klişesi veya renk/tema uydurma.
 
-## 13. Deployment / Operasyonlar
+Multi-page corporate website için `design_planning: standard` önerisi normaldir; source hint olsa bile final profile approval intake'te kesinleşir.
+
+## 14. Deployment / Operasyonlar
 
 Bilinen ortamlar, deployment beklentileri, monitoring, backup veya operasyonel sahipliği belirt.
 
-## 14. Daha Önce Alınmış Önemli Kararlar
+## 15. Daha Önce Alınmış Önemli Kararlar
 
 - 
 
-## 15. Bilinen Kısıtlar
+## 16. Bilinen Kısıtlar
 
 - 
 
-## 16. Bilinmeyenler / Açık Sorular
+## 17. Bilinmeyenler / Açık Sorular
 
 - 
 
-## 17. Başarı Kriterleri
+## 18. Başarı Kriterleri
 
 - 
 
-## 18. Özel Talimatlar
+## 19. Özel Talimatlar
 
 - Normal runtime external web research yapmaz.
 - Project truth bu source dosyanın açık içeriğinden türetilir.
 - Missing factual detail gerekiyorsa uydurulmaz; open question / missing input olarak kalır.
 - Teknik implementation kararları Engine tarafından çözülebilir; firma/domain gerçekleri source-backed olmak zorundadır.
+- Corporate website page proposal'ı pending intake'te üretilebilir; explicit approval olmadan executable truth değildir.
 
-## 19. Referanslar
+## 20. Referanslar
 
 Yalnız Engine workflow'unda gerçekten gereken local repo path/doküman referanslarını listele. External URL normal project truth için eklenmek zorunda değildir.
 
@@ -159,4 +186,4 @@ Yalnız Engine workflow'unda gerçekten gereken local repo path/doküman referan
 
 Bu dosya proje kaynak materyalidir; canonical Product Engine contract'ı veya final Engine input'u değildir.
 
-Ajan bu dosyayı Product Engine'in authority/read-order, intake, planning profile, package/document selection, lifecycle, validation ve approval contract'ları üzerinden işlemelidir. Source dosyanın dışından factual enrichment yapamaz; eksik bilgiler Engine'in missing-input / open-question davranışıyla ele alınır.
+Ajan bu dosyayı Product Engine'in authority/read-order, intake, site architecture, planning profile, package/document selection, lifecycle, validation ve approval contract'ları üzerinden işlemelidir. Source dosyanın dışından factual enrichment yapamaz; eksik bilgiler Engine'in missing-input / open-question davranışıyla ele alınır.
