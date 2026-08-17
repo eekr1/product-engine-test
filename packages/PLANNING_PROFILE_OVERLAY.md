@@ -4,7 +4,7 @@
 
 Bu belge, tüm base package'ların üzerine uygulanan ortak planning-profile doküman katmanını tanımlar.
 
-Base package proje türünün/teslim bağlamının domain belgelerini belirler. Bu overlay ise approved intake'teki:
+Base package proje domain'ini belirler. Bu overlay approved intake'teki:
 
 ```text
 implementation_planning
@@ -13,21 +13,23 @@ design_planning (applicable ise)
 
 alanlarına göre agent-ready implementation ve design planning belgelerini deterministik biçimde ekler.
 
-Bu bir alternatif base package değildir; shared overlay'dir.
+Bu bir alternatif base package değildir; shared overlay'dir. Approved project scope veya site/page architecture breadth'ini değiştiremez.
 
 ---
 
 ## Authority
 
 - Profile semantiği: `engine/PLANNING_PROFILES.md`
+- Corporate page semantics: `engine/SITE_ARCHITECTURE_RULES.md`
 - Document kimlikleri/applicability: `engine/DOCUMENT_CATALOG.md`
 - Paket çözümleme sırası: `engine/PACKAGE_RULES.md`
 
-Base package ile bu overlay çelişirse:
+Base package ile overlay çelişirse:
 
-- base package domain-specific required belgelerde sahibidir,
-- planning profile minimumunda bu overlay sahibidir,
-- `DOCUMENT_CATALOG.md` Document ID ve applicability için son kayıt merkezidir.
+- base package domain-specific requirements sahibidir,
+- planning profile minimumunda overlay sahibidir,
+- approved page/scope breadth project input sahibidir,
+- `DOCUMENT_CATALOG.md` Document ID/applicability registry'sidir.
 
 ---
 
@@ -35,7 +37,7 @@ Base package ile bu overlay çelişirse:
 
 ### `standard`
 
-Aşağıdaki canonical belgeler, project type için applicable oldukları ölçüde required'dır:
+Applicable oldukları ölçüde required:
 
 ```text
 README-DOC
@@ -48,18 +50,18 @@ DECISIONS
 AGENT-INST
 PROJ-PLAN
 WAVE-MAP
-WAVE-PLAN (WAVE_MAP'teki her implementation wave için dynamic instance)
+WAVE-PLAN (her resolved implementation wave için)
 ```
 
 `standard` Product Engine'in agent-ready minimumudur.
 
-Bir base package, `Prototype`, demo, landing veya hızlı teslim gerekçesiyle bu seti sessizce daraltamaz.
+Bir base package, `Prototype`, demo veya hızlı teslim gerekçesiyle bu seti ya da approved page/scope breadth'ini sessizce daraltamaz.
 
 ### `full`
 
 `standard` setinin tamamını içerir.
 
-Aşağıdaki belgeler gerçek scope/karmaşıklık koşulu karşılanırsa eklenir:
+Gerçek scope/complexity gerektiriyorsa:
 
 ```text
 DATA
@@ -70,22 +72,15 @@ DEPLOY
 OPS
 ```
 
-Koşullar:
+uygulanır.
 
-- `DATA`: gerçek kalıcı/önemli veri modeli varsa.
-- `API`: gerçek API surface approved scope içindeyse.
-- `TEST`: risk/karmaşıklık dedicated test strategy gerektiriyorsa.
-- `PROD-STRAT`: gerçek ürün stratejisi kullanıcı tarafından sağlanmış/onaylanmışsa.
-- `DEPLOY`: gerçek deployment target approved scope içindeyse.
-- `OPS`: gerçek production operations scope içindeyse.
-
-`full` bu belgelerin hepsini otomatik üretmek anlamına gelmez.
+`full` her conditional belgeyi otomatik üretmek değildir.
 
 ---
 
 ## 2. Design Planning Matrix
 
-Bu bölüm yalnız UI/UX applicable projelerde kullanılır.
+Yalnız UI/UX applicable projelerde.
 
 ### `light`
 
@@ -93,9 +88,9 @@ Bu bölüm yalnız UI/UX applicable projelerde kullanılır.
 DESIGN
 ```
 
-`DESIGN_RULES.md` güçlü, projeye özgü, non-generic ve uygulanabilir olmak zorundadır.
+`DESIGN_RULES.md` güçlü, project-specific, non-generic ve uygulanabilir olmalıdır.
 
-`light` tasarım kalitesini değil artifact sayısını sınırlar.
+`light` artifact sayısını sınırlar; approved UI/page scope'u azaltmaz.
 
 ### `standard`
 
@@ -103,46 +98,57 @@ DESIGN
 DESIGN
 DESIGN-SYSTEM
 GLOBAL-SHELL        (shell/navigation applicable ise)
-PAGE-DESIGN         (her distinct page/screen implementation surface için)
+PAGE-DESIGN         (her approved/distinct page/screen implementation surface için)
 SYSTEM-STATES       (interactive UI ise)
 ```
 
-Page sayısı project type veya template tarafından sabitlenmez. Engine approved scope'taki distinct implementation surface'leri çıkarır ve tek `PAGE-DESIGN` canonical template'inden gerekli instance'ları üretir.
+Page count template tarafından sabitlenmez. Corporate website'te dynamic PAGE-DESIGN expected seti approved PAGE registry'den türetilir.
 
 ### `full`
 
-`standard` setinin tamamını içerir ve gerçek UX karmaşıklığına göre:
+`standard` setinin tamamı + gerçek UX complexity varsa:
 
 ```text
 FEATURE-DESIGN      (cross-screen / complex feature başına)
 ADMIN-DESIGN        (admin/moderation/operational UI varsa)
 ```
 
-instance/conditional belgelerini ekler.
-
-Full design planning, her page'i feature gibi bölmek veya gereksiz dosya çoğaltmak için kullanılamaz.
+Full design planning gereksiz dosya çoğaltma izni değildir.
 
 ---
 
-## 3. Demo / Prototype Kuralı
+## 3. Profile Recommendation Context
 
-Demo/frontend prototype için önerilen varsayılan teklif:
+### Compact UI Proof / Frontend Prototype
+
+Gerçekten single/few-surface concept proof için makul pending recommendation:
 
 ```yaml
 implementation_planning: standard
 design_planning: light
 ```
 
-Ancak bu yalnız intake önerisidir; canonical explicit approval gerektirir.
+Bu recommendation explicit approval gerektirir.
 
-Bu profile ile:
+### Multi-Page Corporate Website
 
-- implementation planı agent-ready seviyede kalır,
-- `TECH_CONTEXT` integration readiness taşır,
-- `WAVE_MAP` + wave plan instance'ları üretilir,
-- design artifact sayısı hafif kalır,
-- `DESIGN_RULES` generic veya düşük kalite olamaz,
-- gerçek backend yoksa DATA/API uydurulmaz.
+Default pending recommendation:
+
+```yaml
+implementation_planning: standard
+design_planning: standard
+```
+
+Nedeni:
+
+- real global navigation shell,
+- shared design system,
+- approved distinct page contracts,
+- cross-page responsive/state consistency.
+
+`delivery_profile: Prototype` bu recommendation'ı otomatik `light`a düşürmez ve approved page architecture'ı küçültmez.
+
+Kullanıcı corporate website için `light` seçebilir; ancak page architecture implementation planning'de yine eksiksiz korunmalı ve profile rationale pending intake'te görünür olmalıdır.
 
 ---
 
@@ -160,38 +166,39 @@ waves/plans/WAVE_01.md
 
 ### PAGE-DESIGN
 
-Her distinct page/screen implementation surface için bir instance:
+`design_planning: standard | full` için her approved/distinct page/screen implementation surface başına bir instance:
 
 ```text
 HOME_DESIGN_PACKAGE.md
+CORPORATE_DESIGN_PACKAGE.md
 SERVICES_DESIGN_PACKAGE.md
-ROOM_DESIGN_PACKAGE.md
+CONTACT_DESIGN_PACKAGE.md
 ...
+```
+
+Corporate website:
+
+```text
+PAGE_DESIGN_INSTANCE_SET == APPROVED_PAGE_SET
 ```
 
 ### FEATURE-DESIGN
 
-Yalnız `design_planning: full` ve gerçek complex/cross-screen feature varsa:
+Yalnız `design_planning: full` ve gerçek complex/cross-screen feature varsa instance üretilir.
 
-```text
-ROOM_LIFECYCLE_DESIGN_PACKAGE.md
-MATCHING_FLOW_DESIGN_PACKAGE.md
-...
-```
-
-Instance isimleri proje scope'undan türetilir; yeni Document ID oluşturulmaz.
+Instance isimleri approved scope'dan türetilir; yeni Document ID/page truth üretilmez.
 
 ---
 
 ## 5. Quality Floor
 
-Overlay tarafından seçilen bütün belgeler `engine/PLANNING_PROFILES.md` kalite tabanına tabidir.
-
 ```text
 profile depth ≠ quality level
+profile depth ≠ approved scope breadth
+Prototype/demo ≠ page reduction
 demo ≠ throwaway architecture
 light design ≠ generic design
 integration ready ≠ invented backend
 ```
 
-Bu dört invariant package reduction ile kaldırılamaz.
+Bu invariant'lar package reduction veya delivery wording ile kaldırılamaz.
