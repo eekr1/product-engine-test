@@ -7,9 +7,9 @@ Bu belge Product Engine run'larının secondary index'idir. Authoritative run tr
 ## 2. Güncel İndeks Durumu
 
 ```text
-Total Indexed Runs : 4
+Total Indexed Runs : 5
 Active Runs        : 0
-Completed Runs     : 4
+Completed Runs     : 5
 Failed Runs        : 0
 Invalidated Runs   : 0
 ```
@@ -20,3 +20,4 @@ Invalidated Runs   : 0
 | `RUN-20260817-001` | `fizyoterapist-eda-pala` | `demo-frontend` | `Prototype` | `Completed` | `CONDITIONAL PASS` | 2026-08-17 | `outputs/demos/fizyoterapist-eda-pala/latest/` | Published upon explicit user acceptance |
 | `RUN-20260817-002` | `trakya-teknik-makine` | `demo-frontend` | `Prototype` | `Completed` | `CONDITIONAL PASS` | 2026-08-17 | `outputs/demos/trakya-teknik-makine/latest/` | Legacy engine run |
 | `RUN-20260817-003` | `trakya-teknik-makine` | `demo-frontend` | `Prototype` | `Completed` | `CONDITIONAL PASS` | 2026-08-17 | `outputs/demos/trakya-teknik-makine/latest/` | Fresh canonical engine run |
+| `RUN-20260817-004` | `trakya-teknik-makine` | `corporate-website` | `Prototype` | `Completed` | `PASS` | 2026-08-17 | `outputs/demos/trakya-teknik-makine/latest/` | Fresh Product Engine v0.3.0 run with 7 distinct corporate pages |
