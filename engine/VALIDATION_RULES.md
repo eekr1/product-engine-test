@@ -1,7 +1,7 @@
 # Validation Rules
 
 ## Amaç
-Product Engine working output'unun agent-ready, source-safe, scope-safe ve evidence-consistent olup olmadığını doğrular.
+Product Engine working output'unun agent-ready, source-safe, scope-safe, page-architecture-safe ve evidence-consistent olup olmadığını doğrular.
 
 > Self-report is evidence metadata, not ground truth.
 
@@ -9,7 +9,7 @@ Product Engine working output'unun agent-ready, source-safe, scope-safe ve evide
 ```text
 E1 — Independent observable IDE/tool execution trace
 E2 — Filesystem / produced artifact state
-E3 — Approved input, SCP, FCL, canonical contracts
+E3 — Approved input, SCP, approved page registry, FCL, canonical contracts
 E4 — PROGRESS / RUN_LOG / manifest / agent self-report
 ```
 Higher-priority evidence wins.
@@ -17,28 +17,63 @@ Higher-priority evidence wins.
 ## Canonical Gates
 `VAL-01` .. `VAL-19` eksiksiz uygulanır; missing gate overall FAIL'dir.
 
+---
+
+## VAL-01 — Canonical Read Order
+
+Generated/run evidence Product Engine boot/read order, point-of-use template refresh ve authority precedence ile çelişmemelidir.
+
+## VAL-02 — Package / Document Resolution
+
+- selected base package approved `project_type` ile uyumlu olmalıdır,
+- delivery purpose project type'ı override edemez,
+- `project_type: corporate-website` → base package `corporate-website`,
+- corporate sales demo → `demo-frontend` base package seçilemez,
+- planning overlay ve catalog applicability eksiksiz uygulanmalıdır.
+
+Package selection mismatch → FAIL.
+
+---
+
 ## VAL-03 — Dynamic Instance Coverage
+
+Wave instances:
+
 ```text
-EXPECTED = set(WAVE_MAP Wave IDs)
-ACTUAL = set(actual waves/plans/WAVE_*.md)
-PASS iff EXPECTED == ACTUAL
+EXPECTED_WAVES = set(WAVE_MAP Wave IDs)
+ACTUAL_WAVES = set(actual waves/plans/WAVE_*.md)
+PASS iff EXPECTED_WAVES == ACTUAL_WAVES
 ```
 
-## VAL-04 — Approved Scope Integrity
-Scope iki aşamada ve capability atomları üzerinden doğrulanır.
+Corporate website + `design_planning: standard | full` için page-design instances:
 
-### Stage A — WAVE_MAP → Approved Scope
+```text
+EXPECTED_PAGE_DESIGNS = APPROVED_PAGE_SET
+ACTUAL_PAGE_DESIGNS = set(PAGE IDs represented by design/pages/*)
+PASS iff EXPECTED_PAGE_DESIGNS == ACTUAL_PAGE_DESIGNS
+```
+
+Missing/unexpected dynamic instance → FAIL.
+
+---
+
+## VAL-04 — Approved Scope + Page Architecture Integrity
+
+VAL-04 capability scope ve applicable corporate page architecture'ı birlikte doğrular.
+
+### Stage A — WAVE_MAP → Approved Executable Scope
 
 ```text
 WAVE_MAP committed capability atoms subset-of approved executable capability atoms
 ```
 
-Validator yalnız `Committed Capabilities` satırlarını okuyup PASS veremez. Her wave için **bütün executable-bearing alanları** atomize etmelidir:
+Validator yalnız `Committed Capabilities` satırlarını okuyup PASS veremez. Her wave için bütün executable-bearing alanları atomize eder:
 
 ```text
 Wave Map Summary / Deliverables
 Goal
 Committed Capabilities
+Covered Page IDs
 In Scope
 Primary Deliverables
 Downstream Handoff
@@ -46,7 +81,7 @@ executable parts of Exit Boundary
 other prose only when it introduces a concrete surface / behavior / deliverable
 ```
 
-Validator her wave için şunları ayrı ayrı çıkarmalıdır:
+Per wave minimum sets:
 
 ```text
 MAP_CAPABILITY_ATOMS
@@ -56,19 +91,7 @@ SUPPORTED_MAP_CAPABILITIES
 UNSUPPORTED_MAP_CAPABILITIES
 ```
 
-Her atom için exact support identity + exact support meaning gösterilir.
-
-Status semantics:
-
-```text
-IN_SCOPE / KNOWN_DECISION -> executable support olabilir
-VERIFIED_CURRENT_TRUTH -> reference/factual context only
-OPEN_QUESTION / FUTURE / OUT_OF_SCOPE -> non-executable
-```
-
-### Stage A Support Eligibility Gate
-
-Bir approved-scope atomunun map capability support adayı sayılması için iki koşulun **ikisi de** zorunludur:
+Support eligibility:
 
 ```text
 support_status ∈ {IN_SCOPE, KNOWN_DECISION}
@@ -76,81 +99,17 @@ AND
 Executable = YES
 ```
 
-Canonical invariant:
+`VERIFIED_CURRENT_TRUTH`, `OPEN_QUESTION`, `FUTURE`, `OUT_OF_SCOPE` veya `Executable=NO` capability authorize edemez.
+
+Exact semantic support zorunludur:
 
 ```text
-MAP_CAPABILITY_SUPPORT_CANDIDATES
-= approved scope atoms where allowed executable status AND Executable=YES
+map capability semantic meaning ⊆ exact executable support meaning
 ```
 
-Aşağıdakiler hiçbir koşulda executable map capability authorize edemez:
+Broad/generic scope adjacent surface authorize etmez.
 
-```text
-VERIFIED_CURRENT_TRUTH
-OPEN_QUESTION
-FUTURE
-OUT_OF_SCOPE
-Executable = NO olan herhangi bir registry atomu
-```
-
-`VERIFIED_CURRENT_TRUTH` yalnız factual/reference context sağlar. Örneğin:
-
-```text
-SCP: Trakya bölgesi makine servis bağlamı
-Status: VERIFIED_CURRENT_TRUTH
-Executable: NO
-
-Allowed:
-- zaten approved bir hero/about/contact capability'si içinde FCL-bounded factual copy olarak kullanılabilir
-
-Not allowed:
-- bunun için yeni About/Regional Context surface oluşturmak
-- bağımsız WAVE üretmek
-- yeni component/deliverable capability authorize etmek
-```
-
-Her map atomu için validator minimum şu eligibility evidence'ını yazmalıdır:
-
-```text
-Map Capability Atom
-Candidate Support ID
-Candidate Status
-Candidate Executable Flag
-Candidate Exact Meaning
-Eligibility Result
-Semantic Subset Result
-Final Support Result
-```
-
-`Eligibility Result != PASS` ise semantic benzerlik incelenmeden atom `UNSUPPORTED_MAP_CAPABILITIES` içine girer.
-
-### Exact Semantic Support Gate
-
-Eligible support adayı bulunması tek başına PASS değildir. Map atomu candidate support meaning'in **semantic subset'i** olmalıdır.
-
-Broad/generic scope ayrı surface veya adjacent capability authorize etmez.
-
-Invalid examples:
-
-```text
-approved: modern responsive corporate frontend
-map: corporate footer
-→ unsupported unless footer/shell/navigation structure separately executable-approved
-
-approved: modern responsive corporate frontend
-map: independent About/Regional Context surface
-→ unsupported unless that presentation surface separately executable-approved
-
-approved: phone/email direct-contact CTA
-map: sticky contact bar
-→ unsupported unless sticky behavior is semantically justified as implementation detail of exact CTA behavior without creating a new product surface; otherwise separate support required
-
-approved: corporate identity presentation
-map: search / filter / modal / map / form
-→ unsupported
-```
-
-Implementation detail ayrımı yalnız şu durumda geçerlidir:
+Implementation detail yalnız şu koşulların tümü sağlanıyorsa ayrı capability değildir:
 
 ```text
 same approved behavior
@@ -160,75 +119,116 @@ same approved behavior
 + no independently meaningful deliverable surface
 ```
 
-Bu koşullardan biri sağlanmıyorsa broad support kullanılamaz.
+`HIDDEN_MAP_CAPABILITIES != empty` → FAIL.
+`UNSUPPORTED_MAP_CAPABILITIES != empty` → FAIL.
 
-Rules:
-- related/generic capability exact support değildir.
-- phone/email CTA, address/map/form/WhatsApp capability'sini authorize etmez.
-- generic corporate/contact/responsive scope arbitrary adjacent feature authorize etmez.
-- Footer, sticky action bar, technical details overlay, search/filter, modal, badge, map, form veya ayrı interaction surface gibi concrete deliverable'lar yalnız başka broad capability'nin “detayı” denilerek gizlenemez; gerçekten aynı approved behavior'ın implementation detail'i olduğu kanıtlanmalı, aksi halde ayrı atomdur.
-- `MAP_CAPABILITY_ATOMS - COMMITTED_CAPABILITY_ATOMS != empty` ve fark gerçek executable capability içeriyorsa `HIDDEN_MAP_CAPABILITIES != empty` → FAIL.
-- Bir hidden atom approved scope'ta destekli olsa bile Committed Capabilities altında görünmüyorsa map contract ihlalidir; önce atomize edilip committed listesine alınmalı veya kaldırılmalıdır.
-- `UNSUPPORTED_MAP_CAPABILITIES != empty` → VAL-04 FAIL.
+### Stage A2 — Corporate Page Set Integrity
+
+`project_type: corporate-website` ise validator approved input Site Architecture registry'sinden exact page seti çıkarır:
+
+```text
+APPROVED_PAGE_SET = set(IN_SCOPE PAGE-XXX identities)
+PLANNED_PAGE_SET = union(WAVE_MAP Covered Page IDs)
+```
+
+Blocking invariant:
+
+```text
+APPROVED_PAGE_SET == PLANNED_PAGE_SET
+```
+
+Ayrıca:
+
+```text
+UNAPPROVED_MAP_PAGES = PLANNED_PAGE_SET - APPROVED_PAGE_SET
+MISSING_MAP_PAGES = APPROVED_PAGE_SET - PLANNED_PAGE_SET
+```
+
+İkisinden biri non-empty → FAIL.
+
+### Distinct Page Collapse Detection
+
+Validator yalnız PAGE ID string equality'ye bakamaz; implementation semantics'i de kontrol eder.
+
+Geçersiz:
+
+```text
+Approved:
+PAGE-001 Home
+PAGE-002 Corporate
+PAGE-003 Services
+PAGE-004 Contact
+
+Planned/implemented:
+/
+#corporate
+#services
+#contact
+```
+
+Distinct approved page yalnız same-document anchor section olarak uygulanmışsa:
+
+```text
+COLLAPSED_APPROVED_PAGES != empty
+→ VAL-04 FAIL
+```
+
+Approved route/navigation identity single-surface relation olarak açıkça tanımlanmadıkça page collapse yapılamaz.
 
 ### Stage B — WAVE_PLAN → Parent WAVE_MAP Entry
 
 ```text
 WAVE_PLAN capability atoms subset-of exact parent WAVE_MAP capability atoms
+WAVE_PLAN page IDs subset-of exact parent Covered Page IDs
 ```
 
-Validator yalnız capability coverage tablosunu veya checklist başlıklarını okuyamaz. Her plan için executable atomlar şu alanların tamamından çıkarılır:
+Validator her plan için executable-bearing alanları atomize eder:
 
 ```text
 Goal
 Parent Capability Coverage
+Parent Page Coverage
 In Scope
 Expected Result / Target Structure
 Implementation Checklist
 State / Role / Responsive Coverage
-Automated Verification when it implies product behavior
-Manual QA when it implies product behavior
+Verification when it implies behavior
 Acceptance / Exit Criteria
-Handoff when it implies a new deliverable
-other prose only when it introduces a concrete surface / behavior / deliverable
+Handoff when it implies deliverable
 ```
 
-Validator her plan için şunları üretir:
+Minimum sets:
 
 ```text
 PLAN_CAPABILITY_ATOMS
 PARENT_CAPABILITY_ATOMS
 PLAN_TO_PARENT_RELATIONS
 NEW_PLAN_CAPABILITIES
+PLAN_PAGE_SET
+PARENT_COVERED_PAGE_SET
+NEW_PLAN_PAGES
 ```
 
-Allowed relation:
+Allowed capability relation:
+
 ```text
 detail-of | implementation-of | verification-of
 ```
 
-Aşağıdakiler FAIL'dir:
-```text
-new-capability
-adjacent-capability
-inferred-capability
-```
+`NEW_PLAN_CAPABILITIES != empty` → FAIL.
+`NEW_PLAN_PAGES != empty` → FAIL.
 
-Parent Goal'ın broad wording'i tek başına support sayılmaz. Parent map entry'de açık semantic support yoksa plan capability'si unsupported'dur.
+Plan bir parent PAGE identity'yi başka parent page'in section'ına collapse ediyorsa FAIL.
 
-`NEW_PLAN_CAPABILITIES != empty` → VAL-04 FAIL.
+---
 
-WAVE_PLAN task'larında SCP ref zorunlu değildir.
+## VAL-05 — Wave Decomposition + Page-Aware Execution Depth
 
-## VAL-05 — Wave Decomposition + Execution Depth
-
-VAL-05 iki ayrı kalite katmanını birlikte doğrular.
+VAL-05 iki kalite katmanını doğrular.
 
 ### A. WAVE_MAP decomposition depth
 
-Acyclic dependency ve distinct wave count tek başına PASS için yeterli değildir.
-
-Her wave artifact üzerinden şu üç boundary açıkça çıkarılabilmelidir:
+Her wave artifact üzerinden şu sınırlar açıkça çıkarılabilmelidir:
 
 ```text
 WHY_SEPARATE
@@ -236,25 +236,27 @@ UPSTREAM_BOUNDARY_CONSUMED
 DOWNSTREAM_HANDOFF
 ```
 
-PASS beklentisi:
-- wave gerçek, bağımsız doğrulanabilir delivery sonucu taşır,
-- shared prerequisite downstream consumer'lardan önce konumlanır,
-- runtime/state/shared behavior birden fazla surface tarafından tüketiliyorsa uygun foundation boundary olarak ayrılır,
-- whole-project consolidation/responsive/accessibility/regression/performance/readiness/final QA gerçekten standalone ise feature checklist'ine gizlenmez,
-- küçük projede reference taklidi için yapay micro-wave üretilmez,
-- her wave neden o sırada geldiğini ve ne teslim ettiğini açıklar.
+PASS expectations:
 
-Generic `Foundation → UI → QA` zinciri yalnız başına decomposition depth kanıtı değildir.
+- wave bağımsız doğrulanabilir delivery sonucu taşır,
+- shared prerequisite downstream consumer'lardan önce gelir,
+- runtime/state/shared behavior applicable ise doğru foundation boundary'de ayrılır,
+- whole-project cross-page responsive/accessibility/regression/readiness QA gerçekten standalone ise feature page checklist'ine gizlenmez,
+- reference wave count taklit edilmez,
+- corporate website'te approved page responsibilities görünür coverage alır,
+- page grouping coherence için yapılır; page identity'yi görünmez yapmaz.
 
 ### B. WAVE_PLAN implementation-ready depth
 
-Her plan fresh capable agent'ın **ikinci bir implementation-planning pass yapmadan** doğrudan execution'a geçebileceği açıklıkta olmalıdır.
+Fresh capable agent ikinci implementation-planning pass yapmadan execution'a başlayabilmelidir.
 
-Validator yalnız section/checklist sayısına bakamaz. Task'lar artifact üzerinden applicable ölçüde şu execution contract'ı sağlamalıdır:
+Applicable task contract:
 
 ```text
 location / responsibility
 parent capability relation
+parent PAGE identity when page-specific
+route/navigation responsibility when page-specific
 inputs / dependencies / contracts
 implementation behavior
 data/state/interaction flow when applicable
@@ -268,153 +270,190 @@ concrete done result / handoff
 Şunlar tek başına yetersizdir:
 
 ```text
-"component oluştur"
+"Kurumsal sayfayı yap"
+"Services ekle"
 "responsive yap"
 "service'e bağla"
 "test et"
 ```
 
-Fresh capable agent bu görevlerden sonra hâlâ component responsibility, data/state flow, responsive behavior, preserved boundary veya verification strategy icat etmek zorundaysa VAL-05 FAIL'dir.
+Fresh capable agent page responsibility, route relation, component/data boundary veya verification strategy icat etmek zorundaysa FAIL.
 
-Depth gereksiz complexity veya yeni architecture/capability üretme izni değildir. Applicable olmayan alanlar zorla eklenmez.
-
-Pre-execution state başarı iddia etmez.
+---
 
 ## VAL-06 — Execution-Critical Decision Completeness
+
 Critical unresolved karar varken active wave executable gösterilemez.
 
-## VAL-07 — Cross-Document Execution Consistency
-README, TECH_CONTEXT, CURRENT_STATUS, NEXT_TASKS, WAVE_MAP, all WAVE_PLAN, DECISIONS ve source/FCL identities aynı execution reality'yi anlatır.
+Corporate website'te approved page architecture yoksa generation-ready state gösterilemez.
 
-Aşağıdakiler VAL-07 FAIL'dir:
-- WAVE_PLAN parent map'ten yeni capability üretir.
-- validation source identity/state SOURCE_REGISTER'dan farklıdır.
-- validator source setine SOURCE_REGISTER'da olmayan identity ekler.
-- same source ID farklı anlam/state ile raporlanır.
-- approved delivery profile'dan daha yüksek maturity ima eden output wording'i execution reality'yi yanlış anlatır.
+---
 
-## VAL-08 — Decision Provenance + Coverage
-Allowed statuses: User Approved, Engine Resolved, Pending Review, Superseded.
+## VAL-07 — Cross-Document Execution + Page Identity Consistency
 
-## VAL-09 — Tech Context / Integration + Continuation Readiness
-Unapproved backend/API/database uydurulamaz; current data/service boundary açık olmalıdır.
+README, PROJECT_BRAIN, PRODUCT_RULES, TECH_CONTEXT, DESIGN documents, PROJECT_PLAN, WAVE_MAP, WAVE_PLAN, CURRENT_STATUS, NEXT_TASKS ve DECISIONS aynı execution reality'yi anlatmalıdır.
 
-Frontend/demo projelerde validator ayrıca `engine/PLANNING_PROFILES.md` continuation gate'ini **blocking** olarak uygular.
-
-TECH_CONTEXT'ten minimum şu evidence çıkarılır:
+Corporate website için validator minimum şu setleri çıkarır:
 
 ```text
-CONTINUATION_EXPECTED = YES | NO
-CONTINUATION_EVIDENCE = exact approved source/input evidence
-APPROVED_ZERO_BUILD_CONSTRAINT = exact evidence | NONE
+APPROVED_PAGE_SET
+BRAIN_PAGE_SET_OR_SUMMARY
+NAVIGATION_PAGE_SET
+PAGE_DESIGN_INSTANCE_SET (applicable ise)
+PLANNED_PAGE_SET
+PLAN_REFERENCED_PAGE_SET
+```
+
+Blocking invariants:
+
+```text
+APPROVED_PAGE_SET == NAVIGATION_PAGE_SET
+APPROVED_PAGE_SET == PLANNED_PAGE_SET
+```
+
+`design_planning: standard | full` ise:
+
+```text
+APPROVED_PAGE_SET == PAGE_DESIGN_INSTANCE_SET
+```
+
+`PLAN_REFERENCED_PAGE_SET` planned seti aşamaz.
+
+Aşağıdakiler FAIL'dir:
+
+- page ID/name/route identity drift,
+- nav'da unapproved page,
+- approved page nav'da missing,
+- PAGE-DESIGN instance missing/unexpected,
+- WAVE_PLAN parent map'ten yeni page/capability üretir,
+- generated output single-page derken approved input multi-page corporate architecture taşır,
+- source identity/state mismatch,
+- approved delivery profile'dan daha yüksek maturity wording.
+
+---
+
+## VAL-08 — Decision Provenance + Coverage
+
+Allowed decision statuses:
+
+```text
+User Approved
+Engine Resolved
+Pending Review
+Superseded
+```
+
+Site Architecture approved page seti `Engine Resolved` olarak masquerade edemez; canonical approval provenance input lifecycle'dan gelmelidir.
+
+---
+
+## VAL-09 — Tech Context / Integration + Continuation Readiness
+
+Unapproved backend/API/database uydurulamaz; current data/service boundary açık olmalıdır.
+
+Frontend/client/sales continuation expected ise validator TECH_CONTEXT'ten minimum şunları çıkarır:
+
+```text
+CONTINUATION_EXPECTED
+APPROVED_ZERO_BUILD_CONSTRAINT
 SELECTED_FRONTEND_BASELINE
 PACKAGE_MANIFEST
 DEV_COMMAND
 BUILD_COMMAND
 PREVIEW_COMMAND
-SAME_CODEBASE_CONTINUATION = PASS | FAIL
+SAME_CODEBASE_CONTINUATION
 ```
 
-Deterministic validation:
+Continuation expected + approved zero-build constraint yoksa:
 
 ```text
-if CONTINUATION_EXPECTED == YES:
-  if APPROVED_ZERO_BUILD_CONSTRAINT == NONE:
-    require package-managed/component-oriented baseline
-    require PACKAGE_MANIFEST != NONE
-    require DEV_COMMAND != NONE
-    require BUILD_COMMAND != NONE
-    require PREVIEW_COMMAND != NONE
-    require SAME_CODEBASE_CONTINUATION == PASS
+package-managed baseline REQUIRED
+component/module-oriented source structure REQUIRED
+repeatable dev/build/preview workflow REQUIRED
+same-codebase continuation REQUIRED
 ```
 
-Aşağıdaki gerekçeler approved zero-build constraint değildir:
+Agent'ın kendi şu rationale'ları istisna değildir:
 
 ```text
-small/demo/fast
-no dependency risk
-modular ES6
-low migration cost
-future React/Vite/Next migration is easy
-agent/Engine technical preference
+"küçük site"
+"dependency olmasın"
+"daha hızlı"
+"ileride React/Vite'a migrate ederiz"
+"migration kolay olur"
 ```
 
-`future framework migration` same-codebase continuation sayılmaz.
+Zero-build ancak approved user/project/environment constraint ile mümkündür.
 
-Canonical failures:
+Corporate website multi-page ise TECH_CONTEXT routing/navigation implementation path'ini structural rewrite gerektirmeden desteklemelidir. Exact router library hard-code edilmez.
 
-```text
-CONTINUATION_EXPECTED=YES + APPROVED_ZERO_BUILD_CONSTRAINT=NONE + zero-build/dependency-free stack
-→ VAL-09 FAIL
+Gate evidence eksik/çelişkili → VAL-09 FAIL.
 
-CONTINUATION_EXPECTED=YES + missing package manifest/dev/build/preview evidence
-→ VAL-09 FAIL
-
-APPROVED_ZERO_BUILD_CONSTRAINT claimed without exact approved source/input evidence
-→ VAL-09 FAIL
-
-TECH_CONTEXT continuation fields missing
-→ VAL-09 FAIL
-```
-
-Validator yalnız “adapter var / future API path var” diye PASS veremez.
+---
 
 ## VAL-10 — Design Profile + Quality
+
 Light profile düşük kalite izni değildir.
 
+Corporate multi-page website için approved `design_planning: standard | full` ise design system, global shell ve every approved page için page-design instance coverage zorunludur.
+
+Generic template drift veya approved site architecture'ı görsel kolaylık uğruna collapse etme → FAIL.
+
+---
+
 ## VAL-11 — Project Plan / Wave / State Alignment
-PROJECT_PLAN, WAVE_MAP, CURRENT_STATUS ve NEXT_TASKS aynı wave gerçekliğini taşır.
+
+PROJECT_PLAN, WAVE_MAP, CURRENT_STATUS ve NEXT_TASKS aynı wave/page gerçekliğini taşımalıdır.
+
+Pre-execution state success/completion iddia edemez.
+
+---
 
 ## VAL-12 — Information Ownership / Assumption / Conflict Integrity
+
 Canonical ownership, assumptions ve conflicts doğru yönetilir.
 
+Site architecture:
+
+- field/approval → PROJECT_INTAKE + approved input,
+- semantics → SITE_ARCHITECTURE_RULES,
+- domain guard → CORPORATE_WEBSITE_PACKAGE,
+- downstream docs only reference/enforce.
+
+Downstream document site architecture authority'yi yeniden icat edemez.
+
+---
+
 ## VAL-13 — Source Claim Integrity
+
 Blocking invariants:
+
 ```text
 FCL semantic content subset-of exact supporting source evidence
 generated factual claim subset-of referenced FCL semantic content
 VALIDATION source identity/state exactly mirrors SOURCE_REGISTER
 ```
 
-### Generated factual claim extraction
+Generated factual claims bütün prose alanlarından çıkarılır.
 
-Validator yalnız açık “fact” tablolarını tarayamaz. Gerçek dünya / firma / domain gerçeği ima eden modifier ve açıklamalar **claim'dir** ve generated output'un tüm prose alanlarından çıkarılmalıdır.
+Page architecture factual enrichment izni değildir.
 
-Örnek factual expansion'lar:
-
-```text
-"Yedek Parça Temini" -> "orijinal yedek parça", "stoktan parça", belirli marka kapsamı
-"Yerinde Teknik Destek" -> "acil arıza müdahalesi", "mobil filo", belirli SLA/yanıt süresi
-"Makine Bakım ve Onarım" -> "periyodik bakım paketi", "revizyon", belirli makine/alt sistem uzmanlığı
-"Trakya bölgesi teknik servis" -> çalışma saatleri, şube/ağ, kapsama garantisi
-```
-
-Bunlar source-backed FCL içinde exact semantic support yoksa FAIL'dir; “marketing copy”, “kısa açıklama”, “kart detayı”, “technical detail”, “regional context” veya benzer presentation etiketi factual genişlemeyi meşrulaştırmaz.
-
-Teknik implementation kararları factual claim değildir ve FCL gerektirmez; örneğin grid, component boundary, CSS transition, responsive breakpoint, adapter veya file structure Engine tarafından resolve edilebilir. Ancak bu teknik kararlar yeni product capability veya real-world fact üretemez.
-
-Validator generated factual claims'i minimum şu alanlardan taramalıdır:
+Örnek:
 
 ```text
-WAVE_MAP Summary / Goal / In Scope / Deliverables / Handoff / Exit
-all WAVE_PLAN prose
-Implementation Checklist behavior/copy/details
-State / Responsive sections when real-world claims appear
-Acceptance Criteria
-PROJECT_BRAIN / PRODUCT_RULES / TECH_CONTEXT / DESIGN / PROJECT_PLAN / README when factual claims appear
+approved: Yedek Parça Temini
+allowed page: Yedek Parça Temini detail presentation
+not allowed claim: Orijinal Yedek Parça / stok / garanti
 ```
 
-Exact source evidence inference/classification izni değildir.
+External source `consumed` iddiası independent observable read/fetch evidence gerektirir.
 
-External source `consumed` iddiası independent observable open/read/fetch evidence gerektirir. Böyle evidence yoksa source `registered` kalmalıdır.
+```text
+VALIDATION_SOURCE_SET != SOURCE_REGISTER_SOURCE_SET
+→ VAL-07 + VAL-13 FAIL
+```
 
-Validator:
-- SOURCE_REGISTER'da olmayan source ID ekleyemez,
-- source usage_state değiştiremez,
-- `via another source summary`, snapshot, self-report veya derived mention ile external consumption kanıtlayamaz.
-
-`VALIDATION_SOURCE_SET != SOURCE_REGISTER_SOURCE_SET` → VAL-07 + VAL-13 FAIL.
-Usage-state mismatch → VAL-07 + VAL-13 FAIL.
+---
 
 ## Delivery Profile Wording Integrity
 
@@ -427,31 +466,33 @@ Implementation Ready -> Production Ready claim yasak
 Production Ready -> Production Ready allowed
 ```
 
-`production-ready`, `launch-ready`, `production-grade release`, `deployment-ready production package` gibi maturity claim'leri ancak approved profile semantically destekliyorsa kullanılabilir.
+Prototype wording site/page breadth'i azaltamaz.
 
-Prototype içinde `clean static package`, `demo-ready`, `sales-demo ready`, `validated prototype output` gibi profile-consistent wording kullanılabilir.
-
-Profile yükselten wording → VAL-07 FAIL; claim ayrıca source/decision uyduruyorsa ilgili diğer gate'ler de FAIL olabilir.
+---
 
 ## VAL-14 — Template / Placeholder / Project Leakage
+
 Unresolved placeholder, duplicate skeleton veya başka proje leakage → FAIL.
 
+Corporate templates'te unresolved `PAGE_ID`, route identity veya Site Architecture placeholder → FAIL.
+
+---
+
 ## VAL-15 — Point-of-Use Trace Integrity
+
 E1 yalnız validator dışındaki independent observable IDE/tool execution trace'tir.
 
 ```text
 VALIDATION_REPORT / PROGRESS / RUN_LOG / manifest / agent statement != E1 proof
 ```
 
-`Observable Trace Status: AVAILABLE` yalnız external trace gerçekten inspect edilmişse yazılır; aksi halde `UNAVAILABLE`.
+Trace AVAILABLE ise dynamic read/write pairing ordered event sequence üzerinden yapılır.
 
 ### Single-use token model
 
-Trace AVAILABLE ise dynamic read/write pairing gerçek ordered event sequence üzerinden yapılır.
-
 ```text
-READ_TOKENS = each observable template read event, each initially UNUSED
-WRITE_EVENTS = each observable dynamic write event
+READ_TOKENS = each observable fresh template read event, initially UNUSED
+WRITE_EVENTS = each observable corresponding dynamic write event
 
 for each WRITE_EVENT in order:
   choose exactly one preceding UNUSED matching READ_TOKEN
@@ -460,52 +501,63 @@ for each WRITE_EVENT in order:
 ```
 
 Bir read event'i iki write'a pair edilemez.
-Aynı filename'i raporda beş kez yazmak beş read event üretmez.
-Self-reported pair table observable event sequence yerine geçmez.
 
-Özellikle:
-```text
-1 observed WAVE_PLAN_TEMPLATE read + 5 observed WAVE_PLAN writes
-→ 1 paired write + 4 unpaired writes
-→ VAL-15 FAIL
-```
+WAVE_PLAN ve PAGE-DESIGN dynamic instance'ları bu modele tabidir.
 
-Trace AVAILABLE ise expected point-of-use sequence ayrıca şudur:
+Expected pattern:
 
 ```text
-fresh WAVE_PLAN_TEMPLATE read
-→ exact parent/reference/current-authority reads
-→ exactly one WAVE_NN write
-→ next WAVE begins with another fresh WAVE_PLAN_TEMPLATE read
+fresh template read
+→ exact parent/page identity/reference/current-authority reads
+→ exactly one dynamic write
+→ CLOSE
+→ next instance starts with another fresh template read
 ```
-
-Reference read template read-token değildir.
 
 Trace UNAVAILABLE → VAL-15 UNVERIFIED.
 
-### UNVERIFIED overall semantics
 ```text
 VAL-15 UNVERIFIED + no other FAIL -> Overall CONDITIONAL PASS
-Publication -> BLOCKED until explicit user/operator acceptance
-Any other blocking FAIL -> Overall FAIL
+Publication -> BLOCKED until explicit post-validation user/operator acceptance
 ```
 
-Agent/tool kendi kendine evidence limitation kabulü veremez.
+---
 
 ## VAL-16 — Validation Timeline Integrity
-Target yalnız `runs/active/<run-id>/working-output/`; validation < publication < completion.
+
+Target yalnız:
+
+```text
+runs/active/<run-id>/working-output/
+```
+
+Validation < publication < completion.
+
+---
 
 ## VAL-17 — Engine Boundary Integrity
-Normal project run protected engine/package/template surfaces'i mutate edemez.
+
+Normal project run protected `engine/`, `packages/`, canonical `templates/` surfaces'i mutate edemez.
+
+---
 
 ## VAL-18 — Output + Operational Path Integrity
-Output paths OUTPUT_STRUCTURE ile uyumlu olmalıdır.
+
+Output paths `OUTPUT_STRUCTURE.md` ile uyumlu olmalıdır.
+
+Run operational files final published project package içine sızamaz.
+
+---
 
 ## VAL-19 — Traceability + Lifecycle
-Manifest, progress, run log, completion report ve lifecycle location aynı terminal gerçekliği göstermelidir.
 
-## Validation Report Minimumu
-Aşağıdaki evidence bloklarının her biri zorunludur:
+Manifest, progress, run log, completion report, approved input identity, selected package, planning profiles, page architecture summary, validation result ve lifecycle location aynı terminal gerçekliği göstermelidir.
+
+---
+
+# Validation Report Minimumu
+
+Aşağıdaki evidence blokları applicable olduğu ölçüde zorunludur:
 
 ```text
 Expected/Executed/Missing VAL IDs
@@ -515,64 +567,64 @@ Highest Evidence Level Used
 Evidence Contradictions
 Validation Target
 Expected/Actual/Missing/Unexpected Wave IDs
+Expected/Actual Page Design instances (applicable)
+APPROVED_PAGE_SET (corporate website)
+PLANNED_PAGE_SET
+NAVIGATION_PAGE_SET
+PAGE_DESIGN_INSTANCE_SET (applicable)
+MISSING_MAP_PAGES
+UNAPPROVED_MAP_PAGES
+COLLAPSED_APPROVED_PAGES
 MAP_CAPABILITY_ATOMS per wave
 COMMITTED_CAPABILITY_ATOMS per wave
 HIDDEN_MAP_CAPABILITIES per wave
-MAP_SUPPORT_ELIGIBILITY per map atom (support ID + status + executable flag + result)
-exact approved support meaning per map atom
+MAP_SUPPORT_ELIGIBILITY per map atom
 UNSUPPORTED_MAP_CAPABILITIES per wave
 WAVE_MAP WHY_SEPARATE / UPSTREAM / HANDOFF depth check per wave
 PLAN_CAPABILITY_ATOMS per plan
 PARENT_CAPABILITY_ATOMS per plan
 PLAN_TO_PARENT_RELATIONS
-NEW_PLAN_CAPABILITIES per plan
+PLAN_PAGE_SET / PARENT_COVERED_PAGE_SET
+NEW_PLAN_CAPABILITIES
+NEW_PLAN_PAGES
 WAVE_PLAN implementation-readiness depth check per plan
-CONTINUATION_EXPECTED
-CONTINUATION_EVIDENCE
-APPROVED_ZERO_BUILD_CONSTRAINT
-SELECTED_FRONTEND_BASELINE
-PACKAGE_MANIFEST
-DEV_COMMAND / BUILD_COMMAND / PREVIEW_COMMAND
-SAME_CODEBASE_CONTINUATION
-FCL-to-Source checks with exact SOURCE_REGISTER identity/state
+CONTINUATION_EXPECTED / zero-build constraint / tooling evidence
+FCL-to-Source checks
 GENERATED_FACTUAL_CLAIMS
-Generated-to-FCL checks per extracted factual claim
+Generated-to-FCL checks
 DELIVERY_PROFILE_WORDING_CHECKS
 SOURCE_REGISTER vs VALIDATION source-set/state equality
-External source consumption checks
-Actual ordered dynamic read events
-Actual ordered dynamic write events
+Actual ordered dynamic read/write events when observable
 Consumed read-token pairing
 Unpaired writes
 overall result
 ```
 
-Required evidence block missing → corresponding gate cannot PASS. Blocking gate evidence block missing → Overall FAIL.
+Required blocking evidence block missing → corresponding gate cannot PASS; overall FAIL unless gate semantics explicitly define UNVERIFIED (VAL-15).
 
-Canonical results:
+---
+
+# Canonical Failure Summary
+
 ```text
-EXPECTED != ACTUAL -> VAL-03 FAIL
-map support candidate status not IN_SCOPE/KNOWN_DECISION -> VAL-04 FAIL
-map support candidate Executable != YES -> VAL-04 FAIL
-map capability not semantic subset of eligible executable support -> VAL-04 FAIL
-HIDDEN_MAP_CAPABILITIES != empty -> VAL-04 FAIL
-UNSUPPORTED_MAP_CAPABILITIES != empty -> VAL-04 FAIL
-NEW_PLAN_CAPABILITIES != empty -> VAL-04 FAIL
+missing/incorrect base package -> VAL-02 FAIL
+EXPECTED_WAVES != ACTUAL_WAVES -> VAL-03 FAIL
+expected page-design set mismatch -> VAL-03 FAIL
+support not executable-eligible -> VAL-04 FAIL
+hidden/unsupported map capability -> VAL-04 FAIL
+APPROVED_PAGE_SET != PLANNED_PAGE_SET -> VAL-04 FAIL
+MISSING_MAP_PAGES / UNAPPROVED_MAP_PAGES non-empty -> VAL-04 FAIL
+COLLAPSED_APPROVED_PAGES non-empty -> VAL-04 FAIL
+NEW_PLAN_CAPABILITIES / NEW_PLAN_PAGES non-empty -> VAL-04 FAIL
 map why/upstream/handoff ambiguous -> VAL-05 FAIL
-fresh capable agent still needs implementation planning -> VAL-05 FAIL
-validation source-set/state mismatch -> VAL-07 + VAL-13 FAIL
-profile-upgrading wording -> VAL-07 FAIL
-continuation YES + no approved zero-build constraint + zero-build stack -> VAL-09 FAIL
-continuation YES + missing package manifest/dev/build/preview -> VAL-09 FAIL
-claimed zero-build constraint without approved evidence -> VAL-09 FAIL
-future framework migration used as same-codebase continuation -> VAL-09 FAIL
-FCL not subset of exact source -> VAL-13 FAIL
-generated factual claim not subset of FCL -> VAL-13 FAIL
-external consumed without independent read evidence -> VAL-13 FAIL
-trace origin not independent -> Trace UNAVAILABLE
-reused read token -> VAL-15 FAIL
-unpaired dynamic write -> VAL-15 FAIL
-trace UNAVAILABLE -> VAL-15 UNVERIFIED -> Overall cannot PASS
-published output target -> VAL-16 FAIL
-critical FAIL -> overall FAIL
+fresh agent still needs page/implementation planning -> VAL-05 FAIL
+page/nav/design identity drift -> VAL-07 FAIL
+continuation stack/tooling gate fails -> VAL-09 FAIL
+profile/design coverage invalid -> VAL-10 FAIL
+FCL/source claim expansion -> VAL-13 FAIL
+unresolved placeholder/leakage -> VAL-14 FAIL
+trace unavailable -> VAL-15 UNVERIFIED
+reused/unpaired template read token when trace available -> VAL-15 FAIL
+published output used as validation target -> VAL-16 FAIL
+critical gate FAIL -> overall FAIL
 ```
