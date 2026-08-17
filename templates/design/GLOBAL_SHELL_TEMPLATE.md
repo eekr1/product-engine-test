@@ -6,7 +6,7 @@
 template_id: global-shell-template
 template_name: Global Shell Template
 document_id: GLOBAL-SHELL
-version: 1.1.0
+version: 1.2.0
 status: active
 template_type: document
 category: design
@@ -24,6 +24,8 @@ required_inputs:
   - design_rules
   - design_system
   - product_rules
+conditional_inputs:
+  - approved_site_architecture
 dependencies:
   - DESIGN
   - DESIGN-SYSTEM
@@ -38,10 +40,13 @@ Uygulamanın ortak layout shell'ini, navigation modelini, header/sidebar/footer/
 
 `design_planning: standard | full` olan ve ortak shell/navigation yapısı bulunan UI projelerinde zorunludur.
 
+Corporate website'te navigation architecture approved Site Architecture registry'nin exact page identity setini temsil etmek zorundadır.
+
 ## Zorunlu Bölümler
 
 - Global Layout Shell
 - Navigation Architecture
+- Approved Navigation Registry (corporate/page-based applicable ise)
 - Main Content Constraints
 - Responsive Shell Behavior
 - Global Overlay / Modal Layering
@@ -57,7 +62,10 @@ Uygulamanın ortak layout shell'ini, navigation modelini, header/sidebar/footer/
 
 - Shell yalnız global layout/navigation sahibi olmalıdır; page içeriğini sahiplenmemelidir.
 - Desktop ve mobile davranışları ayrı ayrı açıklanmalıdır.
-- Navigation isimleri `PRODUCT_RULES` ve gerçek page seti ile uyumlu olmalıdır.
+- Corporate website'te navigation isimleri, PAGE IDs ve route identities approved site architecture ile bire bir uyumlu olmalıdır.
+- Approved distinct page bir anchor section'a collapse edilemez.
+- Navigation yeni page/surface icat edemez.
+- Footer/nav secondary link'leri de approved page setini aşamaz.
 - Generic navbar/footer template'i otomatik seçilmemeli; shell projenin kullanım bağlamına göre tasarlanmalıdır.
 - Z-index/overlay ilişkileri implementation sırasında belirsiz kalmayacak düzeyde tanımlanmalıdır.
 
@@ -65,6 +73,7 @@ Uygulamanın ortak layout shell'ini, navigation modelini, header/sidebar/footer/
 
 - `{{PROJECT_NAME}}`
 - `{{SHELL_LAYOUT_SPEC}}`
+- `{{NAVIGATION_REGISTRY}}`
 - `{{NAVIGATION_ARCHITECTURE}}`
 - `{{CONTENT_CONSTRAINTS}}`
 - `{{RESPONSIVE_SHELL_BEHAVIOR}}`
@@ -74,11 +83,14 @@ Uygulamanın ortak layout shell'ini, navigation modelini, header/sidebar/footer/
 
 - Page-specific section/layout detayları
 - Feature-specific state/flow
+- Approved input dışında yeni page architecture üretmek
 
 ## Validation Beklentileri
 
 - Page design package'ları shell ile çelişmemeli.
 - Navigasyon gerçek route/surface setiyle tutarlı olmalı.
+- Corporate website için `NAVIGATION_PAGE_SET == APPROVED_PAGE_SET` olmalı.
+- Distinct approved page anchor-only navigation'a indirgenmemeli.
 
 ---
 
@@ -90,19 +102,23 @@ Uygulamanın ortak layout shell'ini, navigation modelini, header/sidebar/footer/
 
 {{SHELL_LAYOUT_SPEC}}
 
-## 2. Navigation Architecture
+## 2. Approved Navigation Registry
+
+{{NAVIGATION_REGISTRY}}
+
+## 3. Navigation Architecture
 
 {{NAVIGATION_ARCHITECTURE}}
 
-## 3. Main Content Constraints
+## 4. Main Content Constraints
 
 {{CONTENT_CONSTRAINTS}}
 
-## 4. Responsive Shell Behavior
+## 5. Responsive Shell Behavior
 
 {{RESPONSIVE_SHELL_BEHAVIOR}}
 
-## 5. Global Overlay / Layering Rules
+## 6. Global Overlay / Layering Rules
 
 {{GLOBAL_OVERLAY_RULES}}
 
