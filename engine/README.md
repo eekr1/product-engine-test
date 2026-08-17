@@ -2,11 +2,9 @@
 
 ## Amaç
 
-Bu klasör, Product Engine'in çalışma zamanı sözleşmelerini içerir.
+Bu klasör Product Engine'in çalışma zamanı sözleşmelerini içerir.
 
-Bir ajan bu klasördeki belgeleri okuyarak Product Engine'in nasıl davrandığını anlayabilmeli ve yalnızca bu belgeler ile proje girdisi üzerinden doğru şekilde çalışabilmelidir.
-
-Bu klasör; hangi bilgileri kabul edeceğini, hangi sırayla hareket edeceğini, planning derinliğini nasıl belirleyeceğini, eksik veya çelişkili bilgiyle nasıl başa çıkacağını, çıktının nasıl doğrulanacağını ve bir çalışmanın nasıl yönetileceğini tanımlar.
+Bir ajan bu belgeler ve approved project truth üzerinden Product Engine'in nasıl davranacağını anlayabilmelidir.
 
 ---
 
@@ -14,51 +12,48 @@ Bu klasör; hangi bilgileri kabul edeceğini, hangi sırayla hareket edeceğini,
 
 | Dosya | Görev |
 |---|---|
-| `README.md` | Navigasyon ve başlangıç belgesi. Bu dosya. |
-| `PROJECT_INTAKE.md` | Proje bilgilerinin nasıl alınacağını ve onaylanacağını tanımlar. |
-| `PLANNING_PROFILES.md` | Implementation/design planning derinliğini, kalite tabanını ve demo/integration readiness kurallarını tanımlar. |
-| `DOCUMENT_CATALOG.md` | Product Engine'in tanıdığı doküman türlerinin kayıt merkezi. |
-| `PACKAGE_RULES.md` | Hangi proje için hangi doküman paketi seçileceğini belirler. |
-| `INFORMATION_MAP.md` | Her bilgi türünün hangi dokümana ait olduğunu tanımlar. |
-| `GENERATION_PIPELINE.md` | Uçtan uca üretim akışının aşamalarını ve sırasını tanımlar. |
-| `OUTPUT_STRUCTURE.md` | Üretilen çıktının klasör yapısını ve teslim kurallarını tanımlar. |
-| `VALIDATION_RULES.md` | Çıktının geçerli sayılması için gerekli kontrolleri tanımlar. |
-| `ASSUMPTION_RULES.md` | Eksik bilgi durumunda ajanın nasıl davranacağını tanımlar. |
-| `CONFLICT_RESOLUTION.md` | Çelişkili bilgi durumunda hangi kaynağın öncelikli olduğunu tanımlar. |
-| `RUN_PROTOCOL.md` | Tek bir Product Engine çalışmasının operasyonel yaşam döngüsünü tanımlar. |
+| `README.md` | Navigasyon ve başlangıç belgesi. |
+| `PROJECT_INTAKE.md` | Project type vocabulary, required input fields ve explicit approval lifecycle. |
+| `SITE_ARCHITECTURE_RULES.md` | Corporate website approved page/surface architecture semantiğinin canonical sahibi. |
+| `PLANNING_PROFILES.md` | Implementation/design planning depth, quality floor ve continuation readiness. |
+| `DOCUMENT_CATALOG.md` | Canonical document type registry. |
+| `PACKAGE_RULES.md` | Approved domain/project type'tan deterministic base package selection. |
+| `INFORMATION_MAP.md` | Her bilgi türünün primary owner sınırı. |
+| `GENERATION_PIPELINE.md` | Uçtan uca generation ve dynamic instance checkpoints. |
+| `OUTPUT_STRUCTURE.md` | Published output structure/versioning. |
+| `VALIDATION_RULES.md` | Canonical VAL-01..VAL-19 gates. |
+| `ASSUMPTION_RULES.md` | Eksik bilgi davranışı. |
+| `CONFLICT_RESOLUTION.md` | Conflict precedence/repair. |
+| `RUN_PROTOCOL.md` | Run operational lifecycle. |
 
 ---
 
-## Agent Boot / Reference Read Order (Kanonik Okuma Sırası)
+## Agent Boot / Reference Read Order
 
-> [!IMPORTANT]
-> **Kavram Ayrımı: Agent Boot Read Order ≠ Runtime Execution Flow**
-> - **Agent Boot Read Order**: Bir ajanın Product Engine sistemini ve çalışma kurallarını anlamak için okuduğu referans okuma sırasıdır. (Root [README.md](../README.md) bu ayrımın üst otoritesidir).
-> - **Runtime Execution Flow**: Bir çalıştırma (`run`) sırasındaki adım adım üretim ve veri akış sırasıdır (`engine/GENERATION_PIPELINE.md` tarafından yönetilir).
-
-Bir Product Engine çalışması başlatılmadan önce referans okuma sırası:
+> Agent Boot Read Order ≠ Runtime Execution Flow. Runtime order `GENERATION_PIPELINE.md` sahibidir.
 
 ```text
-1.  Kök README.md                  (kök klasör — sistem genel görünümü, aktif sürüm, authority haritası)
-2.  PRODUCT_ENGINE_BRAIN.md       (kök klasör — Product Engine nedir, vizyon ve sınırlar)
-3.  engine/README.md               (bu dosya — navigasyon)
-4.  engine/PROJECT_INTAKE.md       (hangi bilgiler gerekli?)
-5.  engine/PLANNING_PROFILES.md    (implementation/design planning derinliği nedir?)
-6.  engine/DOCUMENT_CATALOG.md     (hangi dokümanlar tanınır?)
-7.  engine/PACKAGE_RULES.md        (hangi paket seçilir?)
-8.  engine/ASSUMPTION_RULES.md     (eksik bilgide ne yapılır?)
-9.  engine/CONFLICT_RESOLUTION.md  (çelişkide ne yapılır?)
-10. engine/INFORMATION_MAP.md      (bilgi hangi dokümana yazılır?)
-11. engine/GENERATION_PIPELINE.md  (üretim sırası nedir?)
-12. engine/OUTPUT_STRUCTURE.md     (çıktı nasıl teslim edilir?)
-13. engine/VALIDATION_RULES.md     (çıktı geçerli mi?)
-14. engine/RUN_PROTOCOL.md         (çalışma nasıl yönetilir?)
-15. Seçilen packages/ belgeleri
-16. İlgili templates/ belgeleri
-17. Aktif proje girdisi
+1.  Root README.md
+2.  PRODUCT_ENGINE_BRAIN.md
+3.  engine/README.md
+4.  engine/PROJECT_INTAKE.md
+5.  engine/SITE_ARCHITECTURE_RULES.md   (corporate/page architecture applicable ise)
+6.  engine/PLANNING_PROFILES.md
+7.  engine/DOCUMENT_CATALOG.md
+8.  engine/PACKAGE_RULES.md
+9.  engine/ASSUMPTION_RULES.md
+10. engine/CONFLICT_RESOLUTION.md
+11. engine/INFORMATION_MAP.md
+12. engine/GENERATION_PIPELINE.md
+13. engine/OUTPUT_STRUCTURE.md
+14. engine/VALIDATION_RULES.md
+15. engine/RUN_PROTOCOL.md
+16. Selected packages/
+17. Relevant templates/
+18. Active project source/input according to lifecycle
 ```
 
-Tüm belgelerin her run öncesinde baştan okunması zorunlu değildir. Ajan gerekli belgeleri iş akışı sırasında başvuru amacıyla kullanabilir.
+Tüm belgelerin her task öncesi baştan okunması zorunlu değildir; point-of-use refresh gereken template/authority'ler ilgili runtime contract tarafından belirlenir.
 
 ---
 
@@ -66,53 +61,33 @@ Tüm belgelerin her run öncesinde baştan okunması zorunlu değildir. Ajan ger
 
 | Soru | Authoritative Dosya |
 |---|---|
-| Hangi proje bilgileri gerekli? | `PROJECT_INTAKE.md` |
-| Implementation/design planning ne kadar derin olmalı? | `PLANNING_PROFILES.md` |
-| Demo/prototype mimari kalite tabanı nedir? | `PLANNING_PROFILES.md` |
-| Hangi dokümanlar var ve görevleri nedir? | `DOCUMENT_CATALOG.md` |
-| Hangi paketi seçmeliyim? | `PACKAGE_RULES.md` |
-| Bu bilgi hangi dokümana yazılmalı? | `INFORMATION_MAP.md` |
-| Üretim adımları neler ve sırası nedir? | `GENERATION_PIPELINE.md` |
-| Çıktı nereye ve nasıl teslim edilir? | `OUTPUT_STRUCTURE.md` |
-| Çıktı geçerli mi? | `VALIDATION_RULES.md` |
-| Eksik bilgi varsa ne yapmalıyım? | `ASSUMPTION_RULES.md` |
-| Bilgiler çelişiyorsa ne yapmalıyım? | `CONFLICT_RESOLUTION.md` |
-| Run'ı nasıl başlatır ve kapatırım? | `RUN_PROTOCOL.md` |
+| Hangi project type/input alanları gerekli? | `PROJECT_INTAKE.md` |
+| Corporate website page/surface architecture nasıl modellenir? | `SITE_ARCHITECTURE_RULES.md` |
+| Implementation/design planning ne kadar derin? | `PLANNING_PROFILES.md` |
+| Continuation-ready frontend baseline nedir? | `PLANNING_PROFILES.md` |
+| Hangi canonical docs var? | `DOCUMENT_CATALOG.md` |
+| Hangi package seçilir? | `PACKAGE_RULES.md` |
+| Bilgi hangi doc'un sahibi? | `INFORMATION_MAP.md` |
+| Generation sırası/checkpoints? | `GENERATION_PIPELINE.md` |
+| Output nasıl publish/version edilir? | `OUTPUT_STRUCTURE.md` |
+| Output geçerli mi? | `VALIDATION_RULES.md` |
+| Eksik bilgi? | `ASSUMPTION_RULES.md` |
+| Conflict? | `CONFLICT_RESOLUTION.md` |
+| Run lifecycle? | `RUN_PROTOCOL.md` |
 
 ---
 
-## Diğer Ana Klasörlerle İlişki
+## Ana Klasörlerle İlişki
 
 ```text
-engine/
-→ Product Engine nasıl davranır? (bu klasör)
-
-packages/
-→ Hangi proje için hangi doküman grubu seçilir?
-→ engine/PACKAGE_RULES.md tarafından başvurulur.
-
-templates/
-→ Seçilen belgeler hangi yapıyla üretilir?
-→ engine/DOCUMENT_CATALOG.md her dokümanın template konumunu gösterir.
-
-inputs/
-→ Proje bilgileri hangi yapıda alınır ve saklanır?
-→ engine/PROJECT_INTAKE.md kabul kriterlerini tanımlar.
-
-runs/
-→ Tek bir çalışmada ne oldu?
-→ engine/RUN_PROTOCOL.md run yaşam döngüsünü yönetir.
-
-outputs/
-→ Başarılı çalışmanın temiz sonucu nedir?
-→ engine/OUTPUT_STRUCTURE.md teslim yapısını tanımlar.
-
-logs/
-→ Product Engine zaman içinde nasıl gelişti?
-→ Engine sözleşmeleri bu klasörü doğrudan sahiplenmez.
-
-ref/
-→ Kalite ve yapı referansları. Authoritative değildir.
+engine/    → Product Engine davranış contracts
+packages/  → domain/base packages + planning overlay
+templates/ → canonical artifact skeletons
+inputs/    → pending/approved project truth
+runs/      → operational execution records
+outputs/   → published agent-ready documentation packages
+logs/      → persistent engine history/issues/changelog
+ref/       → non-authoritative quality calibration references
 ```
 
 ---
@@ -121,29 +96,41 @@ ref/
 
 | Terim | Tanım |
 |---|---|
-| **Project Intake** | Proje bilgisinin Product Engine'e kabul edilme süreci |
-| **Delivery Profile** | Projenin hedef teslim olgunluk düzeyi |
-| **Implementation Planning** | Projenin nasıl inşa edileceğine ilişkin execution planning derinliği (`standard | full`) |
-| **Design Planning** | UI/UX tasarım planlama derinliği (`light | standard | full`, applicable projelerde) |
-| **Package** | Bir proje bağlamı için seçilen doküman grubu |
-| **Template** | Bir dokümanın üretim yapısını ve iskeletini tanımlayan dosya |
-| **Ref** | Kalite referansı olarak kullanılan harici kaynak; authoritative değil |
-| **Run** | Tek bir Product Engine çalışması |
-| **Output** | Başarılı run sonunda üretilen temiz doküman paketi |
-| **Assumption** | Eksik bilgi için yapılan kontrollü ve kayıtlı çıkarım |
-| **Conflict** | İki authoritative kaynak arasındaki uyumsuzluk |
-| **Validation** | Üretilen çıktının kurallara uygunluğunun doğrulanması |
-| **Document Catalog** | Tanınan doküman türlerinin kayıt merkezi |
-| **Information Owner** | Bir bilgi türünü birincil olarak sahibi olan doküman |
-| **Input Snapshot** | Bir run başlangıcında alınan proje girdisi anlık görüntüsü |
-| **Run Manifest** | Bir run'ın kimliğini, kararlarını ve durumunu tutan kayıt |
+| **Project Type** | Domain/solution class; örn. `corporate-website`, `web-app`, `api-service` |
+| **Delivery Profile** | Teslim olgunluğu; project type değildir |
+| **Site Architecture** | Corporate website için approved PAGE-XXX registry |
+| **Approved Page Set** | Current executable `IN_SCOPE` PAGE identities |
+| **Implementation Planning** | Execution planning depth (`standard | full`) |
+| **Design Planning** | Design planning depth (`light | standard | full`) |
+| **Package** | Project/domain context için base package |
+| **Template** | Canonical artifact skeleton |
+| **Run** | Tek Product Engine generation lifecycle |
+| **Output** | Successful run sonunda published clean documentation package |
+| **Assumption** | Kontrollü/kayıtlı çıkarım |
+| **Conflict** | Authority uyumsuzluğu |
+| **Validation** | VAL gates ile correctness/consistency kontrolü |
 
 ---
 
-## Model Bağımsızlığı İlkesi
+## Corporate Website Core Distinction
 
-Bu engine belgeler belirli bir AI modeline veya çalışma ortamına bağımlı değildir.
+```text
+corporate-website = project/domain type
+Prototype / sales demo = delivery context
+site_architecture = approved page breadth
+```
 
-Markdown okuyabilen, dosya oluşturabilen ve kuralları uygulayabilen herhangi bir yetkin ajan Product Engine rolünü yerine getirebilir.
+Dolayısıyla:
 
-Ajan kimliği yalnızca izlenebilirlik amacıyla run kaydına dahil edilebilir; engine davranışını değiştirmez.
+```text
+corporate-website + Prototype
+≠ landing/single-page reduction
+```
+
+Approved distinct pages real navigable implementation surfaces olarak korunur.
+
+---
+
+## Model Bağımsızlığı
+
+Engine belirli AI modeline bağımlı değildir. Markdown okuyabilen, repository/files üzerinde çalışabilen ve canonical contracts'i uygulayabilen yetkin ajan Product Engine rolünü yerine getirebilir.
