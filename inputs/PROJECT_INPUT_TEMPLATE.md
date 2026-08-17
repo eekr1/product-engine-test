@@ -104,7 +104,33 @@ source_count: {{SOURCE_COUNT}}
 
 ---
 
-## 6. Existing Project Context
+## 6. Site Architecture
+
+[CONDITIONAL: MUST be fully resolved when `project_type: corporate-website`; otherwise write `N/A`]
+
+### Architecture Status
+
+- **Status:** {{SITE_ARCHITECTURE_STATUS}} # proposed | approved | N/A
+- **Architecture Rationale:** {{SITE_ARCHITECTURE_RATIONALE}}
+
+### Page / Surface Registry
+
+| Page ID | Page Name | Purpose | Route / Navigation Identity | Scope Status | Primary Content / Capability Boundaries | Parent / Detail Relation |
+|---|---|---|---|---|---|---|
+{{SITE_ARCHITECTURE_ROWS}}
+
+### Corporate Website Architecture Rules
+
+- `corporate-website` için approved inputta bu registry boş olamaz.
+- Her executable distinct page `PAGE-XXX` identity taşır.
+- Pending proposal executable authority değildir.
+- Approved distinct pages single-page anchor section'lara collapse edilemez.
+- Future/unresolved pages approved current set içinde gösterilemez.
+- Exact semantics: `engine/SITE_ARCHITECTURE_RULES.md`.
+
+---
+
+## 7. Existing Project Context
 
 ### Current Reality
 
@@ -122,7 +148,7 @@ source_count: {{SOURCE_COUNT}}
 
 ---
 
-## 7. Technical Context & Integration Readiness
+## 8. Technical Context & Integration Readiness
 
 ### Technical Preferences / Constraints
 
@@ -148,7 +174,7 @@ source_count: {{SOURCE_COUNT}}
 
 ---
 
-## 8. Design Context
+## 9. Design Context
 
 ### Known Brand / Design Inputs
 
@@ -166,11 +192,11 @@ source_count: {{SOURCE_COUNT}}
 
 {{DESIGN_DIFFERENTIATION_CONTEXT}}
 
-> Sektör klişesi design decision değildir. `design_planning: light` dahi non-generic design quality floor'a tabidir.
+> Sektör klişesi design decision değildir. Multi-page `corporate-website` için default intake recommendation `design_planning: standard`dır; final değer explicit approval ile kesinleşir.
 
 ---
 
-## 9. Sources & Provenance
+## 10. Sources & Provenance
 
 | Source ID | Kaynak | Tür | Güven Seviyesi | Kullanım Amacı |
 |---|---|---|---|---|
@@ -182,13 +208,13 @@ source_count: {{SOURCE_COUNT}}
 
 ---
 
-## 10. Known Decisions
+## 11. Known Decisions
 
 {{KNOWN_DECISIONS}}
 
 ---
 
-## 11. Assumptions
+## 12. Assumptions
 
 {{ASSUMPTIONS}}
 
@@ -196,7 +222,7 @@ Her assumption `engine/ASSUMPTION_RULES.md` sınıf/status kurallarına uymalıd
 
 ---
 
-## 12. Conflicts
+## 13. Conflicts
 
 {{CONFLICTS}}
 
@@ -204,7 +230,7 @@ Critical conflict çözülmeden approved input oluşturulamaz.
 
 ---
 
-## 13. Open Questions / Unresolved Items
+## 14. Open Questions / Unresolved Items
 
 {{OPEN_QUESTIONS}}
 
@@ -212,7 +238,7 @@ Approved input'ta generation'ı bloke eden unresolved item bulunamaz.
 
 ---
 
-## 14. Approval & Verification
+## 15. Approval & Verification
 
 - **Status:** `{{STATUS}}`
 - **Approved At:** {{APPROVED_AT}}
@@ -223,6 +249,8 @@ Approved input'ta generation'ı bloke eden unresolved item bulunamaz.
 - [ ] `project_name`, `project_purpose`, `project_type`, `project_state`, `delivery_profile`, `implementation_planning`, `primary_language` tamamlandı.
 - [ ] UI/UX applicable ise `design_planning` `light | standard | full` olarak kesinleşti.
 - [ ] Planning profile rationale kullanıcıya görünür biçimde sunuldu.
+- [ ] `project_type: corporate-website` ise Site Architecture registry PAGE identities ile tamamlandı ve explicit approval kapsamına girdi.
+- [ ] Corporate website distinct approved pages single-page section seti gibi modellenmedi.
 - [ ] Existing projede Current Reality / Target State / Transition Scope ayrıldı.
 - [ ] Critical conflict kalmadı.
 - [ ] Assumption'lar kayıtlı ve status'ları doğru.
