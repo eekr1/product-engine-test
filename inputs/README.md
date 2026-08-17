@@ -4,25 +4,28 @@
 
 `inputs/` Product Engine'in kullanıcıdan gelen proje bilgisini normalize ettiği, pending olarak netleştirdiği ve canonical explicit approval sonrasında immutable approved truth snapshot'larına dönüştürdüğü giriş katmanıdır.
 
-Bu klasör **package seçmez, doküman üretmez veya run yönetmez**.
+Bu klasör package seçmez, doküman üretmez veya run yönetmez.
 
 Authority ayrımı:
 
 ```text
 engine/PROJECT_INTAKE.md
-→ hangi alanların gerekli olduğu ve approval gate
+→ required fields + project type vocabulary + approval gate
+
+engine/SITE_ARCHITECTURE_RULES.md
+→ corporate website page/surface semantics
 
 engine/PLANNING_PROFILES.md
-→ implementation/design planning profile semantiği
+→ planning profile semantics
 
 inputs/
-→ bu alanların proje-specific pending/approved truth kayıtları
+→ project-specific pending/approved truth values
 
 engine/PACKAGE_RULES.md + packages/
-→ approved truth'tan document set çözümleme
+→ approved truth'tan domain/document resolution
 
 runs/
-→ belirli run için immutable operational snapshot
+→ immutable operational run snapshot
 ```
 
 ---
@@ -34,18 +37,13 @@ inputs/
 ├── README.md
 ├── PROJECT_INPUT_TEMPLATE.md
 ├── pending/
-│   ├── README.md
-│   └── <project-slug>/
-│       └── PROJECT_INPUT.md
+│   └── <project-slug>/PROJECT_INPUT.md
 └── approved/
-    ├── README.md
     └── <project-slug>/
         ├── v1/PROJECT_INPUT.md
         ├── v2/PROJECT_INPUT.md
         └── ...
 ```
-
-Alternatif flat/history yapısı yoktur.
 
 ---
 
@@ -53,21 +51,15 @@ Alternatif flat/history yapısı yoktur.
 
 ```text
 Raw Project Information
-        ↓
-Normalization
-        ↓
-Pending Input
-        ↓
-Clarification / Assumption / Conflict Resolution
-        ↓
-Canonical Explicit User Approval
-        ↓
-Approved Input vN
-        ↓
-Run INPUT_SNAPSHOT
+→ Normalization
+→ Pending Input
+→ Clarification / Proposal / Assumption / Conflict Resolution
+→ Canonical Explicit User Approval
+→ Approved Input vN
+→ Run INPUT_SNAPSHOT
 ```
 
-`pending` input ile generation run başlatılamaz.
+Pending input generation source of truth değildir.
 
 ---
 
@@ -78,12 +70,12 @@ input_id: INPUT-EXAMPLE-PROJECT-V1
 project_name: Example Project
 project_slug: example-project
 input_version: "1"
-status: approved # pending | approved
-project_type: web-app
-project_state: new # new | existing
+status: approved
+project_type: corporate-website
+project_state: new
 delivery_profile: Prototype
-implementation_planning: standard # standard | full
-design_planning: light # light | standard | full | N/A only if UI/UX not applicable
+implementation_planning: standard
+design_planning: standard
 primary_language: tr
 created_at: <ISO-8601>
 updated_at: <ISO-8601>
@@ -96,13 +88,54 @@ source_count: 1
 
 ### Planning Profile Kuralları
 
-- `implementation_planning` bütün implementation-bearing projelerde zorunludur.
-- Canonical değerler yalnız `standard | full`.
-- UI/UX applicable projelerde `design_planning` zorunludur.
-- Canonical design değerleri yalnız `light | standard | full`.
-- `none` adlı design profile yoktur.
-- UI/UX applicable değilse metadata'da operasyonel gösterim için `N/A` kullanılabilir; bu yeni profile değildir.
-- Delivery profile planning depth yerine geçmez.
+- `implementation_planning`: `standard | full`.
+- UI/UX applicable ise `design_planning`: `light | standard | full`.
+- `none` canonical profile değildir.
+- Delivery profile planning/page breadth yerine geçmez.
+- Multi-page corporate website için default intake recommendation `design_planning: standard`dır; final value explicit approval ile kesinleşir.
+
+---
+
+## Corporate Website Site Architecture Truth
+
+`project_type: corporate-website` için approved `PROJECT_INPUT` Site Architecture bölümü zorunludur.
+
+Minimum registry:
+
+```text
+Page ID
+Page Name
+Purpose
+Route / Navigation Identity
+Scope Status
+Primary Content / Capability Boundaries
+Parent / Detail Relation
+```
+
+Rules:
+
+```text
+corporate website ≠ landing page
+pending proposal ≠ approved architecture
+Prototype/demo ≠ page reduction
+approved distinct page ≠ anchor section
+```
+
+Source exact page list vermiyorsa pending input Proposed Site Architecture taşıyabilir. Bu proposal ancak user explicit approval sonrasında approved truth olur.
+
+Approved project-specific truth owner:
+
+```text
+inputs/approved/<project>/vN/PROJECT_INPUT.md
+```
+
+Semantics owner:
+
+```text
+engine/SITE_ARCHITECTURE_RULES.md
+```
+
+Downstream GLOBAL_SHELL/PAGE-DESIGN/WAVE_MAP/WAVE_PLAN yeni PAGE identity icat edemez.
 
 ---
 
@@ -111,24 +144,26 @@ source_count: 1
 ### Pending
 
 - değiştirilebilir,
-- missing/uncertain alan taşıyabilir,
-- profile önerileri taşıyabilir,
-- generation source of truth değildir.
+- missing/uncertain field taşıyabilir,
+- planning profile proposal taşıyabilir,
+- corporate website ise Proposed Site Architecture taşıyabilir,
+- generation authority değildir.
 
 ### Approved
 
-- tüm MUST alanları kesinleşmiştir,
-- planning profile'lar kesinleşmiştir,
-- critical conflict çözülmüştür,
-- canonical explicit user approval alınmıştır,
-- immutable logical version'dır,
-- generation source of truth'tur.
+- all MUST fields resolved,
+- planning profiles resolved,
+- corporate website ise PAGE registry resolved,
+- critical conflicts resolved,
+- canonical explicit user approval recorded,
+- immutable logical version,
+- generation source of truth.
 
 ---
 
 ## Explicit Approval Integrity
 
-Geçerli approval yalnız kullanıcının pending intake/proje kararlarını doğrudan onaylayan mesajıdır.
+Geçerli approval yalnız user'ın pending intake/proje kararlarını doğrudan onaylayan mesajıdır.
 
 Geçerli approval değildir:
 
@@ -138,95 +173,82 @@ plan approval
 file/tool permission
 terminal/patch approval
 commit/push izni
-agent'ın kendi planını tamamlaması
+agent self-completion
 implicit/silent approval
 ```
 
+Corporate page proposal da aynı gate'e tabidir.
+
 Canonical approval yoksa:
 
-- `status: pending` kalır,
-- `approved_at` / `approved_by` boş kalır,
-- `inputs/approved/` snapshot'ı oluşturulmaz,
-- run başlatılmaz.
+- `status: pending`,
+- `approved_at` / `approved_by` boş,
+- approved snapshot yok,
+- run yok.
 
 ---
 
 ## Versioning / Immutability
 
-Approved input yerinde overwrite edilmez.
+Approved input overwrite edilmez.
 
 ```text
 v1 approved
-↓ değişiklik gerekir
-pending v2 candidate
+↓ truth değişikliği
+pending v2
 ↓ explicit approval
-v2 approved, supersedes: INPUT-...-V1
+v2 approved, supersedes v1
 ```
 
-Eski approved sürüm fiziksel olarak değiştirilmez.
-
-Aktif approved truth, `<project-slug>/` altındaki en yüksek `vN` sürümüdür.
-
-Run başladıktan sonra yeni approved input sürümü oluşursa aktif run snapshot'ı değişmez; yeni truth ile çalışmak için yeni run gerekir.
+Approved site architecture değişikliği de yeni input version gerektirir.
 
 ---
 
 ## Canonical PROJECT_INPUT İçerik Yapısı
 
-`PROJECT_INPUT_TEMPLATE.md` tek skeleton'dır ve şu bilgi ailelerini kapsar:
+`PROJECT_INPUT_TEMPLATE.md` tek skeleton'dır:
 
 1. Original Brief
 2. Project Identity & Planning Profiles
 3. Problem / Purpose / Success
 4. Target Users & Core Flows
 5. Scope Boundaries
-6. Existing Project Context
-7. Technical Context & Integration Readiness
-8. Design Context
-9. Sources & Provenance
-10. Known Decisions
-11. Assumptions
-12. Conflicts
-13. Open Questions
-14. Approval & Verification
+6. Site Architecture
+7. Existing Project Context
+8. Technical Context & Integration Readiness
+9. Design Context
+10. Sources & Provenance
+11. Known Decisions
+12. Assumptions
+13. Conflicts
+14. Open Questions
+15. Approval & Verification
 
-Aynı truth'un paralel JSON/YAML/Markdown kopyaları oluşturulmaz.
+Aynı truth'un paralel JSON/YAML/Markdown source-of-truth kopyası oluşturulmaz.
 
 ---
 
 ## Demo / Prototype Truth Kuralı
 
-`Prototype` veya demo context:
-
 ```text
-scope maturity'yi sınırlar
-≠
-architecture quality'yi düşürür
+Prototype/demo
+→ delivery maturity
+≠ architecture quality reduction
+≠ approved page/scope breadth reduction
 ```
 
-Approved input'ta gerçek backend scope değilse:
-
-- backend/API/database uydurulmaz,
-- current data source yazılır,
-- service/data boundary beklentisi yazılır,
-- future integration context ayrı tutulur,
-- unresolved teknik kararlar görünür kalır.
+Gerçek backend current scope değilse backend/API/database uydurulmaz; clean service/data boundary ve future integration context korunur.
 
 ---
 
 ## Design Context Kuralı
 
-Design input; brand fact ile yaratıcı design synthesis'i ayırmalıdır.
-
 ```text
-brand/user-provided fact
-→ authoritative source
-
-Engine'in ürettiği visual concept
-→ design decision / synthesis
+brand/user-provided fact → authoritative source
+Engine visual concept     → design decision/synthesis
 ```
 
-Sektör klişesi tek başına design truth değildir.
+Sektör klişesi design truth değildir. Approved page architecture visual convenience için küçültülemez.
 
 ---
 
@@ -234,12 +256,11 @@ Sektör klişesi tek başına design truth değildir.
 
 MUST NOT:
 
-- password, token, private key, API secret saklamak,
-- `file:///C:/...` gibi machine-dependent path kullanmak,
+- secret/token/password saklamak,
+- machine-dependent absolute path,
 - future scope'u current truth gibi göstermek,
-- unresolved critical conflict ile approved snapshot oluşturmak.
-
-Repo-relative path ve secret variable name referansları kullanılabilir.
+- unresolved critical conflict ile approved snapshot,
+- proposed corporate page architecture'ı silent approved truth yapmak.
 
 ---
 
@@ -247,10 +268,10 @@ Repo-relative path ve secret variable name referansları kullanılabilir.
 
 ```text
 inputs/approved/<project>/vN/PROJECT_INPUT.md
-→ reusable project truth
+→ reusable approved project truth
 
 runs/active/<run-id>/INPUT_SNAPSHOT.md
-→ o run başladığı andaki immutable operational truth
+→ exact run-start immutable operational snapshot
 ```
 
 Bu iki katman birbirinin yerine kullanılamaz.
