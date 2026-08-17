@@ -2,22 +2,260 @@
 
 ## 1. Amaç ve Otorite
 
-Bu belge Product Engine'in çekirdek contracts, package behavior, template schema, input/run/output lifecycle ve validation değişikliklerinin resmi version history authority'sidir.
+Bu belge, Product Engine'in çekirdek motor yapısında (`engine/`), paket kurallarında (`packages/`), şablon standartlarında (`templates/`), girdi/run/çıktı yaşam döngülerinde ve klasör mimarisinde yapılan kalıcı değişikliklerin tek resmi tarihsel geçmiş kaynağıdır.
 
-- Root `README.md` → active version authority.
-- `logs/ENGINE_CHANGELOG.md` → version history authority.
+### Sürüm Otoritesi Modeli
+
+- **Root `README.md`**: Güncel aktif Product Engine sürümünün birincil otoritesi.
+- **`logs/ENGINE_CHANGELOG.md`**: Product Engine sürüm geçmişinin birincil otoritesi.
 
 Güncel aktif sürüm: `v0.3.0`.
 
 ---
 
-## 2. Sürüm Geçmişi
+## 2. Changelog-Worthy Değişiklikler
+
+Aşağıdakiler changelog'a kaydedilir:
+
+- yeni veya değişen engine contract'ları,
+- package/document selection davranışı,
+- planning profile semantiği,
+- canonical template/document type değişiklikleri,
+- intake/approval/run lifecycle değişiklikleri,
+- output hierarchy ve versioning değişiklikleri,
+- validation contract değişiklikleri,
+- deprecated/removed canonical dosyalar,
+- geriye dönük uyumluluğu etkileyen mimari kararlar.
+
+Typo, format ve tek-run operasyon notları changelog kaydı değildir.
+
+---
+
+## 3. Kayıt Şeması
+
+```markdown
+## PE-CHANGE-<NNN> — <YYYY-MM-DD>
+
+- **Version:** vX.Y.Z
+- **Change Type:** Added | Changed | Fixed | Deprecated | Removed | Security | Documentation
+- **Affected Area:** <areas>
+- **Breaking Change:** Yes | No
+- **Related Issue:** <ISSUE-XXX | None>
+- **Related Run:** <RUN-YYYYMMDD-XXX | None>
+
+### Summary
+...
+
+### Reason
+...
+
+### Impact
+...
+```
+
+Change ID'ler artan sırada ve immutable'dır.
+
+---
+
+## 4. Sürüm Geçmişi
 
 ### v0.1.0 — First Real Engine Runtime
-İlk gerçek Product Engine runtime.
 
-### v0.2.0 — Planning / Design / Wave Architecture
-Planning profiles, implementation-ready wave planning, design planning ve integration-readiness mimarisi.
+`v0.1.0`, Product Engine'in ilk gerçek proje run'ını gerçekleştiren temel runtime sürümüdür.
+
+Historical kanıt:
+
+- `runs/completed/RUN-20260811-001/`
+- `outputs/demos/trakya-teknik-makine/versions/v0.1/`
+
+Bu historical artefact'ler sonraki contract'lara uyarlamak amacıyla geriye dönük mutate edilmez.
+
+---
+
+## PE-CHANGE-001 — 2026-08-11
+
+- **Version:** v0.2.0
+- **Change Type:** Added
+- **Affected Area:** engine/ | packages/ | templates/ | inputs/ | runs/ | outputs/ | project-start/
+- **Breaking Change:** Yes
+- **Related Issue:** None
+- **Related Run:** RUN-20260811-001
+
+### Summary
+
+Product Engine'e delivery maturity'den bağımsız iki planning ekseni eklendi:
+
+```text
+implementation_planning: standard | full
+design_planning: light | standard | full (UI/UX applicable ise)
+```
+
+`engine/PLANNING_PROFILES.md` yeni canonical authority olarak eklendi. `standard` implementation planning agent-ready minimum olarak tanımlandı. `light` design planning daha az artifact fakat aynı kalite tabanı prensibiyle tanımlandı.
+
+### Reason
+
+İlk gerçek Trakya Teknik Makine run'ı, `Prototype` delivery profile'ın mevcut package/catalog kuralları nedeniyle yalnız dört temel belge üretmesinin Engine'in gerçek hedefi olan "yeni agent doğrudan implementation'a başlayabilsin" kriterini karşılamadığını gösterdi.
+
+Delivery maturity ile execution/design planning depth aynı kavram olarak kullanılıyordu. Bu coupling kaldırıldı.
+
+### Impact
+
+- `Prototype` artık implementation planning'i otomatik azaltmaz.
+- Demo/prototype projeler throwaway architecture olarak değerlendirilemez.
+- UI projelerinde design planning `light | standard | full` ile bağımsız çözülür.
+- Planning profile değerleri approved input truth'un parçasıdır.
+
+---
+
+## PE-CHANGE-002 — 2026-08-11
+
+- **Version:** v0.2.0
+- **Change Type:** Changed
+- **Affected Area:** packages/ | engine/DOCUMENT_CATALOG.md | engine/PACKAGE_RULES.md
+- **Breaking Change:** Yes
+- **Related Issue:** None
+- **Related Run:** RUN-20260811-001
+
+### Summary
+
+Base package'ların planning depth sahipliği kaldırıldı. Shared `packages/PLANNING_PROFILE_OVERLAY.md` eklendi.
+
+Base package artık domain/scope ihtiyacını; planning overlay ise execution/design depth'i belirler.
+
+### Reason
+
+`Prototype → TECH_CONTEXT/WAVE planning çıkar` gibi package-level daraltmalar yeni agent-ready kalite tabanıyla çelişiyordu ve farklı package'lar arasında drift riski yaratıyordu.
+
+### Impact
+
+Planning profile minimumları hiçbir base package tarafından sessizce düşürülemez. `TECH_CONTEXT`, planning/wave/state dokümanları ve design artifact'leri delivery profile'dan bağımsız olarak seçilebilir.
+
+---
+
+## PE-CHANGE-003 — 2026-08-11
+
+- **Version:** v0.2.0
+- **Change Type:** Added
+- **Affected Area:** templates/design/ | engine/DOCUMENT_CATALOG.md | engine/INFORMATION_MAP.md
+- **Breaking Change:** Yes
+- **Related Issue:** None
+- **Related Run:** None
+
+### Summary
+
+Design Engine canonical document modeline yükseltildi. Yeni/aktif design artifact family:
+
+```text
+DESIGN
+DESIGN-SYSTEM
+GLOBAL-SHELL
+PAGE-DESIGN
+FEATURE-DESIGN
+SYSTEM-STATES
+ADMIN-DESIGN
+```
+
+Generic single-skeleton page ve feature package template'leri tanımlandı.
+
+### Reason
+
+Tek `DESIGN_RULES.md`, büyük veya gerçek UI ürünlerinde agent'ın ekran/feature tasarımını implementation-ready seviyede anlaması için yeterli değildi. `ref/design` içindeki proje-özel pattern'ler generic Engine contract'larına dönüştürülmeliydi.
+
+### Impact
+
+- `light`: güçlü DESIGN_RULES tabanı.
+- `standard`: design system, global shell, page/screen packages ve system states.
+- `full`: standard + gerçek karmaşıklığın gerektirdiği feature/admin/complex-flow planning.
+- Sektör klişeleri ve generic template görünümü default design reasoning olarak kabul edilmez.
+
+---
+
+## PE-CHANGE-004 — 2026-08-11
+
+- **Version:** v0.2.0
+- **Change Type:** Changed
+- **Affected Area:** templates/waves/ | engine/GENERATION_PIPELINE.md | engine/VALIDATION_RULES.md
+- **Breaking Change:** Yes
+- **Related Issue:** None
+- **Related Run:** None
+
+### Summary
+
+Wave sistemi tek canonical skeleton'a indirildi:
+
+```text
+waves/WAVE_MAP.md
+waves/plans/WAVE_<NN>.md
+```
+
+Eski duplicate `STANDARD_WAVE_TEMPLATE.md` ve `STANDART WAVE TEMPLATE.md` kaldırıldı; iyi execution disiplinleri `WAVE_PLAN_TEMPLATE.md` içine taşındı.
+
+### Reason
+
+Birden fazla wave skeleton aynı kavram için farklı contract üretme riski taşıyordu. Engine'in Single-Skeleton prensibiyle çelişiyordu.
+
+### Impact
+
+Her selected wave için ayrı uygulanabilir plan ve acceptance/validation contract üretilebilir. `NEXT_TASKS` aktif wave planından türetilir; `CURRENT_STATUS` aktif wave durumunu taşır.
+
+---
+
+## PE-CHANGE-005 — 2026-08-11
+
+- **Version:** v0.2.0
+- **Change Type:** Changed
+- **Affected Area:** engine/VALIDATION_RULES.md | engine/OUTPUT_STRUCTURE.md | templates/ai/TECH_CONTEXT_TEMPLATE.md
+- **Breaking Change:** Yes
+- **Related Issue:** None
+- **Related Run:** RUN-20260811-001
+
+### Summary
+
+Agent-readiness, design coverage, planning profile compliance, backend/integration readiness ve cross-document consistency validation katmanları genişletildi.
+
+Frontend/demo projelerinde gerçek backend yoksa endpoint/schema uydurmak yasak; fakat mock/local data ile future API adapter arasında temiz service/data-access boundary planlamak zorunlu kalite tabanıdır.
+
+### Reason
+
+İlk gerçek run, output'un doküman olarak geçerli olmasının tek başına implementation-ready olması anlamına gelmediğini gösterdi.
+
+### Impact
+
+Yeni temel kabul kriteri:
+
+> Projeyi daha önce görmemiş yeni bir agent, final output'u okuyup yeni mimari planlama yapmadan aktif `WAVE_<NN>` planını uygulamaya başlayabilmelidir.
+
+Bu sağlanmıyorsa output validation PASS alamaz.
+
+---
+
+## PE-CHANGE-006 — 2026-08-11
+
+- **Version:** v0.2.0
+- **Change Type:** Fixed
+- **Affected Area:** project-start/ | templates/ | inputs/ | outputs/
+- **Breaking Change:** No
+- **Related Issue:** None
+- **Related Run:** RUN-20260811-001
+
+### Summary
+
+Post-build integration audit cleanup uygulandı:
+
+- duplicate top-level project-start templates kaldırıldı,
+- `project-start/templates/` tek canonical project-start skeleton authority olarak bırakıldı,
+- Trakya source `delivery_profile / implementation_planning / design_planning` schema'sına migrate edildi,
+- eski Trakya pending/approved current input artefact'leri temizlendi,
+- `outputs/.../latest/` altındaki eski `v0.1.0` current view kaldırıldı,
+- historical `versions/v0.1/` ve completed first-run kaydı korundu.
+
+### Reason
+
+Yeni `v0.2.0` architecture sonrası `v0.1.0` current-state artefact'lerinin yeni run'ı etkileyebilmesi ve iki farklı project-start skeleton bulunması authority drift yaratıyordu.
+
+### Impact
+
+Trakya Teknik Makine ikinci gerçek test için temiz source state'ine döndü. Bir sonraki run yeni input ve yeni output version üretmek zorundadır.
 
 ---
 
@@ -31,10 +269,12 @@ Planning profiles, implementation-ready wave planning, design planning ve integr
 - **Related Run:** RUN-20260815-001
 
 ### Summary
+
 Continuation-ready frontend stack selection intent'i eklendi. Sales/client demo için package-managed/component-ready baseline tercih edildi; zero-build yaklaşım için continuation rationale beklendi.
 
 ### Validation Outcome
-Fresh `RUN-20260817-002` fix'in deterministic olmadığını gösterdi. Agent rationale üretip yine dependency-free Vanilla seçebildi ve future framework migration'ını continuation saydı. `VAL-09` bunu yakalamadı.
+
+Fresh `RUN-20260817-002` bu fix'in yeterince deterministic olmadığını gösterdi. Agent yeni rationale bölümünü okuyup yine dependency-free Vanilla seçti ve future React/Vite/Next migration'ını “low migration” olarak gerekçelendirdi. `VAL-09` bunu yakalamadı.
 
 ---
 
@@ -48,6 +288,7 @@ Fresh `RUN-20260817-002` fix'in deterministic olmadığını gösterdi. Agent ra
 - **Related Run:** RUN-20260817-002, RUN-20260817-003
 
 ### Summary
+
 Continuation-ready frontend stack selection preference/rationale modelinden deterministic blocking gate modeline geçirildi.
 
 Canonical invariant:
@@ -58,14 +299,22 @@ continuation_expected = YES
 → package-managed/component-oriented frontend baseline REQUIRED
 ```
 
+### Reason
+
+v0.2.1, agent'ın kendi “low migration cost / modular ES6 / future framework migration” yorumunu zero-build istisnası olarak kullanmasına izin verdi. Ayrıca `VAL-09` yalnız data adapter + future API path'i doğruluyordu.
+
 ### Impact
-- Zero-build yalnız exact approved user/project/environment constraint ile mümkün.
-- Agent-generated rationale approved constraint değil.
-- Future framework migration same-codebase continuation değil.
-- TECH_CONTEXT package manifest + dev/build/preview evidence üretir.
-- `VAL-09` blocking doğrulama yapar.
+
+- Sales/client demo veya future backend/CMS/page/component growth taşıyan projelerde continuation otomatik YES olarak çözülür.
+- Zero-build/dependency-free seçim yalnız exact approved user/project/environment constraint ile mümkündür.
+- Agent-generated rationale approved constraint değildir.
+- “İleride React/Vite/Next'e migrate edilir” same-codebase continuation değildir.
+- TECH_CONTEXT `Continuation Expected`, `Continuation Evidence`, `Approved Zero-Build Constraint`, selected baseline, package manifest ve dev/build/preview commands alanlarını explicit üretir.
+- `VAL-09` bu alanları blocking doğrular; eksik/uygunsuz seçim output validation FAIL üretir.
+- Framework global olarak hardcode edilmez; uygun package-managed component-oriented çözüm project-specific synthesis ile seçilir.
 
 ### Validation Outcome
+
 `RUN-20260817-003` React 18+ + Vite + npm/package.json + repeatable dev/build/preview commands + `Continuation Expected: YES` + `Approved Zero-Build Constraint: NONE` + `Same-Codebase Continuation: PASS` üretti; `VAL-09: PASS` oldu. ISSUE-001 v0.2.2'de Resolved.
 
 ---
@@ -74,21 +323,24 @@ continuation_expected = YES
 
 - **Version:** v0.3.0
 - **Change Type:** Changed / Fixed
-- **Affected Area:** engine/PROJECT_INTAKE.md | engine/SITE_ARCHITECTURE_RULES.md | engine/PLANNING_PROFILES.md | engine/PACKAGE_RULES.md | engine/DOCUMENT_CATALOG.md | engine/GENERATION_PIPELINE.md | engine/VALIDATION_RULES.md | engine/INFORMATION_MAP.md | packages/CORPORATE_WEBSITE_PACKAGE.md | packages/DEMO_FRONTEND_PACKAGE.md | inputs/ | project-start/templates/ | templates/ai/ | templates/design/ | templates/waves/
+- **Affected Area:** engine/PROJECT_INTAKE.md | engine/SITE_ARCHITECTURE_RULES.md | engine/PLANNING_PROFILES.md | engine/PACKAGE_RULES.md | engine/DOCUMENT_CATALOG.md | engine/GENERATION_PIPELINE.md | engine/VALIDATION_RULES.md | engine/INFORMATION_MAP.md | packages/ | inputs/ | project-start/ | templates/ | README.md | PRODUCT_ENGINE_BRAIN.md | logs/ISSUES.md
 - **Breaking Change:** Yes
 - **Related Issue:** ISSUE-002
 - **Related Run:** RUN-20260817-003 / implementation evidence `f09b4ee852fe085e8d810cbfaa9a9f234d75f69a`
 
 ### Summary
+
 Product Engine'in corporate website modeli first-class multi-page information architecture seviyesine yükseltildi.
 
-Active runtime vocabulary'den `landing-page` project type kaldırıldı ve şu first-class type eklendi:
+Active runtime vocabulary'den `landing-page` project type kaldırıldı ve first-class:
 
 ```text
 project_type: corporate-website
 ```
 
-Yeni canonical distinction:
+eklendi.
+
+Canonical model:
 
 ```text
 project_type       → ne üretiyoruz?
@@ -111,9 +363,9 @@ wave grouping ≠ page omission
 
 ### New Site Architecture Contract
 
-`engine/SITE_ARCHITECTURE_RULES.md` corporate page/surface architecture semantiğinin canonical owner'ı olarak eklendi.
+`engine/SITE_ARCHITECTURE_RULES.md` corporate page/surface semantics owner olarak eklendi.
 
-`project_type: corporate-website` approved input artık PAGE-XXX registry taşımak zorunda:
+Corporate approved input PAGE registry taşır:
 
 ```text
 Page ID
@@ -125,35 +377,19 @@ Primary Content / Capability Boundaries
 Parent / Detail Relation
 ```
 
-Exact page list source'ta yoksa Phase A agent pending **Proposed Site Architecture** sunabilir; explicit user approval olmadan executable truth olmaz.
+Exact list source'ta eksikse Phase A pending Proposed Site Architecture üretir; explicit user approval olmadan executable truth olmaz.
 
-### Package / Domain Changes
+### Package / Planning / Design Changes
 
-- `corporate-website` base package yalnız `project_type: corporate-website` ile eşleşir.
-- Corporate sales demo `delivery_profile: Prototype` olsa bile base package `corporate-website` kalır.
+- Corporate sales demo base package deterministically `corporate-website` kalır.
 - `demo-frontend` corporate domain'i override edemez.
-- Corporate website package version 3.0.0 multi-page breadth, navigation ve page coverage guard'larını taşır.
-
-### Planning / Design Changes
-
-Multi-page corporate website için default intake recommendation:
-
-```text
-implementation_planning: standard
-design_planning: standard
-```
-
-Bu automatic approval değildir; user approval gate korunur.
-
-Profile depth approved page breadth'i değiştiremez:
-
-```text
-PROFILE DEPTH ≠ APPROVED SCOPE BREADTH
-```
+- Corporate package v3.0.0 multi-page breadth/navigation/page coverage guard'larını taşır.
+- Multi-page corporate default recommendation `implementation_planning: standard` + `design_planning: standard`.
+- Profile depth approved scope/page breadth'i değiştiremez.
 
 ### Generation Changes
 
-Corporate run başında:
+Corporate run başında immutable:
 
 ```text
 APPROVED_PAGE_SET = set(IN_SCOPE PAGE-XXX identities)
@@ -161,47 +397,44 @@ APPROVED_PAGE_SET = set(IN_SCOPE PAGE-XXX identities)
 
 freeze edilir.
 
-Downstream:
+Downstream chain:
 
 ```text
-approved PAGE registry
-→ PROJECT_BRAIN / PRODUCT_RULES reference
-→ GLOBAL_SHELL navigation registry
+Approved PAGE Registry
+→ PROJECT_BRAIN / PRODUCT_RULES
+→ TECH_CONTEXT routing/page expansion
+→ GLOBAL_SHELL navigation
 → PAGE-DESIGN instances (standard/full)
+→ PROJECT_PLAN
 → WAVE_MAP Covered Page IDs
-→ WAVE_PLAN page-specific tasks
+→ WAVE_PLAN page tasks
 ```
 
-WAVE_MAP freeze kapısı:
+Blocking generation relations:
 
 ```text
 APPROVED_PAGE_SET == PLANNED_PAGE_SET
-```
-
-Corporate standard/full design kapısı:
-
-```text
-APPROVED_PAGE_SET == PAGE_DESIGN_INSTANCE_SET
+APPROVED_PAGE_SET == PAGE_DESIGN_INSTANCE_SET   (design standard/full)
 ```
 
 ### Validation Changes
 
-Current `VAL-01..VAL-19` retained; corporate page/domain checks expanded across gates.
+VAL-01..VAL-19 korunarak page/domain modeline genişletildi.
 
 Key blockers:
 
 ```text
 VAL-02 → corporate package/domain selection
-VAL-03 → dynamic page-design instance coverage
-VAL-04 → approved/planned page equality + collapse detection
-VAL-05 → page-aware implementation-ready depth
-VAL-07 → approved/navigation/design/wave page identity consistency
-VAL-09 → continuation-ready stack + routing/page expansion path
+VAL-03 → dynamic page-design coverage
+VAL-04 → approved/planned equality + collapse detection
+VAL-05 → page-aware execution depth
+VAL-07 → approved/navigation/design/wave identity consistency
+VAL-09 → continuation-ready stack + routing/page expansion
 VAL-10 → design profile/page coverage
 VAL-12 → site architecture ownership
 VAL-14 → unresolved PAGE/route placeholders
-VAL-15 → per-instance PAGE-DESIGN/WAVE_PLAN template read-token integrity
-VAL-19 → lifecycle/manifest page architecture traceability
+VAL-15 → PAGE-DESIGN/WAVE_PLAN point-of-use token integrity
+VAL-19 → page architecture lifecycle traceability
 ```
 
 Explicit collapse detector:
@@ -213,18 +446,20 @@ Generated: / + #corporate + #services + #contact
 ```
 
 ### Reason
-Trakya real project exposed that a visually high-quality, technically continuation-ready React/Vite implementation could still be materially underscoped because corporate intent had been normalized to `landing-page`. Engine lacked a canonical approved page registry and therefore correctly executed the wrong breadth.
+
+Trakya real project showed that visually high-quality and technically continuation-ready React/Vite implementation could still be materially underscoped because corporate intent had been normalized to `landing-page`. Engine correctly executed the wrong breadth because no approved page registry existed.
 
 ### Impact
-- Corporate website sales demos now model real website information architecture rather than one-page marketing shortcuts.
-- Page breadth becomes explicit user-approved truth.
-- Navigation, design packages, wave planning and validation share exact PAGE identities.
-- Engine remains scope-safe: page architecture does not authorize new factual company claims.
-- v0.2.2 continuation-ready React/Vite-style foundation guard remains active.
+
+- Corporate sales demos real website information architecture modelleyebilir.
+- Page breadth explicit user-approved truth olur.
+- Navigation, design packages, project/wave planning and validation exact PAGE identities paylaşır.
+- Page architecture yeni factual company claim authorize etmez.
+- v0.2.2 deterministic continuation-ready stack guard korunur.
 
 ---
 
-## 3. Güncel Durum
+## 5. Güncel Durum
 
 ```text
 Active Engine Version Authority : Root README.md (v0.3.0)
