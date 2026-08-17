@@ -14,67 +14,104 @@ Proje kaynak dosyası:
 
 Bu oturumun tek amacı canonical pending `PROJECT_INPUT` üretmek ve approval gate'te durmaktır.
 
-Bu oturumda:
+Bu oturumda generation run, output, WAVE_MAP/WAVE_PLAN, publication veya implementation başlatma.
 
-- generation run başlatma,
-- output dokümanları üretme,
-- WAVE_MAP / WAVE_PLAN üretme,
-- publication yapma,
-- approved input sonrasındaki runtime işlerini yürütme.
+Approved input elde edildikten sonra bu chat sona erer. Runtime yeni chat/session içinde `INPUT_START_PROMPT.md` ile başlatılır.
 
-Approved input elde edildikten sonra bu chat sona erer. Sonraki runtime yeni bir chat/session içinde `INPUT_START_PROMPT.md` ile başlatılır.
+---
 
 ## Source-Closed Intake Boundary
 
-Normal Product Engine intake'i **source-closed** çalışır.
+Normal Product Engine intake'i source-closed çalışır:
 
 ```text
 PROJECT_SOURCE_PATH = project factual universe
 ```
 
-- Proje gerçeğini tamamlamak için dış web sitesi, arama motoru, sosyal medya veya başka external source araştırması yapma.
-- Source dosyada URL geçse bile onu otomatik authority veya enrichment izni sayma.
-- Source dosyada bulunmayan firma/domain gerçeğini tahmin etme veya adjacent sektör bilgisiyle doldurma.
-- Missing factual detail gerekiyorsa pending input'ta açık soru / eksik bilgi olarak bırak.
-- External research yalnız kullanıcı açıkça ayrı bir `research/source enrichment` işi isterse yapılabilir ve normal intake contract'ından ayrı tutulur.
+- Dış web/search/social ile factual enrichment yapma.
+- Source'ta bulunmayan company/domain gerçeğini tahmin etme.
+- Missing factual detail'i pending question olarak bırak.
+- External research yalnız explicit ayrı enrichment işi ise kullanılabilir.
 
-Teknik implementation seçimleri ile gerçek dünya claim'lerini ayır:
+Teknik synthesis ile factual truth ayrıdır:
 
 ```text
-Engine-resolvable implementation detail:
-component split, layout, file responsibility, adapter shape, responsive behavior
+Engine-resolvable:
+component/layout/file responsibility, stack proposal, adapter, routing implementation approach, responsive behavior
 
-Source-backed factual truth:
-service details, stock/availability, operating hours, certificates, partner status,
-addresses, contact facts, technical capabilities, company claims
+Source-backed truth:
+services/products, stock/availability, hours, certificates, partner status, address/contact, technical/company claims
 ```
 
-İkinci grup source dosyada açık support olmadan PROJECT_INPUT'a eklenemez.
+---
+
+## Corporate Website Intake Gate
+
+Source/brief kurumsal firma web sitesi, müşteri sitesi veya gerçek siteye dönüşmesi beklenen corporate sales demo niyeti taşıyorsa:
+
+```text
+project_type → corporate-website
+```
+
+`demo`, `sales demo`, `Prototype` project type değildir; delivery context/profile bilgisidir.
+
+Corporate website intent algılandığında intake sırasında mutlaka:
+
+1. `engine/SITE_ARCHITECTURE_RULES.md` oku.
+2. Source'taki known/desired page structure'ı çıkar.
+3. Exact page seti eksikse pending input içinde **Proposed Site Architecture** üret.
+4. Her proposed/known distinct surface için PAGE-XXX identity, page name, purpose, route/navigation identity, scope status, capability/content boundary ve parent/detail relation göster.
+5. Proposed architecture'ı executable/approved sayma.
+6. Page registry ve planning profiles kullanıcıya approval öncesi açıkça gösterilsin.
+7. Explicit user approval olmadan corporate `site_architecture` approved truth olamaz.
+
+Canonical guards:
+
+```text
+corporate website ≠ landing page
+Prototype/demo ≠ page breadth reduction
+proposed architecture ≠ approved architecture
+approved distinct pages ≠ anchor sections
+```
+
+Multi-page corporate website için default intake recommendation:
+
+```text
+design_planning: standard
+```
+
+Bu recommendation otomatik approval değildir. Kullanıcı başka profile seçerse rationale görünür kalmalıdır.
+
+---
 
 ## Talimatlar
 
-1. Önce Product Engine authority ve canonical read-order dosyalarını oku.
-2. Verilen proje kaynak dosyasını tamamen oku.
-3. Proje kaynağını canonical Engine contract'ı olarak değil, source truth material olarak ele al.
-4. Yalnız intake için gerekli Engine authority/template dosyalarını uygula; paralel workflow icat etme.
-5. Açıkça belirtilmiş proje kararlarını ve kısıtlarını, bir Engine authority ile çelişmedikleri sürece koru.
-6. Gerekli bilgi eksikse sessizce tahmin yürütme; missing-input / assumption / approval davranışını kullan.
-7. `demo`, `sales demo`, `prototype` veya benzeri ifadeleri yalnız delivery purpose / runtime maturity bağlamı olarak yorumla. Bunlar yeni feature, mock interaction, placeholder capability, scope genişlemesi veya daha düşük implementation/design quality izni değildir.
-8. Pending `PROJECT_INPUT` içindeki current executable scope ile Future / Open Question / Out of Scope sınırlarını açık ve birbirinden ayrı tut.
-9. Source dosyadaki factual truth'u genişletme; source-backed olmayan qualifier, teknik alt hizmet, süreç, stok/availability, çalışma saati, sertifika veya başka company claim ekleme.
-10. Approval gerektiğinde canonical approval gate'te dur.
-11. IDE, tool, plan, execution veya otomatik onay mekanizmalarını Product Engine explicit user approval olarak kabul etme.
-12. Explicit user approval alınmadan `status: approved`, `approved_by: user` veya eşdeğer bir onay kaydı üretme; approved input oluşturma ve generation run başlatma.
-13. Kullanıcı pending input'u explicit biçimde onayladığında canonical approved input'u oluştur/güncelle ve orada dur. Aynı chat içinde run'a devam etme.
+1. Product Engine canonical boot/read order'ını uygula.
+2. Verilen project source'u tamamen oku.
+3. Source'u Engine contract değil source truth material olarak ele al.
+4. Intake için gerekli `PROJECT_INTAKE`, applicable `SITE_ARCHITECTURE_RULES`, `PLANNING_PROFILES`, assumption/conflict ve input template authority'lerini uygula.
+5. Source'taki explicit project decisions/constraints'i Engine authority ile çelişmedikçe koru.
+6. Missing bilgi için silent inference yerine missing-input / assumption / clarification / proposal davranışı kullan.
+7. `demo`, `sales demo`, `prototype` ifadelerini delivery context olarak yorumla; project type/domain'i veya quality/scope breadth'i düşürme.
+8. Current executable scope ile Future / Open Question / Out of Scope ayrımını koru.
+9. Corporate website'te proposed/approved page setini single-page shortcut'a indirgeme.
+10. Source-backed factual truth'u qualifier/adjacent capability ile genişletme.
+11. Approval gerektiğinde canonical approval gate'te dur.
+12. IDE/tool/plan/execution/auto-approval Product Engine user approval değildir.
+13. Explicit user approval alınmadan `status: approved`, `approved_by: user`, approved page registry veya approved input üretme; generation başlatma.
+14. User pending input'u explicit approve ettiğinde approved input'u oluştur/güncelle ve STOP et. Aynı chat içinde run'a devam etme.
 
 ## Beklenen Sonuç
 
 ```text
 self-contained project source
 → pending PROJECT_INPUT
+   + project type
+   + planning profiles
+   + proposed/known site architecture when corporate
 → explicit user approval
 → approved PROJECT_INPUT
 → STOP / NEW CHAT
 ```
 
-Yeni chat, project-specific `INPUT_START_PROMPT.md` üzerinden approved input'u tek authoritative project context olarak kullanarak devam eder.
+Yeni chat project-specific `INPUT_START_PROMPT.md` üzerinden approved input'u authoritative project context olarak kullanır.
