@@ -4,13 +4,14 @@
 
 Bu belge, Product Engine içinde **implementation planning** ve **design planning** derinliğinin nasıl belirleneceğini tanımlar.
 
-Planning profile'ları kalite seviyesi değildir. Bir profil yalnızca hangi planlama katmanlarının ve ne kadar ayrıntının gerekli olduğunu belirler.
+Planning profile'ları kalite veya product/page breadth seviyesi değildir.
 
 ```text
 PROFILE DEPTH ≠ QUALITY LEVEL
+PROFILE DEPTH ≠ APPROVED SCOPE BREADTH
 ```
 
-Product Engine tarafından üretilen her uygulanabilir proje çıktısı; profil seviyesi ne olursa olsun temiz, sürdürülebilir, genişletilebilir, model-bağımsız ve ajan tarafından uygulanabilir olmalıdır.
+Her uygulanabilir çıktı temiz, sürdürülebilir, genişletilebilir, coherent, current ve agent-ready olmalıdır.
 
 ---
 
@@ -18,78 +19,71 @@ Product Engine tarafından üretilen her uygulanabilir proje çıktısı; profil
 
 Bu belge şunların authoritative sahibidir:
 
-- `implementation_planning` değerleri ve anlamları
-- `design_planning` değerleri ve anlamları
-- planning profile seçiminin kalite tabanı
-- demo/prototype projelerde mimari kalite beklentisi
-- frontend projelerde backend/integration readiness tabanı
-- frontend stack/tooling kararlarında continuation/evolution readiness kalite tabanı
-- design planning derinliği ile tasarım kalitesinin birbirinden ayrılması
-- generic/template drift'e karşı design diversity kuralları
+- `implementation_planning` değerleri ve anlamları,
+- `design_planning` değerleri ve anlamları,
+- profile seçiminin kalite tabanı,
+- demo/prototype mimari kalite beklentisi,
+- frontend integration readiness,
+- continuation/evolution-ready stack selection,
+- profile depth ile design/page breadth ayrımı,
+- generic/template drift'e karşı design quality rules.
 
 Bu belge şunların sahibi değildir:
 
-- Exact document ID seçimi → `PACKAGE_RULES.md`, `DOCUMENT_CATALOG.md`, `packages/`
-- Doküman içerik şemaları → `templates/`
-- Proje bilgisi kabulü ve explicit approval → `PROJECT_INTAKE.md`
-- Assumption sınıfları → `ASSUMPTION_RULES.md`
-- Validation'ın tam kontrol listesi → `VALIDATION_RULES.md`
+- exact site/page architecture → `SITE_ARCHITECTURE_RULES.md` + approved input,
+- exact document ID seçimi → `PACKAGE_RULES.md`, `DOCUMENT_CATALOG.md`,
+- project intake/approval → `PROJECT_INTAKE.md`,
+- validation checklist → `VALIDATION_RULES.md`.
 
 ---
 
-## 1. Implementation Planning
+# 1. Implementation Planning
 
-Canonical değerler yalnızca şunlardır:
+Canonical değerler:
 
 ```text
 standard
 full
 ```
 
-`light`, `none`, `minimal` veya eşdeğer üçüncü bir implementation planning profili tanımlı değildir.
+### standard
 
-### `standard`
+Agent-ready implementation minimumudur.
 
-Product Engine'in gerçek minimum implementation planning seviyesidir.
+Standard planning minimum:
 
-Amaç, yeni bir yetkin ajanın ek mimari planlama yapmak zorunda kalmadan projeyi anlayabilmesi, sıradaki işi görebilmesi ve tanımlı execution/wave akışına başlayabilmesidir.
+- teknik bağlam ve ana mimari sınırlar,
+- proje teslim aşamaları,
+- wave structure ve execution order,
+- mevcut durum ve sıradaki görevler,
+- önemli kararlar ve rationale,
+- acceptance criteria için yeterli context,
+- frontend/backend/data/integration boundaries,
+- future integration'ı gereksiz rewrite olmadan destekleyen clean boundaries,
+- approved corporate page setinin implementation coverage'ı (applicable ise).
 
-Standard planning aşağıdaki bilgi kapsamını sağlamalıdır:
+`standard` = “az plan” değildir.
 
-- teknik bağlam ve ana mimari sınırlar
-- proje teslim aşamaları
-- wave/dalga yapısı ve uygulama sırası
-- mevcut durum ve sıradaki görevler
-- ajan çalışma talimatları
-- önemli kararlar ve gerekçeleri
-- acceptance kriterleri için yeterli bağlam
-- frontend/backend/data/integration sınırlarının bugünkü gerçekliğe göre açık tanımı
-- henüz uygulanmayan katmanlar için gelecekteki entegrasyonu engellemeyecek temiz sınırlar
+### full
 
-Standard, "az belge" veya "hızlıca geç" modu değildir. Product Engine için **agent-ready minimum** seviyedir.
+Standard kapsamını korur ve gerçek complexity gerektiriyorsa şunları derinleştirir:
 
-### `full`
+- ayrıntılı dependency graph,
+- granular acceptance criteria,
+- cross-system/cross-feature dependencies,
+- gerçek approved data/API contracts,
+- test strategy,
+- production deployment/operations,
+- migration/transition planning,
+- deeper technical risks.
 
-`standard` kapsamının tamamını içerir ve proje karmaşıklığının gerektirdiği daha derin execution planning'i ekler.
-
-Full planning; uygun olduğunda şu tür derinlikleri kapsar:
-
-- ayrıntılı wave dependency graph'ları
-- daha granüler acceptance criteria
-- cross-system veya cross-feature bağımlılıkları
-- karmaşık data/API contract planlaması
-- test stratejisi ve kritik test katmanları
-- production/deployment/operations planlaması (yalnızca gerçekten kapsamdaysa)
-- migration veya mevcut sistem geçiş planları
-- teknik riskler ve uygulanma sırası kararları
-
-`full`, gereksiz doküman üretme izni değildir. Yalnızca gerçek karmaşıklık tarafından gerekçelendirilen derinlik üretilir.
+`full` gereksiz document/complexity üretme izni değildir.
 
 ---
 
-## 2. Design Planning
+# 2. Design Planning
 
-UI/UX taşıyan projelerde canonical değerler yalnızca şunlardır:
+Canonical değerler:
 
 ```text
 light
@@ -97,63 +91,63 @@ standard
 full
 ```
 
-`none` design planning profili yoktur.
+`none` yoktur. UI/UX applicable değilse design planning seçilmez; metadata representation gerekirse `N/A` operational gösterimdir, yeni profile değildir.
 
-UI/UX taşımayan bir proje türünde (`api-service`, salt `infrastructure` vb.) `design_planning` profili seçilmez; alan applicable değildir. Bu durum `none` adlı bir profile dönüştürülmez.
+## light
 
-### `light`
+Belge kapsamı hafiftir; design quality düşük değildir.
 
-Light, belge sayısının hafif olmasıdır; tasarım kalitesinin düşük olması değildir.
+Minimum:
 
-En azından projenin uygulanabilir ve ayırt edilebilir görsel/UX yönünü tanımlayan güçlü bir `DESIGN_RULES` kapsamı gerekir.
+- güçlü project-specific visual concept,
+- typography/composition/spacing direction,
+- anti-template constraints,
+- responsive/accessibility baseline,
+- agent'ın aynı design language'i sürdürebileceği karar netliği.
 
-Light seviyede dahi tasarım:
+`light` özellikle gerçekten sınırlı **single/few-surface UI proof, compact prototype veya küçük interaction demonstration** için uygundur.
 
-- projeye özgü bir visual concept taşımalı,
-- modern ve güncel composition/typography/spacing kararları üretmeli,
-- generic hazır tema görünümünden kaçınmalı,
-- sektör klişelerini otomatik tasarım kararı olarak kullanmamalı,
-- responsive ve erişilebilir kullanımın temelini tanımlamalı,
-- uygulama sırasında farklı ajanların aynı tasarım dilini sürdürebilmesini sağlamalıdır.
+`light` şu anlama gelmez:
 
-Light özellikle satış demosu, kurumsal frontend demo veya sınırlı ekran sayısına sahip UI işleri için uygundur.
+```text
+corporate website'i single page'e indir
+multi-page information architecture'ı görmezden gel
+navigation/page responsibilities'i tek DESIGN_RULES içine gizle
+```
 
-### `standard`
+Multi-page `corporate-website` için default intake recommendation `standard`dır. Kullanıcı `light` seçebilir; ancak approved page architecture yine eksiksiz implementation-ready kalmalı ve rationale pending intake'te görünmelidir.
 
-Light kapsamının tamamını içerir ve tasarımı bir sistem olarak modellemek için gereken orta derinliği ekler.
+## standard
 
-Uygun olduğunda şu katmanları kapsar:
+Light kapsamının tamamını ve UI'ı sistem olarak modellemek için gereken orta derinliği içerir:
 
-- design rules
-- design system / token ve component ilkeleri
-- global shell / navigation yapısı
-- page/screen design package'ları
-- ortak system state'leri
-- responsive davranışların sayfa seviyesinde netleşmesi
+- DESIGN_RULES,
+- DESIGN_SYSTEM,
+- GLOBAL_SHELL / navigation,
+- PAGE-DESIGN instances,
+- applicable SYSTEM_STATES,
+- cross-page/screen responsive consistency.
 
-Standard, gerçek ürün veya birden çok ekran/sayfa içeren ciddi UI projeleri için varsayılan güçlü seviyedir.
+Birden çok distinct page/screen içeren corporate website veya serious UI product için varsayılan güçlü seviyedir.
 
-### `full`
+## full
 
-Standard kapsamının tamamını içerir ve karmaşık ürün davranışlarının tasarım düzeyinde ayrıntılı modellenmesini sağlar.
+Standard kapsamını korur ve gerçek complexity gerekiyorsa:
 
-Uygun olduğunda şu derinlikleri ekler:
+- feature-level packages,
+- complex multi-step flows,
+- auth/gate/permission experiences,
+- cross-screen interaction state,
+- admin/operational UI,
+- dense responsive/state matrices
 
-- feature-level design package'ları
-- karmaşık multi-step flow'lar
-- auth/gate/permission deneyimleri
-- cross-screen interaction state'leri
-- admin/operational arayüzler
-- yoğun responsive varyasyonlar
-- kompleks empty/loading/error/success/edge state matrisi
-
-Full design planning, dosya sayısını yapay biçimde artırmaz. Yalnızca projenin gerçek UX karmaşıklığının gerektirdiği design artifact'leri seçilir.
+ekler.
 
 ---
 
-## 3. Evrensel Kalite Tabanı
+# 3. Universal Quality Floor
 
-Planning profile ne olursa olsun aşağıdaki kalite tabanı değişmez:
+Profile ne olursa olsun:
 
 ```text
 clean
@@ -165,118 +159,106 @@ current
 agent-ready
 ```
 
-Aşağıdaki yorumlar MUST NOT yapılır:
+MUST NOT:
 
 ```text
-"Prototype olduğu için geçici/dağınık olabilir."
+"Prototype olduğu için dağınık olabilir."
 "Demo olduğu için mimari önemli değil."
-"Light design olduğu için generic template yeterli."
-"Backend henüz yok, veri erişimi component içine gömülebilir."
+"Light olduğu için generic template yeterli."
+"Light olduğu için approved pages tek sayfaya merge edilebilir."
+"Backend yok, data component içine gömülebilir."
 ```
 
-Delivery profile, implementation planning ve design planning yalnızca **kapsam/derinlik** belirler; kalite tabanını düşürmez.
+Delivery/profile yalnız maturity/planning depth'i etkiler; approved scope/page breadth'i değiştirmez.
 
 ---
 
-## 4. Design Diversity ve Anti-Template Kuralı
+# 4. Design Diversity / Anti-Template
 
-Product Engine, tasarım kararı verirken sektör veya proje türünden tek başına hazır bir görsel tema türetemez.
+Product Engine sektör veya project type'tan hazır visual theme türetemez.
 
-Örnek yasak otomatik eşlemeler:
-
-```text
-sanayi/makine → otomatik lacivert ağırlıklı klasik kurumsal tema
-SaaS → otomatik mor/mavi gradient + üç feature kartı
-AI ürünü → otomatik neon mor/cyan koyu arayüz
-kurumsal site → otomatik hero + üç kart + logo bandı + CTA şablonu
-```
-
-Bunlar referans olabilir; default tasarım sonucu olamaz.
-
-Her UI projesinde tasarım kararı verirken en az şu bağlamlar birlikte değerlendirilmelidir:
-
-- ürünün/markanın karakteri ve hedef algısı
-- kullanıcı kitlesi ve kullanım bağlamı
-- içerik yoğunluğu ve ana görevler
-- mevcut marka varlıkları ve doğrulanmış kısıtlar
-- projenin diğer benzer çıktılardan nasıl ayrışacağı
-- güncel ama kullanılabilir interaction/composition yaklaşımları
-
-### Design Novelty Sınırı
-
-Farklılaşma kullanılabilirliğin önüne geçemez.
+Yasak automatic mappings:
 
 ```text
-non-generic ≠ rastgele
-modern ≠ trend kopyası
-novel ≠ erişilemez veya anlaşılmaz
+sanayi → klasik lacivert kurumsal tema
+SaaS → mor/mavi gradient + üç feature card
+AI → neon cyan/mor dark UI
+corporate website → hero + üç card + logo band + CTA template
 ```
 
-Amaç, template hissi vermeyen; projeye ait, tutarlı ve uygulanabilir bir design direction üretmektir.
+Her UI project'te birlikte değerlendirilir:
+
+- brand/product character,
+- audience/use context,
+- content density/tasks,
+- approved brand assets/constraints,
+- project differentiation,
+- current usable composition/interaction patterns.
+
+```text
+non-generic ≠ random
+modern ≠ trend copy
+novel ≠ inaccessible
+```
 
 ---
 
-## 5. Demo / Prototype Mimari Kalite Kuralı
+# 5. Demo / Prototype Architectural Quality
 
-Demo veya Prototype scope geçici olabilir; mimari kalite geçici değildir.
+Canonical invariant:
 
 ```text
 Temporary scope ≠ throwaway architecture
+Prototype/demo maturity ≠ reduced page architecture
 ```
 
-Bir demo bugün yalnızca frontend içeriyor olsa bile, kapsam sonradan gerçek backend/data/service katmanına büyüyebilecekse bugünkü yapı bu geçişi gereksiz yeniden yazım olmadan desteklemelidir.
+Demo frontend future backend/data/service layer'a büyüyebilecekse current structure gereksiz rewrite oluşturmamalıdır.
 
-Product Engine, "demo" ifadesini şu davranışlar için gerekçe olarak kullanamaz:
+MUST NOT:
 
-- iş mantığını presentation component'lerine gömmek
-- mock veriyi kontrolsüz biçimde farklı component'lere dağıtmak
-- environment/config sınırını yok saymak
-- backend entegrasyon noktalarını belirsiz bırakmak
-- gerçek API geldiğinde UI'ın geniş ölçüde yeniden yazılmasını gerektirecek coupling oluşturmak
-- kısa ömürlü hack'leri kalıcı mimari karar gibi belgelemek
+- business logic presentation'a gömmek,
+- mock data'yı uncontrolled component'lere dağıtmak,
+- config/environment boundary'yi yok saymak,
+- future integration points'i belirsiz bırakmak,
+- short-lived hacks'i permanent architecture yapmak,
+- corporate sales demo'yu single marketing surface'e indirmek.
 
 ---
 
-## 6. Backend / Integration Readiness Baseline
+# 6. Backend / Integration Readiness
 
-Frontend ağırlıklı veya demo projelerde gerçek backend henüz kapsamda olmayabilir. Bu durumda Product Engine sahte API, endpoint veya database contract'ı üretmez.
+Frontend current scope'ta backend olmayabilir. Sahte API/database üretilemez.
 
-Ancak teknik planlama aşağıdaki sınırları korumalıdır:
+Required conceptual boundary:
 
 ```text
 UI / presentation
       ↓
-service veya data-access boundary
+service / data-access boundary
       ↓
-mock/local adapter bugün
-real API adapter gelecekte
+mock/local adapter today
+real API adapter later when approved
 ```
 
-Proje bağlamına uygun biçimde en az şu soruların cevabı net olmalıdır:
+Technical planning şunları cevaplamalıdır:
 
-- Veri bugün nereden geliyor?
-- Mock/local data hangi katmanda tutuluyor?
-- UI hangi interface/service boundary üzerinden veri tüketiyor?
-- Gerçek backend eklendiğinde hangi katman değişecek?
-- Environment/config değerleri uygulama kodundan nasıl ayrılacak?
-- Backend henüz yokken hangi contract'lar yalnızca unresolved olarak kalmalı?
-
-### Yasak Davranış
-
-Backend readiness sağlamak, henüz kararlaştırılmamış bir backend stack'i veya API yüzeyini uydurmak anlamına gelmez.
+- data today nereden geliyor,
+- mock/local data nerede,
+- UI hangi boundary üzerinden consume ediyor,
+- real backend geldiğinde hangi layer değişiyor,
+- env/config nasıl ayrılıyor,
+- hangi backend/API decisions unresolved.
 
 ```text
 integration-ready → YES
 invented backend → NO
 ```
 
-Gerçek backend/API/database kapsamı onaylanırsa ilgili canonical package/document selection kuralları ayrıca uygulanır.
-
 ---
 
-## 6A. Continuation-Ready Frontend Stack Selection
+# 6A. Continuation-Ready Frontend Stack Selection
 
-Frontend demo/prototype projelerde integration readiness yalnız data adapter boundary ile tamamlanmış sayılmaz. Product Engine, seçilen frontend stack ve tooling'in **proje kabul edildiğinde aynı codebase'in gerçek uygulamaya büyümesini gereksiz structural rewrite olmadan destekleyip desteklemediğini** ayrıca değerlendirmek zorundadır.
+Integration readiness yalnız adapter boundary değildir. Stack/tooling, continuation beklenen projede aynı codebase'in büyümesini structural rewrite olmadan desteklemelidir.
 
 Canonical invariant:
 
@@ -284,133 +266,127 @@ Canonical invariant:
 Prototype/demo maturity ≠ migration-heavy frontend foundation izni
 ```
 
-Bir satış demosu, müşteri demosu veya ürün doğrulama frontend'i için approved/current context gelecekte aynı proje üzerinde devam edilmesini makul kılıyorsa stack kararı şu hedefi korumalıdır:
+Continuation expected flow:
 
 ```text
-demo frontend
+demo/current frontend
 → same application foundation
 → more pages/components/state
 → real service/API adapter
-→ optional CMS/admin/auth/integration layers
+→ optional CMS/admin/auth/integrations
 ```
 
-Bu kural belirli bir framework'ü global olarak zorunlu kılmaz. React, Vue, Svelte veya başka bir component-oriented frontend yaklaşımı current project constraints ve continuation path ile gerekçelendirildiği ölçüde seçilebilir.
-
-### Deterministic Continuation Gate
-
-Aşağıdaki koşullardan herhangi biri mevcutsa `continuation_expected = YES` kabul edilir:
-
-- proaktif satış/client demosu,
-- müşteri kabul ederse aynı site/ürün üzerinde devam edilmesi bekleniyor,
-- future scope içinde backend/API/CMS/auth/admin veya yeni page/component/state büyümesi açıkça bulunuyor,
-- mevcut source/approved input demo'nun gerçek uygulamaya dönüşebileceğini söylüyor.
-
-`continuation_expected = YES` ise ve approved input/source içinde aksi yönde explicit constraint yoksa Engine **MUST** şu baseline class'ını seçmelidir:
+Belirli global framework mandate yoktur. Ancak continuation beklenen client/sales frontend için approved opposite constraint yoksa şu class zorunludur:
 
 ```text
-package-managed frontend
-+ package/dependency manifest
-+ repeatable dev/build/preview commands
+package-managed development baseline
 + component/module-oriented source structure
++ repeatable dev/build/preview workflow
 + service/config boundary
-+ same-codebase continuation path
++ continuation-friendly routing/page expansion path when multi-page
 ```
 
-Bu gate bir framework adı zorunlu kılmaz; ancak zero-build/dependency-free foundation bu durumda default teknik synthesis seçeneği değildir.
+## Zero-Build / Dependency-Free Gate
 
-### Zero-Build / Dependency-Free İstisnası
+Continuation expected projede standalone/dependency-free/zero-build seçim yalnız **approved user/project/environment constraint** ile yapılabilir.
 
-Standalone HTML/CSS/Vanilla JS veya dependency-free/zero-build yaklaşım, `continuation_expected = YES` iken **yalnızca approved user/project/environment constraint** ile seçilebilir.
+Valid constraint examples:
 
-Geçerli istisna kanıtı örnekleri:
+- explicit zero-build/static delivery requirement,
+- target environment package tooling çalıştıramıyor,
+- explicitly disposable one-off proof with no continuation expectation.
 
-- kullanıcı açıkça framework/package tooling istemediğini onaylamıştır,
-- teslim ortamı Node/package tooling çalıştıramaz,
-- teslim gereksinimi explicit single-file/static/zero-build artifact zorunluluğudur,
-- approved scope projeyi bilinçli one-off/disposable proof olarak tanımlar ve continuation beklenmediğini açıkça söyler.
-
-Engine/agent kendi teknik yorumu ile istisna üretemez. TECH_CONTEXT içindeki “low migration cost”, “modüler ES6”, “ileride React/Vite'a taşınabilir”, “küçük proje”, “daha hızlı”, “dependency riski yok” veya benzeri rationale **approved constraint yerine geçmez**.
-
-Canonical invalid pattern:
+Invalid self-justifications:
 
 ```text
-continuation_expected = YES
-+ no approved zero-build constraint
-+ Vanilla/zero-build selected
-→ INVALID STACK SELECTION
+"küçük olduğu için"
+"demo olduğu için"
+"daha hızlı"
+"dependency crash olmasın"
+"ileride framework'e migrate ederiz"
+"migration kolay olur"
 ```
 
-Özellikle şu ifade continuation-ready sayılmaz:
+Agent rationale approved constraint yaratamaz.
+
+TECH_CONTEXT minimum şu evidence'ı taşır:
 
 ```text
-"Gerekirse ileride React/Vite/Next.js'e migrate edilir."
+Continuation Expected
+Approved Zero-Build Constraint
+Selected Frontend Baseline
+Package Manifest
+Dev Command
+Build Command
+Preview Command
+Same-Codebase Continuation
+Routing/Page Expansion Path (multi-page applicable ise)
 ```
-
-Çünkü continuation hedefi migration planlamak değil, aynı application foundation üzerinde büyümektir.
-
-### Continuation Readiness Soruları
-
-TECH_CONTEXT stack kararı minimum şu sorulara cevap verebilmelidir:
-
-1. `continuation_expected` YES mi NO mu ve hangi approved evidence bunu belirliyor?
-2. Seçilen stack yeni page/component/state eklenmesini structural rewrite olmadan destekliyor mu?
-3. Local development, build ve preview workflow nedir?
-4. Package/dependency lifecycle nasıl yönetiliyor?
-5. Gerçek API/CMS/auth gibi katmanlar geldiğinde hangi frontend boundary'leri korunacak?
-6. Zero-build seçildiyse exact approved constraint ID/evidence nedir?
-
-Bu cevaplar yoksa frontend stack kararı implementation-ready değildir.
 
 ---
 
-## 7. Profile Seçim İlkeleri
+# 7. Corporate Website Profile Guidance
 
-Planning profile'ları approved intake gerçeğinin parçasıdır.
+Site architecture semantics `SITE_ARCHITECTURE_RULES.md` sahibidir; bu bölüm yalnız profile recommendation verir.
 
-Ajan intake sırasında uygun profile'ı önerebilir; ancak approved input öncesinde profile değerleri kullanıcı tarafından canonical explicit approval ile kesinleşmelidir.
-
-Öneri için genel yönlendirme:
+Default recommendation:
 
 ```text
-Satış frontend demosu / sınırlı UI işi
-→ implementation_planning: standard
-→ design_planning: light
-
-Orta ölçekli gerçek UI ürünü
-→ implementation_planning: standard
+corporate-website + multiple approved pages
+→ implementation_planning: standard (unless complexity requires full)
 → design_planning: standard
-
-Büyük, çok özellikli veya teknik olarak karmaşık ürün
-→ implementation_planning: full
-→ design_planning: full (UI/UX kapsamı varsa)
 ```
 
-Bu örnekler zorunlu mapping değildir. Projenin gerçek kapsamı ve kullanıcı kararı üstündür.
+Nedeni:
+
+- real navigation shell,
+- page-specific information hierarchy,
+- consistent design system,
+- page contracts,
+- cross-page responsive behavior.
+
+Bu recommendation approval değildir. Kullanıcı profile değerlerini pending intake üzerinden explicit approve eder.
 
 ---
 
-## 8. Delivery Profile ile İlişki
+# 8. Delivery Profile Relationship
 
-`delivery_profile`, `implementation_planning` ve `design_planning` farklı eksenlerdir.
+`delivery_profile`, `implementation_planning`, `design_planning`, `site_architecture` ayrı eksenlerdir.
 
-Örneğin şu kombinasyon tamamen geçerlidir:
+Örnek:
 
 ```yaml
+project_type: corporate-website
 delivery_profile: Prototype
 implementation_planning: standard
-design_planning: light
+design_planning: standard
+site_architecture:
+  - PAGE-001 Home
+  - PAGE-002 Corporate
+  - PAGE-003 Services
+  - PAGE-004 Contact
 ```
 
-Bu kombinasyon, ürünün teslim olgunluğunun Prototype olduğunu; buna rağmen implementation planlamasının agent-ready minimumda ve tasarım dokümantasyonunun güçlü fakat hafif artifact setiyle tutulacağını ifade eder.
+Anlamı:
 
-Benzer şekilde:
+- delivery maturity Prototype,
+- implementation plan agent-ready standard,
+- multi-page design standard,
+- dört approved page'in tamamı current scope.
 
-```yaml
-delivery_profile: Implementation Ready
-implementation_planning: full
-design_planning: full
+Prototype bu dört page'i bire düşürmez.
+
+---
+
+# Core Invariants
+
+```text
+PROFILE DEPTH ≠ QUALITY LEVEL
+PROFILE DEPTH ≠ APPROVED SCOPE BREADTH
+Prototype ≠ page reduction
+Light ≠ generic design
+Multi-page corporate website → standard design recommended
+Temporary scope ≠ throwaway architecture
+Continuation expected → same-codebase growth
+Integration-ready ≠ invented backend
 ```
-
-karmaşık bir gerçek ürün için geçerlidir.
-
-Delivery profile tek başına planning depth'i düşüremez veya yükseltemez.
