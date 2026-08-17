@@ -14,6 +14,8 @@ Bu belge şunların sahibidir:
 
 - Minimum gerekli girdi alanları
 - Önerilen girdi alanları
+- Canonical `project_type` vocabulary
+- Corporate website için `site_architecture` alanının intake/approval gerekliliği
 - Sıfırdan proje ile mevcut proje ayrımı
 - Girdi onay süreci (pending → approved)
 - Eksik bilgi sınıflandırması
@@ -25,6 +27,7 @@ Bu belge şunların sahibidir:
 
 Bu belge şunların sahibi değildir:
 
+- Corporate website page/surface architecture semantiği → `SITE_ARCHITECTURE_RULES.md`
 - Planning profile değerlerinin tam anlamı → `PLANNING_PROFILES.md`
 - Doküman paketinin seçim mantığı → `PACKAGE_RULES.md`
 - Bilginin hangi dokümana yazılacağı → `INFORMATION_MAP.md`
@@ -73,11 +76,31 @@ primary_language
 design_planning
   UI/UX design planning derinliği.
   Değerler: light | standard | full
-  Applicable örnek türler: web-app, mobile-app, landing-page, content-platform,
+  Applicable örnek türler: web-app, mobile-app, corporate-website, content-platform,
   UI taşıyan internal-tool veya diğer UI kapsamlı projeler.
 ```
 
 UI/UX taşımayan projelerde `design_planning` için `none` adlı bir değer kullanılmaz; alan applicable değildir ve canonical profile seçimi yapılmaz.
+
+### Corporate Website İçin Zorunlu Alan (MUST when `project_type: corporate-website`)
+
+```text
+site_architecture
+  Approved distinct page/surface seti.
+  Her executable surface PAGE-XXX kimliği, adı, amacı, navigation/route identity'si,
+  scope status'u ve ana capability/content boundary'si ile kaydedilir.
+```
+
+Kurallar:
+
+- Exact page listesi source'ta varsa intake bunu normalize eder.
+- Exact page listesi eksik fakat corporate website intent açıksa agent pending intake'te güvenli bir **Proposed Site Architecture** sunar.
+- Proposal approval değildir; executable truth yalnız canonical explicit user approval sonrasında oluşur.
+- `Prototype`, `demo` veya `sales demo` page breadth'i otomatik azaltamaz.
+- Approved distinct pages tek sayfadaki anchor section'lara sessizce collapse edilemez.
+- Site architecture semantiği ve coverage kuralları `engine/SITE_ARCHITECTURE_RULES.md` authority'sidir.
+
+Multi-page corporate website için default intake recommendation `design_planning: standard` olmalıdır. Bu otomatik approval değildir; başka profile seçimi kullanıcıya rationale ile görünür sunulmalıdır.
 
 ### Önerilen Alanlar (SHOULD)
 
@@ -137,12 +160,13 @@ Ajan pending intake sırasında planning profile önerisi yapabilir; ancak packa
 Örnek geçerli kombinasyon:
 
 ```yaml
+project_type: corporate-website
 delivery_profile: Prototype
 implementation_planning: standard
-design_planning: light
+design_planning: standard
 ```
 
-Bu kombinasyon çelişkili değildir. Prototype delivery profile, implementation planning seviyesini otomatik olarak düşürmez.
+Bu kombinasyon çelişkili değildir. Prototype delivery profile, implementation planning seviyesini veya approved site architecture breadth'ini otomatik olarak düşürmez.
 
 ### Profile Approval
 
@@ -163,6 +187,11 @@ Product Engine aşağıdaki proje türlerini tanır:
 web-app
   Kullanıcıya açık tarayıcı tabanlı uygulama.
 
+corporate-website
+  Bir firma/marka/kurumun kurumsal kimliğini, hizmet/ürün keşfini, güven içeriğini
+  ve iletişim yüzeylerini approved multi-page information architecture üzerinden
+  sunan web sitesi.
+
 api-service
   Ağırlıklı olarak API yüzeyi olan arka uç servis.
 
@@ -171,9 +200,6 @@ mobile-app
 
 internal-tool
   Şirket içi kullanım için araç veya pano.
-
-landing-page
-  Ürün veya kampanya tanıtım sayfası.
 
 content-platform
   İçerik üretimi veya tüketimine odaklanan platform.
@@ -185,11 +211,24 @@ infrastructure
   Altyapı, CI/CD veya DevOps odaklı çalışma.
 
 prototype
-  Fikri kanıtlamaya yönelik, production hedefli olmayan yapı.
+  Fikri kanıtlamaya yönelik özel proje türü; delivery maturity için Prototype profile ile karıştırılmaz.
 
 other
   Yukarıdakilere girmeyen proje türleri. Kısa açıklama gerektirir.
 ```
+
+### Corporate Website Classification Guard
+
+Source/brief şu niyeti taşıyorsa `landing-page` benzeri daraltıcı bir type'a normalize edilemez:
+
+```text
+kurumsal web sitesi
+firma web sitesi
+müşteriye gerçek site olarak devam etmesi beklenen kurumsal sales demo
+hizmet/ürün + kurumsal bilgi + iletişim information architecture'ı
+```
+
+Bu context `project_type: corporate-website` olarak pending intake'e taşınır. `sales demo`, `demo` veya `prototype` ifadesi project type'ı değiştirmez; delivery context/profile olarak değerlendirilir.
 
 ---
 
@@ -201,7 +240,7 @@ Foundation
   Ajan projeyi anlayabilir; ancak belirli teknik kararlar henüz verilmemiştir.
 
 Prototype
-  Hızlı deneme veya PoC amaçlı. Teslim olgunluğu sınırlıdır ancak kalite tabanı düşmez.
+  Hızlı doğrulama/demo amaçlı teslim olgunluğudur. Kalite veya approved page/scope breadth'i düşmez.
   Prototype olması throwaway mimari veya eksik execution planning anlamına gelmez.
 
 Implementation Ready
@@ -268,8 +307,10 @@ Pending girdide:
 - Eksik zorunlu alanlar kaydedilmiştir.
 - Belirsiz alanlar işaretlenmiştir.
 - Planning profile önerileri ve gerekçeleri görünürdür.
+- Corporate website ise proposed/known site architecture görünürdür.
 - Kullanıcıya sorulması gereken sorular hazırlanmıştır.
 
+Pending girdideki proposed page seti generation authority değildir.
 Pending girdiyle üretim başlatılamaz.
 
 ### Approved Durumu
@@ -281,6 +322,7 @@ Approved girdide:
 - Tüm zorunlu alanlar doldurulmuştur veya kabul edilmiş assumption'larla tamamlanmıştır.
 - `implementation_planning` kesinleşmiştir.
 - UI/UX taşıyan projelerde `design_planning` kesinleşmiştir.
+- Corporate website ise `site_architecture` kesinleşmiştir.
 - Açık çelişkiler çözülmüştür.
 - Ajan üretimi başlatabilir.
 
@@ -294,7 +336,7 @@ Product Engine intake approval'ı yalnızca kullanıcının Product Engine taraf
 Geçerli explicit approval örnekleri:
 - "Onaylıyorum, devam et."
 - "Bu pending input doğru, approved yap."
-- Sunulan intake kararlarını açıkça kabul eden eşdeğer doğrudan kullanıcı mesajı.
+- Sunulan intake kararlarını ve applicable site architecture'ı açıkça kabul eden eşdeğer doğrudan kullanıcı mesajı.
 
 Geçerli approval SAYILMAYAN olaylar:
 - IDE plan approval / auto-approve
@@ -322,6 +364,7 @@ Canonical explicit approval kanıtı yoksa:
 | Durum | Tanım | Davranış |
 |---|---|---|
 | Kritik Eksiklik | Paket seçimi, proje türü veya kapsamı belirlenemiyor | Üretim durdurulur, kullanıcıya soru sorulur |
+| Site Architecture Eksikliği | Corporate website exact page seti kesin değil | Pending intake'te proposal/clarification üretilir; approval öncesi kesinleşir |
 | Planning Profile Eksikliği | `implementation_planning` veya applicable `design_planning` kesin değil | Pending intake'te öneri/clarification üretilir; approval öncesi kesinleşir |
 | Tamamlanabilir Eksiklik | Paket varsayılanıyla güvenli biçimde doldurulabilir | Assumption yapılır, kaydedilir |
 | Gelecekte Belirlenecek | Şu an için zorunlu değil, sonradan tamamlanacak | Unresolved item olarak işaretlenir |
@@ -351,17 +394,19 @@ Bu kural safe assumption üretimini engellemez; yalnız henüz verilmemiş tekni
 
 ## Clarification Gerektiren Durumlar
 
-Aşağıdaki durumlarda ajan MUST kullanıcıya soru sormalıdır:
+Aşağıdaki durumlarda ajan MUST kullanıcıya soru sormalı veya pending proposal'ı explicit approval için görünür kılmalıdır:
 
 - `project_type` belirsiz veya çelişkili ise
-- `delivery_profile` belirtilmemişse (pending intake aşamasında netleştirilmeli veya safe inference ile belirlenip onay için kullanıcının onayına sunulmalıdır; approved input öncesi kesinleşmek zorundadır)
+- `project_type: corporate-website` fakat exact site architecture source'tan kesinleşmiyorsa
+- Corporate source intent ile pending project type arasında single-page/corporate-site çelişkisi varsa
+- `delivery_profile` belirtilmemişse
 - `implementation_planning` için `standard` ve `full` arasında proje kapsamını ciddi biçimde değiştiren bir belirsizlik varsa
 - UI/UX taşıyan projede `design_planning` için birden fazla makul derinlik varsa ve seçim document scope'u anlamlı biçimde değiştiriyorsa
-- `project_state` belirsiz ise (yani ne kadar mevcut materyal olduğu anlaşılamıyorsa)
+- `project_state` belirsiz ise
 - Birden fazla kapsam yorumu mümkün ve bunlar farklı paket seçimine yol açıyorsa
-- Kullanıcı iki farklı proje hakkında bilgi vermiş gibi görünüyorsa (proje karışıklığı riski)
+- Kullanıcı iki farklı proje hakkında bilgi vermiş gibi görünüyorsa
 
-Ajan açık bağlamdan makul planning profile önerisi yapabilir; ancak approved input öncesi bu öneri kullanıcıya görünür olmalıdır.
+Ajan açık bağlamdan makul planning profile ve site architecture önerisi yapabilir; ancak approved input öncesi bu öneriler kullanıcıya görünür olmalıdır.
 
 ---
 
@@ -379,9 +424,10 @@ Aşağıdaki bilgiler hiçbir koşulda sessizce uydurulmamalıdır (MUST NOT):
 - Production ortam ve deployment hedefleri
 - Kullanıcının açıkça karar vermesi gereken ürün tercihleri
 - Mevcut sistemle entegrasyon gereksinimleri (teknik detayları)
+- Corporate website'te approved page seti (agent pending proposal üretebilir; sessizce approved sayamaz)
 ```
 
-Bu bilgiler eksikse, üretim durdurulur ve kullanıcıya netleştirme sorusu yönlendirilir.
+Bu bilgiler eksikse uygun pending clarification/proposal davranışı uygulanır.
 
 Backend/integration readiness, henüz kararlaştırılmamış API endpoint'i, database veya backend stack'i uydurma izni vermez. Exact stack unresolved iken stack-specific execution assumption da yapılamaz. Bkz: `PLANNING_PROFILES.md`.
 
@@ -395,8 +441,9 @@ Bir girdi aşağıdaki koşulların tamamını karşıladığında approved olar
 2. `project_type` ve `delivery_profile` netleştirilmiştir.
 3. `implementation_planning` `standard | full` olarak netleştirilmiştir.
 4. UI/UX taşıyan projelerde `design_planning` `light | standard | full` olarak netleştirilmiştir.
-5. `project_state` mevcut proje gerçekliğiyle doğru sınıflandırılmış; existing ise kaynaklar ve transition context listelenmiştir.
-6. Kritik çelişkiler çözülmüştür.
-7. Assumption yapılan alanlar açıkça kaydedilmiştir ve unresolved stack hakkında stack-specific gerçeklik uydurulmamıştır.
-8. Kullanıcının canonical explicit approval mesajı alınmıştır; IDE/tool/plan/auto-approval bu koşulu karşılamaz.
-9. `approved_by: user` yalnızca 8. koşul için doğrudan kanıt varsa yazılmıştır.
+5. `project_type: corporate-website` ise `site_architecture` PAGE identities ile kesinleşmiş ve kullanıcıya görünür biçimde onaylanmıştır.
+6. `project_state` mevcut proje gerçekliğiyle doğru sınıflandırılmış; existing ise kaynaklar ve transition context listelenmiştir.
+7. Kritik çelişkiler çözülmüştür.
+8. Assumption yapılan alanlar açıkça kaydedilmiştir ve unresolved stack hakkında stack-specific gerçeklik uydurulmamıştır.
+9. Kullanıcının canonical explicit approval mesajı alınmıştır; IDE/tool/plan/auto-approval bu koşulu karşılamaz.
+10. `approved_by: user` yalnızca 9. koşul için doğrudan kanıt varsa yazılmıştır.
