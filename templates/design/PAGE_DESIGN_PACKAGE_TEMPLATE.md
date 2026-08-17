@@ -6,7 +6,7 @@
 template_id: page-design-package-template
 template_name: Page / Screen Design Package Template
 document_id: PAGE-DESIGN
-version: 1.0.0
+version: 1.1.0
 status: active
 template_type: dynamic-document
 category: design
@@ -26,6 +26,7 @@ required_inputs:
   - design_system
 conditional_inputs:
   - global_shell
+  - approved_site_architecture
 dependencies:
   - DESIGN
   - DESIGN-SYSTEM
@@ -41,13 +42,23 @@ Tek bir distinct page/screen implementation surface'inin amaç, information hier
 
 Bu template tek canonical iskelettir. Her page/screen için yeni Document ID oluşturulmaz.
 
+Corporate website için her instance exact approved `PAGE-XXX` identity'ye bağlanmalıdır:
+
+```text
+approved PAGE-XXX
+→ exactly one PAGE-DESIGN instance (design standard/full)
+```
+
+PAGE-DESIGN yeni page icat edemez, approved distinct page'i başka page içine collapse edemez veya route identity'yi değiştiremez.
+
 Örnek instance'lar:
 
 ```text
 HOME_DESIGN_PACKAGE.md
+CORPORATE_DESIGN_PACKAGE.md
 SERVICES_DESIGN_PACKAGE.md
-ROOM_DESIGN_PACKAGE.md
-PROFILE_DESIGN_PACKAGE.md
+SERVICE_DETAIL_DESIGN_PACKAGE.md
+CONTACT_DESIGN_PACKAGE.md
 ```
 
 Sadece gerçek implementation surface için instance üretilir. Aynı layout içinde küçük section değişikliği yeni page package gerekçesi değildir.
@@ -55,6 +66,7 @@ Sadece gerçek implementation surface için instance üretilir. Aynı layout iç
 ## Zorunlu Bölümler
 
 - Page/Screen Identity & Purpose
+- Approved Page Identity / Relation
 - Route / Entry Context
 - User Goal & Primary Actions
 - Information Hierarchy
@@ -68,18 +80,23 @@ Sadece gerçek implementation surface için instance üretilir. Aynı layout iç
 
 ## İçerik Üretim Kuralları
 
+- Corporate website ise `PAGE_ID`, page name, purpose ve route/navigation identity approved Site Architecture registry ile bire bir eşleşmelidir.
 - `GLOBAL_SHELL` varsa shell tekrar tarif edilmez; yalnız page-specific ilişki yazılır.
 - Design token veya global component style yeniden icat edilmez; `DESIGN_SYSTEM` referans alınır.
 - Page design, PRODUCT_RULES'taki ürün davranışını değiştiremez.
 - Mock/local data kullanılıyorsa page'in hangi service/data boundary'yi tükettiği belirtilir; endpoint uydurulmaz.
 - Responsive davranış yalnız "mobil uyumlu" demekle bırakılmaz; layout transformation açıkça tanımlanır.
 - Tasarım generic template pattern'ine zorlanmaz; page composition proje visual concept'ini sürdürür.
+- Approved detail page accordion/card state'e indirgenemez.
+- Page architecture factual enrichment izni değildir.
 
 ## Placeholder Tanımları
 
 - `{{PROJECT_NAME}}`
+- `{{PAGE_ID}}`
 - `{{PAGE_NAME}}`
 - `{{PAGE_SLUG}}`
+- `{{APPROVED_PAGE_RELATION}}`
 - `{{ROUTE_OR_ENTRY_CONTEXT}}`
 - `{{PAGE_PURPOSE}}`
 - `{{PRIMARY_USER_GOALS}}`
@@ -94,10 +111,12 @@ Sadece gerçek implementation surface için instance üretilir. Aynı layout iç
 
 ## Validation Beklentileri
 
-- Page route/purpose gerçek scope ile eşleşmeli.
+- Corporate website'te Page ID approved registry'de bulunmalı.
+- Page route/purpose approved site architecture ile eşleşmeli.
 - Shell, design system ve product rules ile çelişmemeli.
 - Page-specific states global SYSTEM_STATES ile uyumlu olmalı.
 - Aynı sorumluluk başka page package'ta gereksiz tekrar edilmemeli.
+- `design_planning: standard | full` corporate website'te generated PAGE-DESIGN identity seti approved page setine eşit olmalı.
 
 ---
 
@@ -105,8 +124,10 @@ Sadece gerçek implementation surface için instance üretilir. Aynı layout iç
 
 # {{PROJECT_NAME}} — {{PAGE_NAME}} Design Package
 
+- **Page ID**: `{{PAGE_ID}}`
 - **Page/Screen**: {{PAGE_NAME}}
 - **Slug**: `{{PAGE_SLUG}}`
+- **Approved Relation**: {{APPROVED_PAGE_RELATION}}
 - **Route / Entry Context**: {{ROUTE_OR_ENTRY_CONTEXT}}
 - **Amaç**: {{PAGE_PURPOSE}}
 
