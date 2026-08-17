@@ -11,12 +11,12 @@ Kullanılan ajanın Codex, Claude, Gemini veya başka bir sistem olması fark et
 ## Current Version
 
 ```text
-Product Engine Version: 0.3.0
+Product Engine Version: 0.3.1
 Active Version Authority: Root README.md
 Version History Authority: logs/ENGINE_CHANGELOG.md
 ```
 
-`v0.3.0`, corporate website planning modelini first-class multi-page architecture seviyesine yükseltir.
+`v0.3.1`, v0.3.0 corporate multi-page modelini korur ve generated child-capability scope authorization'ını deterministic/fail-closed hale getirir.
 
 Major distinction:
 
@@ -24,20 +24,23 @@ Major distinction:
 project_type       → ne üretiyoruz?
 delivery_profile   → hangi maturity'de teslim ediyoruz?
 site_architecture  → hangi approved pages/surfaces var?
+approved capability scope → kullanıcı ne yapabilir / sistem ne davranış gösterebilir?
 planning profiles  → planning depth nedir?
 technical stack    → nasıl sürdürülebilir implement ediyoruz?
 ```
 
-Canonical corporate invariants:
+Canonical invariants:
 
 ```text
 corporate website ≠ landing page
 sales demo ≠ project type
 Prototype ≠ page breadth reduction
 approved distinct pages ≠ anchor sections
+relatedness ≠ capability authorization
+approved page existence ≠ all plausible interactions on that page
 ```
 
-Active runtime project type vocabulary artık `landing-page` içermez; corporate firm/site işleri `project_type: corporate-website` olarak modellenir.
+Active runtime project type vocabulary `landing-page` içermez; corporate firm/site işleri `project_type: corporate-website` olarak modellenir.
 
 ---
 
@@ -47,7 +50,7 @@ Active runtime project type vocabulary artık `landing-page` içermez; corporate
 |---|---|
 | `README.md` | Repository entry point + active version authority. |
 | `PRODUCT_ENGINE_BRAIN.md` | Engine amacı/vizyonu/operating philosophy. |
-| `engine/` | Intake, site architecture, planning, package, generation, validation, lifecycle contracts. |
+| `engine/` | Intake, capability scope, site architecture, planning, package, generation, validation, lifecycle contracts. |
 | `packages/` | Domain/base packages + planning overlay. |
 | `templates/` | Canonical project/design/wave/run skeletons. |
 | `project-start/` | Pre-run source + launcher layer. |
@@ -104,15 +107,16 @@ logs/
 2. PRODUCT_ENGINE_BRAIN.md
 3. engine/README.md
 4. engine/PROJECT_INTAKE.md
-5. engine/SITE_ARCHITECTURE_RULES.md (corporate/page architecture applicable ise)
-6. engine/PLANNING_PROFILES.md
-7. engine/DOCUMENT_CATALOG.md
-8. engine/PACKAGE_RULES.md
-9. task için gerekli diğer engine contracts
-10. selected package(s)
-11. relevant point-of-use templates
-12. lifecycle'a göre project source / pending or approved input
-13. active run records when run exists
+5. engine/CAPABILITY_SCOPE_RULES.md
+6. engine/SITE_ARCHITECTURE_RULES.md (corporate/page architecture applicable ise)
+7. engine/PLANNING_PROFILES.md
+8. engine/DOCUMENT_CATALOG.md
+9. engine/PACKAGE_RULES.md
+10. task için gerekli diğer engine contracts
+11. selected package(s)
+12. relevant point-of-use templates
+13. lifecycle'a göre project source / pending or approved input
+14. active run records when run exists
 ```
 
 ---
@@ -132,13 +136,13 @@ PENDING INPUT
         ↓
 EXPLICIT USER APPROVAL
         ↓
-APPROVED INPUT + APPROVED PAGE SET
+APPROVED INPUT + APPROVED PAGE SET + APPROVED EXECUTABLE SCOPE
         ↓
 BASE PACKAGE + PLANNING OVERLAY
         ↓
 DOCUMENT / DYNAMIC INSTANCE RESOLUTION
         ↓
-GENERATION
+GENERATION + PER-ARTIFACT CAPABILITY DIFF
         ↓
 VALIDATION
         ↓
@@ -159,6 +163,9 @@ Corporate website ≠ landing page
 Sales demo ≠ project type
 Proposed page architecture ≠ approved architecture
 Approved distinct pages ≠ anchor sections
+Relatedness ≠ authorization
+Page/surface existence ≠ child interaction approval
+Generated upstream artifact ≠ approved scope authority
 Integration-ready ≠ invented backend
 Continuation expected + no approved zero-build constraint
 → package-managed/component-oriented baseline REQUIRED
@@ -176,7 +183,7 @@ Bu recommendation explicit approval yerine geçmez.
 
 ---
 
-## v0.3.0 Corporate Website Model
+## v0.3 Corporate Website Model
 
 Corporate approved input `site_architecture` registry taşır:
 
@@ -217,17 +224,53 @@ Distinct page'i aynı document anchor section'a collapse etmek `VAL-04 FAIL` ür
 
 ---
 
+## v0.3.1 Capability Semantic Gate
+
+Canonical owner:
+
+```text
+engine/CAPABILITY_SCOPE_RULES.md
+```
+
+Every independently meaningful generated behavior:
+
+```text
+GENERATED_CAPABILITY
+→ exact approved executable support
+→ semantic subset PASS
+```
+
+Örnek:
+
+```text
+Approved:
+Contact page + phone/email direct contact
+
+Generated candidate:
+contact form + fields + submit + success state
+
+Result:
+UNSUPPORTED
+→ generation repair
+→ unresolved ise VAL-04 FAIL
+```
+
+PAGE-DESIGN dahil implementation-bearing generated artifact'ler capability diff'e tabidir. Unsupported behavior downstream WAVE_MAP/WAVE_PLAN'a kopyalanarak authorize hale gelemez.
+
+---
+
 ## Current Build State
 
 ```text
 Core Engine Foundation                     : Completed
 Planning / Wave / Design Systems            : Completed
 Deterministic Continuation Gate v0.2.2      : Validated — ISSUE-001 Resolved
-Corporate Website / Site Architecture v0.3.0: Implemented — Awaiting Fresh Real-Run Validation
-Overall v0.3.0 State                        : Operational; fresh Trakya corporate run is validation target
+Corporate Website / Site Architecture v0.3.0: Validated by RUN-20260817-004 — ISSUE-002 Resolved
+Capability Semantic Scope Gate v0.3.1       : Implemented — Awaiting Fresh Real-Run Validation
+Overall v0.3.1 State                        : Operational; fresh Trakya run is ISSUE-003 validation target
 ```
 
-`ISSUE-002` fresh v0.3.0 corporate generation gerçek multi-page approved architecture + page-aware validation üretene kadar `Implemented — Awaiting Validation` kalır.
+`RUN-20260817-004` v0.3 corporate page architecture modelini başarıyla kanıtladı; aynı run ayrıca contact direct-contact scope'undan unsupported interactive form türetildiğini ve eski validator'ın bunu kaçırdığını gösterdi. Bu ayrı defect `ISSUE-003` olarak v0.3.1'de fixlenmiştir ve fresh run ile doğrulanacaktır.
 
 ---
 
@@ -238,5 +281,6 @@ Overall v0.3.0 State                        : Operational; fresh Trakya corporat
 - `v0.2.1`: Continuation intent/rationale guard; fresh run loophole gösterdi.
 - `v0.2.2`: Deterministic continuation gate + blocking VAL-09; fresh run ile validated.
 - `v0.3.0`: First-class corporate-website type + approved multi-page Site Architecture + page-aware generation/validation.
+- `v0.3.1`: All generated executable artifacts için exact semantic capability authorization + PAGE-DESIGN/VAL-04 scope gate.
 
 Historical run/output/changelog evidence geriye dönük yeni vocabulary'ye migrate edilmez; active contracts yeni kuralları uygular.
