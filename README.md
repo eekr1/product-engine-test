@@ -2,44 +2,61 @@
 
 ## Product Engine Nedir?
 
-Product Engine, projelerde kullanılan AI dokümantasyon yapısını standartlaştıran, yapılandırılmış proje girdisini alarak modele bağımlı olmaksızın tutarlı, kullanıma hazır ve doğrudan ajanlar tarafından işlenebilir bir dokümantasyon paketi üreten sistemdir.
+Product Engine; yapılandırılmış ve approved project truth'u modele bağımlı olmaksızın tutarlı, agent-ready proje dokümantasyonu, design/execution planning ve validation package'ına dönüştüren sistemdir.
 
-Kullanılan ajanın Codex, Claude, Gemini veya başka bir sistem olması fark etmeksizin; ajan ürünün amacını, kurallarını, mimarisini, mevcut durumunu, tasarım bağlamını ve execution wave'lerini proje belgelerinden okuyarak doğrudan üretime başlayabilmelidir.
+Kullanılan ajanın Codex, Claude, Gemini veya başka bir sistem olması fark etmeksizin; ajan ürünün amacını, approved scope'unu, site/page architecture'ını, kurallarını, mimarisini, design context'ini ve execution wave'lerini canonical belgelerden okuyarak doğrudan çalışabilmelidir.
 
 ---
 
 ## Current Version
 
 ```text
-Product Engine Version: 0.2.2
-Active Version Authority: Root README.md (bu dosya)
+Product Engine Version: 0.3.0
+Active Version Authority: Root README.md
 Version History Authority: logs/ENGINE_CHANGELOG.md
 ```
 
-`v0.2.2`, continuation-ready frontend stack guard'ını deterministic hale getirir. Continuation beklenen sales/client demo projelerinde explicit approved zero-build constraint yoksa package-managed, component-oriented frontend baseline ve repeatable dev/build/preview workflow zorunludur. Agent'ın “ileride framework'e migrate edilir” veya “Vanilla düşük maliyetli” yorumu istisna oluşturamaz; `VAL-09` bu kuralı blocking olarak doğrular.
+`v0.3.0`, corporate website planning modelini first-class multi-page architecture seviyesine yükseltir.
 
-Bu dosya (Root `README.md`), Product Engine'in tek birincil aktif sürüm otoritesidir (`current active version authority`). Sürüm geçmişinin sahibi ise `logs/ENGINE_CHANGELOG.md` belgesidir.
+Major distinction:
+
+```text
+project_type       → ne üretiyoruz?
+delivery_profile   → hangi maturity'de teslim ediyoruz?
+site_architecture  → hangi approved pages/surfaces var?
+planning profiles  → planning depth nedir?
+technical stack    → nasıl sürdürülebilir implement ediyoruz?
+```
+
+Canonical corporate invariants:
+
+```text
+corporate website ≠ landing page
+sales demo ≠ project type
+Prototype ≠ page breadth reduction
+approved distinct pages ≠ anchor sections
+```
+
+Active runtime project type vocabulary artık `landing-page` içermez; corporate firm/site işleri `project_type: corporate-website` olarak modellenir.
 
 ---
 
 ## Repository Map
 
-| Klasör / Dosya | Rol ve Açıklama |
+| Klasör / Dosya | Rol |
 |---|---|
-| `README.md` | Repository giriş noktası, aktif sürüm otoritesi ve canonical boot order rehberi. |
-| `PRODUCT_ENGINE_BRAIN.md` | Product Engine'in amacı, vizyonu, girdileri, çıktıları ve temel operating philosophy belgesi. |
-| `engine/` | Çalışma zamanı sözleşmeleri: intake, planning profiles, package/document resolution, generation, validation ve run protocol. |
-| `packages/` | Domain/base package tanımları ve shared planning overlay kapsamı. |
-| `templates/` | Canonical proje dokümanı, design, wave, prompt ve run şablonları. |
-| `project-start/` | Ham brief veya yapılandırılmış proje source material'ini canonical intake'e teslim eden pre-run giriş katmanı. Runtime authority değildir. |
-| `inputs/` | Pending ve explicit approval sonrası approved proje truth katmanı. |
-| `runs/` | Tekil Product Engine çalışmalarının operasyonel yaşam döngüsü ve kayıt yeri. |
-| `outputs/` | Geçerli kılınmış ve teslim edilebilir nihai agent-ready proje dokümantasyon paketleri. |
-| `logs/` | Kalıcı motor hafızası, changelog, issue/hardening takibi ve engine-level history. |
-| `examples/` | Doğru/hatalı çalışma örnekleri ve test senaryoları (non-authoritative). |
-| `archive/` | Aktif kullanımdan kaldırılmış tarihsel materyal ve izole edilmiş belgeler. |
-| `planning/` | İlk inşa süreci şartnameleri ve tarihsel build takibi (runtime authority değildir). |
-| `ref/` | Kalite/yapı referansları; active runtime contract değildir. |
+| `README.md` | Repository entry point + active version authority. |
+| `PRODUCT_ENGINE_BRAIN.md` | Engine amacı/vizyonu/operating philosophy. |
+| `engine/` | Intake, site architecture, planning, package, generation, validation, lifecycle contracts. |
+| `packages/` | Domain/base packages + planning overlay. |
+| `templates/` | Canonical project/design/wave/run skeletons. |
+| `project-start/` | Pre-run source + launcher layer. |
+| `inputs/` | Pending/approved project truth. |
+| `runs/` | Operational run lifecycle/evidence. |
+| `outputs/` | Published validated agent-ready documentation packages. |
+| `products/` | Runtime Engine contract'ı değil; gerçek application implementation workspace convention olarak kullanılabilir. |
+| `logs/` | Persistent engine history/issues/changelog/hardening. |
+| `examples/`, `archive/`, `planning/`, `ref/` | Non-runtime historical/reference/calibration layers. |
 
 ---
 
@@ -47,66 +64,56 @@ Bu dosya (Root `README.md`), Product Engine'in tek birincil aktif sürüm otorit
 
 ```text
 Root README
-├── Repository entry point
-├── Current Product Engine active version authority
-├── Current system state
-├── Canonical agent boot / read order
-└── Active vs historical layers map
+→ active version + repository navigation
 
 PRODUCT_ENGINE_BRAIN
-└── Product Engine amacı, vizyonu, sınırları ve operating philosophy
+→ purpose / vision / operating philosophy
 
 engine/
-└── Runtime behavior contracts
+→ runtime behavioral contracts
 
 packages/
-└── Base package scope + shared planning overlay
+→ domain package requirements
 
 templates/
-└── Generation structures and canonical skeletons
-
-project-start/
-└── Pre-run source/launcher layer; canonical runtime authority değildir
+→ canonical artifact skeletons
 
 inputs/
-└── Pending/approved project truth
+→ project-specific pending/approved truth
 
 runs/
-└── Execution evidence and operational run records
+→ execution evidence
 
 outputs/
-└── Final validated agent-ready deliverables
+→ published clean documentation deliverables
 
 logs/
-└── Persistent engine-level memory, issue/hardening tracking & version history
-
-examples/ / archive/ / planning/ / ref/
-└── Non-runtime reference or historical layers
+→ persistent engine memory/history
 ```
+
+`project-start/` source context'tir; Engine authority'yi geçersiz kılamaz.
 
 ---
 
 ## Canonical Agent Boot / Read Order
 
-> [!IMPORTANT]
-> **Agent Boot Read Order ≠ Runtime Execution Flow**
->
-> - Agent Boot Read Order: Ajanın Product Engine authority ve çalışma kurallarını anlama sırası.
-> - Runtime Execution Flow: Bir run sırasında verinin/adımların akışı; `engine/GENERATION_PIPELINE.md` sahibidir.
+> Agent Boot Read Order ≠ Runtime Execution Flow. Runtime generation order `engine/GENERATION_PIPELINE.md` sahibidir.
 
-Bir ajan Product Engine rolünü üstlenirken kanonik referans sırası:
-
-1. Root `README.md`
-2. `PRODUCT_ENGINE_BRAIN.md`
-3. `engine/README.md`
-4. Görev için gerekli authoritative `engine/` contracts
-5. Seçilen `packages/` contract'ları
-6. İlgili `templates/` belgeleri
-7. Aktif proje source'u (`project-start/` kullanılıyorsa source context olarak)
-8. Aktif pending/approved input (`inputs/` lifecycle durumuna göre)
-9. Run başladıysa `runs/` operasyonel kayıtları
-
-`project-start/` içeriği ham/source context'tir; Engine contract'larını geçersiz kılamaz. `planning/`, `examples/`, `archive/`, `ref/` ve `planning/build-prompts/` varsayılan runtime authority/read order değildir.
+```text
+1. Root README.md
+2. PRODUCT_ENGINE_BRAIN.md
+3. engine/README.md
+4. engine/PROJECT_INTAKE.md
+5. engine/SITE_ARCHITECTURE_RULES.md (corporate/page architecture applicable ise)
+6. engine/PLANNING_PROFILES.md
+7. engine/DOCUMENT_CATALOG.md
+8. engine/PACKAGE_RULES.md
+9. task için gerekli diğer engine contracts
+10. selected package(s)
+11. relevant point-of-use templates
+12. lifecycle'a göre project source / pending or approved input
+13. active run records when run exists
+```
 
 ---
 
@@ -117,17 +124,19 @@ PROJECT SOURCE / RAW BRIEF
         ↓
 PROJECT INTAKE
         ↓
-PLANNING PROFILE RESOLUTION
+PROJECT TYPE + PLANNING PROFILE RESOLUTION
+        ↓
+PROPOSED SITE ARCHITECTURE (corporate if needed)
         ↓
 PENDING INPUT
         ↓
 EXPLICIT USER APPROVAL
         ↓
-APPROVED INPUT
+APPROVED INPUT + APPROVED PAGE SET
         ↓
 BASE PACKAGE + PLANNING OVERLAY
         ↓
-DOCUMENT / INSTANCE RESOLUTION
+DOCUMENT / DYNAMIC INSTANCE RESOLUTION
         ↓
 GENERATION
         ↓
@@ -138,37 +147,96 @@ AGENT-READY OUTPUT
 RUN COMPLETION / HISTORY
 ```
 
-Core quality rules:
+---
+
+## Core Quality / Modeling Rules
 
 ```text
 Profile depth ≠ quality level
+Profile depth ≠ approved scope/page breadth
 Prototype/demo ≠ throwaway architecture
+Corporate website ≠ landing page
+Sales demo ≠ project type
+Proposed page architecture ≠ approved architecture
+Approved distinct pages ≠ anchor sections
 Integration-ready ≠ invented backend
-Continuation expected + no approved zero-build constraint → package-managed/component-oriented baseline REQUIRED
+Continuation expected + no approved zero-build constraint
+→ package-managed/component-oriented baseline REQUIRED
 Future framework migration ≠ same-codebase continuation
 ```
+
+Corporate website + multiple approved pages için default intake recommendation:
+
+```text
+implementation_planning: standard
+design_planning: standard
+```
+
+Bu recommendation explicit approval yerine geçmez.
+
+---
+
+## v0.3.0 Corporate Website Model
+
+Corporate approved input `site_architecture` registry taşır:
+
+```text
+PAGE-XXX
+Page Name
+Purpose
+Route / Navigation Identity
+Scope Status
+Primary Content / Capability Boundaries
+Parent / Detail Relation
+```
+
+Generation minimum chain:
+
+```text
+APPROVED_PAGE_SET
+→ Global Shell navigation
+→ PAGE-DESIGN instances (standard/full)
+→ WAVE_MAP Covered Page IDs
+→ WAVE_PLAN page implementation tasks
+```
+
+Validation blockers:
+
+```text
+APPROVED_PAGE_SET == PLANNED_PAGE_SET
+APPROVED_PAGE_SET == NAVIGATION_PAGE_SET
+```
+
+`design_planning: standard | full` ise:
+
+```text
+APPROVED_PAGE_SET == PAGE_DESIGN_INSTANCE_SET
+```
+
+Distinct page'i aynı document anchor section'a collapse etmek `VAL-04 FAIL` üretir.
 
 ---
 
 ## Current Build State
 
 ```text
-Core Engine Foundation                    : Completed
-Planning / Wave / Design Systems           : Completed
-Continuation-Ready Stack Guard v0.2.1      : Failed real-run validation
-Deterministic Continuation Gate v0.2.2     : Implemented — Awaiting Validation
-Overall v0.2.2 State                       : Operational; next Trakya run is validation target
+Core Engine Foundation                     : Completed
+Planning / Wave / Design Systems            : Completed
+Deterministic Continuation Gate v0.2.2      : Validated — ISSUE-001 Resolved
+Corporate Website / Site Architecture v0.3.0: Implemented — Awaiting Fresh Real-Run Validation
+Overall v0.3.0 State                        : Operational; fresh Trakya corporate run is validation target
 ```
 
-`ISSUE-001` açık kalır. `RUN-20260817-002`, v0.2.1'in agent-generated rationale ile Vanilla'ya kaçabildiğini kanıtladı. v0.2.2 bu loophole'u kapatır ve `VAL-09` enforcement ekler.
+`ISSUE-002` fresh v0.3.0 corporate generation gerçek multi-page approved architecture + page-aware validation üretene kadar `Implemented — Awaiting Validation` kalır.
 
 ---
 
 ## Version History Boundary
 
-- `v0.1.0`: İlk gerçek Engine runtime.
+- `v0.1.0`: First real Engine runtime.
 - `v0.2.0`: Planning profiles + implementation/design/wave architecture.
-- `v0.2.1`: Continuation-ready stack intent/rationale guard.
-- `v0.2.2`: Deterministic continuation gate + blocking VAL-09 enforcement.
+- `v0.2.1`: Continuation intent/rationale guard; fresh run loophole gösterdi.
+- `v0.2.2`: Deterministic continuation gate + blocking VAL-09; fresh run ile validated.
+- `v0.3.0`: First-class corporate-website type + approved multi-page Site Architecture + page-aware generation/validation.
 
-Historical eski run/output yeni contract'lara göre geriye dönük mutate edilmez; validation için fresh run kullanılır.
+Historical run/output/changelog evidence geriye dönük yeni vocabulary'ye migrate edilmez; active contracts yeni kuralları uygular.
