@@ -6,7 +6,7 @@
 template_id: validation-report-template
 template_name: Validation Report Operational Template
 document_id: not_applicable
-version: 1.9.0
+version: 2.0.0
 status: active
 template_type: operational
 category: operational
@@ -19,6 +19,7 @@ supported_delivery_profiles:
   - production-ready
 required_inputs:
   - validation_rules
+  - capability_scope_rules
 conditional_inputs:
   - approved_site_architecture
 dependencies: []
@@ -37,6 +38,7 @@ output_filename: VALIDATION_REPORT.md
 Canonical Gate Coverage
 Evidence Priority / Trace Status
 Dynamic Instance Coverage
+Generated Artifact Capability Integrity
 Corporate Page Architecture Coverage (applicable)
 WAVE_MAP Capability Diff
 WAVE_PLAN Parent Capability + Page Diff
@@ -47,6 +49,64 @@ Point-of-Use Dynamic Template Evidence
 Validation Timing
 VAL-01..VAL-19 Table
 Violations / Repairs
+```
+
+## Generated Artifact Capability Integrity
+
+Canonical semantic owner: `engine/CAPABILITY_SCOPE_RULES.md`.
+
+Minimum global sets:
+
+```text
+GENERATED_EXECUTABLE_CAPABILITY_ATOMS
+GENERATED_CAPABILITY_SUPPORT_RELATIONS
+UNSUPPORTED_GENERATED_CAPABILITIES
+```
+
+Validator minimum implementation-bearing artifacts içinde executable behavior atomları arar:
+
+```text
+PRODUCT_RULES
+GLOBAL_SHELL
+PAGE-DESIGN instances
+FEATURE-DESIGN instances (applicable)
+SYSTEM_STATES when product behavior is implied
+PROJECT_PLAN concrete executable deliverables
+WAVE_MAP
+WAVE_PLAN instances
+other generated prose that introduces concrete user action/interaction/state
+```
+
+Minimum relation table:
+
+```text
+Generated Capability
+Source Artifact
+Exact Approved Support ID(s)
+Exact Approved Support Meaning
+Support Status
+Executable Flag
+Semantic Subset Result
+Result
+```
+
+Page/surface existence child interaction support değildir.
+
+Explicit negative test:
+
+```text
+Approved: Contact page + phone/email direct contact
+Generated: form + fields + submit + success state
+→ unsupported generated capabilities
+→ VAL-04 FAIL
+```
+
+PAGE-DESIGN applicable ise ayrıca per-instance:
+
+```text
+PAGE_DESIGN_CAPABILITY_ATOMS
+PAGE_DESIGN_SUPPORT_RELATIONS
+UNSUPPORTED_PAGE_DESIGN_CAPABILITIES
 ```
 
 ## Corporate Page Architecture Evidence
@@ -103,6 +163,8 @@ SUPPORTED_MAP_CAPABILITIES
 UNSUPPORTED_MAP_CAPABILITIES
 ```
 
+Upstream generated design/project artifact support ID yerine kullanılamaz.
+
 ## WAVE_PLAN Parent Diff
 
 Per plan:
@@ -122,6 +184,8 @@ PLAN_PAGE_SET
 PARENT_COVERED_PAGE_SET
 NEW_PLAN_PAGES
 ```
+
+Parent capability'nin approved semantic support'u yoksa parent relation child planı geçerli yapmaz.
 
 ## Source / FCL Evidence
 
@@ -202,40 +266,43 @@ last required generation checkpoint
 ## 3. Dynamic Instance Coverage
 {{DYNAMIC_INSTANCE_COVERAGE}}
 
-## 4. Corporate Page Architecture Coverage
+## 4. Generated Artifact Capability Integrity
+{{GENERATED_CAPABILITY_INTEGRITY_BLOCK}}
+
+## 5. Corporate Page Architecture Coverage
 {{PAGE_ARCHITECTURE_EVIDENCE_BLOCK}}
 
-## 5. WAVE_MAP Capability Diff
+## 6. WAVE_MAP Capability Diff
 {{WAVE_MAP_CAPABILITY_DIFF}}
 
-## 6. WAVE_PLAN Parent Capability / Page Diff
+## 7. WAVE_PLAN Parent Capability / Page Diff
 {{WAVE_PLAN_PARENT_CAPABILITY_DIFF}}
 
-## 7. Source Registry Consistency + Classification
+## 8. Source Registry Consistency + Classification
 {{SOURCE_REGISTRY_CONSISTENCY}}
 
-## 8. Source → FCL → Generated Claim Checks
+## 9. Source → FCL → Generated Claim Checks
 {{FCL_SEMANTIC_CHECKS}}
 
-## 9. Continuation / Routing Evidence
+## 10. Continuation / Routing Evidence
 {{CONTINUATION_ROUTING_EVIDENCE}}
 
-## 10. External Source Consumption Checks
+## 11. External Source Consumption Checks
 {{EXTERNAL_SOURCE_CHECKS}}
 
-## 11. Point-of-Use Template + Quality-Reference Evidence
+## 12. Point-of-Use Template + Quality-Reference Evidence
 {{TRACE_TOKEN_PAIRING_BLOCK}}
 
-## 12. Validation Timing / Chronology
+## 13. Validation Timing / Chronology
 {{VALIDATION_TIMING_BLOCK}}
 
-## 13. Blocking Validation Checks
+## 14. Blocking Validation Checks
 {{VALIDATION_CHECKS_TABLE}}
 
-## 14. Violations & Evidence
+## 15. Violations & Evidence
 {{VIOLATIONS_AND_EVIDENCE_BLOCK}}
 
-## 15. Repair Actions
+## 16. Repair Actions
 {{REPAIR_ACTIONS}}
 
 # OUTPUT DOCUMENT END

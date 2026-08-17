@@ -6,7 +6,7 @@
 template_id: page-design-package-template
 template_name: Page / Screen Design Package Template
 document_id: PAGE-DESIGN
-version: 1.1.0
+version: 1.2.0
 status: active
 template_type: dynamic-document
 category: design
@@ -63,11 +63,74 @@ CONTACT_DESIGN_PACKAGE.md
 
 Sadece gerçek implementation surface için instance üretilir. Aynı layout içinde küçük section değişikliği yeni page package gerekçesi değildir.
 
+---
+
+## Executable Capability Guard
+
+Canonical owner: `engine/CAPABILITY_SCOPE_RULES.md`.
+
+PAGE-DESIGN yalnız visual/layout composition üretmez; `Primary Actions`, interaction states, component behavior ve integration touchpoint gibi alanlar executable product capability üretebilir. Bu nedenle her instance write edilmeden önce bütün independently meaningful executable behavior'lar atomize edilmelidir.
+
+Canonical invariant:
+
+```text
+PAGE-DESIGN_CAPABILITY semantic meaning
+⊆ exact approved executable support semantic meaning
+```
+
+Page identity veya page purpose child interaction authorization değildir.
+
+Explicit example:
+
+```text
+Approved:
+PAGE-007 Contact
++ phone direct contact
++ email direct contact
+
+Does NOT authorize:
+contact form
+input fields
+submit behavior
+success state
+map
+WhatsApp
+booking/request flow
+```
+
+Bir interaction “bu sayfada mantıklı olur” diye eklenemez.
+
+### Required Capability Support Diff
+
+Her PAGE-DESIGN instance minimum şu setleri üretip kontrol etmelidir:
+
+```text
+PAGE_DESIGN_CAPABILITY_ATOMS
+PAGE_DESIGN_SUPPORT_RELATIONS
+UNSUPPORTED_PAGE_DESIGN_CAPABILITIES
+```
+
+Her independently meaningful executable atom için relation:
+
+```text
+Generated Capability
+Exact Approved Support ID(s)
+Exact Approved Support Meaning
+Semantic Subset Result: PASS | FAIL
+```
+
+`UNSUPPORTED_PAGE_DESIGN_CAPABILITIES != empty` ise instance repair edilmeden checkpoint CLOSE edilemez.
+
+Generated DESIGN/PRODUCT document kendi başına approved support değildir; exact support approved input/SCP registry'den gelmelidir.
+
+---
+
 ## Zorunlu Bölümler
 
 - Page/Screen Identity & Purpose
 - Approved Page Identity / Relation
 - Route / Entry Context
+- Approved Capability Support
 - User Goal & Primary Actions
 - Information Hierarchy
 - Layout & Section Breakdown
@@ -84,6 +147,8 @@ Sadece gerçek implementation surface için instance üretilir. Aynı layout iç
 - `GLOBAL_SHELL` varsa shell tekrar tarif edilmez; yalnız page-specific ilişki yazılır.
 - Design token veya global component style yeniden icat edilmez; `DESIGN_SYSTEM` referans alınır.
 - Page design, PRODUCT_RULES'taki ürün davranışını değiştiremez.
+- Page/surface existence yeni form, modal, accordion, submit flow, search/filter, map, external action veya başka interaction authorize etmez.
+- New user action, data collection/submission veya externally observable product state ayrı capability atomudur ve exact approved support ister.
 - Mock/local data kullanılıyorsa page'in hangi service/data boundary'yi tükettiği belirtilir; endpoint uydurulmaz.
 - Responsive davranış yalnız "mobil uyumlu" demekle bırakılmaz; layout transformation açıkça tanımlanır.
 - Tasarım generic template pattern'ine zorlanmaz; page composition proje visual concept'ini sürdürür.
@@ -99,6 +164,7 @@ Sadece gerçek implementation surface için instance üretilir. Aynı layout iç
 - `{{APPROVED_PAGE_RELATION}}`
 - `{{ROUTE_OR_ENTRY_CONTEXT}}`
 - `{{PAGE_PURPOSE}}`
+- `{{APPROVED_CAPABILITY_SUPPORT}}`
 - `{{PRIMARY_USER_GOALS}}`
 - `{{INFORMATION_HIERARCHY}}`
 - `{{LAYOUT_AND_SECTIONS}}`
@@ -113,8 +179,11 @@ Sadece gerçek implementation surface için instance üretilir. Aynı layout iç
 
 - Corporate website'te Page ID approved registry'de bulunmalı.
 - Page route/purpose approved site architecture ile eşleşmeli.
+- `UNSUPPORTED_PAGE_DESIGN_CAPABILITIES == empty` olmalı.
+- Her independently meaningful interaction/action/state exact approved executable support'a semantic subset olmalı.
+- Page existence veya broad page purpose child interaction support olarak kullanılamaz.
 - Shell, design system ve product rules ile çelişmemeli.
-- Page-specific states global SYSTEM_STATES ile uyumlu olmalı.
+- Page-specific states global SYSTEM_STATES ile uyumlu olmalı ancak SYSTEM_STATES yeni behavior authorize edemez.
 - Aynı sorumluluk başka page package'ta gereksiz tekrar edilmemeli.
 - `design_planning: standard | full` corporate website'te generated PAGE-DESIGN identity seti approved page setine eşit olmalı.
 
@@ -131,39 +200,43 @@ Sadece gerçek implementation surface için instance üretilir. Aynı layout iç
 - **Route / Entry Context**: {{ROUTE_OR_ENTRY_CONTEXT}}
 - **Amaç**: {{PAGE_PURPOSE}}
 
-## 1. User Goal & Primary Actions
+## 1. Approved Capability Support
+
+{{APPROVED_CAPABILITY_SUPPORT}}
+
+## 2. User Goal & Primary Actions
 
 {{PRIMARY_USER_GOALS}}
 
-## 2. Information Hierarchy
+## 3. Information Hierarchy
 
 {{INFORMATION_HIERARCHY}}
 
-## 3. Layout & Section Breakdown
+## 4. Layout & Section Breakdown
 
 {{LAYOUT_AND_SECTIONS}}
 
-## 4. Component Composition
+## 5. Component Composition
 
 {{COMPONENT_COMPOSITION}}
 
-## 5. States & Edge Cases
+## 6. States & Edge Cases
 
 {{PAGE_STATES}}
 
-## 6. Responsive Behavior
+## 7. Responsive Behavior
 
 {{RESPONSIVE_BEHAVIOR}}
 
-## 7. Accessibility / Keyboard / Focus
+## 8. Accessibility / Keyboard / Focus
 
 {{ACCESSIBILITY_NOTES}}
 
-## 8. Data & Integration Touchpoints
+## 9. Data & Integration Touchpoints
 
 {{DATA_INTEGRATION_TOUCHPOINTS}}
 
-## 9. Acceptance Notes
+## 10. Acceptance Notes
 
 {{ACCEPTANCE_NOTES}}
 

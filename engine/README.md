@@ -14,6 +14,7 @@ Bir ajan bu belgeler ve approved project truth üzerinden Product Engine'in nas�
 |---|---|
 | `README.md` | Navigasyon ve başlangıç belgesi. |
 | `PROJECT_INTAKE.md` | Project type vocabulary, required input fields ve explicit approval lifecycle. |
+| `CAPABILITY_SCOPE_RULES.md` | Executable capability semantic authorization'ın canonical sahibi. |
 | `SITE_ARCHITECTURE_RULES.md` | Corporate website approved page/surface architecture semantiğinin canonical sahibi. |
 | `PLANNING_PROFILES.md` | Implementation/design planning depth, quality floor ve continuation readiness. |
 | `DOCUMENT_CATALOG.md` | Canonical document type registry. |
@@ -37,20 +38,21 @@ Bir ajan bu belgeler ve approved project truth üzerinden Product Engine'in nas�
 2.  PRODUCT_ENGINE_BRAIN.md
 3.  engine/README.md
 4.  engine/PROJECT_INTAKE.md
-5.  engine/SITE_ARCHITECTURE_RULES.md   (corporate/page architecture applicable ise)
-6.  engine/PLANNING_PROFILES.md
-7.  engine/DOCUMENT_CATALOG.md
-8.  engine/PACKAGE_RULES.md
-9.  engine/ASSUMPTION_RULES.md
-10. engine/CONFLICT_RESOLUTION.md
-11. engine/INFORMATION_MAP.md
-12. engine/GENERATION_PIPELINE.md
-13. engine/OUTPUT_STRUCTURE.md
-14. engine/VALIDATION_RULES.md
-15. engine/RUN_PROTOCOL.md
-16. Selected packages/
-17. Relevant templates/
-18. Active project source/input according to lifecycle
+5.  engine/CAPABILITY_SCOPE_RULES.md
+6.  engine/SITE_ARCHITECTURE_RULES.md   (corporate/page architecture applicable ise)
+7.  engine/PLANNING_PROFILES.md
+8.  engine/DOCUMENT_CATALOG.md
+9.  engine/PACKAGE_RULES.md
+10. engine/ASSUMPTION_RULES.md
+11. engine/CONFLICT_RESOLUTION.md
+12. engine/INFORMATION_MAP.md
+13. engine/GENERATION_PIPELINE.md
+14. engine/OUTPUT_STRUCTURE.md
+15. engine/VALIDATION_RULES.md
+16. engine/RUN_PROTOCOL.md
+17. Selected packages/
+18. Relevant templates/
+19. Active project source/input according to lifecycle
 ```
 
 Tüm belgelerin her task öncesi baştan okunması zorunlu değildir; point-of-use refresh gereken template/authority'ler ilgili runtime contract tarafından belirlenir.
@@ -62,6 +64,7 @@ Tüm belgelerin her task öncesi baştan okunması zorunlu değildir; point-of-u
 | Soru | Authoritative Dosya |
 |---|---|
 | Hangi project type/input alanları gerekli? | `PROJECT_INTAKE.md` |
+| Generated behavior/capability approved scope tarafından authorize edilmiş mi? | `CAPABILITY_SCOPE_RULES.md` |
 | Corporate website page/surface architecture nasıl modellenir? | `SITE_ARCHITECTURE_RULES.md` |
 | Implementation/design planning ne kadar derin? | `PLANNING_PROFILES.md` |
 | Continuation-ready frontend baseline nedir? | `PLANNING_PROFILES.md` |
@@ -98,6 +101,8 @@ ref/       → non-authoritative quality calibration references
 |---|---|
 | **Project Type** | Domain/solution class; örn. `corporate-website`, `web-app`, `api-service` |
 | **Delivery Profile** | Teslim olgunluğu; project type değildir |
+| **Capability Atom** | Independently meaningful executable behavior/action/state/deliverable |
+| **Approved Executable Support** | Capability atomunu exact semantic meaning ile authorize eden `IN_SCOPE | KNOWN_DECISION` + `Executable=YES` support |
 | **Site Architecture** | Corporate website için approved PAGE-XXX registry |
 | **Approved Page Set** | Current executable `IN_SCOPE` PAGE identities |
 | **Implementation Planning** | Execution planning depth (`standard | full`) |
@@ -109,6 +114,25 @@ ref/       → non-authoritative quality calibration references
 | **Assumption** | Kontrollü/kayıtlı çıkarım |
 | **Conflict** | Authority uyumsuzluğu |
 | **Validation** | VAL gates ile correctness/consistency kontrolü |
+
+---
+
+## Capability Scope Core Distinction
+
+```text
+relatedness ≠ authorization
+approved page existence ≠ all plausible interactions on that page
+upstream generated artifact ≠ scope authority
+```
+
+Örnek:
+
+```text
+approved Contact page + phone/email direct contact
+≠ contact form + submit + success state
+```
+
+Her independently meaningful generated behavior exact approved executable support ister.
 
 ---
 

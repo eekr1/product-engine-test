@@ -31,8 +31,8 @@ Resolved yalnız fix + canonical contracts + changelog + fresh validation + non-
 ```text
 Open Issues                           : 0
 Implemented — Awaiting Validation     : 1
-Resolved Issues                       : 1
-Total Recorded                        : 2
+Resolved Issues                       : 2
+Total Recorded                        : 3
 ```
 
 ---
@@ -85,16 +85,16 @@ Overall run `CONDITIONAL PASS` yalnız independent trace unavailable nedeniyle `
 
 ## ISSUE-002 — Corporate website intent collapses into single-page planning and lacks canonical page architecture
 
-- **Status:** Implemented — Awaiting Validation
+- **Status:** Resolved
 - **Severity:** Major
 - **Category:** Engine Rules | Inputs | Packages | Templates | Validation
 - **Owner:** engine maintainer
 - **First Seen:** 2026-08-17
 - **Last Seen:** 2026-08-17
-- **Related Runs:** `RUN-20260817-003`; implementation evidence commit `f09b4ee852fe085e8d810cbfaa9a9f234d75f69a`
-- **Resolved in Version:** not_assigned
+- **Related Runs:** `RUN-20260817-003`, `RUN-20260817-004`; implementation evidence commit `f09b4ee852fe085e8d810cbfaa9a9f234d75f69a`
+- **Resolved in Version:** v0.3.0
 - **Related Change:** PE-CHANGE-009
-- **Validation Run:** None — fresh v0.3.0 corporate run required
+- **Validation Run:** `RUN-20260817-004`
 
 ### Description
 Corporate website intent first-class project type ve approved page/surface architecture olarak modellenmediği için Engine gerçek kurumsal sales demo scope'unu dar `landing-page` modeline normalize edebiliyordu.
@@ -130,7 +130,7 @@ planladı ve final deliverable'ı `responsive landing page` olarak dondurdu.
 5. WAVE_MAP, GLOBAL_SHELL, PAGE-DESIGN ve validation arasında exact approved page-set equality contract'ı yoktu.
 6. Demo/frontend package domain selection'i corporate sales demo ile karışabiliyordu.
 
-### v0.3.0 Implemented Resolution
+### v0.3.0 Resolution
 - Active `landing-page` project type kaldırıldı.
 - First-class `project_type: corporate-website` eklendi.
 - `engine/SITE_ARCHITECTURE_RULES.md` canonical semantics owner olarak eklendi.
@@ -142,4 +142,108 @@ planladı ve final deliverable'ı `responsive landing page` olarak dondurdu.
 - GLOBAL_SHELL navigation, PAGE-DESIGN instances, WAVE_MAP page coverage ve WAVE_PLAN page tasks approved registry'ye bağlandı.
 - VAL-02/03/04/05/07/09/10/12/14/15/19 page/domain modelini blocking doğrular.
 
-Issue fresh v0.3.0 corporate generation gerçek approved multi-page architecture üretip validation gate'lerinden geçtiğinde `Resolved` yapılacaktır.
+### Validation Evidence
+Fresh `RUN-20260817-004`:
+
+- `project_type: corporate-website`,
+- approved `PAGE-001..PAGE-007`,
+- 7 distinct routable surfaces,
+- 7 PAGE-DESIGN instances,
+- `APPROVED_PAGE_SET == PLANNED_PAGE_SET == NAVIGATION_PAGE_SET == PAGE_DESIGN_INSTANCE_SET`,
+- `MISSING_MAP_PAGES = []`,
+- `UNAPPROVED_MAP_PAGES = []`,
+- `COLLAPSED_APPROVED_PAGES = []`,
+- corporate package preserved,
+- coherent 5-wave multi-page execution map
+
+üretti. ISSUE-002 behavior non-recurrent olarak doğrulandı.
+
+`RUN-20260817-004` içinde ayrıca ayrı bir scope-semantic defect (ISSUE-003) bulundu; bu, corporate page architecture resolution'ın başarılı validation evidence'ını geçersiz kılmaz ancak run'ın overall PASS sonucunun güvenilir olmadığını gösterir.
+
+---
+
+## ISSUE-003 — Broad page/scope support can incorrectly authorize unapproved child interactions
+
+- **Status:** Implemented — Awaiting Validation
+- **Severity:** Major
+- **Category:** Engine Rules | Generation | Design Templates | Validation
+- **Owner:** engine maintainer
+- **First Seen:** 2026-08-17
+- **Last Seen:** 2026-08-17
+- **Related Runs:** `RUN-20260817-004`
+- **Resolved in Version:** not_assigned
+- **Related Change:** PE-CHANGE-010
+- **Validation Run:** None — fresh v0.3.1 Trakya run required
+
+### Description
+v0.3.0 exact scope/capability language taşımasına rağmen enforcement esas olarak WAVE_MAP/WAVE_PLAN seviyesinde çalışıyordu. Upstream PAGE-DESIGN gibi implementation-bearing design artifact'i, broad page existence/purpose ve related direct-contact capability'den yeni child interaction türetebildi. WAVE_MAP bunu inherited capability olarak commit etti ve validator exact semantic subset ihlalini yakalamadı.
+
+### Fresh Evidence — RUN-20260817-004
+Approved input:
+
+```text
+PAGE-007 Contact
++ phone/e-mail direct-contact capability
++ page boundary: harita/form/WhatsApp eklenmez
+```
+
+SCP:
+
+```text
+SCP-008 = Contact page
+SCP-011 = phone/e-mail direct contact
+```
+
+Generated PAGE-DESIGN:
+
+```text
+Interactive Demo Form
+- name
+- email
+- subject
+- message
+- submit behavior
+- success state
+```
+
+Generated WAVE_MAP:
+
+```text
+CAP-022 = Contact Channels and Demo Form
+support = SCP-008 + SCP-011
+```
+
+But:
+
+```text
+Contact page != form
+phone/e-mail direct contact != form submit
+page existence != child interaction authorization
+```
+
+Therefore generated form/submit/success-state capability was unsupported.
+
+### Impact
+- Approved scope dışındaki product behavior generated design docs içinde ortaya çıkabilir.
+- Unsupported behavior downstream WAVE_MAP/WAVE_PLAN'a taşınarak görünürde supported hale gelebilir.
+- VAL-04 broad relatedness üzerinden false PASS verebilir.
+- Engine'in hard scope gate'i ihlal edilir.
+
+### Root Cause
+1. Executable capability semantic authorization için tek explicit canonical owner yoktu.
+2. PAGE-DESIGN checkpoint identity/page/factual diff yapıyordu fakat child interaction atomlarını exact SCP support'a bağlayan required evidence block taşımıyordu.
+3. VAL-04 global generated-artifact capability diff yerine ağırlıklı WAVE_MAP/WAVE_PLAN scope diff'ine odaklanıyordu.
+4. Upstream generated artifact'teki unsupported capability downstream map'e taşındığında support laundering açıkça yasaklanmamıştı.
+
+### v0.3.1 Implemented Resolution
+- `engine/CAPABILITY_SCOPE_RULES.md` canonical executable capability semantics owner olarak eklendi.
+- `relatedness ≠ authorization` ve `page existence ≠ child capability authorization` deterministic invariant oldu.
+- Form, input collection, submit, success/error state, modal, search/filter, map, WhatsApp, booking/request flow, upload/download, new CTA vb. independently meaningful behavior ayrı capability atomu sayılır.
+- PAGE-DESIGN template v1.2.0 `Approved Capability Support` + per-instance capability diff zorunluluğu aldı.
+- PAGE-DESIGN checkpoint `UNSUPPORTED_PAGE_DESIGN_CAPABILITIES == empty` olmadan CLOSE edilemez.
+- WAVE_MAP direct exact approved executable support ister; upstream generated artifact scope authority olamaz.
+- VAL-04 Stage 0 bütün implementation-bearing generated artifact'lerde global executable capability diff yapar.
+- Validation report `GENERATED_EXECUTABLE_CAPABILITY_ATOMS`, support relations ve `UNSUPPORTED_GENERATED_CAPABILITIES` evidence'ını zorunlu taşır.
+- Unsupported upstream capability downstream'da aklanamaz.
+
+Fresh v0.3.1 Trakya generation contact surface'inde yalnız approved direct-contact behavior'ı üretip form/submit/success-state'i dışarıda bırakır veya valid new explicit approval olmadan bunları üretirse VAL-04 FAIL verirse ISSUE-003 `Resolved` yapılacaktır.

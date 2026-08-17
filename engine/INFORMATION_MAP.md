@@ -45,6 +45,25 @@ Derived Into  : UX constraints, page actions, feature behaviors, acceptance crit
 Must Not Own  : DESIGN_RULES.md, TECH_CONTEXT.md
 ```
 
+## Approved Executable Capability Truth / Semantic Authorization
+
+```text
+Project-Specific Truth Owner : Approved PROJECT_INPUT.md + derived executable SCP registry
+Semantic Contract Owner      : engine/CAPABILITY_SCOPE_RULES.md
+Referenced By                : PRODUCT_RULES, GLOBAL_SHELL, PAGE-DESIGN, FEATURE-DESIGN, SYSTEM_STATES, PROJECT_PLAN, WAVE_MAP, WAVE_PLAN, VALIDATION_REPORT
+Derived Into                 : Exact allowed user actions/interactions/states, per-artifact capability support relations, execution capability atoms
+Must Not Own                 : Generated design/planning docs (bunlar yeni capability authority oluşturamaz)
+```
+
+Canonical rule:
+
+```text
+relatedness ≠ authorization
+approved surface existence ≠ child interaction authorization
+```
+
+Generated artifact başka generated artifact'e scope authority olamaz. Every independently meaningful behavior exact approved executable support'a semantic subset olmalıdır.
+
 ## Implementation / Design Planning Profile Değerleri
 
 ```text
@@ -71,6 +90,8 @@ approved PAGE-XXX truth
 → downstream reference/implementation
 ≠ downstream re-definition
 ```
+
+Page identity child interaction capability authorize etmez; capability boundary ayrıca `CAPABILITY_SCOPE_RULES.md` ile çözülür.
 
 ---
 
@@ -145,6 +166,8 @@ Derived Into  : Token, shell, page, feature ve state design kararları
 Must Not Own  : PRODUCT_RULES.md, PROJECT_BRAIN.md
 ```
 
+Design decision new executable capability authorize etmez.
+
 ## Design Tokens / Typography / Semantic Colors / Primitive System
 
 ```text
@@ -158,10 +181,10 @@ Must Not Own  : PAGE-DESIGN, FEATURE-DESIGN, DESIGN_RULES.md (yalnız yön/karak
 
 ```text
 Primary Owner : GLOBAL_SHELL.md (implementation/design representation)
-Truth Input   : Approved Site Architecture PAGE registry
+Truth Input   : Approved Site Architecture PAGE registry + approved executable capability scope
 Referenced By : PAGE-DESIGN, FEATURE-DESIGN, README.md
 Derived Into  : Navigation composition, route presentation, responsive shell behavior
-Must Not Own  : Yeni page identity, page-specific content
+Must Not Own  : Yeni page identity, page-specific content, new unapproved user actions
 ```
 
 ## Page / Screen-Specific Design
@@ -169,12 +192,13 @@ Must Not Own  : Yeni page identity, page-specific content
 ```text
 Primary Owner : İlgili PAGE-DESIGN instance (yalnız design contract)
 Identity Truth: Approved PAGE-XXX registry
+Capability Truth: Approved executable scope/SCP registry
 Referenced By : FEATURE-DESIGN, WAVE_PLAN instances
 Derived Into  : Page implementation tasks
-Must Not Own  : Global shell, design tokens, yeni page identity
+Must Not Own  : Global shell, design tokens, yeni page identity, new product capability authority
 ```
 
-PAGE-DESIGN yalnız approved surface'inin layout, sections, actions, responsive behavior ve local state ilişkisini sahiplenir.
+PAGE-DESIGN yalnız approved surface'inin layout, sections, **approved actions**, responsive behavior ve local state ilişkisini sahiplenir. Form/modal/submit/search vb. yeni interaction page purpose'tan türetilemez.
 
 ## Cross-Screen / Complex Feature Design
 
@@ -182,7 +206,7 @@ PAGE-DESIGN yalnız approved surface'inin layout, sections, actions, responsive 
 Primary Owner : İlgili FEATURE-DESIGN instance
 Referenced By : WAVE_PLAN instances, PAGE-DESIGN (kısa referans)
 Derived Into  : Feature implementation / state transition görevleri
-Must Not Own  : PAGE-DESIGN layout ownership, SYSTEM_STATES global rules, new page identities
+Must Not Own  : PAGE-DESIGN layout ownership, SYSTEM_STATES global rules, new page identities, new capability authority
 ```
 
 ## Shared UI States
@@ -190,9 +214,11 @@ Must Not Own  : PAGE-DESIGN layout ownership, SYSTEM_STATES global rules, new pa
 ```text
 Primary Owner : SYSTEM_STATES.md
 Referenced By : PAGE-DESIGN, FEATURE-DESIGN, ADMIN_OPERATIONAL_DESIGN.md
-Derived Into  : Loading/empty/error/success/recovery implementation
-Must Not Own  : Tekil page layout veya business rule
+Derived Into  : Approved behavior'ların loading/empty/error/success/recovery implementation standardı
+Must Not Own  : Tekil page layout, business rule veya yeni interaction capability
 ```
+
+SYSTEM_STATES bir success/error pattern'ini tanımlayabilir ancak scope'ta olmayan submit/request action'ı sırf success state tanımlayabilmek için üretemez.
 
 ## Admin / Operational UI
 
@@ -200,7 +226,7 @@ Must Not Own  : Tekil page layout veya business rule
 Primary Owner : ADMIN_OPERATIONAL_DESIGN.md
 Referenced By : Relevant PAGE-DESIGN / FEATURE-DESIGN / WAVE_PLAN instances
 Derived Into  : Admin/ops implementation tasks
-Must Not Own  : Auth/business permission truth
+Must Not Own  : Auth/business permission truth veya new capability authority
 ```
 
 ---
@@ -213,18 +239,20 @@ Must Not Own  : Auth/business permission truth
 Primary Owner : PROJECT_PLAN.md
 Referenced By : README.md, WAVE_MAP.md
 Derived Into  : Wave architecture
-Must Not Own  : WAVE_MAP ayrıntılı wave structure veya page truth
+Must Not Own  : WAVE_MAP ayrıntılı wave structure, page truth veya yeni executable capability authority
 ```
 
 ## Wave Architecture / Scope / Page Coverage / Dependency Chain
 
 ```text
 Primary Owner : WAVE_MAP.md (execution decomposition)
-Truth Inputs  : Approved capability scope + approved PAGE registry
+Truth Inputs  : Approved executable capability scope + approved PAGE registry
 Referenced By : PROJECT_PLAN.md, CURRENT_STATUS.md, AGENT_INSTRUCTIONS.md, WAVE_PLAN instances
 Derived Into  : Dynamic WAVE-PLAN instances
 Must Not Own  : Yeni capability veya page identity
 ```
+
+WAVE_MAP capability'leri direct exact approved support'a trace edilir; PAGE-DESIGN veya başka generated artifact scope authority değildir.
 
 ## Tekil Wave Tasks / Acceptance / Verification
 
@@ -233,7 +261,7 @@ Primary Owner : İlgili WAVE-PLAN instance
 Truth Inputs  : Parent WAVE_MAP capability + Covered Page IDs
 Referenced By : CURRENT_STATUS.md, NEXT_TASKS.md, AGENT_INSTRUCTIONS.md
 Derived Into  : Immediate execution queue
-Must Not Own  : WAVE_MAP scope veya yeni page identity
+Must Not Own  : WAVE_MAP scope, yeni page identity veya new product capability
 ```
 
 ## Current Project State / Active Wave
@@ -269,7 +297,7 @@ Must Not Own  : Product business rules veya Engine runtime rules
 Primary Owner : DECISIONS.md
 Referenced By : PROJECT_BRAIN.md, TECH_CONTEXT.md, DESIGN_RULES.md, WAVE_PLAN instances
 Derived Into  : Uygulama ve future run context
-Must Not Own  : ASSUMPTIONS kayıtlarının kendisi
+Must Not Own  : ASSUMPTIONS kayıtlarının kendisi veya unapproved capability truth
 ```
 
 ---
@@ -281,7 +309,7 @@ Must Not Own  : ASSUMPTIONS kayıtlarının kendisi
 ```text
 Primary Owner : README.md
 Purpose       : Project output read-order / navigation / quick start
-Must Not Own  : Diğer belgelerin detay truth alanları veya site architecture
+Must Not Own  : Diğer belgelerin detay truth alanları, site architecture veya capability scope
 ```
 
 README özetler ve yönlendirir; owner belgelerin içeriğini kopyalamaz.
@@ -291,6 +319,13 @@ README özetler ve yönlendirir; owner belgelerin içeriğini kopyalamaz.
 # Aynı Bilginin Farklı Seviyelerde Temsili
 
 ```text
+Capability scope:
+  Approved PROJECT_INPUT / SCP → project-specific executable truth
+  CAPABILITY_SCOPE_RULES       → semantic authorization contract
+  PAGE-DESIGN                   → exact supported page actions/design representation
+  WAVE_MAP                      → approved capability execution decomposition
+  WAVE_PLAN                     → parent-approved implementation tasks
+
 Site architecture:
   Approved PROJECT_INPUT → authoritative PAGE registry
   PROJECT_BRAIN          → summary
@@ -318,6 +353,9 @@ Wave:
 Primary owner değişirse dependent belgeler kontrol edilmelidir:
 
 ```text
+Approved Executable Scope
+→ PRODUCT_RULES / GLOBAL_SHELL / PAGE-DESIGN / FEATURE-DESIGN / SYSTEM_STATES / WAVE_MAP / WAVE_PLAN
+
 Approved Site Architecture
 → PROJECT_BRAIN / PRODUCT_RULES / GLOBAL_SHELL / PAGE-DESIGN instances / WAVE_MAP / PROJECT_PLAN
 
@@ -349,10 +387,12 @@ Validation bu dependency zincirlerinde drift olup olmadığını kontrol eder.
 MUST NOT:
 
 - Same technical decision PROJECT_BRAIN ve TECH_CONTEXT'te bağımsız truth olmak,
-- GLOBAL_SHELL yeni PAGE ID icat etmek,
-- PAGE-DESIGN approved registry dışında page üretmek,
-- WAVE_MAP approved page setini azaltmak veya genişletmek,
-- WAVE_PLAN parent Covered Page IDs dışına çıkmak,
+- generated design/planning doc yeni capability authority olmak,
+- page existence/purpose'tan form/modal/search/request gibi child interaction türetmek,
+- GLOBAL_SHELL yeni PAGE ID veya unapproved action icat etmek,
+- PAGE-DESIGN approved registry dışında page veya approved executable scope dışında behavior üretmek,
+- WAVE_MAP approved page/capability setini azaltmak veya genişletmek,
+- WAVE_PLAN parent Covered Page IDs/capability sınırı dışına çıkmak,
 - page package kendi token system'ini icat etmek,
 - NEXT_TASKS future roadmap'e dönüşmek,
 - design document business fact uydurmak,

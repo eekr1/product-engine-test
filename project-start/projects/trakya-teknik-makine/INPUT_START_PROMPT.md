@@ -1,6 +1,6 @@
 # Trakya Teknik Makine — Input Start Prompt
 
-Product Engine v0.3.0 runtime'ını Trakya Teknik Makine için **yeni ve temiz bir chat/session** içinde başlatıyorsun.
+Product Engine v0.3.1 runtime'ını Trakya Teknik Makine için **yeni ve temiz bir chat/session** içinde başlatıyorsun.
 
 ## Authoritative Project Input
 
@@ -17,7 +17,40 @@ Bu session intake chat'inin devamı değildir.
 - Previous chat/reasoning/memory authority değildir.
 - Project truth approved PROJECT_INPUT'tur.
 - Factual provenance canonical source/FCL chain'den çözülür.
-- Approved input'ta olmayan önceki idea/page/proposal current scope'a taşınamaz.
+- Approved input'ta olmayan önceki idea/page/proposal/current capability current scope'a taşınamaz.
+
+---
+
+## Capability Semantic Runtime Gate
+
+Runtime başında `engine/CAPABILITY_SCOPE_RULES.md` fresh-read et.
+
+Canonical invariant:
+
+```text
+relatedness ≠ authorization
+page existence ≠ child interaction authorization
+```
+
+Her independently meaningful generated action/interaction/state exact approved executable support ister.
+
+Explicit Trakya negative test:
+
+```text
+Approved PAGE-007 Contact
++ phone/e-mail direct contact
+
+MUST NOT silently become:
+contact form
+input fields
+submit/send behavior
+success state
+map
+WhatsApp
+request/booking flow
+```
+
+PAGE-DESIGN dahil implementation-bearing artifact'lerde capability diff uygulanmalı. Unsupported capability downstream WAVE_MAP/WAVE_PLAN'a taşınarak authorize sayılamaz.
 
 ---
 
@@ -82,9 +115,15 @@ Approved design profile `standard | full` ise her exact PAGE-XXX ayrı checkpoin
 ```text
 fresh PAGE_DESIGN_PACKAGE_TEMPLATE
 → exact approved PAGE-XXX row
+→ exact approved executable SCP scope
 → DESIGN / DESIGN_SYSTEM / GLOBAL_SHELL / PRODUCT_RULES
-→ ONE page-design write
-→ page/capability/factual diff
+→ ONE page-design candidate
+→ PAGE_DESIGN_CAPABILITY_ATOMS
+→ exact approved support relations
+→ UNSUPPORTED_PAGE_DESIGN_CAPABILITIES
+→ repair until empty
+→ page/factual diff
+→ write ONE instance
 → CLOSE
 ```
 
@@ -92,6 +131,7 @@ Required:
 
 ```text
 PAGE_DESIGN_INSTANCE_SET == APPROVED_PAGE_SET
+UNSUPPORTED_PAGE_DESIGN_CAPABILITIES == empty for every instance
 ```
 
 ### WAVE_MAP
@@ -100,7 +140,7 @@ PAGE_DESIGN_INSTANCE_SET == APPROVED_PAGE_SET
 ref/waves/README.md
 → ref/waves/WAVE_MAP_REFERENCE.md
 → fresh WAVE_MAP_TEMPLATE.md
-→ current authorities + APPROVED_PAGE_SET
+→ current authorities + APPROVED_PAGE_SET + exact approved executable scope
 → ONE WAVE_MAP write
 → capability + page coverage + decomposition validation
 → CLOSE
@@ -110,7 +150,10 @@ Required:
 
 ```text
 PLANNED_PAGE_SET == APPROVED_PAGE_SET
+UNSUPPORTED_MAP_CAPABILITIES == empty
 ```
+
+Generated design docs direct scope support authority değildir.
 
 ### EACH WAVE_PLAN
 
@@ -129,7 +172,17 @@ fresh WAVE_PLAN_TEMPLATE
 
 ### VALIDATION_REPORT
 
-Fresh validation template + current `VALIDATION_RULES.md` ile `VAL-01..VAL-19` eksiksiz uygula.
+Fresh validation template + current `VALIDATION_RULES.md` + `CAPABILITY_SCOPE_RULES.md` ile `VAL-01..VAL-19` eksiksiz uygula.
+
+Capability minimum evidence:
+
+```text
+GENERATED_EXECUTABLE_CAPABILITY_ATOMS
+GENERATED_CAPABILITY_SUPPORT_RELATIONS
+UNSUPPORTED_GENERATED_CAPABILITIES
+PAGE_DESIGN_CAPABILITY_ATOMS
+UNSUPPORTED_PAGE_DESIGN_CAPABILITIES
+```
 
 Corporate minimum evidence:
 
@@ -143,6 +196,7 @@ UNAPPROVED_MAP_PAGES
 COLLAPSED_APPROVED_PAGES
 ```
 
+`UNSUPPORTED_GENERATED_CAPABILITIES != empty` → VAL-04 FAIL.
 `VAL-15 = UNVERIFIED` iken overall en fazla `CONDITIONAL PASS`.
 
 ---
@@ -151,28 +205,30 @@ COLLAPSED_APPROVED_PAGES
 
 1. Canonical Product Engine boot/read order'ını fresh uygula.
 2. Active approved PROJECT_INPUT'u tamamen oku/freeze et.
-3. PAGE registry'yi immutable execution boundary yap.
-4. Package/document/profile resolution'ı v0.3.0 authorities'den yeniden çöz.
-5. `RUN_PROTOCOL`, `GENERATION_PIPELINE`, `OUTPUT_STRUCTURE` uyarınca fresh run başlat.
-6. Dynamic PAGE-DESIGN ve WAVE_PLAN instances batch-generate etme; point-of-use fresh template checkpoint uygula.
-7. WAVE_MAP approved capabilities + exact PAGE setini freeze etsin.
-8. Navigation/global shell approved page setinin tamamını gerçek routable/navigable surfaces olarak korusun.
-9. Home/Corporate/Services/3 service details/Contact identities approved registry'de varsa hiçbirini same-page section'a collapse etme.
-10. Factual claims yalnız source-backed FCL boundary içinde kalsın.
-11. Validation self-report değil available evidence üzerinden fail-closed çalışsın.
-12. Independent trace yoksa AVAILABLE ilan etme.
-13. Publication/completion yalnız canonical validation gate izin veriyorsa yapılsın.
+3. Approved executable SCP scope'u capability authorization boundary olarak freeze et.
+4. PAGE registry'yi immutable execution boundary yap.
+5. Package/document/profile resolution'ı v0.3.1 authorities'den yeniden çöz.
+6. `RUN_PROTOCOL`, `GENERATION_PIPELINE`, `OUTPUT_STRUCTURE` uyarınca fresh run başlat.
+7. Dynamic PAGE-DESIGN ve WAVE_PLAN instances batch-generate etme; point-of-use fresh template checkpoint uygula.
+8. Her generated product behavior exact approved executable support'a semantic subset olsun.
+9. WAVE_MAP approved capabilities + exact PAGE setini freeze etsin.
+10. Navigation/global shell approved page setinin tamamını gerçek routable/navigable surfaces olarak korusun.
+11. Home/Corporate/Services/3 service details/Contact identities approved registry'de varsa hiçbirini same-page section'a collapse etme.
+12. Factual claims yalnız source-backed FCL boundary içinde kalsın.
+13. Validation self-report değil available evidence üzerinden fail-closed çalışsın.
+14. Independent trace yoksa AVAILABLE ilan etme.
+15. Publication/completion yalnız canonical validation gate izin veriyorsa yapılsın.
 
 ## Beklenen Akış
 
 ```text
-approved PROJECT_INPUT + PAGE registry
+approved PROJECT_INPUT + PAGE registry + executable scope
 → fresh Engine boot
 → corporate package/document resolution
 → source/FCL
-→ design system/global shell/page design checkpoints
-→ page-aware WAVE_MAP
+→ design system/global shell/page design capability checkpoints
+→ page-aware + capability-safe WAVE_MAP
 → page-aware isolated WAVE_PLAN checkpoints
-→ validation
+→ global capability semantic validation
 → publication/completion when allowed
 ```

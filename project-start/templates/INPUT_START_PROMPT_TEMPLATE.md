@@ -16,8 +16,24 @@ Bu session intake session'ın devamı değildir.
 
 - Önceki chat/raw brief/intake reasoning/agent memory authority değildir.
 - Project-specific truth için authoritative başlangıç approved `PROJECT_INPUT` dosyasıdır.
-- Approved input'ta bulunmayan önceki niyet, page önerisi, varsayım veya fikir current scope'a taşınamaz.
+- Approved input'ta bulunmayan önceki niyet, page önerisi, varsayım veya capability current scope'a taşınamaz.
 - Factual provenance canonical source/FCL zincirinden çözülür.
+
+---
+
+## Capability Semantic Runtime Gate
+
+Runtime başında `engine/CAPABILITY_SCOPE_RULES.md` current authority olarak uygulanır.
+
+```text
+relatedness ≠ authorization
+page/surface existence ≠ child interaction approval
+upstream generated artifact ≠ approved scope authority
+```
+
+Her independently meaningful generated user action, interaction, data collection/submission veya externally observable product state exact approved executable support ister.
+
+PAGE-DESIGN ve diğer implementation-bearing generated artifact'ler capability self-diff yapmadan valid sayılmaz.
 
 ---
 
@@ -76,9 +92,15 @@ Corporate/page-based project + `design_planning: standard | full` ise her approv
 ```text
 fresh PAGE_DESIGN_PACKAGE_TEMPLATE.md
 → exact approved PAGE-XXX registry row
+→ exact approved executable scope/SCP
 → current DESIGN / DESIGN_SYSTEM / GLOBAL_SHELL / PRODUCT_RULES
+→ generate candidate instance
+→ PAGE_DESIGN_CAPABILITY_ATOMS
+→ exact support relations
+→ UNSUPPORTED_PAGE_DESIGN_CAPABILITIES
+→ repair until empty
 → ONE page-design instance write
-→ identity/capability/factual diff
+→ identity/factual diff
 → CLOSE
 ```
 
@@ -88,6 +110,7 @@ Expected corporate page-design set:
 
 ```text
 PAGE_DESIGN_INSTANCE_SET == APPROVED_PAGE_SET
+UNSUPPORTED_PAGE_DESIGN_CAPABILITIES == empty
 ```
 
 ### WAVE_MAP
@@ -96,7 +119,7 @@ PAGE_DESIGN_INSTANCE_SET == APPROVED_PAGE_SET
 ref/waves/README.md
 → ref/waves/WAVE_MAP_REFERENCE.md
 → fresh WAVE_MAP_TEMPLATE.md
-→ exact current authorities + APPROVED_PAGE_SET if applicable
+→ exact current authorities + approved executable scope + APPROVED_PAGE_SET if applicable
 → ONE WAVE_MAP write
 → page/capability/decomposition validation
 → close
@@ -106,7 +129,10 @@ Corporate website:
 
 ```text
 PLANNED_PAGE_SET == APPROVED_PAGE_SET
+UNSUPPORTED_MAP_CAPABILITIES == empty
 ```
+
+WAVE_MAP support direct approved executable scope'tan gelir; generated PAGE-DESIGN/PROJECT_PLAN scope authority değildir.
 
 ### EACH WAVE_PLAN
 
@@ -127,12 +153,24 @@ fresh WAVE_PLAN_TEMPLATE.md
 
 ```text
 fresh templates/runs/VALIDATION_REPORT_TEMPLATE.md
+→ fresh/current engine/CAPABILITY_SCOPE_RULES.md
 → fresh/current engine/VALIDATION_RULES.md
 → inspect current working-output + available evidence
 → write VALIDATION_REPORT
 ```
 
-Current `VAL-01..VAL-19` eksiksiz uygulanır. Corporate website ise validation minimum page evidence'ı taşır:
+Current `VAL-01..VAL-19` eksiksiz uygulanır.
+
+Capability minimum evidence:
+
+```text
+GENERATED_EXECUTABLE_CAPABILITY_ATOMS
+GENERATED_CAPABILITY_SUPPORT_RELATIONS
+UNSUPPORTED_GENERATED_CAPABILITIES
+PAGE_DESIGN_CAPABILITY_ATOMS / unsupported sets when applicable
+```
+
+Corporate website ise validation minimum page evidence'ı taşır:
 
 ```text
 APPROVED_PAGE_SET
@@ -144,6 +182,7 @@ UNAPPROVED_MAP_PAGES
 COLLAPSED_APPROVED_PAGES
 ```
 
+`UNSUPPORTED_GENERATED_CAPABILITIES != empty` → VAL-04 FAIL.
 `VAL-15 = UNVERIFIED` ise overall en fazla `CONDITIONAL PASS` olabilir.
 
 ---
@@ -152,31 +191,33 @@ COLLAPSED_APPROVED_PAGES
 
 1. Product Engine canonical boot/read order'ını baştan uygula.
 2. Approved PROJECT_INPUT'u tamamen oku ve freeze et.
-3. Corporate website ise approved page registry'yi ayrıca immutable execution boundary olarak freeze et.
-4. Package/document/profile resolution'ı canonical Engine authority'lerinden yeniden çöz.
-5. Run lifecycle'ını `RUN_PROTOCOL`, `GENERATION_PIPELINE`, `OUTPUT_STRUCTURE` uyarınca yürüt.
-6. Her dynamic artifact için point-of-use template refresh uygula; batch-read + batch-generate yapma.
-7. WAVE_MAP approved capability + page scope'u decomposition seviyesinde freeze etsin; WAVE_PLAN exact parent'ı detaylandırsın.
-8. PAGE-DESIGN applicable ise her approved PAGE identity için isolated checkpoint uygula.
-9. Factual claims yalnız source-backed SOURCE_REGISTER/FCL zinciriyle desteklensin.
-10. Distinct corporate page'leri single-page anchor/section structure'a collapse etme.
-11. Continuation expected frontend için TECH_CONTEXT package/tooling/routing expansion path'i canonical guards'a göre çözsün.
-12. VALIDATION_REPORT yazmadan önce current validation template/rules fresh-read edilsin.
-13. Independent trace inspect edilemiyorsa `AVAILABLE` ilan etme.
-14. Validation sonucu canonical evidence'dan türemeli; self-report ground truth değildir.
-15. Publication/completion yalnız canonical validation/publication gate izin veriyorsa yapılır.
+3. Approved executable scope/SCP registry'yi capability authorization boundary olarak kullan.
+4. Corporate website ise approved page registry'yi ayrıca immutable execution boundary olarak freeze et.
+5. Package/document/profile resolution'ı canonical Engine authority'lerinden yeniden çöz.
+6. Run lifecycle'ını `RUN_PROTOCOL`, `GENERATION_PIPELINE`, `OUTPUT_STRUCTURE` uyarınca yürüt.
+7. Her dynamic artifact için point-of-use template refresh uygula; batch-read + batch-generate yapma.
+8. PAGE-DESIGN applicable ise her approved PAGE identity için isolated checkpoint + exact capability diff uygula.
+9. WAVE_MAP approved capability + page scope'u decomposition seviyesinde freeze etsin; WAVE_PLAN exact parent'ı detaylandırsın.
+10. Factual claims yalnız source-backed SOURCE_REGISTER/FCL zinciriyle desteklensin.
+11. Distinct corporate page'leri single-page anchor/section structure'a collapse etme.
+12. Page existence veya design creativity gerekçesiyle yeni interaction/capability üretme.
+13. Continuation expected frontend için TECH_CONTEXT package/tooling/routing expansion path'i canonical guards'a göre çözsün.
+14. VALIDATION_REPORT yazmadan önce current capability/validation rules + template fresh-read edilsin.
+15. Independent trace inspect edilemiyorsa `AVAILABLE` ilan etme.
+16. Validation sonucu canonical evidence'dan türemeli; self-report ground truth değildir.
+17. Publication/completion yalnız canonical validation/publication gate izin veriyorsa yapılır.
 
 ## Beklenen Akış
 
 ```text
 approved PROJECT_INPUT
 → fresh Engine boot
-→ approved PAGE_SET freeze if corporate
+→ approved capability scope + PAGE_SET freeze if applicable
 → deterministic package/document resolution
 → source register
-→ design/page checkpoints if applicable
-→ WAVE_MAP
+→ design/page capability checkpoints if applicable
+→ capability-safe WAVE_MAP
 → isolated WAVE_PLAN checkpoints
-→ validation
+→ global generated-artifact capability validation
 → publication/completion when allowed
 ```

@@ -45,6 +45,21 @@ services/products, stock/availability, hours, certificates, partner status, addr
 
 ---
 
+## Capability Scope Intake Gate
+
+Intake sırasında `engine/CAPABILITY_SCOPE_RULES.md` uygula.
+
+```text
+relatedness ≠ authorization
+page/surface existence ≠ child interaction approval
+```
+
+Source/brief bir page veya broad flow approve ediyor diye form, submit, modal, search/filter, map, WhatsApp, booking/request flow, upload/download, new CTA veya başka independently meaningful behavior current scope'a eklenemez.
+
+Exact executable behavior source/current approved context'te yoksa pending proposal olarak bile `IN_SCOPE` masquerade edemez; clarification/future/out-of-scope ayrımı korunur.
+
+---
+
 ## Corporate Website Intake Gate
 
 Source/brief kurumsal firma web sitesi, müşteri sitesi veya gerçek siteye dönüşmesi beklenen corporate sales demo niyeti taşıyorsa:
@@ -72,6 +87,7 @@ corporate website ≠ landing page
 Prototype/demo ≠ page breadth reduction
 proposed architecture ≠ approved architecture
 approved distinct pages ≠ anchor sections
+page purpose ≠ child interaction authorization
 ```
 
 Multi-page corporate website için default intake recommendation:
@@ -89,17 +105,18 @@ Bu recommendation otomatik approval değildir. Kullanıcı başka profile seçer
 1. Product Engine canonical boot/read order'ını uygula.
 2. Verilen project source'u tamamen oku.
 3. Source'u Engine contract değil source truth material olarak ele al.
-4. Intake için gerekli `PROJECT_INTAKE`, applicable `SITE_ARCHITECTURE_RULES`, `PLANNING_PROFILES`, assumption/conflict ve input template authority'lerini uygula.
+4. Intake için gerekli `PROJECT_INTAKE`, `CAPABILITY_SCOPE_RULES`, applicable `SITE_ARCHITECTURE_RULES`, `PLANNING_PROFILES`, assumption/conflict ve input template authority'lerini uygula.
 5. Source'taki explicit project decisions/constraints'i Engine authority ile çelişmedikçe koru.
 6. Missing bilgi için silent inference yerine missing-input / assumption / clarification / proposal davranışı kullan.
 7. `demo`, `sales demo`, `prototype` ifadelerini delivery context olarak yorumla; project type/domain'i veya quality/scope breadth'i düşürme.
 8. Current executable scope ile Future / Open Question / Out of Scope ayrımını koru.
 9. Corporate website'te proposed/approved page setini single-page shortcut'a indirgeme.
-10. Source-backed factual truth'u qualifier/adjacent capability ile genişletme.
-11. Approval gerektiğinde canonical approval gate'te dur.
-12. IDE/tool/plan/execution/auto-approval Product Engine user approval değildir.
-13. Explicit user approval alınmadan `status: approved`, `approved_by: user`, approved page registry veya approved input üretme; generation başlatma.
-14. User pending input'u explicit approve ettiğinde approved input'u oluştur/güncelle ve STOP et. Aynı chat içinde run'a devam etme.
+10. Page existence veya related scope'tan yeni product interaction türetme.
+11. Source-backed factual truth'u qualifier/adjacent capability ile genişletme.
+12. Approval gerektiğinde canonical approval gate'te dur.
+13. IDE/tool/plan/execution/auto-approval Product Engine user approval değildir.
+14. Explicit user approval alınmadan `status: approved`, `approved_by: user`, approved page registry veya approved input üretme; generation başlatma.
+15. User pending input'u explicit approve ettiğinde approved input'u oluştur/güncelle ve STOP et. Aynı chat içinde run'a devam etme.
 
 ## Beklenen Sonuç
 
@@ -108,6 +125,7 @@ self-contained project source
 → pending PROJECT_INPUT
    + project type
    + planning profiles
+   + exact executable capability boundaries
    + proposed/known site architecture when corporate
 → explicit user approval
 → approved PROJECT_INPUT

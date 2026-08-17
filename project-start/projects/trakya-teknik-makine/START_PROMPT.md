@@ -1,6 +1,6 @@
 # Trakya Teknik Makine — Start Prompt
 
-Product Engine v0.3.0 üzerinden Trakya Teknik Makine için **Phase A — Intake Session** başlatıyorsun.
+Product Engine v0.3.1 üzerinden Trakya Teknik Makine için **Phase A — Intake Session** başlatıyorsun.
 
 ## Kaynak
 
@@ -8,7 +8,7 @@ Product Engine v0.3.0 üzerinden Trakya Teknik Makine için **Phase A — Intake
 
 ## Session Boundary
 
-Bu chat'in tek amacı canonical pending `PROJECT_INPUT` üretmek, project type/planning/site architecture kararlarını kullanıcıya görünür kılmak ve explicit approval gate'te durmaktır.
+Bu chat'in tek amacı canonical pending `PROJECT_INPUT` üretmek, project type/planning/site architecture/capability-scope kararlarını kullanıcıya görünür kılmak ve explicit approval gate'te durmaktır.
 
 Bu chat içinde generation run, WAVE_MAP/WAVE_PLAN, output, validation, publication veya implementation başlatma.
 
@@ -26,9 +26,32 @@ Source file bu intake için self-contained factual project universe'dür.
 - `Yerinde Teknik Destek` → mobil filo/acil müdahale/SLA anlamına genişletme.
 - `Makine Bakım ve Onarım` → periyodik bakım/revizyon/spesifik makine uzmanlığı anlamına genişletme.
 - Contact values source'ta yoksa uydurma.
-- Page architecture yeni factual company claim authorize etmez.
+- Page architecture yeni factual company claim veya child interaction authorize etmez.
 
-Technical/design synthesis Engine-resolved olabilir; company/domain claims source-backed olmalıdır.
+Technical/design synthesis Engine-resolved olabilir; company/domain claims ve executable product capabilities approved scope-backed olmalıdır.
+
+---
+
+## Capability Scope Intake Guard
+
+Intake sırasında `engine/CAPABILITY_SCOPE_RULES.md` oku ve approved executable scope'u child interactions açısından broadlaştırma.
+
+Canonical invariant:
+
+```text
+relatedness ≠ authorization
+page existence ≠ child capability authorization
+```
+
+Trakya current scope için örnek:
+
+```text
+Contact page
++ phone/e-mail direct contact
+≠ contact form / submit / success state / WhatsApp / map
+```
+
+Source current scope'ta açıkça olmayan form/request/booking/search/filter/modal vb. interaction'ları pending `IN_SCOPE` capability olarak ekleme. Future possibility current executable support değildir.
 
 ---
 
@@ -61,9 +84,9 @@ Contact
 
 Bunlara canonical `PAGE-XXX` identities, purpose, route/navigation identity, IN_SCOPE status, content/capability boundary ve parent/detail relation ata.
 
-Bu listeden yeni factual page/capability üretme. Referanslar/Projeler/Harita/Form/WhatsApp gibi yüzeyleri current scope'a ekleme.
+Bu listeden yeni factual page/capability üretme. Referanslar/Projeler/Harita/Form/WhatsApp gibi yüzey/behavior'ları current scope'a ekleme.
 
-Pending page registry **approved değildir**. Kullanıcıya project type + planning profiles + proposed page registry açıkça gösterilmeden approval isteğine geçme.
+Pending page registry **approved değildir**. Kullanıcıya project type + planning profiles + proposed page registry + relevant capability boundaries açıkça gösterilmeden approval isteğine geçme.
 
 Canonical invariants:
 
@@ -72,6 +95,7 @@ corporate website ≠ landing page
 Prototype ≠ page breadth reduction
 proposed architecture ≠ approved architecture
 approved distinct pages ≠ anchor sections
+page purpose ≠ child interaction approval
 ```
 
 ---
@@ -79,12 +103,12 @@ approved distinct pages ≠ anchor sections
 ## Talimatlar
 
 1. Root README → PRODUCT_ENGINE_BRAIN → engine/README read order'ını uygula.
-2. Intake için `PROJECT_INTAKE`, `SITE_ARCHITECTURE_RULES`, `PLANNING_PROFILES`, assumptions/conflicts ve `inputs/PROJECT_INPUT_TEMPLATE.md` authority'lerini oku.
+2. Intake için `PROJECT_INTAKE`, `CAPABILITY_SCOPE_RULES`, `SITE_ARCHITECTURE_RULES`, `PLANNING_PROFILES`, assumptions/conflicts ve `inputs/PROJECT_INPUT_TEMPLATE.md` authority'lerini oku.
 3. Source file'ı tamamen oku.
 4. `project_type: corporate-website` intent'ini narrow single-page type'a dönüştürme.
 5. Proposed Site Architecture'ı pending input Section 6'ya PAGE identities ile yaz.
-6. Current Scope / Future / Open Question / Out of Scope ayrımını koru.
-7. Source factual truth'u genişletme.
+6. Current executable scope ile Future / Open Question / Out of Scope ayrımını koru.
+7. Source factual truth'u veya executable capability scope'u genişletme.
 8. Antrasit/amber technical precision direction'ı creative preference olarak koruyabilirsin; official brand fact olarak yazma.
 9. IDE/tool/plan/auto approval user approval değildir.
 10. User pending intake'i doğrudan approve etmeden `status: approved`, `approved_by: user` veya approved input oluşturma.
@@ -98,6 +122,7 @@ TRAKYA_TEKNIK_MAKINE_PROJECT.md
    project_type: corporate-website
    planning profiles
    proposed PAGE-XXX registry
+   exact current executable capability boundaries
 → explicit user approval
 → approved PROJECT_INPUT
 → STOP / NEW CHAT

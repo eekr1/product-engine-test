@@ -17,6 +17,8 @@ Higher-priority evidence wins.
 ## Canonical Gates
 `VAL-01` .. `VAL-19` eksiksiz uygulanır; missing gate overall FAIL'dir.
 
+Executable capability semantic authorization için canonical owner `engine/CAPABILITY_SCOPE_RULES.md`'dir. VAL-04 bu contract'ı blocking biçimde uygular.
+
 ---
 
 ## VAL-01 — Canonical Read Order
@@ -60,6 +62,123 @@ Missing/unexpected dynamic instance → FAIL.
 ## VAL-04 — Approved Scope + Page Architecture Integrity
 
 VAL-04 capability scope ve applicable corporate page architecture'ı birlikte doğrular.
+
+### Stage 0 — All Generated Executable Artifact Capability Integrity
+
+Validator yalnız WAVE_MAP/WAVE_PLAN'a bakamaz. Implementation-bearing generated artifacts içindeki independently meaningful product behavior/action/state'ler de approved executable scope'a karşı atomize edilir.
+
+Minimum inspect surface:
+
+```text
+PRODUCT_RULES executable behaviors
+TECH_CONTEXT only when it introduces product-visible capability rather than technical implementation
+GLOBAL_SHELL executable navigation/actions
+PAGE-DESIGN instances
+FEATURE-DESIGN instances (applicable)
+SYSTEM_STATES when a state implies new product behavior
+PROJECT_PLAN when it introduces concrete executable capability
+WAVE_MAP
+WAVE_PLAN instances
+other generated prose only when it introduces a concrete user action / interaction / state / deliverable
+```
+
+Canonical rule:
+
+```text
+GENERATED_CAPABILITY semantic meaning
+⊆ exact approved executable support semantic meaning
+```
+
+Support eligibility:
+
+```text
+support_status ∈ {IN_SCOPE, KNOWN_DECISION}
+AND
+Executable = YES
+```
+
+Minimum global sets:
+
+```text
+GENERATED_EXECUTABLE_CAPABILITY_ATOMS
+GENERATED_CAPABILITY_SUPPORT_RELATIONS
+UNSUPPORTED_GENERATED_CAPABILITIES
+```
+
+Each support relation must identify:
+
+```text
+Generated Capability
+Source Artifact
+Exact Approved Support ID(s)
+Exact Approved Support Meaning
+Support Status
+Support Executable Flag
+Semantic Subset Result
+```
+
+#### Surface Existence Guard
+
+Approved page/screen/surface existence child interaction authorization değildir.
+
+```text
+approved Contact page
+≠ contact form
+
+approved phone/email direct contact
+≠ message form / input fields / submit / success state
+
+approved Services page
+≠ search/filter
+
+approved detail page
+≠ accordion/modal/request flow
+```
+
+Aşağıdaki class'lar related surface içinde mantıklı görünseler bile ayrı capability atomu sayılır ve exact approved support ister:
+
+```text
+form
+input/data collection
+submit/send action
+success/error/retry state caused by a new action
+modal/dialog
+accordion/tab product interaction
+search/filter/sort
+upload/download action
+map interaction
+WhatsApp/external-channel action
+booking/request flow
+auth action
+new CTA type
+new externally observable product state
+```
+
+Page ID, page purpose, visual design decision veya generated upstream artifact tek başına bunları authorize edemez.
+
+Generated upstream artifact scope authority değildir:
+
+```text
+PAGE-DESIGN says form
+→ form approved değildir
+
+WAVE_MAP copies form
+→ unsupported scope downstream'da aklanmış olmaz
+```
+
+Implementation detail yalnız şu koşulların tamamı sağlanıyorsa ayrı capability değildir:
+
+```text
+same approved behavior
++ no new user-facing capability
++ no new interaction contract
++ no new data collection/submission
++ no new externally observable product state
++ no new factual/business meaning
++ no independently meaningful deliverable surface
+```
+
+`UNSUPPORTED_GENERATED_CAPABILITIES != empty` → VAL-04 FAIL.
 
 ### Stage A — WAVE_MAP → Approved Executable Scope
 
@@ -107,17 +226,9 @@ Exact semantic support zorunludur:
 map capability semantic meaning ⊆ exact executable support meaning
 ```
 
-Broad/generic scope adjacent surface authorize etmez.
+Broad/generic scope adjacent surface authorize etmez. WAVE_MAP upstream PAGE-DESIGN/PROJECT_PLAN artifact'ını scope support olarak kullanamaz; exact approved executable support'a trace etmelidir.
 
-Implementation detail yalnız şu koşulların tümü sağlanıyorsa ayrı capability değildir:
-
-```text
-same approved behavior
-+ no new user-facing capability
-+ no new interaction contract
-+ no new factual/business meaning
-+ no independently meaningful deliverable surface
-```
+Implementation detail yalnız `CAPABILITY_SCOPE_RULES.md` exception testini karşılıyorsa ayrı capability değildir.
 
 `HIDDEN_MAP_CAPABILITIES != empty` → FAIL.
 `UNSUPPORTED_MAP_CAPABILITIES != empty` → FAIL.
@@ -219,6 +330,8 @@ detail-of | implementation-of | verification-of
 `NEW_PLAN_PAGES != empty` → FAIL.
 
 Plan bir parent PAGE identity'yi başka parent page'in section'ına collapse ediyorsa FAIL.
+
+Parent WAVE_MAP capability'si Stage A/Stage 0'da unsupported ise parent'ta bulunması WAVE_PLAN capability'sini geçerli yapmaz.
 
 ---
 
@@ -327,6 +440,7 @@ Aşağıdakiler FAIL'dir:
 - PAGE-DESIGN instance missing/unexpected,
 - WAVE_PLAN parent map'ten yeni page/capability üretir,
 - generated output single-page derken approved input multi-page corporate architecture taşır,
+- generated artifacts arasında capability reality drift'i,
 - source identity/state mismatch,
 - approved delivery profile'dan daha yüksek maturity wording.
 
@@ -344,6 +458,8 @@ Superseded
 ```
 
 Site Architecture approved page seti `Engine Resolved` olarak masquerade edemez; canonical approval provenance input lifecycle'dan gelmelidir.
+
+Engine Resolved technical/design choice yeni product capability authorize edemez.
 
 ---
 
@@ -399,6 +515,8 @@ Corporate multi-page website için approved `design_planning: standard | full` i
 
 Generic template drift veya approved site architecture'ı görsel kolaylık uğruna collapse etme → FAIL.
 
+Design creativity yeni product capability üretme izni değildir. PAGE-DESIGN capability diff'i VAL-04 Stage 0'da PASS etmek zorundadır.
+
 ---
 
 ## VAL-11 — Project Plan / Wave / State Alignment
@@ -413,6 +531,12 @@ Pre-execution state success/completion iddia edemez.
 
 Canonical ownership, assumptions ve conflicts doğru yönetilir.
 
+Capability scope:
+
+- approved executable truth → approved input / SCP registry,
+- executable capability semantics → `CAPABILITY_SCOPE_RULES.md`,
+- generated docs yalnız reference/implementation yapar; yeni capability authority olamaz.
+
 Site architecture:
 
 - field/approval → PROJECT_INTAKE + approved input,
@@ -420,7 +544,7 @@ Site architecture:
 - domain guard → CORPORATE_WEBSITE_PACKAGE,
 - downstream docs only reference/enforce.
 
-Downstream document site architecture authority'yi yeniden icat edemez.
+Downstream document site architecture veya capability authority'yi yeniden icat edemez.
 
 ---
 
@@ -475,6 +599,8 @@ Prototype wording site/page breadth'i azaltamaz.
 Unresolved placeholder, duplicate skeleton veya başka proje leakage → FAIL.
 
 Corporate templates'te unresolved `PAGE_ID`, route identity veya Site Architecture placeholder → FAIL.
+
+PAGE-DESIGN `Approved Capability Support` block'u applicable instance'ta unresolved/empty kalamaz; explicit `N/A — no executable page-specific action beyond approved surface presentation` gibi doğrulanabilir representation kullanılabilir.
 
 ---
 
@@ -575,6 +701,11 @@ PAGE_DESIGN_INSTANCE_SET (applicable)
 MISSING_MAP_PAGES
 UNAPPROVED_MAP_PAGES
 COLLAPSED_APPROVED_PAGES
+GENERATED_EXECUTABLE_CAPABILITY_ATOMS
+GENERATED_CAPABILITY_SUPPORT_RELATIONS
+UNSUPPORTED_GENERATED_CAPABILITIES
+PAGE_DESIGN_CAPABILITY_ATOMS per page-design instance (applicable)
+UNSUPPORTED_PAGE_DESIGN_CAPABILITIES per page-design instance (applicable)
 MAP_CAPABILITY_ATOMS per wave
 COMMITTED_CAPABILITY_ATOMS per wave
 HIDDEN_MAP_CAPABILITIES per wave
@@ -611,6 +742,9 @@ missing/incorrect base package -> VAL-02 FAIL
 EXPECTED_WAVES != ACTUAL_WAVES -> VAL-03 FAIL
 expected page-design set mismatch -> VAL-03 FAIL
 support not executable-eligible -> VAL-04 FAIL
+UNSUPPORTED_GENERATED_CAPABILITIES non-empty -> VAL-04 FAIL
+UNSUPPORTED_PAGE_DESIGN_CAPABILITIES non-empty -> VAL-04 FAIL
+page/surface existence used to authorize unsupported child interaction -> VAL-04 FAIL
 hidden/unsupported map capability -> VAL-04 FAIL
 APPROVED_PAGE_SET != PLANNED_PAGE_SET -> VAL-04 FAIL
 MISSING_MAP_PAGES / UNAPPROVED_MAP_PAGES non-empty -> VAL-04 FAIL

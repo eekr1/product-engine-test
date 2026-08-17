@@ -48,6 +48,7 @@ APPROVED INPUT
 Canonical invariants:
 
 ```text
+all generated executable capability atoms ⊆ approved executable capability atoms
 WAVE_MAP committed capability atoms ⊆ approved executable capability atoms
 WAVE_PLAN capability atoms ⊆ exact parent WAVE_MAP capability atoms
 
@@ -56,6 +57,7 @@ APPROVED_PAGE_SET == PLANNED_PAGE_SET
 APPROVED_PAGE_SET == NAVIGATION_PAGE_SET
 ```
 
+Executable capability semantic authorization owner: `engine/CAPABILITY_SCOPE_RULES.md`.
 Exact site architecture semantics: `engine/SITE_ARCHITECTURE_RULES.md`.
 
 WAVE_PLAN task'ları SCP ID taşımak zorunda değildir. SCP registry upstream map resolution içindir.
@@ -94,11 +96,23 @@ Page relation değişikliği gerekiyorsa yeni approved input gerekir.
 
 ## Capability Atom Rule
 
-Scope comparison broad summary veya wave adı üzerinden yapılamaz.
+Canonical owner: `engine/CAPABILITY_SCOPE_RULES.md`.
+
+Scope comparison broad summary, page existence, wave adı veya “bu yüzeyde mantıklı olur” reasoning'i üzerinden yapılamaz.
 
 Executable içerik şu alanlardan capability atomlarına ayrılır:
 
 ```text
+GENERATED ARTIFACTS:
+- Product behavior/action descriptions
+- Navigation/actions
+- Page Design Primary Actions
+- Page Design interactive components
+- Page Design states caused by product behavior
+- Feature design interactions
+- System states when they imply a product capability
+- concrete executable roadmap deliverables
+
 WAVE_MAP:
 - Committed Capabilities
 - In Scope
@@ -113,15 +127,75 @@ WAVE_PLAN:
 - verification/acceptance only when they imply product capability
 ```
 
-Her atom ayrı semantic capability olarak değerlendirilir.
+Her independently meaningful behavior ayrı semantic capability olarak değerlendirilir.
 
 ```text
 phone CTA != address card != static map != contact form != WhatsApp
+approved Contact page != contact form
+approved phone/email != form submit
 approved Corporate page != Home page #corporate section
 approved Service Detail page != accordion/card expansion
+approved Services page != search/filter behavior
 ```
 
 Relatedness authorization değildir.
+
+### Surface Existence Guard
+
+```text
+approved PAGE identity
+→ surface existence + approved purpose/boundary + route identity
+
+approved PAGE identity
+↛ all plausible actions/interactions on that surface
+```
+
+Form, input collection, submit/send, modal, search/filter, booking/request flow, map interaction, WhatsApp action, upload/download, new CTA type veya externally observable new state exact approved executable support ister.
+
+### Implementation Detail Exception
+
+Generated detail yalnız aşağıdakilerin tamamı sağlanıyorsa ayrı capability değildir:
+
+```text
+same approved behavior
++ no new user-facing action
++ no new interaction contract
++ no new data collection/submission
++ no new externally observable product state
++ no new factual/business meaning
++ no independently meaningful deliverable surface
+```
+
+Generated upstream artifact scope authority değildir. Unsupported capability downstream artifact'a kopyalanarak authorize hale gelemez.
+
+---
+
+## Generated Artifact Capability Diff
+
+Her implementation-bearing artifact checkpoint'i write öncesinde capability self-diff yapmalıdır.
+
+Minimum algorithm:
+
+```text
+1. Extract candidate independently meaningful executable behaviors/actions/states.
+2. Build GENERATED_ARTIFACT_CAPABILITY_ATOMS.
+3. Resolve exact approved executable support for every atom.
+4. Build GENERATED_ARTIFACT_SUPPORT_RELATIONS.
+5. Build UNSUPPORTED_ARTIFACT_CAPABILITIES.
+6. If non-empty: remove/repair; do not CLOSE checkpoint.
+```
+
+Support yalnız:
+
+```text
+Status ∈ {IN_SCOPE, KNOWN_DECISION}
+AND Executable = YES
+AND generated semantic meaning ⊆ exact support semantic meaning
+```
+
+ile geçerlidir.
+
+Page ID, page purpose, another generated design doc veya broad scope summary exact child-capability support değildir.
 
 ---
 
@@ -214,6 +288,8 @@ generated factual claim ⊆ referenced FCL semantic content
 
 Page architecture factual enrichment değildir. Approved hizmet/fact farklı page'lerde organize edilebilir; semantic meaning genişletilemez.
 
+Capability approval da factual approval değildir; factual truth da capability authorize etmez.
+
 ---
 
 ## Observable Trace Boundary
@@ -248,6 +324,8 @@ APPROVED_PAGE_SET
 PAGE identity → purpose → route/navigation identity → scope status
 ```
 
+SCP granularity child capability semantic comparison'a izin vermelidir. Broad page atomu child interaction authorize etmez.
+
 ## 4. Source Register + FCL Registry
 Her FCL exact supporting source/evidence ile kaydedilir.
 
@@ -277,6 +355,8 @@ Approved Input
 → README-DOC
 ```
 
+Her implementation-bearing checkpoint generated artifact capability diff'e tabidir.
+
 ### PAGE-DESIGN Dynamic Checkpoint Loop
 
 `design_planning: standard | full` ve page/screen-based UI için her approved distinct page ayrı checkpoint'tir.
@@ -285,11 +365,16 @@ Approved Input
 START PAGE-XXX CHECKPOINT
 1. Fresh-read PAGE_DESIGN_PACKAGE_TEMPLATE.
 2. Re-open exact approved PAGE-XXX registry row.
-3. Re-open DESIGN / DESIGN_SYSTEM / GLOBAL_SHELL and product/source authorities as applicable.
+3. Re-open approved SCP/executable scope + DESIGN / DESIGN_SYSTEM / GLOBAL_SHELL and product/source authorities as applicable.
 4. Generate only PAGE-XXX design package.
-5. Confirm no new page/capability/factual claim introduced.
-6. Confirm route/navigation identity matches approved architecture.
-7. CLOSE.
+5. Extract PAGE_DESIGN_CAPABILITY_ATOMS from Primary Actions, interactive components, states, integration actions and other executable prose.
+6. Resolve every atom to exact approved executable support under CAPABILITY_SCOPE_RULES.
+7. Build UNSUPPORTED_PAGE_DESIGN_CAPABILITIES.
+8. If non-empty: repair/remove unsupported behavior; do not write/CLOSE invalid instance.
+9. Confirm no new page/factual claim introduced.
+10. Confirm route/navigation identity matches approved architecture.
+11. Write only valid PAGE-XXX instance.
+12. CLOSE.
 END
 ```
 
@@ -300,6 +385,8 @@ EXPECTED_PAGE_DESIGN_INSTANCES = APPROVED_PAGE_SET
 ACTUAL_PAGE_DESIGN_INSTANCES = generated PAGE-DESIGN identities
 EXPECTED == ACTUAL required when design standard/full
 ```
+
+Page existence veya direct-contact surface semantics yeni form/modal/request/search interaction authorize etmez.
 
 ---
 
@@ -336,8 +423,8 @@ Map generation algorithm:
 8. Her approved PAGE-XXX'i en az bir implementation wave'e map et.
 9. Distinct page'leri anchor section'a collapse etme.
 10. For every wave explain WHY SEPARATE, UPSTREAM boundary and HANDOFF boundary.
-11. Extract every candidate committed capability atom.
-12. Resolve exact executable approved support for each atom.
+11. Extract every candidate committed/executable capability atom from all executable-bearing map fields.
+12. Resolve exact approved executable support for each atom directly; upstream generated docs cannot substitute support.
 13. Build UNSUPPORTED_MAP_CAPABILITIES.
 14. Build PLANNED_PAGE_SET from map coverage.
 15. If unsupported capabilities exist OR PLANNED_PAGE_SET != APPROVED_PAGE_SET: repair; do not freeze.
@@ -369,11 +456,12 @@ START WAVE_NN CHECKPOINT
 10. Atomize candidate executable capabilities and map them to exact parent relations.
 11. Build NEW_PLAN_CAPABILITIES.
 12. Build plan page identity set; it must be subset of parent Covered Page IDs.
-13. If invalid: repair upstream only if genuinely approved; otherwise remove.
-14. Run implementation-readiness question: would a fresh capable agent still need a planning pass? If yes, deepen applicable task contracts.
-15. Write ONLY WAVE_NN.
-16. Validate/repair WAVE_NN.
-17. CLOSE checkpoint.
+13. Parent capability itself must already have valid exact approved support; invalid parent cannot authorize child.
+14. If invalid: repair upstream only if genuinely approved; otherwise remove.
+15. Run implementation-readiness question: would a fresh capable agent still need a planning pass? If yes, deepen applicable task contracts.
+16. Write ONLY WAVE_NN.
+17. Validate/repair WAVE_NN.
+18. CLOSE checkpoint.
 END
 ```
 
@@ -425,6 +513,9 @@ Validator yeni source ID veya consumption state icat edemez.
 ## Pre-Validation Consistency Check
 
 - expected vs actual dynamic instances
+- global generated executable capability diff complete
+- `UNSUPPORTED_GENERATED_CAPABILITIES == empty`
+- every PAGE-DESIGN capability diff complete and `UNSUPPORTED_PAGE_DESIGN_CAPABILITIES == empty`
 - corporate website ise APPROVED_PAGE_SET == PLANNED_PAGE_SET == NAVIGATION_PAGE_SET
 - design standard/full corporate website ise PAGE-DESIGN set equality
 - no distinct approved page collapsed into anchor-only section
@@ -448,7 +539,7 @@ Canonical target:
 runs/active/<run-id>/working-output/
 ```
 
-VAL-04 scope/page integrity, VAL-05 planning depth, VAL-09 tech/continuation, VAL-13 factual claims ve VAL-15 trace integrity current `VALIDATION_RULES.md` üzerinden uygulanır.
+VAL-04 scope/page/capability integrity, VAL-05 planning depth, VAL-09 tech/continuation, VAL-13 factual claims ve VAL-15 trace integrity current `VALIDATION_RULES.md` üzerinden uygulanır.
 
 Validation publication'dan önce tamamlanır.
 

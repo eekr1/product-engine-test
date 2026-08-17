@@ -9,7 +9,7 @@ Bu belge, Product Engine'in çekirdek motor yapısında (`engine/`), paket kural
 - **Root `README.md`**: Güncel aktif Product Engine sürümünün birincil otoritesi.
 - **`logs/ENGINE_CHANGELOG.md`**: Product Engine sürüm geçmişinin birincil otoritesi.
 
-Güncel aktif sürüm: `v0.3.0`.
+Güncel aktif sürüm: `v0.3.1`.
 
 ---
 
@@ -457,15 +457,120 @@ Trakya real project showed that visually high-quality and technically continuati
 - Page architecture yeni factual company claim authorize etmez.
 - v0.2.2 deterministic continuation-ready stack guard korunur.
 
+### Validation Outcome
+
+Fresh `RUN-20260817-004` corporate-website package + approved PAGE-001..007 + seven distinct routes + seven PAGE-DESIGN instances + coherent page-aware wave map üretti. `APPROVED_PAGE_SET == PLANNED_PAGE_SET == NAVIGATION_PAGE_SET == PAGE_DESIGN_INSTANCE_SET`, collapse/missing/unapproved page setleri boş kaldı. ISSUE-002 v0.3.0 behavior'ı doğrulandı.
+
+Aynı run ayrıca ayrı bir capability semantic authorization defect'i (ISSUE-003) ortaya çıkardı; bu defect PE-CHANGE-010 kapsamındadır.
+
+---
+
+## PE-CHANGE-010 — 2026-08-17
+
+- **Version:** v0.3.1
+- **Change Type:** Added / Fixed
+- **Affected Area:** engine/CAPABILITY_SCOPE_RULES.md | engine/README.md | engine/GENERATION_PIPELINE.md | engine/VALIDATION_RULES.md | templates/design/PAGE_DESIGN_PACKAGE_TEMPLATE.md | templates/waves/WAVE_MAP_TEMPLATE.md | templates/runs/VALIDATION_REPORT_TEMPLATE.md | README.md | logs/ISSUES.md
+- **Breaking Change:** No
+- **Related Issue:** ISSUE-003
+- **Related Run:** RUN-20260817-004
+
+### Summary
+
+Executable capability authorization broad relatedness modelinden deterministic exact semantic subset modeline geçirildi.
+
+Yeni canonical owner:
+
+```text
+engine/CAPABILITY_SCOPE_RULES.md
+```
+
+Core invariant:
+
+```text
+GENERATED_CAPABILITY semantic meaning
+⊆ exact approved executable support semantic meaning
+```
+
+### Defect Evidence
+
+`RUN-20260817-004` approved scope yalnız Contact page + phone/e-mail direct-contact behavior taşımasına rağmen PAGE-DESIGN şunları üretti:
+
+```text
+interactive contact form
+name/e-mail/subject/message inputs
+submit action
+success state
+```
+
+WAVE_MAP bunu `CAP-022 Contact Channels and Demo Form` olarak `SCP-008 Contact page + SCP-011 phone/e-mail` support'una bağladı ve v0.3.0 VAL-04 false PASS verdi.
+
+```text
+Contact page != contact form
+phone/e-mail direct contact != form submit
+```
+
+### Generation Changes
+
+- Her implementation-bearing generated artifact capability self-diff'e tabidir.
+- Page/surface existence child interaction authorization değildir.
+- Form, input collection, submit, new interaction state, modal, search/filter, map, WhatsApp, booking/request flow, upload/download ve new CTA independently meaningful capability atomu sayılır.
+- PAGE-DESIGN template `Approved Capability Support` block'u taşır.
+- PAGE-DESIGN checkpoint `UNSUPPORTED_PAGE_DESIGN_CAPABILITIES == empty` olmadan CLOSE edilemez.
+- Upstream generated artifact approved support authority değildir; unsupported capability downstream'da aklanamaz.
+- WAVE_MAP every capability için direct exact approved executable support ister.
+
+### Validation Changes
+
+VAL-04'e Stage 0 global generated-artifact capability integrity eklendi.
+
+Required evidence:
+
+```text
+GENERATED_EXECUTABLE_CAPABILITY_ATOMS
+GENERATED_CAPABILITY_SUPPORT_RELATIONS
+UNSUPPORTED_GENERATED_CAPABILITIES
+PAGE_DESIGN_CAPABILITY_ATOMS
+UNSUPPORTED_PAGE_DESIGN_CAPABILITIES
+```
+
+Blocking:
+
+```text
+UNSUPPORTED_GENERATED_CAPABILITIES != empty
+→ VAL-04 FAIL
+
+UNSUPPORTED_PAGE_DESIGN_CAPABILITIES != empty
+→ VAL-04 FAIL
+```
+
+### Impact
+
+- Design creativity yeni product behavior authorize edemez.
+- Page architecture yalnız surface identity/boundary verir; plausible interactions otomatik scope değildir.
+- Broad page/purpose support ile child capability authorization yapılamaz.
+- Validator WAVE_MAP öncesindeki generated design artifacts'i de scope açısından denetler.
+- Existing page architecture, continuation stack ve factual claim gates korunur.
+
+### Acceptance Gate
+
+Fresh Trakya v0.3.1 run:
+
+- approved contact scope unchanged iken form/submit/success state üretmemeli,
+- veya unsupported interaction oluşursa generation checkpoint repair etmeli / VAL-04 FAIL vermeli,
+- corporate 7-page architecture + continuation stack behavior'ı regression olmadan korumalıdır.
+
+ISSUE-003 yalnız bu fresh evidence sonrasında `Resolved` yapılır.
+
 ---
 
 ## 5. Güncel Durum
 
 ```text
-Active Engine Version Authority : Root README.md (v0.3.0)
+Active Engine Version Authority : Root README.md (v0.3.1)
 Version History Authority       : logs/ENGINE_CHANGELOG.md
-Recorded Change Entries         : 9
+Recorded Change Entries         : 10
 ISSUE-001                        : Resolved in v0.2.2
-ISSUE-002                        : Implemented — Awaiting Fresh v0.3.0 Validation
-Next Acceptance Gate            : Fresh Trakya corporate-website intake + multi-page generation
+ISSUE-002                        : Resolved in v0.3.0 by RUN-20260817-004
+ISSUE-003                        : Implemented — Awaiting Fresh v0.3.1 Validation
+Next Acceptance Gate            : Fresh Trakya corporate generation + exact capability semantic validation
 ```

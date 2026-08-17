@@ -78,10 +78,14 @@ Trakya Teknik Makine için yalnız tek sayfalık bir tanıtım yüzeyi değil; f
 - E-ticaret / online ödeme.
 - Canlı harita.
 - WhatsApp entegrasyonu.
+- İletişim formu / demo form / mesaj submit interaction'ı.
+- Form input alanları, submit/send behavior ve form success/error state'leri.
 - Gerçek form submit backend'i.
 - Production deployment/domain/hosting geçişi.
 - Source-backed olmayan referans/proje/müşteri/tarihçe/sertifika/kapasite sayfaları veya company claims.
 - Source dosyada bulunmayan hizmet qualifier'ları/teknik alt kapsamlar.
+
+> İletişim sayfasının varlığı veya telefon/e-posta direct-contact capability'si form, submit, WhatsApp, harita, booking/request flow veya başka child interaction authorize etmez.
 
 ## 7. Site / Surface Architecture
 
@@ -116,7 +120,7 @@ Aşağıdaki yapı bu source için **desired corporate site architecture**'dır.
 
 7. **İletişim**
    - Purpose: Approved direct-contact capability'leri ayrı iletişim yüzeyinde sunmak.
-   - Constraint: exact telefon/e-posta/adres source truth olmadan uydurulmaz; map/form/WhatsApp otomatik eklenmez.
+   - Constraint: exact telefon/e-posta/adres source truth olmadan uydurulmaz; map/form/WhatsApp/booking-request behavior otomatik eklenmez.
 
 ### Page Relationships
 
@@ -141,7 +145,8 @@ Home
 - Direct URL / route-based page access suitable frontend architecture ile desteklenmeli.
 - Firma kimliği ve yetkili servis statüsü güçlü sunulmalı.
 - Üç approved hizmet overview + approved detail surfaces üzerinden açıkça keşfedilebilmeli.
-- Approved contact channels'a kolay erişim sağlanmalı.
+- Approved telefon/e-posta contact capability'lerine kolay erişim planlanmalı; exact değer yoksa uydurma/işlevsiz fake değer render edilmemeli.
+- Current scope'ta kullanıcıdan mesaj/form verisi toplanmamalı veya demo submit behavior oluşturulmamalı.
 - Shared header/footer/shell cross-page consistent olmalı.
 - Mock/local content presentation component'lerine kontrolsüz hardcode edilmemeli; service/data boundary korunmalı.
 - Same-codebase continuation future page/CMS/API growth için structural rewrite gerektirmemeli.
@@ -150,7 +155,7 @@ Home
 
 - Trakya Teknik Makine gerçek bir firmadır.
 - Firma Disan Hidrolik Makine'nin Trakya Bölge Yetkili Servisi olarak konumlandırılır.
-- Bu v0.3.0 fresh Product Engine çalışması için current implementation/generated state temizlenerek sıfırdan planlanacaktır.
+- Bu v0.3.1 fresh Product Engine çalışması için current implementation/generated state temizlenerek sıfırdan planlanacaktır.
 - Mevcut dış web sitesi/CMS/old codebase bilgisi bu run için gerekli source truth değildir.
 
 ## 10. Approved Project Facts / Content Truth
@@ -190,6 +195,7 @@ Telefon/e-posta/adres gibi exact contact values source material'a gerçek değer
 - İlk demo için external API gereksinimi yoktur.
 - Mock/local project data kullanılabilir.
 - Future backend/data source için replaceable adapter boundary korunmalıdır.
+- Current scope'ta form submission payload/endpoint veya fake send-flow yoktur.
 
 ## 13. Tasarım Yönü
 
@@ -201,6 +207,7 @@ Telefon/e-posta/adres gibi exact contact values source material'a gerçek değer
 - Güçlü typography, spacing, technical/grid/diagram inspired surfaces ve controlled motion kullanılabilir.
 - **Antrasit/koyu teknik yüzey + amber/turuncu precision accent yönü tercih edilen ve önceki demo görselinde beğenilen bir creative direction'dır; resmi brand color/fact değildir.** Engine bunu proje-specific design decision olarak kullanabilir veya aynı karakteri koruyan eşdeğer kaliteli solution üretebilir.
 - Masaüstü ve mobil birlikte planlanmalı.
+- Design creativity current approved capability scope dışında yeni form/modal/search/request behavior üretme izni değildir.
 
 ## 14. Deployment / Operasyonlar
 
@@ -217,6 +224,7 @@ Telefon/e-posta/adres gibi exact contact values source material'a gerçek değer
 - Desired site architecture: Home + Corporate + Services + 3 service-detail pages + Contact.
 - Single-page landing reduction hedef değildir.
 - Unknown company facts uydurulmayacaktır.
+- Current contact capability yalnız source-safe phone/e-mail direct-contact boundary'sidir; form/submit behavior current scope değildir.
 - Demo scope code/design/architecture/page breadth quality floor'unu düşürmeyecektir.
 - Same-codebase continuation + clean service/data boundary korunacaktır.
 
@@ -224,7 +232,7 @@ Telefon/e-posta/adres gibi exact contact values source material'a gerçek değer
 
 - Müşteri tarafından doğrulanmış production brief değildir; proaktif sales demo source'udur.
 - Yalnız bu source'taki explicit company/domain facts factual truth kabul edilir.
-- Page architecture presentation structure organize eder; yeni company fact authorize etmez.
+- Page architecture presentation structure organize eder; yeni company fact veya child interaction authorize etmez.
 - Gereksiz backend/panel/operational complexity eklenmemeli.
 - Tasarım başka Engine çıktılarının görünümünü kopyalamamalı.
 
@@ -237,7 +245,7 @@ Telefon/e-posta/adres gibi exact contact values source material'a gerçek değer
 - Future scope'ta form/map/WhatsApp istenecek mi?
 - Production aşamasında admin/CMS ihtiyacı olacak mı?
 
-Bu unresolved items current approved page architecture'ı bloke etmez; source-backed olmadığı sürece current pages bunları factual content gibi kullanamaz.
+Bu unresolved items current approved page architecture'ı bloke etmez; source-backed/approved olmadığı sürece current pages bunları factual content veya executable behavior gibi kullanamaz.
 
 ## 18. Başarı Kriterleri
 
@@ -247,6 +255,7 @@ Bu unresolved items current approved page architecture'ı bloke etmez; source-ba
 - Home, Corporate, Services, 3 Service Detail ve Contact responsibilities açıkça hissedilmeli.
 - Firma/yetkili servis statüsü ve approved services hızlı anlaşılmalı.
 - Hizmet overview → detail discovery flow çalışmalı.
+- Contact page approved direct-contact boundary'yi aşmamalı; form/submit/success-state current scope'a sızmamalı.
 - Mobile/desktop cross-page experience sales görüşmesinde gösterilecek kalitede olmalı.
 - Source-backed olmayan company truth üretilmemeli.
 - Frontend same codebase üzerinde future backend/CMS/page growth'e structural rewrite olmadan devam edebilmeli.
@@ -259,12 +268,14 @@ Bu unresolved items current approved page architecture'ı bloke etmez; source-ba
 - Source dışından factual enrichment yapılamaz.
 - Missing factual info open question olarak kalır.
 - Teknik implementation decisions Engine-resolved olabilir; company/domain claims source-backed olmalıdır.
+- Generated executable interaction'lar exact approved scope-backed olmalıdır; related page/purpose authorization sayılmaz.
 - Intake agent exact PAGE IDs ile Proposed Site Architecture sunmalı ve user explicit approval'ı almadan approved input oluşturulmamalıdır.
 
 ## 20. Referanslar
 
 - Project-start skeleton: `project-start/templates/PROJECT_START_SCENARIO_TEMPLATE.md`
 - Phase A prompt: `project-start/templates/AGENT_START_PROMPT_TEMPLATE.md`
+- Capability scope authority: `engine/CAPABILITY_SCOPE_RULES.md`
 - Site architecture authority: `engine/SITE_ARCHITECTURE_RULES.md`
 - Planning profiles authority: `engine/PLANNING_PROFILES.md`
 
@@ -272,4 +283,4 @@ Bu unresolved items current approved page architecture'ı bloke etmez; source-ba
 
 ## Handoff Kuralı
 
-Bu dosya project source material'dir; final Engine input değildir. Intake agent source'u canonical pending PROJECT_INPUT'a normalize eder, proposed/known PAGE registry + profiles'i user'a görünür sunar, explicit approval alır, approved input oluşturur ve STOP eder. Runtime yalnız approved input üzerinden fresh session'da devam eder.
+Bu dosya project source material'dir; final Engine input değildir. Intake agent source'u canonical pending PROJECT_INPUT'a normalize eder, proposed/known PAGE registry + profiles + exact current capability boundaries'i user'a görünür sunar, explicit approval alır, approved input oluşturur ve STOP eder. Runtime yalnız approved input üzerinden fresh session'da devam eder.

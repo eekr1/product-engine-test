@@ -6,7 +6,7 @@
 template_id: wave-map-template
 template_name: Canonical Wave Map Template
 document_id: WAVE-MAP
-version: 3.1.0
+version: 3.2.0
 status: active
 template_type: document
 category: waves
@@ -44,6 +44,8 @@ output_filename: WAVE_MAP.md
 Approved execution scope'u anlamlı delivery wave'lerine bölen canonical **execution decomposition authority** belgesidir.
 
 WAVE_PLAN yalnız burada dondurulan exact parent wave entry'yi implementation seviyesinde detaylandırır; yeni product capability, page/surface veya factual scope icat edemez.
+
+Executable capability authorization semantiği `engine/CAPABILITY_SCOPE_RULES.md` sahibidir.
 
 ---
 
@@ -113,6 +115,29 @@ Executable = NO
 
 Broad/generic support adjacent capability authorize etmez. Exact semantic subset zorunludur.
 
+### Direct Approved Support Requirement
+
+WAVE_MAP generated upstream artifact'tan capability authorization miras alamaz.
+
+```text
+PAGE-DESIGN says form
+≠ form support
+
+PROJECT_PLAN mentions modal
+≠ modal support
+```
+
+Her Committed Capability doğrudan exact approved executable support ID(s)'ye trace edilmelidir.
+
+Page/surface existence child interaction authorize etmez:
+
+```text
+Contact page + phone/email
+≠ contact form / submit / success state
+```
+
+Form, data collection, submit, modal, search/filter, map, WhatsApp, booking/request flow, upload/download veya new CTA independently meaningful capability atomudur.
+
 ---
 
 ## Corporate Page Coverage
@@ -168,11 +193,13 @@ Capability
 Approved Support ID(s)
 Support Status
 Support Executable Flag
-Support Meaning
+Exact Approved Support Meaning
 Eligibility Result
 Semantic Subset Result
 Map Subset Result
 ```
+
+`Support Meaning` capability'nin broad parent page/purpose'unu değil, generated behavior'ı gerçekten authorize eden exact executable meaning'i göstermelidir.
 
 ### Covered Page IDs
 
@@ -184,7 +211,7 @@ Covered Page IDs:
 - PAGE-002 — Corporate
 ```
 
-Bu alan yalnız registry identity mapping'idir; page-specific factual content üretmez.
+Bu alan yalnız registry identity mapping'idir; page-specific factual content veya child interaction üretmez.
 
 ---
 
@@ -206,6 +233,7 @@ Sonra:
 
 ```text
 HIDDEN_MAP_CAPABILITIES = executable atoms not covered by Committed Capabilities
+UNSUPPORTED_MAP_CAPABILITIES = map atoms without exact approved executable semantic support
 UNAPPROVED_MAP_PAGES = PLANNED_PAGE_SET - APPROVED_PAGE_SET
 MISSING_MAP_PAGES = APPROVED_PAGE_SET - PLANNED_PAGE_SET
 ```
@@ -253,9 +281,10 @@ Kontrol soruları:
 4. Corporate approved page'lerin tamamı coverage alıyor mu?
 5. Page grouping coherence sağlıyor mu, yoksa page'i görünmez mi yapıyor?
 6. Whole-project QA bağımsız horizontal boundary ise feature wave'e gizlenmiş mi?
-7. Her capability exact executable support taşıyor mu?
-8. Her factual modifier FCL sınırında mı?
-9. Why Separate / Upstream / Handoff net mi?
+7. Her capability direct exact executable support taşıyor mu?
+8. Her child interaction ayrı atomize edilmiş mi?
+9. Her factual modifier FCL sınırında mı?
+10. Why Separate / Upstream / Handoff net mi?
 
 Rules:
 
@@ -265,6 +294,7 @@ shared prerequisite → CONSIDER FOUNDATION SPLIT
 no standalone result → MERGE
 approved pages omitted/collapsed → FAIL
 unapproved page → FAIL
+page existence used as child interaction authorization → FAIL
 unsupported capability → FAIL
 hidden capability → FAIL
 factual expansion → FAIL
@@ -275,8 +305,10 @@ factual expansion → FAIL
 ## Validation Beklentileri
 
 - Required map calibration checkpoint uygulanmış olmalı.
-- Capability support yalnız executable-eligible scope'tan gelmeli.
+- Capability support yalnız executable-eligible approved scope'tan gelmeli.
+- Generated design/planning artifact scope support authority olarak kullanılmamalı.
 - `HIDDEN_MAP_CAPABILITIES == empty`.
+- `UNSUPPORTED_MAP_CAPABILITIES == empty`.
 - Corporate website ise `APPROVED_PAGE_SET == PLANNED_PAGE_SET`.
 - `UNAPPROVED_MAP_PAGES == empty` ve `MISSING_MAP_PAGES == empty`.
 - Distinct approved page section anchor'a collapse edilmemeli.
