@@ -6,32 +6,35 @@
 package_id: demo-frontend
 package_name: Frontend Demo Package
 package_type: base
-version: 2.2.2
+version: 2.3.0
 status: active
 default_delivery_profile: Prototype
 compatible_project_types:
-  - web-app
-  - landing-page
   - prototype
+  - web-app
   - mobile-app
+  - other
 ```
 
 ## Amaç
 
-Satış demosu, UI proof, sunum prototipi veya erken frontend deneyimi gibi **frontend ağırlıklı scope'u** tanımlar.
+UI proof, interaction prototype, concept validation veya erken frontend deneyimi gibi **frontend ağırlıklı fakat corporate-website domain'i olmayan** scope'u tanımlar.
 
 Bu package planning depth sahibi değildir. Implementation/design planning belgeleri `PLANNING_PROFILE_OVERLAY.md` tarafından eklenir.
+
+`corporate-website` project type bu package tarafından sahiplenilemez. Bir corporate website sales demo/prototype olsa bile domain base package `corporate-website` olmalıdır.
 
 ---
 
 ## Demo / Prototype Semantics
 
-`demo`, `sales demo`, `prototype`, `local preview` veya benzeri ifadeler **delivery purpose / runtime maturity** bilgisidir; execution capability authority değildir.
+`demo`, `sales demo`, `prototype`, `local preview` veya benzeri ifadeler **delivery purpose / runtime maturity** bilgisidir; project type veya execution capability authority değildir.
 
-Canonical invariant:
+Canonical invariants:
 
 ```text
 demo/prototype label ≠ feature approval
+demo/prototype label ≠ project type override
 ```
 
 Bu etiketler tek başına şunları authorize etmez:
@@ -61,13 +64,12 @@ Bu base package şu gerçekleri ifade eder:
 - Gerçek backend yoksa demo mock/local data kullanabilir.
 - Mock/local adapter yalnız approved capability'lerin veri ihtiyacını karşılar; kendi başına yeni interaction veya feature oluşturmaz.
 - Demo throwaway architecture değildir.
-- UI/UX applicable olduğundan `design_planning` profile'ı intake'te zorunludur.
+- UI/UX applicable olduğundan design planning gerekir.
+- Corporate information architecture bu package'ın shortcut scope'u değildir.
 
 ---
 
 ## Base Domain Documents
-
-Base package'ın kendi domain çekirdeği:
 
 ```text
 README-DOC
@@ -75,8 +77,6 @@ PROJECT-BRAIN
 PRODUCT-RULES (applicable product type'ta)
 DESIGN       (UI applicable olduğu için)
 ```
-
-Bunlar nihai document set değildir.
 
 Nihai set:
 
@@ -89,16 +89,6 @@ real contextual conditions
 ```
 
 ile çözülür.
-
-Örneğin:
-
-```yaml
-delivery_profile: Prototype
-implementation_planning: standard
-design_planning: light
-```
-
-ise overlay TECH-CTX, PROJECT_PLAN, WAVE_MAP/WAVE plans, STATUS/TASKS/AGENT/DECISIONS gibi agent-ready implementation minimumunu ekler.
 
 ---
 
@@ -124,83 +114,34 @@ MUST NOT:
 
 Gerçek API approved scope'a girerse `API`/`DATA` ve ilgili extension/context koşulları yeniden çözülür.
 
-### Continuation-Ready Frontend Foundation
+---
 
-`demo-frontend` package için integration readiness yalnız data adapter ile tamamlanmış sayılmaz. Özellikle satış demosu veya müşteri kabul ederse gerçek projeye dönüşmesi beklenen frontend'lerde, bugünkü stack/tooling seçimi aynı codebase üzerinde devam etmeyi desteklemelidir.
+## Continuation-Ready Frontend Foundation
 
-Canonical package expectation:
+`demo-frontend` package için integration readiness yalnız data adapter ile tamamlanmış sayılmaz. Aynı codebase üzerinde continuation beklenen frontend'lerde bugünkü stack/tooling seçimi gerçek ürüne devam etmeyi desteklemelidir.
+
+Canonical expectation:
 
 ```text
-sales/client demo
+demo frontend
 → same frontend foundation
-→ additional pages/components/state
-→ real service/API/CMS integration when approved
+→ additional surfaces/components/state
+→ real service/API integration when approved
 ```
 
-### Deterministic Package Gate
-
-Aşağıdakilerden herhangi biri mevcutsa continuation beklenir:
-
-- proje sales/client demo'dur,
-- kabul sonrası aynı site/ürün üzerinde devam edilmesi beklenir,
-- future scope içinde backend/API/CMS/auth/admin veya yeni page/component/state büyümesi vardır.
-
-Continuation bekleniyorsa ve approved source/input içinde aksi yönde explicit constraint yoksa Engine **MUST** package-managed, component-ready modern frontend baseline seçmelidir.
+Approved teknik constraint yoksa continuation beklenen demo package-managed, component-oriented ve repeatable dev/build/preview workflow taşıyan modern frontend baseline kullanmalıdır.
 
 Beklenen baseline class:
 
 ```text
 package/dependency manifest
 + repeatable dev/build/preview workflow
-+ component/module-oriented source structure
++ modular component/module structure
 + service/config boundary
 + production-continuation friendly source layout
 ```
 
-Belirli framework global olarak zorunlu değildir. React/Vite, Vue/Vite, SvelteKit veya başka uygun package-managed component-oriented çözüm current project synthesis ile seçilebilir.
-
-### Zero-Build İstisna Kuralı
-
-Continuation beklenen `demo-frontend` projesinde Vanilla/zero-build/dependency-free foundation yalnız approved user/project/environment constraint ile mümkündür.
-
-Geçerli kanıt örnekleri:
-
-```text
-user explicitly requires no framework/package tooling
-runtime environment cannot run Node/package tooling
-explicit single-file/static/zero-build delivery requirement
-approved one-off/disposable proof with continuation explicitly not expected
-```
-
-Aşağıdakiler **geçerli istisna değildir**:
-
-```text
-demo olduğu için
-küçük olduğu için
-hızlı olduğu için
-no dependency risk
-modüler ES6 yeterli
-ileride React/Vite/Next'e migrate edilebilir
-migration düşük maliyetli görünüyor
-```
-
-Engine/agent kendi rationale'ını approved constraint yerine koyamaz.
-
-Canonical failure:
-
-```text
-continuation_expected = YES
-+ approved_zero_build_constraint = NONE
-+ selected_stack = zero-build/dependency-free
-→ PACKAGE GUARD FAIL
-```
-
-TECH_CONTEXT bu iki alanı explicit göstermelidir:
-
-```text
-Continuation Expected: YES | NO
-Approved Zero-Build Constraint: <exact evidence | NONE>
-```
+Zero-build / dependency-free yaklaşım yalnız `engine/PLANNING_PROFILES.md` continuation gate'ini karşılayan **approved constraint** ile seçilebilir. Agent kendi low-migration rationale'ını constraint yerine kullanamaz.
 
 ---
 
@@ -223,50 +164,24 @@ Sektör klişesi tek tasarım gerekçesi olamaz.
 
 ## Deterministic Wave Granularity Guard
 
-`demo-frontend` özellikle `landing-page`, corporate presentation veya satış demosu bağlamında wave decomposition'ı yorum serbestisine bırakamaz.
+Demo frontend wave decomposition responsibility sınırlarına göre yapılır.
 
-Aşağıdaki responsibility class'lar distinct deliverable adaylarıdır:
+Distinct deliverable class örnekleri:
 
 ```text
 Foundation / Bootstrapping
-Primary Entry / Hero
-Corporate / Trust
-Services / Product Presentation
-Contact / Conversion
+Primary Surface / Shell
+Feature / Presentation Surface
+Conversion / Contact behavior (approved ise)
 Final Cross-Cutting Integration / Responsive / Regression / Presentation QA
 ```
 
-Bu liste sabit wave isimleri değildir; ancak şu merge'ler deterministic olarak geçersizdir:
+Rules:
 
-```text
-Services + Contact in one wave
-→ SPLIT unless contact is truly trivial/non-distinct and has no own data/CTA/responsive responsibility
-
-Any feature/surface + whole-project final QA
-→ SPLIT
-
-Contact + whole-project final QA
-→ SPLIT
-```
-
-Cross-cutting QA tanımı:
-
-```text
-QA scope re-validates 2 or more previously completed surfaces/features
-or performs whole-project responsive/cross-browser/regression/presentation verification
-→ separate final QA wave is REQUIRED
-```
-
-Corporate/landing demo için minimum decomposition sanity:
-
-- Foundation user-facing surfaces'ten ayrıdır.
-- Services distinct ise Contact altında saklanamaz.
-- Contact yalnız approved contact capability'lerini taşıyabilir; `Contact` etiketi form/map/WhatsApp gibi ek davranışları otomatik authorize etmez.
-- Whole-project final QA bir feature wave'inin acceptance maddesi olarak gizlenemez.
-
-Valid merge yalnız gerçekten tek coherent completion boundary varsa ve merge edilen responsibility bağımsız olarak tamamlanabilir bir deliverable değilse yapılabilir. Bu istisna explicit rationale ile WAVE_MAP içinde açıklanmalıdır.
-
-Validator bu guard'ı heuristic tavsiye olarak değil package-level blocking contract olarak uygular.
+- Foundation user-facing surface'lerden ayrıdır.
+- Whole-project final QA gerçek feature wave'inin içine gizlenemez.
+- Yeni capability yalnız wave decomposition gerekçesiyle üretilemez.
+- Corporate website page architecture bu package'ın wave-granularity heuristiğine indirgenemez; corporate project `CORPORATE_WEBSITE_PACKAGE` kullanır.
 
 ---
 
@@ -275,23 +190,19 @@ Validator bu guard'ı heuristic tavsiye olarak değil package-level blocking con
 Bu package için ek doğrulamalar:
 
 - demo/prototype label yeni capability authorize etmez,
+- demo/prototype label corporate-website project type'ını override etmez,
 - demo ≠ throwaway architecture,
 - integration readiness mevcut,
-- `continuation_expected` explicit resolve edilmiş,
-- continuation YES ise package/dependency manifest mevcut,
-- continuation YES ise repeatable dev/build/preview workflow mevcut,
-- continuation YES ise component/module-oriented source foundation mevcut,
-- continuation YES + zero-build seçimi varsa exact approved constraint evidence mevcut,
-- agent-generated low-migration rationale approved constraint sayılmamış,
+- continuation beklenen demo için frontend stack/tooling continuation-ready,
+- zero-build/dependency-free seçim yalnız approved constraint ile destekli,
+- repeatable dev/build/preview workflow ve package/tooling reality TECH_CONTEXT ile tutarlı,
 - invented backend yok,
 - invented mock interaction/capability yok,
 - design profile minimumu korunmuş,
 - planning overlay implementation minimumu korunmuş,
-- sunum akışı gerçek approved scope ile tutarlı,
-- distinct Services ve Contact sorumlulukları uygunsuz biçimde merge edilmemiş,
-- whole-project final QA herhangi bir feature/contact wave'ine gömülmemiş.
+- whole-project final QA feature wave'ine gömülmemiş.
 
-Package scope/granularity/continuation guard ihlali → validation FAIL / TECH_CONTEXT or WAVE_MAP repair.
+Package scope/granularity/continuation guard ihlali → validation FAIL / upstream repair.
 
 ---
 
