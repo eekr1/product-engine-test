@@ -1,6 +1,6 @@
 # Trakya Teknik Makine — WAVE_05: Cross-Page Responsive Integration & Quality QA
 
-- **Status**: Ready for Execution
+- **Status**: Completed
 - **Parent Wave**: `WAVE_05` in `waves/WAVE_MAP.md`
 - **Goal**: Tüm 7 sayfa genelinde responsive uyum, klavye/focus erişilebilirliği, cross-page navigasyon tutarlılığı ve production build doğrulamasını gerçekleştirmek.
 
@@ -80,17 +80,17 @@ dist/
 
 ## 9. Implementation Checklist
 
-- [ ] **Task 05.1 — Cross-Page Responsive Audit**:
+- [x] **Task 05.1 — Cross-Page Responsive Audit**:
   - Location: Tüm `src/pages/` ve `src/styles/` dosyaları.
   - Action: 320px mobil, 768px tablet ve 1280px masaüstü çözünürlüklerinde yatay kayma (horizontal scroll) olmadığını kontrol edin.
   - Parent Capability: `CAP-015`. Parent Pages: `PAGE-001` .. `PAGE-007`.
   - Done Criteria: Sıfır yatay kayma, mobil menü kusursuz çalışır.
-- [ ] **Task 05.2 — Accessibility & Keyboard Focus Audit**:
+- [x] **Task 05.2 — Accessibility & Keyboard Focus Audit**:
   - Location: `src/styles/global.css`, `src/components/Header.tsx`.
   - Action: Klavyeyle Tab tuşu takibini ve focus göstergelerini test edin.
   - Parent Capability: `CAP-015`. Parent Pages: `PAGE-001` .. `PAGE-007`.
   - Done Criteria: Tüm linkler ve butonlar belirgin focus ring alır.
-- [ ] **Task 05.3 — Production Build Verification**:
+- [x] **Task 05.3 — Production Build Verification**:
   - Location: Terminal / `npm run build`.
   - Action: Derleme komutunu çalıştırın ve `dist/` klasörünün temiz oluştuğunu doğrulayın.
   - Parent Capability: `CAP-015`.
@@ -113,8 +113,8 @@ npm run preview
 
 ## 13. Acceptance / Exit Criteria
 
-- [ ] `npm run build` hatasız geçer.
-- [ ] 7 sayfa responsive olarak mükemmeldir.
+- [x] `npm run build` hatasız geçer.
+- [x] 7 sayfa responsive olarak mükemmeldir.
 
 ## 14. Handoff / Stop Rule
 
@@ -123,4 +123,4 @@ npm run preview
 ---
 ## Wave Result
 
-- **Result**: Pending Execution
+- **Result**: PASSED

@@ -1,6 +1,6 @@
 # Trakya Teknik Makine — WAVE_02: Home & Corporate Pages
 
-- **Status**: Ready for Execution
+- **Status**: Completed
 - **Parent Wave**: `WAVE_02` in `waves/WAVE_MAP.md`
 - **Goal**: Ana Sayfa (`PAGE-001`) ve Kurumsal (`PAGE-002`) sayfalarını onaylı tasarım paketleri ve içerik sınırları uyarınca inşa etmek.
 
@@ -79,17 +79,17 @@ src/
 
 ## 9. Implementation Checklist
 
-- [ ] **Task 02.1 — HomePage Implementation**:
+- [x] **Task 02.1 — HomePage Implementation**:
   - Location: `src/pages/HomePage.tsx`, `src/components/HeroSection.tsx`.
   - Action: Ana Sayfa hero alanı, Disan yetkili servis rozeti, 3 hizmet özet kartı ve yönlendirmeleri kodlayın.
   - Parent Capability: `CAP-006`. Parent Page: `PAGE-001`.
   - Done Criteria: Ana Sayfa antrasit/amber tema ile sorunsuz görünür.
-- [ ] **Task 02.2 — Authority Badge Component**:
+- [x] **Task 02.2 — Authority Badge Component**:
   - Location: `src/components/AuthorityBadge.tsx`.
   - Action: Disan Hidrolik Makine Trakya Bölge Yetkili Servisi rozet bileşenini oluşturun.
   - Parent Capability: `CAP-008`. Parent Page: `PAGE-001`, `PAGE-002`.
   - Done Criteria: Rozet onaylı metni taşır ve görsel güven sağlar.
-- [ ] **Task 02.3 — CorporatePage Implementation**:
+- [x] **Task 02.3 — CorporatePage Implementation**:
   - Location: `src/pages/CorporatePage.tsx`, `src/components/CorporateIntroSection.tsx`.
   - Action: Kurumsal sayfa sunumunu, faaliyet alanı vurgusunu ve yetkili servis bilgi panelini kodlayın.
   - Parent Capability: `CAP-007`. Parent Page: `PAGE-002`.
@@ -111,8 +111,8 @@ npm run dev
 
 ## 13. Acceptance / Exit Criteria
 
-- [ ] `PAGE-001` ve `PAGE-002` tamamlanmıştır.
-- [ ] Source-backed olmayan iddia uydurulmamıştır.
+- [x] `PAGE-001` ve `PAGE-002` tamamlanmıştır.
+- [x] Source-backed olmayan iddia uydurulmamıştır.
 
 ## 14. Handoff / Stop Rule
 
@@ -121,4 +121,4 @@ npm run dev
 ---
 ## Wave Result
 
-- **Result**: Pending Execution
+- **Result**: PASSED

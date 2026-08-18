@@ -1,6 +1,6 @@
 # Trakya Teknik Makine — WAVE_01: Global Shell & Navigation Architecture
 
-- **Status**: Ready for Execution
+- **Status**: Completed
 - **Parent Wave**: `WAVE_01` in `waves/WAVE_MAP.md`
 - **Goal**: Header (logo, 7 sayfalık nav, mobile drawer), Footer ve Layout Shell bileşenlerini React Router DOM rotalama altyapısıyla entegre etmek.
 
@@ -79,22 +79,22 @@ src/
 
 ## 9. Implementation Checklist
 
-- [ ] **Task 01.1 — Router Configuration**:
+- [x] **Task 01.1 — Router Configuration**:
   - Location: `src/App.tsx`.
   - Action: 7 onaylı rota için React Router DOM `Routes` yapısını kurun.
   - Parent Relation: `CAP-003`.
   - Done Criteria: Rotalar değiştiğinde doğru sayfa stubu render edilir.
-- [ ] **Task 01.2 — Desktop & Mobile Header Component**:
+- [x] **Task 01.2 — Desktop & Mobile Header Component**:
   - Location: `src/components/Header.tsx`, `src/components/MobileDrawer.tsx`.
   - Action: Trakya Teknik Makine logosu, Disan yetkili servis rozeti, 7 sayfalık navigasyon linkleri ve mobil hamburger menüsünü yazın.
   - Parent Relation: `CAP-004`.
   - Done Criteria: Masaüstünde menü barı, mobilde açılır drawer kusursuz çalışır.
-- [ ] **Task 01.3 — Global Footer Component**:
+- [x] **Task 01.3 — Global Footer Component**:
   - Location: `src/components/Footer.tsx`.
   - Action: Firma özeti, Disan yetkili servis bilgisi, 7 onaylı sayfa bağlantısı ve direct phone/email iletişim linklerini ekleyin.
   - Parent Relation: `CAP-005`.
   - Done Criteria: Footer tüm sayfalarda dikey akışın altında sabit görünür.
-- [ ] **Task 01.4 — Layout Wrapper**:
+- [x] **Task 01.4 — Layout Wrapper**:
   - Location: `src/components/Layout.tsx`.
   - Action: Header ve Footer'ı saran, `<Outlet />` içeren ana layout şablonunu oluşturun.
   - Parent Relation: `CAP-003`.
@@ -116,8 +116,8 @@ npm run dev
 
 ## 13. Acceptance / Exit Criteria
 
-- [ ] 7 sayfanın tamamı navigasyondan erişilebilir.
-- [ ] Anchor collapse yapılmamıştır.
+- [x] 7 sayfanın tamamı navigasyondan erişilebilir.
+- [x] Anchor collapse yapılmamıştır.
 
 ## 14. Handoff / Stop Rule
 
@@ -126,4 +126,4 @@ npm run dev
 ---
 ## Wave Result
 
-- **Result**: Pending Execution
+- **Result**: PASSED

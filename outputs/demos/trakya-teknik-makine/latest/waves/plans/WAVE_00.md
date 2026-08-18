@@ -1,6 +1,6 @@
 # Trakya Teknik Makine — WAVE_00: Foundation & Engineering Baseline
 
-- **Status**: Ready for Execution
+- **Status**: Completed
 - **Parent Wave**: `WAVE_00` in `waves/WAVE_MAP.md`
 - **Goal**: Package-managed Vite + React + TypeScript projesini kurmak, CSS variables tasarım token'larını yerleştirmek ve soyutlanmış data-access adapter katmanını oluşturmak.
 
@@ -87,22 +87,22 @@ trakya-teknik-makine/
 
 ## 9. Implementation Checklist
 
-- [ ] **Task 00.1 — Tooling & Workspace Setup**:
+- [x] **Task 00.1 — Tooling & Workspace Setup**:
   - Location: `./package.json`, `./tsconfig.json`, `./vite.config.ts`.
   - Action: Vite React TS projesini ilklendirin, `react-router-dom` bağımlılığını ekleyin.
   - Parent Relation: `CAP-001`.
   - Done Criteria: `npm install` hatasız tamamlanır.
-- [ ] **Task 00.2 — Design System Token CSS**:
+- [x] **Task 00.2 — Design System Token CSS**:
   - Location: `src/styles/tokens.css`, `src/styles/global.css`.
   - Action: Antrasit (`#0B0F17`), amber (`#F59E0B`), tipografi ve spacing CSS değişkenlerini yerleştirin.
   - Parent Relation: `CAP-001`.
   - Done Criteria: Global CSS değişkenleri projede erişilebilir olur.
-- [ ] **Task 00.3 — Mock Data Fixture & Service Adapters**:
+- [x] **Task 00.3 — Mock Data Fixture & Service Adapters**:
   - Location: `src/data/mockData.ts`, `src/services/companyService.ts`, `src/services/servicesService.ts`.
   - Action: Şirket bilgilerini ve 3 onaylı hizmetin fixture verilerini typed service adapter metodları arkasına koyun (`getCompanyInfo()`, `getAllServices()`, `getServiceBySlug()`).
   - Parent Relation: `CAP-002`.
   - Done Criteria: Servis metodları TypeScript arayüzü ile typed mock veri döndürür.
-- [ ] **Task 00.4 — Router Stubs Baseline**:
+- [x] **Task 00.4 — Router Stubs Baseline**:
   - Location: `src/App.tsx`.
   - Action: 7 onaylı sayfa için geçici stub route yapılandırmasını kurun.
   - Parent Relation: `CAP-001`.
@@ -125,9 +125,9 @@ npm run build
 
 ## 13. Acceptance / Exit Criteria
 
-- [ ] `npm run dev` hatasız başlar.
-- [ ] TypeScript tip kontrolü temizdir.
-- [ ] Service katmanı soyutlanmıştır.
+- [x] `npm run dev` hatasız başlar.
+- [x] TypeScript tip kontrolü temizdir.
+- [x] Service katmanı soyutlanmıştır.
 
 ## 14. Handoff / Stop Rule
 
@@ -136,4 +136,4 @@ npm run build
 ---
 ## Wave Result
 
-- **Result**: Pending Execution
+- **Result**: PASSED
